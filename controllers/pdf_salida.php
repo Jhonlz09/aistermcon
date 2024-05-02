@@ -14,10 +14,14 @@ class PDF extends FPDF
     private $startY;
     private $LineHeight; // nueva variable de clase
     private $id_boleta; // Propiedad para almacenar el ID de la boleta
+    public $orden;
+    public $cliente;
 
     function Header()
     {
         $data_detalle = ModeloSalidas::mdlBuscarDetalleBoleta($this->id_boleta);
+        $this->orden = $data_detalle[0]['orden'];
+        $this->cliente = $data_detalle[0]['cliente'];
         // // Arial bold 15
         $this->SetFont('Arial', '', 11);
         $this->SetTextColor(10, 0, 0);
@@ -462,4 +466,37 @@ $totalMicros = 0;
 // }
 // $pdf->Row(array('TOTAL', $totalSilabos, $totalMicros), array(12, 12, 12), 'B');
 // }
-$pdf->Output();
+
+// Definir el nombre predeterminado del archivo PDF
+$filename =  $data_boleta[0]["id_boleta"] .'_'.$pdf->cliente. '_'.$pdf->orden. ".pdf";
+
+// Generar el PDF y almacenarlo temporalmente
+$pdf->Output('I', $filename);
+
+// // Comprobar si es un dispositivo móvil
+// function isMobileDevice() {
+//     return preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $_SERVER['HTTP_USER_AGENT']);
+// }
+
+// // Cambiar el nombre del archivo si es un dispositivo móvil
+// if (isMobileDevice()) {
+//     $newFilename = "nuevo_nombre.pdf";
+//     rename($filename, $newFilename);
+//     $filename = $newFilename;
+// }
+
+// // Enviar encabezados de acuerdo al dispositivo
+// if (isMobileDevice()) {
+//     // Descarga directa en dispositivos móviles
+//     header('Content-Disposition: attachment; filename="' . $filename . '"');
+//     readfile($filename);
+// } else {
+//     // Visualización en el navegador en computadoras
+//     header('Content-type: application/pdf');
+//     header('Content-Disposition: inline; filename="' . $filename . '"');
+//     readfile($filename);
+// }
+
+// // Eliminar el archivo temporal
+// unlink($filename);
+?>

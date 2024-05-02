@@ -5,7 +5,7 @@ foreach ($permisosUsuario as $permiso) {
     $_SESSION["eliminar" . $permiso->id] = $permiso->eliminar;
 }?>
 <!-- Main Sidebar Container -->
-<aside style="backdrop-filter:blur(10px);white-space:nowrap;overflow-x:hidden" class="main-sidebar  sidebar-light-lightblue elevation-4">
+<aside style="backdrop-filter:blur(10px);white-space:nowrap;overflow-x:hidden" class="main-sidebar  sidebar-light-lightblue elevation-4 sidebar-no-expand">
     <!-- Brand Logo -->
     <a href="" class="brand-link">
         <img src="assets/img/logo_menu.png" alt="logo" class="brand-image" />
@@ -31,7 +31,7 @@ foreach ($permisosUsuario as $permiso) {
                     $first = false;
                 endforeach; ?>
             </ul>
-            <li class="mode">
+            <!-- <li class="mode">
                 <div class="moon-sun">
                     <i class="fas fa-sun sun icon"></i>
                     <i class="fas fa-moon moon icon"></i>
@@ -40,7 +40,7 @@ foreach ($permisosUsuario as $permiso) {
                 <div class="toggle-switch">
                     <span class="switch"></span>
                 </div>
-            </li>
+            </li> -->
 
         </nav>
         <!-- /.sidebar-menu -->

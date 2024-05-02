@@ -48,7 +48,7 @@
                 form.classList.add('was-validated');
                 return;
             }
-            $(btn).hide();
+            // $(btn).hide();
             btn.disabled = true;
             const username = user.value,
                 password = pass.value;
@@ -61,11 +61,30 @@
                 },
                 success: function(response) {
                     if (response === 'success') {
-                        window.location.href = "/aistermcon/";
+                        window.location.href = "./";
                     } else if (response === 'invalid_password') {
-                        validarLogin('La contraseña es incorrecta', false, btn, null, pass);
+                        mostrarToast('Error',
+                             "Error",
+                            "fa-solid fa-xmark fa-lg",
+                            'La contraseña es incorrecta'
+                        );
+                        pass.value = '';
+                        pass.focus();
+                        // $(btn).show();
+                    btn.disabled = false;
+                        // validarLogin('La contraseña es incorrecta', false, btn, null, pass);
                     } else {
-                        validarLogin('El usuario no existe', true, btn, user)
+                        // validarLogin('El usuario no existe', true, btn, user)
+                        mostrarToast('Error',
+                             "Error",
+                            "fa-solid fa-xmark fa-lg",
+                            'El usuario no existe'
+                        );
+                        user.value = '';
+                        user.focus();
+                       
+                        // $(btn).show();
+                    btn.disabled = false;
                     }
                 }
             });

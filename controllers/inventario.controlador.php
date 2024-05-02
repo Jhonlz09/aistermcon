@@ -5,11 +5,25 @@ class ControladorInventario
     public $id;
     public $codigo;
     public $nombre, $unidad, $categoria, $percha, $stock, $stock_min, $stock_mal;
+
     static public function listarInventario()
     {
         $data = ModeloInventario::mdlListarInventario();
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    static public function listarInventarioStock()
+    {
+        $data = ModeloInventario::mdlListarInventarioStock();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    static public function alertaStock()
+    {
+        $data = ModeloInventario::mdlAlertaStock();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
     public function agregarInventario()
     {
         $data = ModeloInventario::mdlAgregarInventario($this->codigo,$this->nombre,$this->stock,$this->stock_min,$this->stock_mal,$this->categoria,$this->unidad,$this->percha);
@@ -28,21 +42,27 @@ class ControladorInventario
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function buscarNombres()
+    public function buscarCodigo()
     {
-        $data = ModeloInventario::mdlBuscarProductos();
+        $data = ModeloInventario::mdlBuscarCodigo($this->codigo);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function buscarCodigo()
+    public function buscarId()
     {
         $data = ModeloInventario::mdlBuscarId($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function buscarProductos()
+    {
+        $data = ModeloInventario::mdlBuscarProductos();
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     
 }
 
-if (!isset($_POST["accion"])) {
+if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
     $data = new ControladorInventario();
     $data->listarInventario();
 } else {
@@ -75,11 +95,20 @@ if (!isset($_POST["accion"])) {
         $data->eliminarInventario();
     }else if ($_POST["accion"] == 4) {
         $data = new ControladorInventario();
-        // $data->codigo = $_POST["codigo"];
-        $data->buscarNombres();
+        $data->codigo = $_POST["id"];
+        $data->buscarCodigo();
     }else if ($_POST["accion"] == 5) {
         $data = new ControladorInventario();
         $data->id = $_POST["id"];
-        $data->buscarCodigo();
+        $data->buscarId();
+    }else if ($_POST["accion"] == 6) {
+        $data = new ControladorInventario();
+        $data->listarInventarioStock();
+    }else if ($_POST["accion"] == 7) {
+        $data = new ControladorInventario();
+        $data->buscarProductos();
+    }else if ($_POST["accion"] == 8) {
+        $data = new ControladorInventario();
+        $data->alertaStock();
     }
 }

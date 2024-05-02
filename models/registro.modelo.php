@@ -100,6 +100,23 @@ class ModeloRegistro
             $hora = date('H:i:s');
             $fechaHora = $fecha . ' ' . $hora;
 
+            foreach ($arr as $data) {
+                list($idProducto, $cantidad) = explode(',', $data);
+
+                // Consultar el stock disponible para el producto 
+                $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) as stock, codigo FROM tblinventario WHERE id = :idProducto");
+                $stmtStock->bindParam(':idProducto', $idProducto, PDO::PARAM_INT);
+                $stmtStock->execute();
+                $resultadoStock = $stmtStock->fetch(PDO::FETCH_ASSOC);
+
+                if (!$resultadoStock || $resultadoStock['stock'] < $cantidad) {
+                    return array(
+                        'status' => 'danger',
+                        'm' => "No hay suficiente stock disponible para el producto con el codigo '" . $resultadoStock['codigo']. "'"
+                    );
+                }
+            }
+
             $stmtB = $conexion->prepare("INSERT INTO tblboleta(fecha, id_orden, id_conductor, id_entrega, tipo_boleta) VALUES(:fecha,:orden,:conductor,:entrega, 'S')");
             $stmtB->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
             $stmtB->bindParam(':orden', $orden, PDO::PARAM_INT);
@@ -108,8 +125,7 @@ class ModeloRegistro
             $stmtB->execute();
             $id_boleta = $conexion->lastInsertId();
             // }
-
-            // Recorre el array e inserta la entrada en tblsalidas y actualiza tblinventario
+            // Recorre el array e inserta la salida de cada producto en tblsalidas y actualiza tblinventario
             foreach ($arr as $data) {
                 list($id, $cantidad) = explode(',', $data);
                 $stmtE = Conexion::ConexionDB()->prepare("INSERT INTO tblsalidas(id_boleta,cantidad_salida, id_producto)         

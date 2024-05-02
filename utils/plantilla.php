@@ -64,7 +64,7 @@
 
     <!-- Tabledit -->
     <script src="assets/plugins/jquery-tabledit/tabledit.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.0/chart.min.js"></script>
+    <script src="assets/plugins/chart.js/Chart.min.js"></script>
     <script src="assets/plugins/chart.js/ChartDataLabels.min.js"></script>
 
 </head>
@@ -76,6 +76,7 @@
         let items = [];
         let id_boleta = 0;
         let accion_salida = 4;
+        let accion_inv = 0;
         let scroll = false;
         let sub = false;
         const now = new Date();
@@ -142,11 +143,12 @@
         ];
     </script>
 
-    <body class='hold-transition sidebar-mini layout-fixed'>
+    <body class='hold-transition sidebar-mini layout-fixed sidebar-mini-xs'>
         <!-- Preloader -->
         <div class='preloader flex-column justify-content-center align-items-center'>
             <img class='animation__shake' src='assets/img/loading.svg' alt='AdminLTELogo' height='80' width='80'>
         </div>
+        <audio id="scanner" src="assets/sounds/scanner-beep.mp3"></audio>
         <div class='wrapper'>
             <?php
             include 'modules/sidebar.php';
@@ -166,15 +168,16 @@
             const body = document.querySelector('body'),
                 navbar = body.querySelector('.navbar'),
                 sidebar = body.querySelector('.main-sidebar'),
-                modeSwitch = body.querySelector('.mode'),
-                modeText = body.querySelector('.mode-text'),
+                // modeSwitch = body.querySelector('.mode'),
+                // modeText = body.querySelector('.mode-text'),
                 controlSide = body.getElementsByClassName('control-sidebar')[0],
                 control = body.querySelector('.ctrl-side'),
                 btnSide = document.getElementById('btnSide'),
                 setA = body.querySelectorAll('.setA'),
-                inputauto = body.querySelector('#codProducto');
+                inputauto = body.querySelector('#codProducto'),
+                inputBarras = body.querySelector('#codBarras');
 
-            const card_orden = document.getElementById('card_orden');
+            const card_fab = document.getElementById('card_fab');
 
 
             setA.forEach((e) => {
@@ -194,6 +197,7 @@
                 let ruta = id.toLowerCase();
 
                 var tablaData = localStorage.getItem(ruta);
+                accion_inv = 0;
                 scroll = false;
                 $('.' + contenedor).load(contenido, function() {
                     if (tablaData) {
@@ -246,34 +250,34 @@
                 }
             });
 
-            let savedTheme = localStorage.getItem('darkMode');
-            if (savedTheme == 'true') {
-                aplicarTema();
-            }
+            // let savedTheme = localStorage.getItem('darkMode');
+            // if (savedTheme == 'true') {
+            //     aplicarTema();
+            // }
 
-            modeSwitch.addEventListener('click', () => {
-                let dark = aplicarTema();
-                savePreference(dark);
-            });
+            // modeSwitch.addEventListener('click', () => {
+            //     let dark = aplicarTema();
+            //     savePreference(dark);
+            // });
 
-            function aplicarTema(chart = null) {
-                const chart_theme =
-                    body.classList.toggle('dark-mode');
-                navbar.classList.toggle('navbar-dark');
-                navbar.classList.toggle('navbar-light');
-                sidebar.classList.toggle('sidebar-light-lightblue');
-                sidebar.classList.toggle('sidebar-dark-navy');
-                controlSide.classList.toggle('control-sidebar-light');
-                controlSide.classList.toggle('control-sidebar-dark');
+            // function aplicarTema(chart = null) {
+            //     const chart_theme =
+            //         // body.classList.toggle('dark-mode');
+            //         navbar.classList.toggle('navbar-dark');
+            //     navbar.classList.toggle('navbar-light');
+            //     sidebar.classList.toggle('sidebar-light-lightblue');
+            //     sidebar.classList.toggle('sidebar-dark-navy');
+            //     controlSide.classList.toggle('control-sidebar-light');
+            //     controlSide.classList.toggle('control-sidebar-dark');
 
-                const isDarkMode = body.classList.contains('dark-mode');
-                modeText.innerText = isDarkMode ? 'Modo claro' : 'Modo oscuro';
-                return isDarkMode;
-            }
+            //     const isDarkMode = body.classList.contains('dark-mode');
+            //     modeText.innerText = isDarkMode ? 'Modo claro' : 'Modo oscuro';
+            //     return isDarkMode;
+            // }
 
-            function savePreference(isDarkMode) {
-                localStorage.setItem('darkMode', isDarkMode);
-            }
+            // function savePreference(isDarkMode) {
+            //     localStorage.setItem('darkMode', isDarkMode);
+            // }
 
             tblReturn = $('#tblReturn').DataTable({
                 "dom": 'pt',
@@ -418,97 +422,101 @@
             });
 
             $('#tblDetalleSalida').on('draw.dt', function() {
-
-                $('#tblDetalleSalida').Tabledit({
-                    url: 'controllers/Tabledit/acciones_salidas.php',
-                    dataType: 'json',
-                    columns: {
-                        identifier: [0, 'id'],
-                        editable: [
-                            [1, 'codigo'],
-                            [2, 'cantidad_salida']
-                        ]
-                    },
-                    buttons: {
-                        edit: {
-                            class: 'btn btn-sm btn-default',
-                            html: '<span class="text-nowrap"></span>',
-                            html: '<i class="fas fa-pen"></i>',
-                            action: 'edit'
+                if (id_boleta != 0) {
+                    $('#tblDetalleSalida').Tabledit({
+                        url: 'controllers/Tabledit/acciones_salidas.php',
+                        dataType: 'json',
+                        columns: {
+                            identifier: [0, 'id'],
+                            editable: [
+                                [1, 'codigo'],
+                                [2, 'cantidad_salida']
+                            ]
                         },
-                        delete: {
-                            class: 'btn btn-sm btn-default',
-                            html: '<i class="fas fa-trash"></i>',
-                            action: 'delete'
-                        }
-                    },
-                    onSuccess: function(data, textStatus, jqXHR) {
-                        if (data.action == 'delete') {
-                            // $('#' + data.id_boleta).remove();
-                            tblDetalleSalida.ajax.reload(null, false);
-                            tabla.ajax.reload(null, false);
-                        }
-                        if (data.action == 'edit') {
+                        buttons: {
+                            edit: {
+                                class: 'btn btn-sm btn-default',
+                                html: '<span class="text-nowrap"></span>',
+                                html: '<i class="fas fa-pen"></i>',
+                                action: 'edit'
+                            },
+                            delete: {
+                                class: 'btn btn-sm btn-default',
+                                html: '<i class="fas fa-trash"></i>',
+                                action: 'delete'
+                            }
+                        },
+                        onSuccess: function(data, textStatus, jqXHR) {
+                            if (data.action == 'delete') {
+                                // $('#' + data.id_boleta).remove();
+                                tblDetalleSalida.ajax.reload(null, false);
+                                tabla.ajax.reload(null, false);
+                            }
+                            if (data.action == 'edit') {
 
-                            tblDetalleSalida.ajax.reload(null, false);
-                            tabla.ajax.reload(null, false);
+                                tblDetalleSalida.ajax.reload(null, false);
+                                tabla.ajax.reload(null, false);
+                            }
                         }
-                    }
-                })
+                    })
+                    $('#tblDetalleSalida').find('input[name="cantidad_salida"]').attr({
+                        'inputmode': 'numeric',
+                        'autocomplete': 'off',
+                        'onpaste': 'validarPegado(this, event)',
+                        'onkeydown': 'validarTecla(event,this)',
+                        'oninput': 'validarNumber(this,/[^0-9.]/g)'
+                    });
+                }
 
-                $('#tblDetalleSalida').find('input[name="cantidad_salida"]').attr({
-                    'inputmode': 'numeric',
-                    'autocomplete': 'off',
-                    'onpaste': 'validarPegado(this, event)',
-                    'onkeydown': 'validarTecla(event,this)',
-                    'oninput': 'validarNumber(this,/[^0-9.]/g)'
-                });
+
             })
 
             $('#tblDetalleEntrada').on('draw.dt', function() {
-
-                $('#tblDetalleEntrada').Tabledit({
-                    url: 'controllers/Tabledit/acciones_entradas.php',
-                    dataType: 'json',
-                    columns: {
-                        identifier: [0, 'id'],
-                        editable: [
-                            [1, 'codigo'],
-                            [2, 'cantidad_entrada']
-                        ]
-                    },
-                    buttons: {
-                        edit: {
-                            class: 'btn btn-sm btn-default',
-                            html: '<span class="text-nowrap"></span>',
-                            html: '<i class="fas fa-pen"></i>',
-                            action: 'edit'
+                if (id_boleta != 0) {
+                    $('#tblDetalleEntrada').Tabledit({
+                        url: 'controllers/Tabledit/acciones_entradas.php',
+                        dataType: 'json',
+                        columns: {
+                            identifier: [0, 'id'],
+                            editable: [
+                                [1, 'codigo'],
+                                [2, 'cantidad_entrada']
+                            ]
                         },
-                        delete: {
-                            class: 'btn btn-sm btn-default',
-                            html: '<i class="fas fa-trash"></i>',
-                            action: 'delete'
+                        buttons: {
+                            edit: {
+                                class: 'btn btn-sm btn-default',
+                                html: '<span class="text-nowrap"></span>',
+                                html: '<i class="fas fa-pen"></i>',
+                                action: 'edit'
+                            },
+                            delete: {
+                                class: 'btn btn-sm btn-default',
+                                html: '<i class="fas fa-trash"></i>',
+                                action: 'delete'
+                            }
+                        },
+                        onSuccess: function(data, textStatus, jqXHR) {
+                            if (data.action == 'delete') {
+                                tblDetalleEntrada.ajax.reload(null, false);
+                                tabla.ajax.reload(null, false);
+                            }
+                            if (data.action == 'edit') {
+                                tblDetalleEntrada.ajax.reload(null, false);
+                                tabla.ajax.reload(null, false);
+                            }
                         }
-                    },
-                    onSuccess: function(data, textStatus, jqXHR) {
-                        if (data.action == 'delete') {
-                            tblDetalleEntrada.ajax.reload(null, false);
-                            tabla.ajax.reload(null, false);
-                        }
-                        if (data.action == 'edit') {
-                            tblDetalleEntrada.ajax.reload(null, false);
-                            tabla.ajax.reload(null, false);
-                        }
-                    }
-                })
+                    })
 
-                $('#tblDetalleEntrada').find('input[name="cantidad_entrada"]').attr({
-                    'inputmode': 'numeric',
-                    'autocomplete': 'off',
-                    'onpaste': 'validarPegado(this, event)',
-                    'onkeydown': 'validarTecla(event,this)',
-                    'oninput': 'validarNumber(this,/[^0-9.]/g)'
-                });
+                    $('#tblDetalleEntrada').find('input[name="cantidad_entrada"]').attr({
+                        'inputmode': 'numeric',
+                        'autocomplete': 'off',
+                        'onpaste': 'validarPegado(this, event)',
+                        'onkeydown': 'validarTecla(event,this)',
+                        'oninput': 'validarNumber(this,/[^0-9.]/g)'
+                    });
+                }
+
             })
 
             const cboClientesActivos = document.getElementById('cboPorCliente'),
@@ -520,58 +528,72 @@
                 const cboOrden = document.getElementById('cboOrden'),
                     form_guia = document.getElementById('form_guia'),
                     cboProveedor = document.getElementById('cboProveedores'),
-                    cboCliente = document.getElementById('cboClientes'),
+                    cboFab = document.getElementById('cboFabricado'),
                     cboEmpleado = document.getElementById('cboEmpleado'),
                     cboConductor = document.getElementById('cboConductor'),
                     btnGuia = document.getElementById('btnGuardarGuia');
 
+                const audio = document.getElementById("scanner");
+
+
                 $(cboOrden).select2({
                     placeholder: 'SELECCIONA UNA ORDEN',
-                    width: '100%',
+                    width: 'auto',
                 })
 
                 $(cboEmpleado).select2({
                     placeholder: 'SELECCIONA UN EMPLEADO',
-                    width: '100%',
+                    width: 'auto',
                 })
 
                 $(cboClientesActivos).select2({
                     placeholder: 'POR CLIENTE',
                     width: '100%',
                 })
+
                 $(cboOrdenActivas).select2({
                     placeholder: 'POR ORDEN',
-                    width: '100%',
+                    width: 'auto',
                 })
 
                 $(cboProveedor).select2({
                     placeholder: 'SELECCIONA UN PROVEEDOR',
-                    width: '100%',
+                    width: 'auto',
                 })
 
-                $(cboCliente).select2({
-                    placeholder: 'SELECCIONA UN CLIENTE',
-                    width: '100%',
+                $(cboFab).select2({
+                    placeholder: 'SELECCIONA UN PRODUCTO',
+                    width: 'auto',
+
                 })
+
+
+
 
                 $(cboConductor).select2({
                     placeholder: 'SELECCIONA UN CONDUCTOR',
-                    width: '100%',
                 })
 
                 cargarCombo('Proveedores');
                 cargarCombo('Clientes', '', 1, true)
                     .then(datos_ => {
                         datos_cliente = datos_;
-                        console.log(datos_cliente)
+                        // console.log(datos_cliente)
                     });
 
                 cargarCombo('Empleado')
                 cargarCombo('Conductor', '', 2);
                 cargarCombo('Orden', '', 3, true).then(datos_ => {
                     datos_orden = datos_;
-                    console.log(datos_orden)
+                    $(cboOrdenFab).select2({
+                        placeholder: 'SELECCIONA UNA ORDEN',
+                        width: 'auto',
+                        data: datos_orden
+                    })
+                    setChange(cboOrdenFab, 0);
+
                 });
+
                 cargarCombo('PorCliente', '', 4)
                 cargarCombo('PorOrden', '', 5)
 
@@ -648,59 +670,116 @@
                             className: "text-center ",
                         },
                         {
-                            targets: 4,
-                            className: "text-center",
+                            targets: 4
                         },
                     ],
                     buttons: [{
-                        text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
-                        className: "btn btn-light text-danger",
-                        action: function(e, dt, node, config) {
-                            dt.clear().draw(); // Esta línea vacía los datos de la tabla
-                        }
-                    }]
+                            text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
+                            className: "btn btn-light text-danger",
+                            action: function(e, dt, node, config) {
+                                dt.clear().draw(); // Esta línea vacía los datos de la tabla
+                            }
+                        },
+                        // {
+                        //     text: "<i class='fa-regular fa-layer-plus fa-xl'style='color: #000'></i> Agregar fabricación",
+                        //     className: "btn btn-light text-dark",
+                        //     action: function(e, dt, node, config) {
+                        //         card_fab.style.display = 'block'
+                        //     }
+                        // }
+                    ]
                 });
 
                 $('#tblIn tbody').on('click', '.btnEliminarIn', function() {
                     tblIn.row($(this).parents('tr')).remove().draw();
                 });
 
+                $('#tblOut tbody').on('click', '.btnFab', function() {
+                    // Obtener la fila padre del botón clickeado
+                    var fila = $(this).closest('tr');
+
+                    // Obtener los datos de la fila
+                    var cantidad = fila.find('.cantidad').val();
+                    var descripcion = fila.find('td:eq(3)').text(); // Cambia el índice según la posición de la columna
+                    // Aquí obtén otros datos que necesites según su posición en la fila
+
+                    // Crear una nueva fila en tblFab con los datos obtenidos
+                    var nuevaFila = '<tr>' +
+                        '<td class="text-center">' + cantidad + '</td>' +
+                        '<td>' + descripcion + '</td>' +
+                        '<td class="text-center">' +
+                        '<button type="button" class="btnEliminarFab btn btn-danger">Eliminar</button>' +
+                        '</td>' +
+                        '</tr>';
+
+                    // Agregar la nueva fila a tblFab
+                    $('#tblFab tbody').append(nuevaFila);
+
+                    // Ocultar la tarjeta de fabricación y eliminar la fila de tblIn
+                    card_fab.style.display = 'block'; // Si estás mostrando la tarjeta de fabricación
+                    tblOut.row($(this).parents('tr')).remove().draw();
+                });
+
+                $('#tblFab tbody').on('click', '.btnEliminarFab', function() {
+                    // Obtener la fila padre del botón clickeado
+                    var fila = $(this).closest('tr');
+
+                    // Eliminar la fila de la tabla tblFab
+                    fila.remove();
+                });
+
                 $('#tblOut tbody').on('click', '.btnEliminarIn', function() {
                     tblOut.row($(this).parents('tr')).remove().draw();
                 });
+
                 //INICIA AUTOCOMPLETAR
-                $.ajax({
-                    url: "controllers/inventario.controlador.php",
-                    method: "POST",
-                    data: {
-                        'accion': 4
-                    },
-                    dataType: 'json',
-                    success: function(respuesta) {
+                // $.ajax({
+                //     url: "controllers/inventario.controlador.php",
+                //     method: "POST",
+                //     data: {
+                //         'accion': 7
+                //     },
+                //     dataType: 'json',
+                //     success: function(respuesta) {
 
-                        for (let i = 0; i < respuesta.length; i++) {
-                            var formattedItem = {
-                                label: respuesta[i]['descripcion'],
-                                value: respuesta[i]['descripcion'],
-                                id: respuesta[i]['id'],
-                                cantidad: respuesta[i]['cantidad']
-                            };
-                            items.push(formattedItem);
-                        }
+                //         for (let i = 0; i < respuesta.length; i++) {
+                //             var formattedItem = {
+                //                 label: respuesta[i]['descripcion'],
+                //                 value: respuesta[i]['descripcion'],
+                //                 id: respuesta[i]['id'],
+                //                 cantidad: respuesta[i]['cantidad']
+                //             };
+                //             items.push(formattedItem);
+                //         }
 
-                        $(inputauto).autocomplete({
-                            source: items,
-                            select: function(event, ui) {
-                                CargarProductos(ui.item.id);
-                                return false;
-                            }
-                        }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                            return $("<li>")
-                                .append("<div>" + item.label + "<strong class='large-text'>CANTIDAD: " + item.cantidad + "</strong></div>")
-                                .appendTo(ul);
-                        };
-                    }
-                });
+                //         $(inputauto).autocomplete({
+                //             source: items,
+                //             select: function(event, ui) {
+                //                 CargarProductos(ui.item.id);
+                //                 return false;
+                //             }
+                //         }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                //             return $("<li>")
+                //                 .append("<div>" + item.label + "<strong class='large-text'>CANTIDAD: " + item.cantidad + "</strong></div>")
+                //                 .appendTo(ul);
+                //         };
+                //     }
+                // });
+
+                cargarAutocompletado(function(items) {
+                    $(inputauto).autocomplete({
+                        source: items,
+                        select: function(event, ui) {
+                            CargarProductos(ui.item.cod);
+                            return false;
+                        },
+                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                        return $("<li>").append(
+                            "<div>" + item.label + "<strong class='large-text'>CANTIDAD: " +
+                            item.cantidad + "</strong></div>"
+                        ).appendTo(ul);
+                    };
+                })
 
                 let action;
                 const tabs = document.querySelectorAll('.tabs input');
@@ -712,14 +791,14 @@
                 const div_conductor = document.getElementById('div_conductor');
                 const div_productos = document.getElementById('div_productos');
 
-                const formOrden = document.getElementById('formOrden'),
-                    id_orden = document.getElementById('id_orden'),
-                    nro_orden = document.getElementById('num_orden'),
-                    span_text = document.getElementById('nom_action');
+                // const formOrden = document.getElementById('formOrden'),
+                //     id_orden = document.getElementById('id_orden'),
+                //     nro_orden = document.getElementById('num_orden'),
+                //     span_text = document.getElementById('nom_action');
 
-                const new_orden = document.getElementById('new_orden'),
-                    edit_orden = document.getElementById('edit_orden'),
-                    eli_orden = document.getElementById('edit_orden');
+                // const new_orden = document.getElementById('new_orden'),
+                //     edit_orden = document.getElementById('edit_orden'),
+                //     eli_orden = document.getElementById('edit_orden');
 
                 document.addEventListener("keydown", function(event) {
                     // Verifica si se presionó la tecla 'g' y la tecla 'ctrl' (o 'command' en Mac)
@@ -733,50 +812,50 @@
                 });
 
 
-                new_orden.addEventListener('click', () => {
-                    card_orden.style.display = 'block'
-                    action = 4
-                    nro_orden.focus();
-                    formOrden.reset();
-                    setChange(cboCliente, 0);
-                })
+                // new_orden.addEventListener('click', () => {
+                //     card_orden.style.display = 'block'
+                //     action = 4
+                //     nro_orden.focus();
+                //     formOrden.reset();
+                //     setChange(cboCliente, 0);
+                // })
 
-                edit_orden.addEventListener('click', () => {
-                    card_orden.style.display = 'block'
-                    action = 5
-                    nro_orden.focus();
-                })
+                // edit_orden.addEventListener('click', () => {
+                //     card_orden.style.display = 'block'
+                //     action = 5
+                //     nro_orden.focus();
+                // })
 
-                eli_orden.addEventListener('click', () => {
-                    action = 6
-                })
+                // eli_orden.addEventListener('click', () => {
+                //     action = 6
+                // })
 
-                formOrden.addEventListener("submit", function(e) {
-                    e.preventDefault();
-                    const id_o = id_orden.value,
-                        num = nro_orden.value.trim(),
-                        cli = cboCliente.value;
-                    if (!this.checkValidity()) {
-                        this.classList.add('was-validated');
-                        return;
-                    }
-                    let datos = new FormData();
-                    datos.append('id', id_o);
-                    datos.append('num_orden', num);
-                    datos.append('id_cliente', cli);
-                    datos.append('accion', action)
-                    confirmarAccion(datos, 'producto', null, '', function(r) {
-                        if (r) {
-                            cargarCombo('Orden', r.res, 3, true).then(datos_ => {
-                                datos_orden = datos_;
-                                console.log(id_o)
-                            });
-                        }
-                    });
-                    card_orden.style.display = 'none'
-                    formOrden.reset();
-                    setChange(cboCliente, 0);
-                });
+                // formOrden.addEventListener("submit", function(e) {
+                //     e.preventDefault();
+                //     const id_o = id_orden.value,
+                //         num = nro_orden.value.trim(),
+                //         cli = cboCliente.value;
+                //     if (!this.checkValidity()) {
+                //         this.classList.add('was-validated');
+                //         return;
+                //     }
+                //     let datos = new FormData();
+                //     datos.append('id', id_o);
+                //     datos.append('num_orden', num);
+                //     datos.append('id_cliente', cli);
+                //     datos.append('accion', action)
+                //     confirmarAccion(datos, 'producto', null, '', function(r) {
+                //         if (r) {
+                //             cargarCombo('Orden', r.res, 3, true).then(datos_ => {
+                //                 datos_orden = datos_;
+                //                 console.log(id_o)
+                //             });
+                //         }
+                //     });
+                //     card_orden.style.display = 'none'
+                //     formOrden.reset();
+                //     setChange(cboCliente, 0);
+                // });
 
                 form_guia.addEventListener("submit", function(e) {
                     e.preventDefault()
@@ -805,14 +884,12 @@
                     } else if (selectedTab === '2') {
                         let elementosAValidar = [fecha, cboEmpleado, cboConductor];
                         let isValid = true;
-
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
                             }
                         });
-
                         if (!isValid) {
                             return;
                         }
@@ -834,11 +911,13 @@
 
                 tabs.forEach(tab => {
                     tab.addEventListener('change', function() {
+                        tblOut.clear().draw(); // Esta línea vacía los datos de la tabla
+                        tblIn.clear().draw(); // Esta línea vacía los datos de la tabla
                         selectedTab = this.value;
                         form_guia.classList.remove('was-validated');
                         const selectedForm = document.getElementById(`form-${selectedTab}`);
                         const formContainers = document.querySelectorAll('.form-container');
-                        console.log(selectedForm)
+                        // console.log(selectedForm)
                         formContainers.forEach(container => {
                             container.style.display = 'none';
                         });
@@ -849,18 +928,18 @@
 
                         if (selectedTab === '1' || selectedTab === '5') {
                             div_orden.style.display = 'none';
-                            div_productos.style.display = 'block';
+                            div_productos.style.display = 'flex';
                             div_proveedor.style.display = 'block';
                             div_conductor.style.display = 'none';
                             div_retorno.style.display = 'none';
                             div_entregado.style.display = 'none';
-                            card_orden.style.display = 'none';
+                            // card_orden.style.display = 'none';
                             div_return.style.display = 'none'
                         } else if (selectedTab === '2' || selectedTab === '4') {
                             div_orden.style.display = 'block';
                             div_proveedor.style.display = 'none';
-                            div_productos.style.display = 'block';
-                            card_orden.style.display = 'none';
+                            div_productos.style.display = 'flex';
+                            // card_orden.style.display = 'none';
                             div_return.style.display = 'none';
                             div_conductor.style.display = 'block';
                             div_retorno.style.display = 'none';
@@ -870,7 +949,7 @@
                             div_proveedor.style.display = 'none';
                             div_productos.style.display = 'none';
                             div_return.style.display = 'block'
-                            card_orden.style.display = 'none';
+                            // card_orden.style.display = 'none';
                             div_conductor.style.display = 'none';
                             div_retorno.style.display = 'block';
                             div_entregado.style.display = 'none';
@@ -878,24 +957,18 @@
                     });
                 });
 
-                function CargarProductos(p = "") {
+                function CargarProductos(p = "", barras = false) {
+                    let existingRow = tblIn.row("#producto_" + p);
+                    let existingRowOut = tblOut.row("#producto_" + p);
 
-                    if (p != "") {
-                        var id_producto = p;
-                    } else {
-                        var id_producto = $(inputauto).val();
-                    }
-
-                    var existingRow = tblIn.row("#producto_" + id_producto);
-                    console.log(existingRow)
-
+                    // var id_producto = p;
                     if (selectedTab === '4') {
                         $.ajax({
                             url: "controllers/salidas.controlador.php",
                             method: "POST",
                             data: {
                                 'accion': 1, //BUSCAR PRODUCTOS POR id_producto
-                                'id_producto': id_producto,
+                                'id_producto': p,
                                 'id_boleta': id_boleta
                             },
                             dataType: 'json',
@@ -907,29 +980,54 @@
                         });
                     } else {
                         if (existingRow.any()) {
+                            audio.play();
+                            if (barras) {
+                                inputBarras.disabled = true;
+                            }
                             // Si el id_producto ya está en el DataTable, actualizar la cantidad
                             var rowData = existingRow.data();
                             var cantidadInput = existingRow.node().querySelector('.cantidad');
                             var cantidad = parseFloat(cantidadInput.value) + 1; // Incrementar la cantidad
                             cantidadInput.value = cantidad; // Actualizar el valor en el input
-                            $(inputauto).val("");
-
-                            // Puedes hacer otras actualizaciones aquí si es necesario
-
-                            // También puedes enviar estos cambios al servidor si es necesario
-                            // ...
+                            audio.onended = function() {
+                                if (barras) {
+                                    inputBarras.disabled = false;
+                                    inputBarras.focus();
+                                }
+                                $(inputBarras).val("");
+                            }
                             return;
+                        }
+
+                        if (existingRowOut.any()) {
+                            audio.play();
+                            var rowData = existingRowOut.data();
+                            var cantidadInput = existingRowOut.node().querySelector('.cantidad');
+                            var cantidad = parseFloat(cantidadInput.value) + 1; // Incrementar la cantidad
+                            cantidadInput.value = cantidad; // Actualizar el valor en el input
+                            audio.onended = function() {
+                                $(inputBarras).val("");
+                            }
+                            return;
+                            // audio.play = function() {
+                            //     // Si el id_producto ya está en el DataTable, actualizar la cantidad
+
+                            // };
                         }
                         $.ajax({
                             url: "controllers/inventario.controlador.php",
                             method: "POST",
                             data: {
-                                'accion': 5, //BUSCAR PRODUCTOS POR id_producto
-                                'id': id_producto
+                                'accion': 4, //BUSCAR PRODUCTOS POR id_producto
+                                'id': p
                             },
                             dataType: 'json',
                             success: function(respuesta) {
                                 if (respuesta) {
+                                    audio.play();
+                                    if (barras) {
+                                        inputBarras.disabled = true;
+                                    }
                                     if (selectedTab === '1') {
                                         tblIn.row.add([
                                             '',
@@ -943,7 +1041,7 @@
                                             "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
                                             "</span>" +
                                             "</center>",
-                                        ]).node().id = "producto_" + respuesta['id'];
+                                        ]).node().id = "producto_" + respuesta['codigo'];
                                         tblIn.draw(false);
                                     } else if (selectedTab === '2') {
                                         tblOut.row.add([
@@ -953,25 +1051,37 @@
                                             respuesta['nombre'],
                                             respuesta['descripcion'],
                                             "<center>" +
+                                            "<span class='btnFab text-info'style='margin-right:.4rem;cursor:pointer;'  title='Agregar a fabricacion'> " +
+                                            "<i style=';font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-hammer'> </i> " +
+                                            "</span>" +
                                             "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
                                             "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
                                             "</span>" +
                                             "</center>",
-                                        ]).node().id = "producto_" + respuesta['id'];
+                                        ]).node().id = "producto_" + respuesta['codigo'];
                                         tblOut.draw(false);
                                     }
-                                    $(inputauto).val("");
+                                    audio.onplay = function() {
+                                        $(inputauto).val("");
+                                    }
+                                    audio.onended = function() {
+                                        if (barras) {
+                                            inputBarras.disabled = false;
+                                            inputBarras.focus();
+                                        }
+                                        $(inputBarras).val("");
 
+                                    }
                                     /*===================================================================*/
                                     //SI LA RESPUESTA ES FALSO, NO TRAE ALGUN DATO
                                     /*===================================================================*/
                                 } else {
-                                    Toast.fire({
-                                        icon: 'error',
-                                        title: ' El producto no existe o no tiene stock'
-                                    });
-                                    $(inputauto).val("");
-                                    $(inputauto).focus();
+                                    // Toast.fire({
+                                    //     icon: 'error',
+                                    //     title: ' El producto no existe o no tiene stock'
+                                    // });
+                                    // $(inputauto).val("");
+                                    // $(inputauto).focus();
                                 }
                             }
                         });
@@ -1006,9 +1116,17 @@
                             contentType: false,
                             processData: false,
                             success: function(r) {
-                                mostrarToast(r.status, "Completado", "fa-solid fa-check fa-lg", r.m);
-                                table.clear().draw();
-                                tabla ? tabla.ajax.reload(null, false) : ''
+                                let isSuccess = r.status === "success";
+
+                                mostrarToast(r.status,
+                                    isSuccess ? "Completado" : "Error",
+                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                    r.m);
+
+                                if (isSuccess) {
+                                    table.clear().draw();
+                                    tabla ? tabla.ajax.reload(null, false) : ''
+                                }
                             }
                         });
 
@@ -1021,6 +1139,73 @@
                     $("#iptCodigoVenta").focus();
 
                 }
+
+                inputBarras.addEventListener("input", function(event) {
+                    event.preventDefault();
+                    let codigo = this.value;
+                    if (codigo.length >= 5) {
+                        CargarProductos(codigo, true)
+                    }
+                    // $.ajax({
+                    //     url: "controllers/inventario.controlador.php",
+                    //     method: "POST",
+                    //     data: {
+                    //         'accion': 4, //BUSCAR PRODUCTOS POR id_producto
+                    //         'codigo': codigo
+                    //     },
+                    //     dataType: 'json',
+                    //     success: function(respuesta) {
+                    //         if (respuesta) {
+                    //             if (selectedTab === '1') {
+                    //                 tblIn.row.add([
+                    //                     '',
+                    //                     respuesta['id'],
+                    //                     '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['cantidad'] + '">',
+                    //                     respuesta['nombre'],
+                    //                     '$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['precio'] + '">',
+                    //                     respuesta['descripcion'],
+                    //                     "<center>" +
+                    //                     "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
+                    //                     "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
+                    //                     "</span>" +
+                    //                     "</center>",
+                    //                 ])
+                    //                 tblIn.draw(false);
+                    //             } else if (selectedTab === '2') {
+                    //                 tblOut.row.add([
+                    //                     ' ',
+                    //                     respuesta['id'],
+                    //                     '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['cantidad'] + '">',
+                    //                     respuesta['nombre'],
+                    //                     respuesta['descripcion'],
+                    //                     "<center>" +
+                    //                     "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
+                    //                     "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
+                    //                     "</span>" +
+                    //                     "</center>",
+                    //                 ]).node().id = "producto_" + respuesta['id'];
+                    //                 tblOut.draw(false);
+                    //             }
+                    //             // Toast.fire({
+                    //             //     icon: 'success',
+                    //             //     title: ' Producto agregado a la guia'
+                    //             // });
+                    //             $(inputauto).val("");
+
+                    //             /*===================================================================*/
+                    //             //SI LA RESPUESTA ES FALSO, NO TRAE ALGUN DATO
+                    //             /*===================================================================*/
+                    //         } else {
+                    //             // Toast.fire({
+                    //             //     icon: 'error',
+                    //             //     title: ' El producto no existe o no tiene stock'
+                    //             // });
+                    //             $(inputauto).val("");
+                    //             $(inputauto).focus();
+                    //         }
+                    //     }
+                    // });
+                })
             });
         </script>
     </body>

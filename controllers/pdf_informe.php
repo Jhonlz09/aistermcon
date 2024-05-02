@@ -318,8 +318,8 @@ if ($datos_fecha == null) {
     $pdf->SetY(25);
     $pdf->SetFont('Arial', 'B', 18);
     $pdf->SetMargins(15, 0, 15);
-    $pdf->SetWidths(array(25, 95, 20, 20, 20));
-    $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C'));
+    $pdf->SetWidths(array(20, 80, 20, 20, 20, 20));
+    $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C','C'));
     $pdf->SetX(15);
     foreach ($datos_fecha as $row) {
         $pdf->SetFont('Arial', 'B', 12);
@@ -328,20 +328,24 @@ if ($datos_fecha == null) {
         $pdf->Ln(10);
         $id_fecha = $row["fecha_retorno"];
         $pdf->SetFont('Arial', 'B', 11);
-        $header = array('Codigo', 'Descripcion', 'Unidad', 'Salida', 'Entrada');
-        $pdf->Row($header, array(12, 12, 12, 12, 12), 'B');
+        $header = array('Codigo', 'Descripcion', 'Unidad', 'Salida', 'Entrada', 'Tot. Util.');
+        $pdf->Row($header, array(12, 12, 12, 12, 12, 12), 'B');
         $data = ModeloInforme::mdlInformeOrden($id_orden, $id_fecha);
         foreach ($data as $fill) {
             $pdf->SetStartY(20);
             $pdf->SetFont('Arial', '', 10);
             // $resaño = substr($fill["year"], -2);
+            $salida = $fill["cantidad_salida"];
+            $entrada = $fill["retorno"];
+            $util = $salida - $entrada;
             $pdf->Row(array(
                 iconv('UTF-8', 'windows-1252', $fill["codigo"]),
                 iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
                 iconv('UTF-8', 'windows-1252', $fill["unidad"]),
-                iconv('UTF-8', 'windows-1252', $fill["cantidad_salida"]),
-                iconv('UTF-8', 'windows-1252', $fill["retorno"])
-            ), array(10, 10, 10, 10, 10), '', 7, [true, true, true, true, true]);
+                iconv('UTF-8', 'windows-1252', $salida),
+                iconv('UTF-8', 'windows-1252', $entrada),
+                iconv('UTF-8', 'windows-1252', $util )
+            ), array(10, 10, 10, 10, 10,10), '', 7, [true, true, true, true, true,true]);
         }
         $pdf->Ln();
     }

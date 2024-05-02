@@ -49,7 +49,7 @@ class ModeloInicio
     static public function mdlGraficoCategorias($categoria)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("SELECT cl.nombre as cliente, 
+            $a = Conexion::ConexionDB()->prepare("SELECT cl.nombre  || ' - '|| o.nombre as cliente, 
             COUNT(s.id_producto) AS salidas
             FROM tblclientes cl
             JOIN tblorden o ON cl.id = o.id_cliente
@@ -57,7 +57,7 @@ class ModeloInicio
             JOIN tblsalidas s ON b.id = s.id_boleta AND s.retorno IS NULL
             JOIN tblinventario i ON s.id_producto = i.id AND i.id_categoria = :cat
             JOIN tblcategoria c ON c.id = i.id_categoria
-            GROUP BY cl.nombre;");
+            GROUP BY cl.nombre, o.nombre;");
 
             $a->bindParam(":cat", $categoria, PDO::PARAM_INT);
             // $a->bindParam(":anio", $anio, PDO::PARAM_INT);

@@ -3,7 +3,7 @@
 } ?>
 
 <head>
-    <title>Salidas</title>
+    <title>Movimientos</title>
 </head>
 
 <!-- Contenido Header -->
@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
-                <h1 class="col-p">Salidas</h1>
+                <h1 class="col-p">Movimientos</h1>
             </div>
             <?php if ($_SESSION["crear4"]) : ?>
                 <div class="col">
@@ -33,7 +33,7 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-auto col-p" style="padding-right: .3rem">
-                                    <h3 class="card-title ">Listado de salidas</h3>
+                                    <h3 class="card-title ">Listado de movimientos</h3>
                                 </div>
                                 <div class=" col col-sm-auto">
                                     <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
@@ -124,11 +124,14 @@
             },
             {
                 targets: 2,
-                className: "text-center"
+                className: "text-center",
+                responsivePriority: 1
             },
+
             {
                 targets: 3,
-                className: "text-center"
+                className: "text-center",
+                responsivePriority: 2
             },
             {
                 targets: 5,

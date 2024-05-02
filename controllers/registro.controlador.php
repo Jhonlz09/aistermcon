@@ -5,13 +5,13 @@ require_once "../models/registro.modelo.php";
 class ajaxRegistro
 {
 
-    public function ajaxObtenerNroBoleta()
-    {
+    // public function ajaxObtenerNroBoleta()
+    // {
 
-        $nroBoleta = ModeloRegistro::mdlObtenerNroBoleta();
+    //     $nroBoleta = ModeloRegistro::mdlObtenerNroBoleta();
 
-        echo json_encode($nroBoleta, JSON_UNESCAPED_UNICODE);
-    }
+    //     echo json_encode($nroBoleta, JSON_UNESCAPED_UNICODE);
+    // }
 
     public function registrarEntrada($datos, $proveedor, $fecha)
     {

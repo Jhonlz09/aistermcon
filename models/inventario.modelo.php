@@ -22,6 +22,40 @@ class ModeloInventario
         }
     }
 
+    public static function mdlListarInventarioStock()
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo, i.descripcion, 
+            c.nombre AS categoria, u.nombre AS unidad, p.nombre AS percha, i.stock_mal, 
+            i.stock, '' AS acciones, i.stock_min, c.id AS categoria_id, u.id AS unidad_id, p.id AS percha_id  
+        FROM tblinventario i 
+        JOIN tblcategoria c ON c.id = i.id_categoria
+        JOIN tblunidad u ON u.id = i.id_unidad
+        JOIN tblubicacion p ON p.id = i.id_percha
+        WHERE 
+            i.estado = true
+            AND (i.stock - i.stock_mal) <= i.stock_min
+        ORDER BY id ASC;");
+            $l->execute();
+            return $l->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    public static function mdlAlertaStock()
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT COUNT(*) AS poco_stock
+            FROM tblinventario WHERE estado = true  
+            AND CASE WHEN stock - stock_mal <= stock_min THEN true ELSE false END;");
+            $l->execute();
+            return $l->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
     public static function mdlAgregarInventario($cod, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi)
     {
         try {
@@ -105,14 +139,17 @@ class ModeloInventario
         }
     }
 
-    public static function mdlBuscarProductos()
+    public static function mdlBuscarCodigo($codigo)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo || ' - ' || i.descripcion as descripcion, (i.stock - i.stock_mal) AS cantidad
-            FROM tblinventario i where i.estado =true order by i.descripcion");
+            $e = Conexion::ConexionDB()->prepare("SELECT i.id, i.descripcion,'1' as cantidad, u.nombre, '0.00' as precio, '' as acciones, i.codigo
+            FROM tblinventario i 
+            JOIN tblunidad u on i.id_unidad = u.id
+            WHERE i.codigo = :codigo");
+            $e->bindParam(":codigo", $codigo, PDO::PARAM_STR);
             $e->execute();
 
-            return $e->fetchAll();
+            return $e->fetch(PDO::FETCH_OBJ);
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
@@ -132,7 +169,22 @@ class ModeloInventario
             $e->bindParam(":id", $id, PDO::PARAM_STR);
             $e->execute();
             return $e->fetch(PDO::FETCH_OBJ);
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
+            );
+        }
+    }
 
+    public static function mdlBuscarProductos()
+    {
+        try {
+
+            $e = Conexion::ConexionDB()->prepare("SELECT i.codigo, i.codigo || ' - ' || i.descripcion as descripcion, (i.stock - i.stock_mal) AS cantidad
+            FROM tblinventario i WHERE i.estado =true ORDER BY i.descripcion");
+            $e->execute();
+            return $e->fetchAll();
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',

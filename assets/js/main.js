@@ -1,4 +1,4 @@
-function confirmarEliminar( art, name, callback) {
+function confirmarEliminar(art, name, callback) {
   Swal.fire({
     title: "¿Está seguro de eliminar " + art + " " + name + "?",
     text: "Una vez eliminado no podrá recuperarlo",
@@ -8,7 +8,7 @@ function confirmarEliminar( art, name, callback) {
     cancelButtonText: "Cancelar",
   }).then((result) => {
     if (result.value) {
-      callback(true)
+      callback(true);
       // $.ajax({
       //   url: "controllers/" + ruta + ".controlador.php",
       //   method: "POST",
@@ -29,7 +29,7 @@ function confirmarEliminar( art, name, callback) {
       //     }
       //   },
       // });
-      
+
       // if (s !== '') {
       //   confirmarAccion(src,ruta, null, null, function(res){
       //     if(res){
@@ -71,9 +71,9 @@ function cargarCombo(id, s, a = 1, isDataCbo = false) {
         //     .val(res)
         //     .trigger("change");
         // } else {
-          $(cbo)
-            .val(s !== "" ? s : 0)
-            .trigger("change");
+        $(cbo)
+          .val(s !== "" ? s : 0)
+          .trigger("change");
         // }
         if (isDataCbo) {
           resolve(dataCbo);
@@ -83,13 +83,7 @@ function cargarCombo(id, s, a = 1, isDataCbo = false) {
   });
 }
 
-function confirmarAccion(
-  datos,
-  ruta,
-  tabla,
-  modal='',
-  callback
-) {
+function confirmarAccion(datos, ruta, tabla, modal = "", callback) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
     method: "POST",
@@ -125,8 +119,8 @@ function confirmarAccion(
     // },
     success: function (r) {
       let isSuccess = r.status === "success";
-
       if (isSuccess && tabla !== null) {
+        accion_inv = 0;
         tabla.ajax.reload(null, false);
       }
       mostrarToast(
@@ -334,26 +328,38 @@ function validarClave(input, sub) {
   }
 }
 
-function cargarAutocompletado() {
+function cargarAutocompletado(callback= false) {
   $.ajax({
     url: "controllers/inventario.controlador.php",
     method: "POST",
     data: {
-      accion: 4,
+      accion: 7,
     },
     dataType: "json",
     success: function (respuesta) {
       var items = [];
       for (let i = 0; i < respuesta.length; i++) {
         var formattedItem = {
+          cod: respuesta[i]["codigo"],
           label: respuesta[i]["descripcion"],
           value: respuesta[i]["descripcion"],
-          id: respuesta[i]["id"],
           cantidad: respuesta[i]["cantidad"],
         };
         items.push(formattedItem);
       }
-      $("#codProducto").autocomplete("option", "source", items);
+      if (typeof callback === "function") {
+        callback(items)
+      } else {
+        $("#codProducto").autocomplete("option", "source", items);
+      }
     },
   });
+}
+
+function evitarEnvio(event) {
+  if (event.keyCode === 13) { // 13 es el código de la tecla "Enter"
+    event.preventDefault(); // Evita que el formulario se envíe
+    return false; // Evita el envío del formulario
+  }
+  return true; 
 }

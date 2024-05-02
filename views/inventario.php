@@ -33,8 +33,29 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col col-p">
-                                    <h3 class="card-title ">Listado de productos</h3>
+                                    <h3 class="card-title" style="white-space:nowrap;display: flex;align-items: center;">Listado de productos
+                                        <!-- <i id="stock_icon" class="fas fa-arrow-down-big-small"> </i> -->
+                                        <div class="icon-container ml-1">
+                                            <input autocomplete="off" style="border:none" type="checkbox" id="check_stock">
+                                            <label class="m-0" for="check_stock">
+                                                <i style="font-size:1.5rem;" id="stock_icon" class="fas fa-arrow-down-big-small"></i>
+                                            </label>
+                                        </div>
+                                    </h3>
+
+
+                                    <!-- <label class="switch-2">
+                                        <input class="switch__input" type="checkbox" name="1" value="1" onkeydown="toggleWithEnter(event, this)"> -->
+                                    <!-- <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                            <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                        </svg> -->
+                                    <!-- <svg fill="#000" class="switch__check" width="16px" height="16px" viewBox="0 0 24 24">
+                                            <path class="switch__check-line" d="M7 4V20M7 20L3 16M7 20L11 16M15.6 11H19.4C19.9601 11 20.2401 11 20.454 10.891C20.6422 10.7951 20.7951 10.6422 20.891 10.454C21 10.2401 21 9.96005 21 9.4V5.6C21 5.03995 21 4.75992 20.891 4.54601C20.7951 4.35785 20.6422 4.20487 20.454 4.10899C20.2401 4 19.9601 4 19.4 4H15.6C15.0399 4 14.7599 4 14.546 4.10899C14.3578 4.20487 14.2049 4.35785 14.109 4.54601C14 4.75992 14 5.03995 14 5.6V9.4C14 9.96005 14 10.2401 14.109 10.454C14.2049 10.6422 14.3578 10.7951 14.546 10.891C14.7599 11 15.0399 11 15.6 11ZM15.6 20H17.4C17.9601 20 18.2401 20 18.454 19.891C18.6422 19.7951 18.7951 19.6422 18.891 19.454C19 19.2401 19 18.9601 19 18.4V16.6C19 16.0399 19 15.7599 18.891 15.546C18.7951 15.3578 18.6422 15.2049 18.454 15.109C18.2401 15 17.9601 15 17.4 15H15.6C15.0399 15 14.7599 15 14.546 15.109C14.3578 15.2049 14.2049 15.3578 14.109 15.546C14 15.7599 14 16.0399 14 16.6V18.4C14 18.9601 14 19.2401 14.109 19.454C14.2049 19.6422 14.3578 19.7951 14.546 19.891C14.7599 20 15.0399 20 15.6 20Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+
+                                    </label> -->
                                 </div>
+
                                 <div class="col-sm-8 p-0">
                                     <div class="card-tools">
                                         <div class="input-group">
@@ -248,6 +269,8 @@
             autoHide: 'leave'
         }
     });
+
+
     var mostrarCol = '<?php echo $_SESSION["editar2"] || $_SESSION["eliminar2"] ?>';
     var editar = '<?php echo $_SESSION["editar2"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar2"] ?>';
@@ -255,7 +278,7 @@
     configuracionTable = {
         "dom": mostrarCol ? '<"row"<"col-sm-6"B><"col-sm-6"p>>t' : 'pt',
         "responsive": true,
-        "pageLength": 5, // Cambia este valor según tus necesidades
+        "pageLength": 10, // Cambia este valor según tus necesidades
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
@@ -420,12 +443,58 @@
     }
 
     $(document).ready(function() {
+
+        // Obtener el input y el icono
+        const checkbox = document.getElementById('check_stock');
+        const icona = document.getElementById('stock_icon');
+
+        $.ajax({
+            url: "controllers/inventario.controlador.php",
+            method: "POST",
+            dataType: "json",
+            data: {
+                'accion': 8
+            },
+            success: function(respuesta) {
+                if (respuesta[0]['poco_stock'] > 0) {
+                    Swal.fire({
+                        title: "¡Existen productos con poco stock!",
+                        text: "Hay " + respuesta[0]['poco_stock'] + " producto(s) con poco stock" ,
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Ver detalles",
+                        cancelButtonText: "Cerrar",
+                    }).then((result) => {
+                        if (result.value) {
+                            checkbox.click();
+                        }
+                    });
+                }
+
+            },
+        });
+
+        // Agregar evento de cambio al input
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                accion_inv = 6;
+                tabla.ajax.reload();
+            } else {
+                accion_inv = 0;
+                tabla.ajax.reload();
+            }
+        });
+
+
         if (!$.fn.DataTable.isDataTable('#tblInventario')) {
             tabla = $("#tblInventario").DataTable({
                 "ajax": {
                     "url": "controllers/inventario.controlador.php",
                     "type": "POST",
-                    "dataSrc": ''
+                    "dataSrc": '',
+                    data: function(data) {
+                        data.accion = accion_inv;
+                    }
                 },
                 ...configuracionTable
             });
@@ -437,11 +506,10 @@
                 handleScroll(b, s, w);
 
                 let tablaData = tabla.rows().data().toArray();
-                localStorage.setItem('inventario', JSON.stringify(tablaData));
+                localStorage.setItem('i', JSON.stringify(tablaData));
             });
         }
         let name;
-        let accion = 0;
         const id = document.getElementById('id'),
             codigo = document.getElementById('codigo'),
             descripcion = document.getElementById('nombre'),
@@ -523,7 +591,7 @@
 
         if (btnNuevo) {
             btnNuevo.addEventListener('click', function() {
-                accion = 1;
+                accion_inv = 1;
                 cambiarModal(span, ' Nuevo Producto', icon, 'fa-layer-plus', elements, 'bg-gradient-blue', 'bg-gradient-success', modalE, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
@@ -538,7 +606,7 @@
 
         $('#tblInventario tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
-            accion = 2;
+            accion_inv = 2;
             cambiarModal(span, ' Editar Producto', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modalE, 'modal-change', 'modal-new')
             select.forEach(function(s) {
                 s.classList.remove('select2-success');
@@ -558,10 +626,10 @@
 
         $('#tblInventario tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
-            accion = 3
+            accion_inv = 3
             const id = e["id"];
             let src = new FormData();
-            src.append('accion', accion);
+            src.append('accion', accion_inv);
             src.append('id', id);
             confirmarEliminar('este', 'producto', function(res) {
                 if (res) {
@@ -589,15 +657,15 @@
             data.append('cat', cboCategoria.value);
             data.append('uni', cboUnidad.value);
             data.append('ubi', cboUbicacion.value);
-            data.append('accion', accion);
+            data.append('accion', accion_inv);
 
-            confirmarAccion(data, 'inventario', tabla, modalE, function(res){
+            confirmarAccion(data, 'inventario', tabla, modalE, function(res) {
                 cargarAutocompletado();
             });
         });
 
         $(".new-span").on('click', function() {
-            accion = 1;
+            accion_inv = 1;
             name = this.dataset.value;
             const selectE = document.querySelector('#cbo' + name);
             const iconS = this.dataset.icon;
@@ -609,7 +677,7 @@
         });
 
         $(".e-span").on('click', function() {
-            accion = 2;
+            accion_inv = 2;
             name = this.dataset.value;
             const selectE = document.getElementById('cbo' + name);
             const iconS = this.dataset.icon;
@@ -620,17 +688,17 @@
         });
 
         $(".d-span").on('click', function() {
-            accion = 3;
+            accion_inv = 3;
             name = this.dataset.value;
             const id_val = document.getElementById('cbo' + name).value;
             const tbl = 'tbl' + name.toLowerCase();
             let src = new FormData();
-            src.append('accion', accion);
+            src.append('accion', accion_inv);
             src.append('id', id_val);
             src.append('tabla', tbl);
             confirmarEliminar('esta', name, function(res) {
                 if (res) {
-                    confirmarAccion(src, 'producto', null, '',  function(res) {
+                    confirmarAccion(src, 'producto', null, '', function(res) {
                         cargarCombo(name);
                     })
                 }
@@ -650,7 +718,7 @@
                 const data = new FormData();
                 data.append('id', ids);
                 data.append('nombre', nombre);
-                data.append('accion', accion);
+                data.append('accion', accion_inv);
                 data.append('tabla', tbl);
                 confirmarAccion(data, 'producto', null, modalS, function(res) {
                     if (res) {

@@ -3,7 +3,7 @@
 } ?>
 
 <head>
-    <title>Entradas</title>
+    <title>Compras</title>
 </head>
 
 <!-- Contenido Header -->
@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
-                <h1 class="col-p">Entradas</h1>
+                <h1 class="col-p">Compras</h1>
             </div>
             <?php if ($_SESSION["crear3"]) : ?>
                 <div class="col">
@@ -33,7 +33,7 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-auto col-p" style="padding-right: .3rem">
-                                    <h3 class="card-title ">Listado de entradas</h3>
+                                    <h3 class="card-title ">Listado de compras</h3>
                                 </div>
                                 <div class=" col col-sm-auto">
                                     <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
@@ -175,10 +175,14 @@
             {
                 targets: 2,
                 className: "text-center",
+                responsivePriority: 1
+
             },
             {
                 targets: 3,
                 className: "text-center text-nowrap ",
+                responsivePriority: 2
+
             },
             {
                 targets: 6,
@@ -368,7 +372,7 @@
         //         }
         //     }
         // });
-
+        
         // $('#tblEntradas tbody').on('click', '.btnEditar', function() {
         //     let row = obtenerFila(this, tabla);
         //     accion = 2;

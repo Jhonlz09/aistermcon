@@ -3,6 +3,7 @@
   
 
 </head>
+
 <!-- Contenido Header -->
 <section class="content-header stick-header">
     <div class="container-fluid">
@@ -309,7 +310,7 @@
                     salidas.push(i['salidas']);
                 });
 
-                graficoTheme();
+                // graficoTheme();
                 barChartCanvas = $("#barChart").get(0).getContext('2d');
                 barChartData = {
                     labels: clientes,
@@ -321,7 +322,9 @@
                         data: salidas,
                     }]
                 }
-
+                let ms = 6
+                let maximo = Math.max(...salidas) + 1;
+                console.log(maximo)
                 barChartOptions = {
                     maintainAspectRatio: false,
                     responsive: true,
@@ -367,7 +370,6 @@
                         easing: "easeOutQuart",
                     }
                 }
-
                 chartCanvas = new Chart(barChartCanvas, {
                     type: 'bar',
                     data: barChartData,
@@ -495,27 +497,27 @@
             }
         });
 
-        const modeS = document.querySelector('.mode');
-        modeS.addEventListener('click', () => {
-            const x = chartCanvas.config.options.scales.x;
-            const y = chartCanvas.config.options.scales.y;
-            if (document.body.classList.contains('dark-mode')) {
-                Chart.defaults.color = '#fff';
-                x.ticks.color = '#fff';
-                y.ticks.color = '#fff';
-                x.grid.color = 'rgba(255, 255, 255, 0.2)';
-                y.grid.color = 'rgba(255, 255, 255, 0.2)';
-            } else {
-                console.log("rntro en else")
-                Chart.defaults.color = '#333';
-                x.ticks.color = '#333';
-                y.ticks.color = '#333';
-                x.grid.color = 'rgba(0, 0, 0, 0.15)';
-                y.grid.color = 'rgba(0, 0, 0, 0.15)';
-            }
-            chartCanvas.update();
-            donutCanvas.update();
-        });
+        // const modeS = document.querySelector('.mode');
+        // modeS.addEventListener('click', () => {
+        //     const x = chartCanvas.config.options.scales.x;
+        //     const y = chartCanvas.config.options.scales.y;
+        //     if (document.body.classList.contains('dark-mode')) {
+        //         Chart.defaults.color = '#fff';
+        //         x.ticks.color = '#fff';
+        //         y.ticks.color = '#fff';
+        //         x.grid.color = 'rgba(255, 255, 255, 0.2)';
+        //         y.grid.color = 'rgba(255, 255, 255, 0.2)';
+        //     } else {
+        //         console.log("rntro en else")
+        //         Chart.defaults.color = '#333';
+        //         x.ticks.color = '#333';
+        //         y.ticks.color = '#333';
+        //         x.grid.color = 'rgba(0, 0, 0, 0.15)';
+        //         y.grid.color = 'rgba(0, 0, 0, 0.15)';
+        //     }
+        //     chartCanvas.update();
+        //     donutCanvas.update();
+        // });
 
         $(cboAnio).on("change", function() {
             let a = this.options[this.selectedIndex].text
@@ -524,14 +526,14 @@
             }
             anio = a
             mes = cboMeses.value;
-            console.log(mes)
-            console.log(anio)
+            // console.log(mes)
+            // console.log(anio)
             tarjetasInfo(anio);
             let src = new FormData();
             src.append('accion', 1);
             src.append('mes', mes);
             src.append('anio', anio);
-            actualizarGrafico(src, chartCanvas, barChartData);
+            actualizarGrafico(src, chartCanvas, barChartData, true);
             mes = cboMeses2.value;
             tablaTop.ajax.reload();
         });
@@ -541,21 +543,21 @@
             if(m == mes){
                 return;
             }
-            console.log(mes);
+            // console.log(mes);
             mes = m;
             anio = cboAnio.options[cboAnio.selectedIndex].text;
             let src = new FormData();
             src.append('accion', 1);
             src.append('mes', mes);
             src.append('anio', anio);
-            actualizarGrafico(src, chartCanvas, barChartData);
+            actualizarGrafico(src, chartCanvas, barChartData, true);
         });
 
         $(cboMeses2).on("change", function() {
             mes = this.value;
             anio = cboAnio.options[cboAnio.selectedIndex].text;
             tablaTop.ajax.reload();
-            console.log("si me ejecuto sapo")
+            // console.log("si me ejecuto sapo")
         });
 
         $(cboCategoria).on("change", function() {
@@ -570,7 +572,7 @@
             actualizarGrafico(src, donutCanvas, donutData);
         });
 
-        function actualizarGrafico(src, chart, chartData) {
+        function actualizarGrafico(src, chart, chartData, max) {
             $.ajax({
                 url: "controllers/inicio.controlador.php",
                 method: 'POST',
@@ -591,6 +593,9 @@
                     //Actualiza las etiquetas
                     chartData.labels = clientes;
                     chartData.datasets[0].data = salidas;
+                    if(max){
+                        chart.config.options.scales.y.suggestedMax = Math.max(...salidas) + 1;
+                    }
                     chart.update();
                 }
             })
@@ -634,12 +639,12 @@
             return dataTable;
         }
 
-        function graficoTheme() {
-            if (document.body.classList.contains('dark-mode')) {
-                Chart.defaults.color = '#fff';
-                Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.18)'; // Cambia el color por defecto de las líneas del grid
-            }
-        }
+        // function graficoTheme() {
+        //     if (document.body.classList.contains('dark-mode')) {
+        //         Chart.defaults.color = '#fff';
+        //         Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.18)'; // Cambia el color por defecto de las líneas del grid
+        //     }
+        // }
 
 
 

@@ -207,9 +207,9 @@
                 if (r) {
                     confirmarAccion(src, 'clientes', tabla, '', function(r) {
                         if (r) {
-                            cargarCombo('Clientes', '', 1, true).then(datos_ => {
-                                datos_cliente = datos_;
-                            });
+                            // cargarCombo('Clientes', '', 1, true).then(datos_ => {
+                            //     datos_cliente = datos_;
+                            // });
                         }
                     })
                 }
@@ -247,9 +247,9 @@
             datos.append('accion', accion);
             confirmarAccion(datos, 'clientes', tabla, modal, function(r) {
                 if (r) {
-                    cargarCombo('Clientes', '', 1, true).then(datos_ => {
-                        datos_cliente = datos_;
-                    });
+                    // cargarCombo('Clientes', '', 1, true).then(datos_ => {
+                    //     datos_cliente = datos_;
+                    // });
                 }
             })
 
