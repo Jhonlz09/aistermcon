@@ -139,14 +139,14 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class=" input-data" style="margin-bottom:26px">
-                                        <input type="text" id="stock_min" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
+                                        <input type="text" id="stock_min" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)" required>
                                         <label style="font-size:21px" id="min" class="label"><i class="fa-solid fa-box-taped"></i> Cantidad Min.</label>
                                         <div class="invalid-feedback">*Este campo es requerido.</div>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="input-data" style="margin-bottom:26px">
-                                        <input type="text" id="stock_mal" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)">
+                                        <input type="text" id="stock_mal" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)">
                                         <label class="label"><i class="fa-solid fa-hammer-crash"></i> Dañado</label>
                                         <div class="invalid-feedback">*Este campo es requerido.</div>
                                     </div>
@@ -175,7 +175,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label id="lblU" class="mb-0 combo"><i class="fa-solid fa-ruler"></i> Unidad</label>
+                                <label id="lblU" class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
                                 <div class="row">
                                     <div class="col">
                                         <select name="cboUnidad" id="cboUnidad" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
@@ -341,7 +341,7 @@
                     search: "applied",
                     order: "applied",
                 },
-                text: "<i class='fa-regular fa-file-excel fa-xl'style='color: #0a8f00'></i>",
+                text: "<i class='fa-regular fa-file-xls fa-xl'style='color: #0a8f00'></i>",
                 titleAttr: "Exportar a Excel",
                 title: "LISTADO DE PRODUCTOS",
                 className: "btn btn-light",
@@ -448,31 +448,34 @@
         const checkbox = document.getElementById('check_stock');
         const icona = document.getElementById('stock_icon');
 
-        $.ajax({
-            url: "controllers/inventario.controlador.php",
-            method: "POST",
-            dataType: "json",
-            data: {
-                'accion': 8
-            },
-            success: function(respuesta) {
-                if (respuesta[0]['poco_stock'] > 0) {
-                    Swal.fire({
-                        title: "¡Existen productos con poco stock!",
-                        text: "Hay " + respuesta[0]['poco_stock'] + " producto(s) con poco stock" ,
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Ver detalles",
-                        cancelButtonText: "Cerrar",
-                    }).then((result) => {
-                        if (result.value) {
-                            checkbox.click();
-                        }
-                    });
-                }
+        setTimeout(function() {
+            $.ajax({
+                url: "controllers/inventario.controlador.php",
+                method: "POST",
+                dataType: "json",
+                data: {
+                    'accion': 8
+                },
+                success: function(respuesta) {
+                    if (respuesta[0]['poco_stock'] > 0) {
+                        Swal.fire({
+                            title: "¡Existen productos con poco stock!",
+                            text: "Hay " + respuesta[0]['poco_stock'] + " producto(s) con poco stock",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Ver detalles",
+                            cancelButtonText: "Cerrar",
+                        }).then((result) => {
+                            if (result.value) {
+                                checkbox.click();
+                            }
+                        });
+                    }
 
-            },
-        });
+                },
+            });
+        }, 1000); // Espera 3 segundos (3000 milisegundos)
+
 
         // Agregar evento de cambio al input
         checkbox.addEventListener('change', function() {

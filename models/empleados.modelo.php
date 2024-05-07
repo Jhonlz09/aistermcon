@@ -32,7 +32,7 @@ class ModeloEmpleados
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo agregar el empleado debido a que ya existe un empleado con la misma cedula' 
+                    'm' => 'No se puede agregar al empleado porque ya existe un empleado registrado con la misma cédula' 
                 );
             } else {
                 return array(
@@ -60,7 +60,7 @@ class ModeloEmpleados
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo editar el empleado debido a que ya existe un empleado con la misma cedula' 
+                    'm' => 'No se puede editar el empleado porque ya existe un empleado registrado con la misma cédula' 
                 );
             } else {
                 return array(

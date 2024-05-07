@@ -30,12 +30,12 @@
 <script>
     $(document).ready(function() {
         // Borrar todo el localStorage
-        let mode = localStorage.getItem('darkMode');
+        // let mode = localStorage.getItem('darkMode');
 
-        localStorage.clear();
+        // localStorage.clear();
 
-        // Restaurar la variable desde la copia de seguridad
-        localStorage.setItem('darkMode', mode);
+        // // Restaurar la variable desde la copia de seguridad
+        // localStorage.setItem('darkMode', mode);
 
         const form = document.getElementById('formLogin'),
             btn = document.getElementById('iniciar'),

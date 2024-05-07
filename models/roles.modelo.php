@@ -117,10 +117,15 @@ class ModeloRoles
             $l->bindParam(":editar", $editar, PDO::PARAM_BOOL);
             $l->bindParam(":eliminar", $eliminar, PDO::PARAM_BOOL);
             $l->execute();
-            return $l->fetchAll();
+            return array(
+                'status' => 'success',
+                'm' => 'Se guardo los permisos del rol con éxito.'
+            );
         } catch (PDOException $e) {
-            return "Error en la consulta: " . $e->getMessage();
-        }
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo guardar los permisos de el rol: ' . $e->getMessage()
+            );        }
     }
 
     public static function mdlDeletePermisos($id)

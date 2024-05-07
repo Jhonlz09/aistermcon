@@ -64,6 +64,7 @@
                                     <th>UND</th>
                                     <th>DESCRIPCION</th>
                                     <th></th>
+                                    <th class="text-center">UTIL.</th>
                                     <th>ENTRADA</th>
                                 </tr>
                             </thead>
@@ -109,7 +110,7 @@
                     r.style.display = collapsed ? '' : 'none';
                 });
 
-                var groupText = '<div class="d-flex justify-content-between align-items-center "><strong style="cursor:pointer" class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="controllers/pdf_salida.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_boleta" class="input_boleta" value=""><button style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' + (editar ? '<button id="editS" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button><button id="editR" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') + (eliminar ? '<button id="eliS" style="color:var(--text-color);font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-trash-can" ></i></button>' : '') + '</div></div>';
+                var groupText = '<div class="d-flex justify-content-between align-items-center "><strong style="cursor:pointer" class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_salida.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_boleta" class="input_boleta" value=""><button style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' + (editar ? '<button id="editS" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button><button id="editR" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') + (eliminar ? '<button id="eliS" style="color:var(--text-color);font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-trash-can" ></i></button>' : '') + '</div></div>';
 
                 return $('<tr/>')
                     .append('<td colspan="8">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
@@ -139,6 +140,18 @@
             },
             {
                 targets: 6,
+                className: "text-center",
+                visible: true,
+                render: function(data, type, row) {
+                    let resultado = row.fabricado;
+                    let texto = resultado ? 'SI' : 'NO';
+                    let className = resultado ? 'text-success': 'text-danger';
+                    return `<span style='font-size:1rem' class="${className} font-weight-bold">${texto}</span>`;
+                }
+            },
+
+            {
+                targets: 7,
                 className: "text-center",
                 render: function(data, type, row, meta) {
                     if (data === null) {
@@ -255,7 +268,7 @@
         $('#tblSalidas').on('submit', '.form_pdf', function(event) {
             event.preventDefault(); // Evita el envío predeterminado del formulario
 
-            var id_boleta = tabla.row($(this).closest('tr').next()).data()[7];
+            var id_boleta = tabla.row($(this).closest('tr').next()).data()[8];
             console.log(id_boleta)
             var input_pdf = $(this).find('.input_boleta');
             input_pdf.val(id_boleta);
@@ -268,7 +281,7 @@
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
                 const salida = document.getElementById('radio-2');
-                control.click();
+                first_control.click();
                 salida.click();
             });
         }
@@ -287,7 +300,7 @@
             salida_radio.value = '4';
             salida_radio.checked = true;
             salida_radio.dispatchEvent(new Event('change'));
-            control.click();
+            first_control.click();
             tblDetalleSalida.ajax.reload(null, false);
             salida_radio.value = '2';
         });
@@ -301,7 +314,7 @@
             setChange(cboOrdenActivas, orden_id)
             setChange(cboClientesActivos, cliente)
             fecha.value = fecha_id;
-            control.click();
+            first_control.click();
             retorno.click();
             tblReturn.ajax.reload(null, false);
         });

@@ -8,7 +8,7 @@
     <!-- Google Font: Source Sans Pro -->
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback'>
     <!-- Font Awesome Icons -->
-    <link rel='stylesheet' href='assets/css/icon/fontawesome.min.css'>
+    <link rel='stylesheet' href='assets/css/icon/icon.min.css'>
     <!-- Theme style -->
     <link rel='stylesheet' href='assets/css/theme/adminlte3.min.css'>
     <!-- Estilo css -->
@@ -31,7 +31,7 @@
 
     <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
-
+    <script src='assets/js/main.js'></script>
     <!-- jQuery -->
     <script src='assets/plugins/jquery/jquery.min.js'></script>
     <!-- jquery UI -->
@@ -42,30 +42,29 @@
     <script src='assets/js/theme/adminlte.min.js'></script>
     <!-- DataTables  & Plugins -->
     <script src='assets/plugins/datatables/jquery.dataTables.min.js' type='text/javascript'></script>
-    <script src='assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' type='text/javascript'></script>
-    <script src='assets/plugins/datatables-responsive/js/dataTables.responsive.min.js' type='text/javascript'></script>
-    <script src='assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' type='text/javascript'></script>
+    <script defer src='assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' type='text/javascript'></script>
+    <script defer src='assets/plugins/datatables-responsive/js/dataTables.responsive.min.js' type='text/javascript'></script>
+    <script defer src='assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' type='text/javascript'></script>
     <!-- SweetAlert -->
-    <script src='assets/plugins/sweetalert2/sweetalert2.min.js'></script>
-    <script src='assets/js/main.js'></script>
+    <script defer src='assets/plugins/sweetalert2/sweetalert2.min.js'></script>
     <!-- Select2 -->
-    <script src='assets/plugins/select2/js/select2.full.min.js'></script>
+    <script defer src='assets/plugins/select2/js/select2.full.min.js'></script>
     <!-- overlayScrollbars -->
     <script src='assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js'></script>
 
-    <script src="assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-    <script src="assets/plugins/jszip/jszip.min.js"></script>
-    <script src="assets/plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="assets/plugins/pdfmake/vfs_fonts.js"></script>
-    <script src="assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-    <script src="assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script defer src="assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script defer src="assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script defer src="assets/plugins/jszip/jszip.min.js"></script>
+    <script defer src="assets/plugins/pdfmake/pdfmake.min.js"></script>
+    <script defer src="assets/plugins/pdfmake/vfs_fonts.js"></script>
+    <script defer src="assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script defer src="assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script defer src="assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
     <!-- Tabledit -->
-    <script src="assets/plugins/jquery-tabledit/tabledit.min.js"></script>
-    <script src="assets/plugins/chart.js/Chart.min.js"></script>
-    <script src="assets/plugins/chart.js/ChartDataLabels.min.js"></script>
+    <script defer src="assets/plugins/jquery-tabledit/tabledit.min.js"></script>
+    <script defer src="assets/plugins/chart.js/Chart.min.js"></script>
+    <script defer src="assets/plugins/chart.js/ChartDataLabels.min.js"></script>
 
 </head>
 <?php if (isset($_SESSION['s_usuario'])) {
@@ -85,6 +84,7 @@
         let datos_cliente = [];
         let datos_orden = [];
         let datos_anio = [];
+        // let datos_und = [];
         for (let i = 2023; i <= year; i++) {
             datos_anio.push({
                 id: i,
@@ -161,19 +161,25 @@
 
             <?php
             include 'modules/aside.php';
+            include 'modules/slide.php';
             ?>
         </div>
         <script>
-            let selectedTab = '1';
+            let selectedTab = '2';
             const body = document.querySelector('body'),
+                html = document.querySelector('html'),
                 navbar = body.querySelector('.navbar'),
                 sidebar = body.querySelector('.main-sidebar'),
                 // modeSwitch = body.querySelector('.mode'),
                 // modeText = body.querySelector('.mode-text'),
                 controlSide = body.getElementsByClassName('control-sidebar')[0],
-                control = body.querySelector('.ctrl-side'),
+                control = body.querySelectorAll('.ctrl-side'),
+                first_control = control[0],
+                second_control = control[1],
                 btnSide = document.getElementById('btnSide'),
                 setA = body.querySelectorAll('.setA'),
+                setB = body.querySelectorAll('.setB'),
+
                 inputauto = body.querySelector('#codProducto'),
                 inputBarras = body.querySelector('#codBarras');
 
@@ -184,11 +190,71 @@
                 e.addEventListener('click', function() {
                     // const ul = this.nextElementSibling;
                     // if (!ul) {
-                    setA.forEach((a) => a.classList.remove('active'));
-                    this.classList.add('active');
-                    if (body.classList.contains('control-sidebar-slide-open')) {
-                        control.click();
+                    // Verificar si el elemento clickeado es desplegable
+                    const isDropdown = this.nextElementSibling && this.nextElementSibling.classList.contains('nav-treeview');
+
+                    // Si es desplegable, no hacer nada
+                    if (isDropdown) {
+                        return;
                     }
+
+                    // Remover la clase 'active' de todos los elementos setA
+                    setA.forEach((a) => a.classList.remove('active'));
+                    // Agregar la clase 'active' al elemento clickeado
+                    this.classList.add('active');
+
+                    // Si no es desplegable, remover la clase 'active' de todos los elementos setB
+                    if (!isDropdown) {
+                        const setB = document.querySelectorAll('.setB');
+                        setB.forEach((b) => b.classList.remove('active'));
+                    }
+
+                    if (body.classList.contains('control-sidebar-slide-open')) {
+                        // second_control.click();
+                        // body.classList.remove('control-sidebar-slide-open');
+                        // body.classList.remove('overflow-body');
+                        // html.classList.remove('overflow-body');
+                        control.forEach((e) => {
+                            // e.style.display = 'none'
+                            if (e.classList.contains('active')) {
+                                e.click();
+                            }
+                        })
+
+
+                    }
+                });
+            });
+
+
+            setB.forEach((e) => {
+                e.addEventListener('click', function() {
+                    // Remover la clase 'active' de todos los elementos setB
+                    setB.forEach((b) => b.classList.remove('active'));
+                    // Agregar la clase 'active' al elemento clickeado
+                    this.classList.add('active');
+
+                    const parentSetA = this.closest('.menu-is-opening').querySelector('.setA');
+                    // Remover la clase 'active' de todos los elementos setA que no contienen al setB clickeado
+                    document.querySelectorAll('.setA').forEach((setA) => {
+                        if (setA !== parentSetA) {
+                            setA.classList.remove('active');
+                        }
+                    });
+
+                    parentSetA.classList.add('active');
+
+                    if (body.classList.contains('control-sidebar-slide-open')) {
+                        control.forEach((e) => {
+                            // e.style.display = 'none'
+                            if (e.classList.contains('active')) {
+                                e.click();
+                            }
+                        })
+
+
+                    }
+
                 });
             });
 
@@ -236,19 +302,185 @@
                 ul.outerWidth(this.element.outerWidth());
             }
 
-            control.addEventListener('click', () => {
-                body.classList.toggle('overflow-body');
+            let activeControl = null;
+            control.forEach((e) => {
+                e.addEventListener('click', () => {
+                    // if (activeControl !== e) {
+                    //     // Desactivar el control-sidebar activo anteriormente, si existe
+                    //     if (activeControl) {
+                    //         activeControl.classList.remove('active');
+                    //     }
+                    //     activeControl = e;
+                    //     activeControl.classList.add('active');
 
-                // if(!(body.classList.contains('control-sidebar-slide-open')))
-                // else{
-                //     body.classList.remove('overflow-body');
-                // }
-                if (body.classList.contains('control-sidebar-slide-open')) {
-                    return;
-                } else if (!(body.classList.contains('sidebar-collapse'))) {
-                    body.classList.toggle('sidebar-collapse');
-                }
-            });
+                    //     // Contar cuántos control-sidebar están activos
+                    //     const activeControls = document.querySelectorAll('.ctrl-side.active').length;
+
+                    //     // Agregar o quitar la clase 'overflow-body' dependiendo del estado de los control-sidebar
+                    //     if (activeControls > 0) {
+                    //         body.classList.add('overflow-body');
+                    //         html.classList.add('overflow-body');
+                    //     } else {
+                    //         body.classList.remove('overflow-body');
+                    //         html.classList.remove('overflow-body');
+                    //     }
+                    // } else {
+                    //     // Si se hace clic en el mismo control-sidebar, alternar su estado
+                    //     activeControl.classList.toggle('active');
+                    //     activeControl = null;
+
+                    //     // Contar cuántos control-sidebar están activos
+                    //     const activeControls = document.querySelectorAll('.ctrl-side.active').length;
+
+                    //     // Agregar o quitar la clase 'overflow-body' dependiendo del estado de los control-sidebar
+                    //     if (activeControls > 0) {
+                    //         body.classList.add('overflow-body');
+                    //         html.classList.add('overflow-body');
+                    //     } else {
+                    //         body.classList.remove('overflow-body');
+                    //         html.classList.remove('overflow-body');
+                    //     }
+                    // }
+                    const clickedControlIsActive = e === activeControl;
+
+                    // Desactivar el control-sidebar activo anteriormente, si existe y no es el mismo que el clic actual
+                    if (activeControl && !clickedControlIsActive) {
+                        activeControl.classList.remove('active');
+                    }
+
+                    // Si el clic actual no es el mismo que el control-sidebar activo, activarlo
+                    if (!clickedControlIsActive) {
+                        e.classList.add('active');
+                        activeControl = e;
+                    } else { // Si se hace clic en el mismo control-sidebar, alternar su estado
+                        e.classList.toggle('active');
+                        activeControl = e.classList.contains('active') ? e : null;
+                    }
+
+                    const activeControls = document.querySelectorAll('.ctrl-side.active').length;
+                    const isOverflow = activeControls > 0;
+
+                    body.classList.toggle('overflow-body', isOverflow);
+                    html.classList.toggle('overflow-body', isOverflow);
+                    // const wasActive = e.classList.contains('active');
+                    // const isActive = e.classList.toggle('active', !wasActive);
+                    // activeControl = isActive ? e : null;
+
+                    // const activeControls = document.querySelectorAll('.ctrl-side.active').length;
+                    // const isOverflow = activeControls > 0;
+
+                    // body.classList.toggle('overflow-body', isOverflow);
+                    // html.classList.toggle('overflow-body', isOverflow);
+                    // const clickedControlIsActive = e === activeControl;
+                    // const isActive = e.classList.toggle('active', !clickedControlIsActive);
+                    // activeControl = isActive ? e : null;
+
+                    // const activeControls = body.querySelectorAll('.ctrl-side.active').length;
+                    // const isOverflow = activeControls > 0;
+
+                    // body.classList.toggle('overflow-body', isOverflow);
+                    // html.classList.toggle('overflow-body', isOverflow);
+
+                    // const isActive = e.classList.contains('active');
+                    // openSidebars += isActive ? -1 : 1; // Si el control está activo, resta 1, de lo contrario, suma 1
+
+                    // if (openSidebars > 0) {
+                    //     body.classList.add('overflow-body');
+                    //     html.classList.add('overflow-body');
+                    // } else {
+                    //     body.classList.remove('overflow-body');
+                    //     html.classList.remove('overflow-body');
+                    // }
+
+                    // e.classList.toggle('active', !isActive);
+
+                    // sidebarActive = !sidebarActive; // Alternar el estado de la barra lateral
+
+                    // if (sidebarActive) {
+                    //     body.classList.add('overflow-body');
+                    //     html.classList.add('overflow-body');
+                    // } else {
+                    //     if (body.classList.contains('overflow-body')) {
+                    //         body.classList.remove('overflow-body');
+                    //         html.classList.remove('overflow-body');
+                    //     }
+                    // }
+
+                    // if (body.classList.contains('overflow-body')){
+                    //     sidebaractive=false
+                    //     console.log("dentro del slide if no scroll")
+                    // }else if (!body.classList.contains('overflow-body') ){
+                    //     sidebaractive=true
+                    //     console.log("dentro del slide else if scroll")
+                    // }
+
+                    // if(sidebaractive){
+                    //     body.classList.add('overflow-body');
+                    //     html.classList.add('overflow-body');
+                    // }else{
+                    //     body.classList.remove('overflow-body');
+                    //     html.classList.remove('overflow-body');
+                    // }
+                    // if (body.classList.contains('control-sidebar-slide-open')) {
+                    //     return;
+                    // } else if(!(body.classList.contains('control-sidebar-slide-open'))) {
+                    //     body.classList.add('overflow-body');
+                    //     html.classList.add('overflow-body');
+                    // }
+
+                    // if ((body.classList.contains('overflow-body'))) {
+                    //     body.classList.remove('overflow-body');
+                    //     html.classList.remove('overflow-body');
+                    //     return;
+                    // } else if (!(body.classList.contains('control-sidebar-slide-open'))) {
+                    //     body.classList.add('overflow-body');
+                    //     html.classList.add('overflow-body');
+                    // }
+
+                    // if (body.classList.contains('control-sidebar-slide-open')) {
+                    //     return;
+                    // } else {
+                    //     body.classList.toggle('overflow-body');
+                    //     html.classList.toggle('overflow-body');
+                    // }
+
+                    // if (body.classList.contains('control-sidebar-slide-open')) {
+                    //     return;
+                    // } else if(!(body.classList.contains('control-sidebar-slide-open'))) {
+                    //     body.classList.add('overflow-body');
+                    //     html.classList.add('overflow-body');
+                    // }
+
+                    // if (body.classList.contains('control-sidebar-slide-open') && body.classList.contains('overflow-body')) {
+                    //     return;
+                    // } else if (!body.classList.contains('control-sidebar-slide-open') && !body.classList.contains('overflow-body')) {
+                    //     body.classList.add('overflow-body');
+                    //     html.classList.add('overflow-body');
+                    // }else  if (body.classList.contains('overflow-body') && !body.classList.contains('control-sidebar-slide-open')) {
+                    //     body.classList.remove('overflow-body');
+                    //     html.classList.remove('overflow-body');
+                    // }
+
+
+
+                    // Remover overflow-body si está presente y no hay control-sidebar-slide-open
+                    // if (body.classList.contains('overflow-body') && !body.classList.contains('control-sidebar-slide-open')) {
+                    //     body.classList.remove('overflow-body');
+                    //     html.classList.remove('overflow-body');
+                    // }
+
+
+
+
+                    if (body.classList.contains('control-sidebar-slide-open')) {
+                        return;
+                    } else if (!(body.classList.contains('sidebar-collapse'))) {
+                        body.classList.toggle('sidebar-collapse');
+                    }
+                });
+            })
+
+
 
             // let savedTheme = localStorage.getItem('darkMode');
             // if (savedTheme == 'true') {
@@ -285,6 +517,7 @@
                 "lengthChange": false,
                 "ordering": false,
                 "autoWidth": false,
+                "paging": false,
                 ajax: {
                     url: "controllers/salidas.controlador.php",
                     dataSrc: "",
@@ -575,6 +808,7 @@
                 })
 
                 cargarCombo('Proveedores');
+                cargarCombo('Unidad');
                 cargarCombo('Clientes', '', 1, true)
                     .then(datos_ => {
                         datos_cliente = datos_;
@@ -585,14 +819,14 @@
                 cargarCombo('Conductor', '', 2);
                 cargarCombo('Orden', '', 3, true).then(datos_ => {
                     datos_orden = datos_;
-                    $(cboOrdenFab).select2({
-                        placeholder: 'SELECCIONA UNA ORDEN',
-                        width: 'auto',
-                        data: datos_orden
-                    })
-                    setChange(cboOrdenFab, 0);
-
                 });
+                cargarCombo('Unidad', '', 1, true).then(datos_ => {
+                    $('#cboUnidad_fab').select2({
+                        placeholder: 'SELECCIONA UNA UNIDAD',
+                        width: 'auto',
+                        data: datos_
+                    })
+                })
 
                 cargarCombo('PorCliente', '', 4)
                 cargarCombo('PorOrden', '', 5)
@@ -670,8 +904,10 @@
                             className: "text-center ",
                         },
                         {
-                            targets: 4
+                            targets: 5,
+                            className: "text-center",
                         },
+
                     ],
                     buttons: [{
                             text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
@@ -680,11 +916,30 @@
                                 dt.clear().draw(); // Esta línea vacía los datos de la tabla
                             }
                         },
+                        {
+                            text: "<i class='fa-regular fa-hammer fa-xl'></i> Fabricación",
+                            className: "btn btn-light text-info",
+                            action: function(e, dt, node, config) {
+
+                                formFab.reset();
+                                formFab.classList.remove('was-validated');
+                                $('#modal-fab').modal("show");
+
+                            }
+                        },
                         // {
-                        //     text: "<i class='fa-regular fa-layer-plus fa-xl'style='color: #000'></i> Agregar fabricación",
-                        //     className: "btn btn-light text-dark",
-                        //     action: function(e, dt, node, config) {
-                        //         card_fab.style.display = 'block'
+                        //     text: "<input type='checkbox' id='checkbox_input'>",
+                        //     init: function(dt, node, config) {
+                        //         $(document).on('change', '#checkbox_input', function() {
+                        //             // Aquí puedes agregar tu lógica para manejar el evento de cambio del checkbox
+                        //             if ($(this).is(':checked')) {
+                        //                 // Acción cuando el checkbox está marcado
+                        //                 console.log('Checkbox marcado');
+                        //             } else {
+                        //                 // Acción cuando el checkbox está desmarcado
+                        //                 console.log('Checkbox desmarcado');
+                        //             }
+                        //         });
                         //     }
                         // }
                     ]
@@ -893,7 +1148,7 @@
                         if (!isValid) {
                             return;
                         }
-                        let clases = ['cantidad'];
+                        let clases = ['cantidad', 'util'];
                         formData.append('orden', cboOrden.value);
                         formData.append('conductor', cboConductor.value);
                         formData.append('entrega', cboEmpleado.value);
@@ -911,9 +1166,12 @@
 
                 tabs.forEach(tab => {
                     tab.addEventListener('change', function() {
-                        tblOut.clear().draw(); // Esta línea vacía los datos de la tabla
-                        tblIn.clear().draw(); // Esta línea vacía los datos de la tabla
                         selectedTab = this.value;
+                        if (selectedTab === '1') {
+                            tblOut.clear().draw(); // Esta línea vacía los datos de la tabla
+                            tblIn.clear().draw();
+                        }
+
                         form_guia.classList.remove('was-validated');
                         const selectedForm = document.getElementById(`form-${selectedTab}`);
                         const formContainers = document.querySelectorAll('.form-container');
@@ -1050,10 +1308,15 @@
                                             '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['cantidad'] + '">',
                                             respuesta['nombre'],
                                             respuesta['descripcion'],
+                                            '<center style="vertical-align: middle;display: inline-flex">' +
+                                            '<label class="switch-2">' +
+                                            '<input class="switch__input util" type="checkbox" value="1">' +
+                                            '<svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">' +
+                                            '<polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>' +
+                                            '</label>' +
+                                            "</center>",
+
                                             "<center>" +
-                                            "<span class='btnFab text-info'style='margin-right:.4rem;cursor:pointer;'  title='Agregar a fabricacion'> " +
-                                            "<i style=';font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-hammer'> </i> " +
-                                            "</span>" +
                                             "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
                                             "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
                                             "</span>" +
@@ -1093,15 +1356,17 @@
                     table.rows().eq(0).each(function(index) {
                         count = count + 1;
                     });
-
                     if (count > 0) {
                         var arr = [];
                         table.rows().eq(0).each(function(index) {
                             let row = table.row(index);
                             let data = row.data();
                             let id = data[producto];
-                            let valores = clases.map(clase => row.node().querySelector('input.' + clase).value);
-                            // Agrega los valores al array
+                            let valores = clases.map(clase => {
+                                let inputElement = row.node().querySelector('input.' + clase);
+                                // Utilizamos el operador ternario para comprobar el tipo de entrada y obtener el valor adecuado
+                                return inputElement.type === 'checkbox' ? inputElement.checked : inputElement.value;
+                            }); // Agrega los valores al array
                             arr.push(id + "," + valores.join(","));
                             // Agrega al FormData directamente en este ciclo si es necesario
                             formData.append('arr[]', arr[index]);
@@ -1126,6 +1391,8 @@
                                 if (isSuccess) {
                                     table.clear().draw();
                                     tabla ? tabla.ajax.reload(null, false) : ''
+                                    cargarAutocompletado();
+
                                 }
                             }
                         });

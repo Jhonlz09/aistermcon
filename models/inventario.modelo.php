@@ -88,6 +88,34 @@ class ModeloInventario
         }
     }
 
+    public static function mdlAgregarInventarioFab($des, $uni, $sto)
+    {
+        try {
+            $a = Conexion::ConexionDB()->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,:sto,:uni, true)");
+            $a->bindParam(":des", $des, PDO::PARAM_STR);
+            $a->bindParam(":uni", $uni, PDO::PARAM_INT);
+            $a->bindParam(":sto", $sto, PDO::PARAM_INT);
+            $a->execute();
+            return array(
+                'status' => 'success',
+                'm' => 'El producto se agregó correctamente'
+            );
+        } catch (PDOException $e) {
+            if ($e->getCode() == '23505') {
+                return array(
+                    'status' => 'danger',
+                    'm' => 'No se pudo agregar el producto debido a que ya existe un producto con el mismo codigo'
+                );
+            } else {
+                return array(
+                    'status' => 'danger',
+                    'm' => 'No se pudo agregar el producto: ' . $e->getMessage()
+                );
+            }
+        }
+    }
+
+
     public static function mdlEditarInventario($id, $codigo, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi)
     {
         try {
@@ -181,8 +209,11 @@ class ModeloInventario
     {
         try {
 
-            $e = Conexion::ConexionDB()->prepare("SELECT i.codigo, i.codigo || ' - ' || i.descripcion as descripcion, (i.stock - i.stock_mal) AS cantidad
-            FROM tblinventario i WHERE i.estado =true ORDER BY i.descripcion");
+            $e = Conexion::ConexionDB()->prepare("SELECT i.codigo, i.codigo || ' - ' || i.descripcion AS descripcion, 
+            (i.stock - i.stock_mal) AS cantidad
+                FROM tblinventario i WHERE i.estado = true 
+                AND NOT (i.fabricado = true AND i.stock = 0)
+                ORDER BY i.descripcion;");
             $e->execute();
             return $e->fetchAll();
         } catch (PDOException $e) {

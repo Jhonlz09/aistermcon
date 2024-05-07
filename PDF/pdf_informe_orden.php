@@ -2,22 +2,14 @@
 require('../assets/plugins/fpdf/fpdf.php');
 require('../models/informe.modelo.php');
 
-$tab = $_POST['tabs'];
-
-if ($tab == '1') {
-    $id_orden = $_POST['orden'];
-    $datos_fecha = ModeloInforme::mdlInformeFechaOrden($id_orden);
-    if ($datos_fecha != null) {
-        $cliente = $datos_fecha[0]['cliente'];
-        $orden = $datos_fecha[0]['orden_nro'];
-        $info_header = 'NRO. ORDEN: ' . $orden . "         " . 'CLIENTE: ' . $cliente;
-        $info = 'CLIENTE: ' . $cliente . "\n" . 'NRO. ORDEN: ' . $orden;
-    }
-
-    // $info_2 =  'NRO. ORDEN: '.$datos_fecha[0]['orden_nro'];
-} else if ($tab == '2') {
-} else if ($tab == '3') {
-} else {
+$id_orden = $_POST['orden'];
+$info_error = 'NRO. DE ORDEN';
+$datos_fecha = ModeloInforme::mdlInformeFechaOrden($id_orden);
+if ($datos_fecha != null) {
+    $cliente = $datos_fecha[0]['cliente'];
+    $orden = $datos_fecha[0]['orden_nro'];
+    $info_header = $info_error . ': ' . $orden . "         " . 'CLIENTE: ' . $cliente;
+    $info = 'CLIENTE: ' . $cliente . "\n" . 'NRO. ORDEN: ' . $orden;
 }
 
 class PDF extends FPDF
@@ -31,80 +23,11 @@ class PDF extends FPDF
     private $encabezado = true;
     // Propiedad para almacenar el ID de la boleta
 
-    // function Header()
-    // {
-    //     $this->SetFont('Arial', '', 11);
-    //     $this->SetTextColor(10, 0, 0);
-    //     // Número de página
-    //     $this->Cell(350, 25, '' . $this->PageNo() . ' / {nb}', 0, 0, 'C');
-    //     $this->Image('../assets/img/logo_pdf.jpeg', 48, -5, 118, 40);
-    //     $this->Ln();
-    //     $this->SetFont('Arial', '', 8);
-    //     $this->Cell(0, -4, iconv('UTF-8', 'windows-1252', 'Lotización Santa Adriana Mz 16 Solar 11 Mapasingue Este'), 0, 1, 'C');
-    //     $this->Cell(0, 11, iconv('UTF-8', 'windows-1252', 'Sector A Telf.: 6052288   3082701 Cel.: 099851628'), 0, 1, 'C');
-    //     $this->Cell(0, -5, iconv('UTF-8', 'windows-1252', 'e-mails: info@aistermcon.com • www.aistermcon.com'), 0, 1, 'C');
-    //     $this->Cell(0, 11, iconv('UTF-8', 'windows-1252', 'Guayaquil - Ecuador'), 0, 1, 'C');
-    //     $this->SetFont('Arial', 'B', 14);
-    //     $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'GUIA DE REMISION'), 0, 1, 'C');
-
-    //     $this->SetFont('Arial', 'B', 9); // Configurar la fuente en negrita
-    //     $this->Cell(10, 10, iconv('UTF-8', 'windows-1252', 'Fecha de iniciacion del traslado: '), 0, 1, 'L');
-    //     $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'Fecha de terminacion del traslado: _______________________________'), 0, 1, 'L');
-    //     $this->SetXY(68, 43);
-    //     $this->SetFont('Arial', '', 9); // Configurar la fuente en normal
-    //     $this->Cell(50, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['fecha']), 0, 0, 'L'); // Cambiar a nueva línea al final
-    //     $this->SetFont('Arial', 'B', 9);
-    //     $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Punto de partida: _______________________________'), 0, 1, 'L');
-    //     $this->SetFont('Arial', '', 9);
-    //     $this->SetXY(148, 43);
-    //     $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'BODEGA SANTA ADRIANA'), 0, 1, 'L');
-    //     $this->SetXY(148, 48);
-    //     $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['fecha']), 0, 1, 'L'); // Cambiar a nueva línea al final
-    //     $this->SetXY(68, 48);
-    //     $this->SetFont('Arial', '', 9); // Configurar la fuente en normal
-    //     $this->Cell(50, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['fecha']), 0, 0, 'L'); // Cambiar a nueva línea al final
-    //     $this->SetFont('Arial', 'B', 9);
-    //     $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Fecha de emisión: ______________________________'), 0, 1, 'L');
-    //     $this->SetFont('Arial', 'B', 11); // Fuente ampliada
-    //     $this->SetY(53);
-    //     $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Destinatario'), 0, 1, 'L');
-    //     $this->SetFont('Arial', 'B', 9); // Fuente ampliada
-    //     $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'Nombre o razón social: ______________________________________________'), 0, 1, 'L');
-    //     $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'RUC/C.I.: ___________________________'), 0, 1, 'L');
-    //     $this->SetXY(48, 58);
-    //     $this->SetFont('Arial', '', 9); // Fuente ampliada
-    //     $this->Cell(79, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['cliente']), 0, 0, 'L');
-    //     $this->SetFont('Arial', 'B', 9); // Fuente ampliada
-    //     $this->Cell(30, 0, iconv('UTF-8', 'windows-1252', 'Número de orden: _________________________'), 0, 0, 'L');
-    //     $this->SetFont('Arial', '', 9); // Fuente ampliada
-    //     $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['orden']), 0, 0, 'L');
-    //     $this->SetXY(25, 63);
-    //     $this->Cell(47, 0, iconv('UTF-8', 'windows-1252', '5'), 0, 0, 'L');
-    //     $this->SetFont('Arial', 'B', 9); // Fuente ampliada
-    //     $this->Cell(32, 0, iconv('UTF-8', 'windows-1252', 'Punto de llegada: _________________________________________________________'), 0, 0, 'L');
-    //     $this->SetFont('Arial', '', 9); // Fuente ampliada
-    //     $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['cliente']), 0, 1, 'L');
-    //     $this->SetY(68);
-    //     $this->SetFont('Arial', 'B', 11); // Fuente ampliada
-    //     $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Identificacion del encargado del transporte'), 0, 1, 'L');
-    //     $this->SetFont('Arial', 'B', 9); // Fuente ampliada
-    //     $this->Cell(110, 10, iconv('UTF-8', 'windows-1252', 'Nombre o razón social: ____________________________________________________'), 0, 0, 'L');
-    //     $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'RUC/C.I.: ___________________________'), 0, 1, 'R');
-    //     $this->SetXY(48, 73);
-    //     $this->SetFont('Arial', '', 9); // Fuente ampliada
-    //     $this->Cell(107, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['conductor']), 0, 0, 'L');
-    //     $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['cedula_conductor']), 0, 0, 'L');
-    //     $this->SetY(78);
-    //     $this->SetFont('Arial', 'B', 11); // Fuente ampliada
-    //     $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Bienes transportados'), 0, 1, 'L');
-    // }
-
     function Header()
     {
 
         $this->SetFont('Arial', '', 11);
         $this->SetTextColor(10, 0, 0);
-        // Número de página
         $this->Cell(350, 25, '' . $this->PageNo() . ' / {nb}', 0, 0, 'C');
         if ($this->encabezado) {
 
@@ -285,7 +208,7 @@ $pdf->AddPage();
 if ($datos_fecha == null) {
     $pdf->SetFont('Arial', '', 14);
     $pdf->SetXY(10, 20);
-    $pdf->Cell(0, 20, iconv('UTF-8', 'windows-1252', 'NO SE ENCONTRARON DATOS PARA EL NRO. DE ORDEN'), 0, 0, 'C');
+    $pdf->Cell(0, 20, iconv('UTF-8', 'windows-1252', 'NO SE ENCONTRARON DATOS PARA EL ' . $info_error), 0, 0, 'C');
     $pdf->SetTitle("Error", true);
 } else {
     $pdf->SetTitle("Nro. Orden " . $datos_fecha[0]['orden_nro']);
@@ -319,7 +242,7 @@ if ($datos_fecha == null) {
     $pdf->SetFont('Arial', 'B', 18);
     $pdf->SetMargins(15, 0, 15);
     $pdf->SetWidths(array(20, 80, 20, 20, 20, 20));
-    $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C','C'));
+    $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C'));
     $pdf->SetX(15);
     foreach ($datos_fecha as $row) {
         $pdf->SetFont('Arial', 'B', 12);
@@ -344,8 +267,8 @@ if ($datos_fecha == null) {
                 iconv('UTF-8', 'windows-1252', $fill["unidad"]),
                 iconv('UTF-8', 'windows-1252', $salida),
                 iconv('UTF-8', 'windows-1252', $entrada),
-                iconv('UTF-8', 'windows-1252', $util )
-            ), array(10, 10, 10, 10, 10,10), '', 7, [true, true, true, true, true,true]);
+                iconv('UTF-8', 'windows-1252', $util)
+            ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
         }
         $pdf->Ln();
     }

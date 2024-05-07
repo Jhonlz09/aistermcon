@@ -94,7 +94,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formInforme" method="POST" action="controllers/pdf_informe.php" class="needs-validation" autocomplete="off" target="_blank" novalidate>
+            <form id="formInforme" method="POST" action="PDF/pdf_informe_orden.php" class="needs-validation" autocomplete="off" target="_blank" novalidate>
                 <div class="modal-body" style="padding:1rem 1rem 0rem 1rem">
                     <input type="hidden" name="variable" id="variable" value="">
                     <input type="hidden" name="id_usuario" id="id_usuario" value="">
@@ -198,7 +198,7 @@
                 var parte2 = partes[1];
                 var parte3 = partes[2];
 
-                var groupText = '<div class="d-flex justify-content-between align-items-center "><strong style="cursor:pointer" class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="controllers/pdf_salida.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_boleta" class="input_boleta" value=""><button style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' + (editar ? '<button id="editR" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') + (eliminar ? '<button id="eliS" style="color:var(--text-color);font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-trash-can" ></i></button>' : '') + '</div></div>';
+                var groupText = '<div class="d-flex justify-content-between align-items-center "><strong style="cursor:pointer" class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_salida.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_boleta" class="input_boleta" value=""><button style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' + (editar ? '<button id="editR" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') + (eliminar ? '<button id="eliS" style="color:var(--text-color);font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-trash-can" ></i></button>' : '') + '</div></div>';
 
                 return $('<tr/>')
                     .append('<td colspan="8">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
@@ -324,13 +324,31 @@
         const col_group = document.getElementById('col_group');
         const groupOrden = document.getElementById('groupOrden');
         const groupCliente = document.getElementById('groupCliente');
-
+        const btnGuardar = document.getElementById('btnGuardar');
         const tabsIn = document.querySelectorAll('.tabs .rd-i');
 
+        let tabSelected='1';
+
+        btnGuardar.addEventListener('click', function(event) {
+            // Evita que el formulario se envíe
+            event.preventDefault();
+
+            // Cambia el action del formulario
+            if(tabSelected === '1'){
+                form.action = 'PDF/pdf_informe_orden.php';
+            }else if(tabSelected === '2'){
+                form.action = 'PDF/pdf_informe_cliente.php';
+            }else if (tabSelected === '3'){
+                form.action = 'PDF/pdf_informe_fecha.php';
+            }
+
+            // Envía el formulario manualmente
+            form.submit();
+        });
         console.log(tabsIn);
         tabsIn.forEach(tab => {
             tab.addEventListener('change', function() {
-                let tabSelected = this.value;
+                tabSelected = this.value;
 
                 form.classList.remove('was-validated');
                 // const selectedForm = document.getElementById(`form-${tabSelected}`);
@@ -344,8 +362,8 @@
                 //     selectedForm.style.display = 'block';
                 // }
 
-                console.log(tabSelected)
-                console.log(row_date);
+                // console.log(tabSelected)
+                // console.log(row_date);
 
                 if (tabSelected === '1') {
                     cboOrden_i.required = true

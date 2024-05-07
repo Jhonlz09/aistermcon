@@ -3,7 +3,7 @@ require_once "../models/roles.modelo.php";
 
 class ControladorRoles
 {
-    public $id,$nombres,$modulo,$crear,$editar,$eliminar;
+    public $id, $nombres, $modulo, $crear, $editar, $eliminar;
 
     static public function listarRoles()
     {
@@ -22,7 +22,7 @@ class ControladorRoles
     }
     public function editarRol()
     {
-        $data = ModeloRoles::mdlEditarRol($this->id,$this->nombres);
+        $data = ModeloRoles::mdlEditarRol($this->id, $this->nombres);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -32,10 +32,20 @@ class ControladorRoles
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function savePermisos()
+    // public function savePermisos()
+    // {
+    //     $data = ModeloRoles::mdlSavePermisos($this->id,$this->modulo,$this->crear,$this->editar,$this->eliminar);
+    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    // }
+
+    public function savePermisos($datos)
     {
-        $data = ModeloRoles::mdlSavePermisos($this->id,$this->modulo,$this->crear,$this->editar,$this->eliminar);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        $resultados = [];
+        foreach ($datos as $permiso) {
+            $resultado = ModeloRoles::mdlSavePermisos($this->id, $permiso['id_modulo'], $permiso['crear'], $permiso['editar'], $permiso['eliminar']);
+            $resultados[] = $resultado;
+        }
+        echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
     }
 
     public function deletePermisos()
@@ -62,21 +72,18 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorRoles();
         $data->id = $_POST["id"];
         $data->eliminarRol();
-    }else if ($_POST["accion"] == 4) {
+    } else if ($_POST["accion"] == 4) {
         $data = new ControladorRoles();
         $data->id = $_POST["id_perfil"];
-        $data-> getPermisos();
-    }else if ($_POST["accion"] == 5) {
+        $data->getPermisos();
+    } else if ($_POST["accion"] == 5) {
         $data = new ControladorRoles();
         $data->id = $_POST["id_perfil"];
-        $data-> deletePermisos();
-    }else if ($_POST["accion"] == 6) {
+        $data->deletePermisos();
+    } else if ($_POST["accion"] == 6) {
         $data = new ControladorRoles();
         $data->id = $_POST["id_perfil"];
-        $data->modulo = $_POST["modulo"];
-        $data->crear = $_POST["crear"];
-        $data->editar = $_POST["editar"];
-        $data->eliminar = $_POST["eliminar"];
-        $data-> savePermisos();
+        $datos = json_decode($_POST["datos"], true);
+        $data->savePermisos($datos);
     }
 }

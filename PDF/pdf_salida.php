@@ -4,7 +4,6 @@ require('../models/salidas.modelo.php');
 
 $id_boleta = $_POST['id_boleta'];
 
-
 class PDF extends FPDF
 
 {
@@ -451,8 +450,8 @@ if ($remainingRows > 0) {
 // $pdf->SetX(20);
 // $pdf->Row(array('Direccion', 'Silabo', 'Micros'), array(12, 12, 12), 'B');
 // Initialize variables to keep track of the total sum
-$totalSilabos = 0;
-$totalMicros = 0;
+// $totalSilabos = 0;
+// $totalMicros = 0;
 // foreach ($dataGrafico as $fill) {
 //     $totalMicros += $fill["micros"];
 //     $totalSilabos += $fill["silabos"];

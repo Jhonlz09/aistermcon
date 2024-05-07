@@ -102,7 +102,6 @@ class ModeloRegistro
 
             foreach ($arr as $data) {
                 list($idProducto, $cantidad) = explode(',', $data);
-
                 // Consultar el stock disponible para el producto 
                 $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) as stock, codigo FROM tblinventario WHERE id = :idProducto");
                 $stmtStock->bindParam(':idProducto', $idProducto, PDO::PARAM_INT);
@@ -127,11 +126,12 @@ class ModeloRegistro
             // }
             // Recorre el array e inserta la salida de cada producto en tblsalidas y actualiza tblinventario
             foreach ($arr as $data) {
-                list($id, $cantidad) = explode(',', $data);
-                $stmtE = Conexion::ConexionDB()->prepare("INSERT INTO tblsalidas(id_boleta,cantidad_salida, id_producto)         
-            VALUES(:id_boleta, :cantidad, :id)");
+                list($id, $cantidad, $fab) = explode(',', $data);
+                $stmtE = Conexion::ConexionDB()->prepare("INSERT INTO tblsalidas(id_boleta,cantidad_salida, id_producto, fabricado)         
+            VALUES(:id_boleta, :cantidad, :id , :fab)");
                 $stmtE->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
                 $stmtE->bindParam(':cantidad', $cantidad, PDO::PARAM_STR);
+                $stmtE->bindParam(':fab', $fab, PDO::PARAM_BOOL);
                 $stmtE->bindParam(':id', $id, PDO::PARAM_INT);
                 $stmtE->execute();
             }

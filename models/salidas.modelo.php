@@ -8,7 +8,7 @@ class ModeloSalidas
     {
         try {
             $consulta = "SELECT s.id, i.codigo, s.cantidad_salida, u.nombre AS unidad, 
-            i.descripcion, LPAD(b.id::TEXT, 7, '0') || ' - '|| c.nombre || ' '|| o.nombre  || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY') AS grupo,
+            i.descripcion, LPAD(b.id::TEXT, 7, '0') || ' - '|| c.nombre || ' '|| o.nombre  || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY') AS grupo, s.fabricado,
             s.retorno, b.id as id_boleta, o.id as orden, c.id as cliente, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha, b.id_conductor,b.id_entrega,
             ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila
         FROM 
@@ -109,15 +109,21 @@ class ModeloSalidas
     static public function mdlBuscarBoleta($id_boleta)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT s.id, s.cantidad_salida,u.nombre AS unidad,
-                i.descripcion, s.cantidad_salida as salidas, s.retorno, LPAD(b.id::TEXT, 7, '0') as id_boleta
-                FROM tblsalidas s
-                JOIN tblinventario i ON s.id_producto = i.id
-                JOIN tblboleta b ON s.id_boleta = b.id 
-                JOIN tblorden o ON b.id_orden = o.id
-                JOIN tblunidad u ON i.id_unidad = u.id
-		            WHERE b.id=:id
-                ORDER BY b.fecha ASC, s.id");
+            $l = Conexion::ConexionDB()->prepare("SELECT s.id, 
+                    s.cantidad_salida, 
+                    u.nombre AS unidad, 
+                    i.descripcion, 
+                    s.cantidad_salida AS salidas, 
+                    s.retorno, 
+                    LPAD(b.id::TEXT, 7, '0') AS id_boleta 
+            FROM tblsalidas s 
+            JOIN tblinventario i ON s.id_producto = i.id 
+            JOIN tblboleta b ON s.id_boleta = b.id 
+            JOIN tblorden o ON b.id_orden = o.id 
+            JOIN tblunidad u ON i.id_unidad = u.id 
+            WHERE b.id = :id
+            AND (i.fabricado = true OR s.fabricado = false) 
+            ORDER BY b.fecha ASC, s.id;");
             $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
             $l->execute();
 

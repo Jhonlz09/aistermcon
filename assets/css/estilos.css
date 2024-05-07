@@ -241,19 +241,19 @@ input[type="radio"]:checked+label {
     --boxshadow: #00000040;
 }
 
-.control-sidebar-slide-open:has(#radio-1:checked) {
+.control-sidebar:has(#radio-1:checked) {
     --label-star: #2fb54d;
     --label-new: #007904;
     --boxshadow: #1eb0325a;
 }
 
-.control-sidebar-slide-open:has(#radio-2:checked) {
+.control-sidebar:has(#radio-2:checked){
     --label-star: #c32333;
     --label-new: #940909;
     --boxshadow: #960d0d6b;
 }
 
-.control-sidebar-slide-open:has(#radio-3:checked) {
+.control-sidebar:has(#radio-3:checked):not(.modal-body *) {
     --label-star: #2c6cb1;
     --label-new: #294371;
     --boxshadow: #175aad62;
@@ -275,11 +275,7 @@ input[type="radio"]:checked+label {
     --label-new:#294579;
 } */
 
-#radio-1:checked~.glider {
-    transform: translateX(0);
-    background-color: var(--label-new);
 
-}
 
 #radio-orden:checked~.glider {
     transform: translateX(0);
@@ -296,16 +292,21 @@ input[type="radio"]:checked+label {
     background-color: var(--label-new);
 }
 
+#radio-1:checked~.glider {
+    transform: translateX(200%);
+    background-color: var(--label-new);
+
+}
 
 #radio-2:checked~.glider {
     /* --radio-color: #818b16; */
-    transform: translateX(100%);
+    transform: translateX(0);
     background-color: var(--label-new);
 }
 
 #radio-3:checked~.glider {
     /* --radio-color: #01626b; */
-    transform: translateX(200%);
+    transform: translateX(100%);
     background-color: var(--label-new);
 }
 

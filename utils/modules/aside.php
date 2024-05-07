@@ -1,5 +1,5 @@
 <!-- Control Sidebar -->
-<aside class="control-sidebar control-sidebar-light" style="overflow:hidden auto;">
+<aside class="control-sidebar first-sidebar control-sidebar-light" style="overflow:hidden auto;">
     <div class="p-3 ">
         <div class="row" style="align-items:flex-start">
             <form id="form_guia" style="display:contents" autocomplete="off" class="needs-validation" novalidate>
@@ -27,7 +27,7 @@
                                 </div>
                                 <!-- <form action="" id="form_salida"> -->
 
-                                <div class="col-sm-4" id="div_entregado" style="display:none;margin-bottom:1.8rem">
+                                <div class="col-sm-4" id="div_entregado" style="display:block;margin-bottom:1.8rem">
                                     <div class="form-group mb-0">
                                         <label id="lbl" class="mb-0 combo"><i class="fa-solid fa-person-carry-box"></i> Entregado a</label>
                                         <select id="cboEmpleado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
@@ -35,7 +35,7 @@
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4" id="div_conductor" style="display:none;margin-bottom:1.8rem">
+                                <div class="col-sm-4" id="div_conductor" style="display:block;margin-bottom:1.8rem">
                                     <div class="form-group mb-0">
                                         <label id="lbl" class="mb-0 combo"><i class="fas fa-steering-wheel"></i> Conductor</label>
                                         <select id="cboConductor" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
@@ -49,18 +49,19 @@
                                 <div class="row" style="align-items:normal">
                                     <div class="col-md-5 d-flex">
                                         <div class="tabs" style="margin-block: 0.5rem 1.8rem ">
-                                            <input type="radio" id="radio-1" name="tabs" value="1" checked />
-                                            <label class="tab" for="radio-1"> Compra</label>
-                                            <input type="radio" id="radio-2" name="tabs" value="2" />
+
+                                            <input type="radio" id="radio-2" name="tabs" value="2" checked />
                                             <label class="tab" for="radio-2">Salida</label>
                                             <input type="radio" id="radio-3" name="tabs" value="3" />
                                             <label class="tab" for="radio-3">Entrada</label>
+                                            <input type="radio" id="radio-1" name="tabs" value="1" />
+                                            <label class="tab" for="radio-1"> Compra</label>
                                             <span class="glider"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-7">
-                                        <div class="form-group" id="div_orden" style="display:none;line-height:1">
-                                            <label id="lblO" class="mb-0 combo"><i class="fas fa-receipt"></i> Orden</label>
+                                        <div class="form-group" id="div_orden" style="display:block;line-height:1">
+                                            <label id="lblO" class="mb-0 combo"><i class="fas fa-ticket"></i> Orden</label>
                                             <div class="row">
                                                 <div class="col">
                                                     <!-- <form id="form_orden" action=""> -->
@@ -76,7 +77,7 @@
                                                 </div> -->
                                             </div>
                                         </div>
-                                        <div class="form-group" id="div_proveedor" style="display:block;line-height:1">
+                                        <div class="form-group" id="div_proveedor" style="display:none;line-height:1">
                                             <!-- <form id="form_proveedor" action=""> -->
                                             <label id="lblP" class="mb-0 combo"><i class="fas fa-hand-holding-box"></i> Proveedor</label>
                                             <div class="row">
@@ -91,7 +92,7 @@
                                         <div class="form-group mb-0" id="div_return" style="display:none;line-height:1">
                                             <div class="row">
                                                 <div class="col-md-6" style="margin-bottom:1.8rem">
-                                                    <label id="lblP" class="mb-0 combo"><i class="fas fa-receipt"></i> Orden</label>
+                                                    <label id="lblP" class="mb-0 combo"><i class="fas fa-ticket"></i> Orden</label>
                                                     <select id="cboPorOrden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                                     </select>
                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
@@ -124,7 +125,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="form-1" style="display:block;" class="card-body form-container">
+                            <div id="form-1" class="card-body form-container">
                                 <div class="table-responsive">
                                     <table id="tblIn" class="table table-bordered w-100 table-striped">
                                         <thead>
@@ -144,7 +145,7 @@
                                 </div>
                             </div>
 
-                            <div id="form-2" class="form-container">
+                            <div id="form-2" style="display:block;" class="form-container">
                                 <div class="table-responsive">
                                     <table id="tblOut" class="table table-bordered w-100 table-striped">
                                         <thead>
@@ -154,6 +155,7 @@
                                                 <th>CANTIDAD</th>
                                                 <th>UNIDAD</th>
                                                 <th>DESCRIPCION</th>
+                                                <th class="text-center">UTIL.</th>
                                                 <th class="text-center">ACCIONES</th>
                                             </tr>
                                         </thead>
@@ -238,7 +240,7 @@
                                         <i class="fas fa-ticket"></i> Nro. Orden</label>
                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                 </div> -->
-                                <div class="form-group" >
+                                <div class="form-group">
                                     <label id="lbl" class="mb-0 combo"><i class="fas fa-trowel-bricks"></i> Producto</label>
                                     <div class="row">
                                         <div class="col-10">
@@ -253,6 +255,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <button type="submit" id="btnFab" style="margin-bottom:1.8rem" class="btn btn-block btn-outline-dark"><i class="fas fa-floppy-disks"></i><span id=" " class="button-text"> Agregar a la guia</span></button>
                                 <button type="submit" id="btnFab" style="margin-bottom:1.8rem" class="btn btn-block btn-outline-dark"><i class="fas fa-floppy-disks"></i><span id=" " class="button-text"> Guardar</span></button>
                             </form>
                             <div class="table-responsive">
@@ -294,6 +297,28 @@
                 <div class="modal-body scroll-modal">
                     <input type="hidden" id="id_usuario" value="">
                     <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-data s1">
+                                <input type="text" id="cantidad_fab" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
+                                <label class="label"><i class="fa-solid fa-boxes-stacked"></i> Cantidad</label>
+                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label id="lbl" class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
+                                <div class="row">
+                                    <div class="col">
+                                        <select name="c" id="cboUnidad_fab" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                        </select>
+                                        <div class="invalid-feedback">*Seleccione una unidad</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
                         <div class="col-md-12">
                             <div class="input-data">
                                 <input autocomplete="off" id="nombre_fab" class="input-nuevo" type="text" required>
@@ -302,7 +327,7 @@
                                     <i class="fa-solid fa-signature"></i> Descripción</label>
                                 <div class="invalid-feedback">*Este campo es requerido.</div>
                             </div>
-                            <div class="form-group mb-4">
+                            <!-- <div class="form-group mb-4">
                                 <label id="lbl" class="mb-0 combo"><i class="fas fa-receipt"></i> Orden</label>
                                 <div class="row">
                                     <div class="col">
@@ -311,7 +336,7 @@
                                         <div class="invalid-feedback">*Seleccione una orden</div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -327,5 +352,41 @@
 </div>
 
 <script>
+    const btnGuardarFab = document.getElementById('btnAgregarFab');
+    const formFab = document.getElementById('formProductoFab');
+    const modal_fab = document.getElementById('modal-fab');
+    const cantidad_fab = document.getElementById('cantidad_fab');
 
+
+
+    $(modal_fab).on("shown.bs.modal", () => {
+        cantidad_fab.focus();
+    });
+
+
+    formFab.addEventListener("submit", function(e) {
+        e.preventDefault();
+        console.log("entro al foem")
+        const cboUnidad = document.getElementById('cboUnidad_fab');
+        const nombre_fab = document.getElementById('nombre_fab');
+
+        if (!this.checkValidity()) {
+            this.classList.add('was-validated');
+            return;
+        }
+        let nom = nombre_fab.value.trim().toUpperCase();
+        let und = cboUnidad.value;
+        let cant = cantidad_fab.value;
+
+        let datos = new FormData();
+        datos.append('nombre', nom);
+        datos.append('unidad', und);
+        datos.append('cantidad', cant);
+        datos.append('accion', 9);
+        confirmarAccion(datos, 'inventario', null, modal_fab, function(r) {
+            cargarAutocompletado();
+        })
+
+
+    })
 </script>
