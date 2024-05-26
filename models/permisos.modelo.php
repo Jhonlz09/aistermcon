@@ -31,4 +31,21 @@ class PermisosModelo
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS);
     }
+
+    static public function mdlObtenerNav($id)
+    {
+        $stmt = Conexion::ConexionDB()->prepare("SELECT guia, ppt FROM tblperfil p
+        WHERE id = :id");
+        $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS);
+    }
+
+    static public function mdlObtenerConfiguracion()
+    {
+        $stmt = Conexion::ConexionDB()->prepare("SELECT empresa, iva, emisor, ruc, matriz, correo1, correo2, telefonos, entradamultiple as entrada FROM tblconfiguracion");
+        // $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS);
+    }
 }

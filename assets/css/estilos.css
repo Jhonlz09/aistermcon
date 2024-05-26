@@ -12,7 +12,7 @@
     --search-border: #ced4da;
     --open-select: #ffffff85;
     --color-select: #454e55;
-    --select-hover: #b9b9b9;
+    --select-hover: #878787;
     --select-text-hover: #17222f;
     --select-border-bottom: #212529;
     --swal-color: #B7040F;
@@ -43,7 +43,9 @@
     color: #fff;
 }
 
-
+.dtsp-panes.dtsp-panesContainer{
+    padding: 0 .75rem;
+}
 
 body.dark-mode {
     --body-color: #18191a;
@@ -163,7 +165,13 @@ input[type=file] {
 }
 
 
-#cboOrden .select2-container--default .select2-selection--single .select2-selection__placeholder {}
+#cboEmpresaFilter + .select2-container.select2-container--default {
+    max-width: 280px; /* Puedes ajustar este valor según tus necesidades */
+}
+
+#cboMeses + .select2-container.select2-container--default {
+    min-width: 112px; /* Puedes ajustar este valor según tus necesidades */
+}
 
 .bg-1 {
     color: #fff;
@@ -189,6 +197,10 @@ input[type=file] {
 /* #select2-cboProveedor-container .select2-selection__placeholder {
     font-size: 1rem;
 } */
+
+.select2-container--disabled .select2-search__field{
+    cursor: not-allowed;
+}
 
 .tabs {
     display: inline-flex;
@@ -427,32 +439,67 @@ input[type="number"] {
 
 }
 
+.tab-icon{
+    text-align: center;
+    width: 1.46rem;
+}
+
 #tblPermisos th[scope="row"] {
     padding: 0rem 1.2rem 0rem 1.2rem !important;
     border: none;
 
 }
 
+.dtsp-titleRow{
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.dtsp-title,.dtsp-clearAll, .dtsp-showAll, .dtsp-collapseAll{
+    -ms-flex-preferred-size: 0;
+    flex-basis: 0;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    max-width: 100%;
+    position: relative;
+    width: 100%;
+}
 #tblPermisos th {
     vertical-align: middle;
     white-space: nowrap;
 }
 
+#tblSalidas thead {
+    visibility: collapse;
+}
+
 #tblSalidas tr.dtrg-group {
-    background-color: #7f000066 !important;
+    background: linear-gradient(to bottom, #911c24, #954045, #911c24) !important;
+    color: aliceblue;
 }
 #tblInforme tr.dtrg-group {
-    background-color: #002c7f66 !important;
+    background: linear-gradient(to bottom, #5c85bcc7, #709cd8, #4a6b97c7) !important;
 }
 
 #tblEntradas tr.dtrg-group {
-    background-color: #3e992e73 !important;
+    background: linear-gradient(to bottom, #7fc762, #96d78a, #61a745) !important;
 }
 
 .overflow-body{
     overflow: hidden;
 }
   
+.btn-row{
+    color: aliceblue;
+    font-size: 1.55rem;
+    padding-inline: .5rem !important;
+}
+.btn-row:hover{
+    color: #fff!important;
+    
+}
 .sidebar nav {
     height: calc(100% - 1rem);
     display: flex;
@@ -590,6 +637,21 @@ body.sidebar-collapse .text {
     text-align: center;
 }
 
+#formConfigM .form-group .switch-2 .switch__input{
+    --label-new: #153d7e;
+    --boxshadow: rgba(0, 62, 177, 0.25);
+}
+
+#formConfigM .form-group .switch-2 .switch__input:checked+.switch__check .switch__check-line{
+    --label-new: #153d7e;
+}
+
+.txt-ellipsis{
+    text-overflow: ellipsis;
+    white-space: NOWRAP;
+    overflow: hidden;
+}
+
 @media (max-width: 991px) {
     .control-sidebar,
     .control-sidebar::before {
@@ -630,7 +692,7 @@ input:focus-visible {
     transition: all 0.3s ease;
 }
 
-.input-data input:focus {
+.input-data input:focus:not(#fecha_ppt) {
     border-bottom-color: var(--label-new);
 }
 
@@ -675,7 +737,7 @@ input:focus-visible {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     background-color: var(--open-select);
-    backdrop-filter: blur(50px)
+    backdrop-filter: blur(15px)
 }
 
 
@@ -720,7 +782,7 @@ input:focus-visible {
     color: #375c9b;
 }
 
-.input-group:focus-within {
+.input-group:focus-within:not(.dtsp-subRowsContainer .input-group) {
     border-bottom: 1px solid #375c9b;
 }
 
@@ -734,11 +796,11 @@ svg {
 }
 
 .select2-container--default .select2-selection--single .select2-selection__placeholder {
-    color: var(--text-color)
+    color: #939ba2;
 }
 
 .scroll-modal {
-    max-height: 65vh;
+    max-height: calc(54vh - 2.2rem);
 }
 
 .dark-mode .text-info {
@@ -746,7 +808,17 @@ svg {
 }
 
 
+.dtsp-nameButton, .dtsp-countButton, .clearButton{
+    display:none
+}
 
+.dtsp-subRow1 .input-group .input-group-append{
+    display: none;
+}
+/* 
+.input-group input.dtsp-paneInputButton:focus {
+    border-bottom: none!important;
+} */
 
 #select2-cboProveedores-container .select2-selection__placeholder,
 #select2-cboClientes-container .select2-selection__placeholder,
@@ -758,7 +830,7 @@ svg {
 }
 
 
-.card-body .select2-container--default .select2-selection--single:focus {
+.card-body .select2-container--default .select2-selection--single:focus:not(#card_empleados .select2-container--default .select2-selection--single) {
     border-bottom-color: var(--label-new);
 }
 
@@ -778,6 +850,8 @@ svg {
         max-width: 50%
     }
     .col-sm-auto{-ms-flex:0 0 auto;flex:0 0 auto;width:auto;max-width:100%}
+
+    
 }
 
 
@@ -785,14 +859,19 @@ svg {
     .btn-group button span:not(.text-danger span) {
         font-size: .8rem !important;
     }
-    .select2-container--default{
-        /* width: 100% !important;; */
+    .col-sm-auto .select2-container--default{
+        width: 100% !important;
     }
-
+    .navbar-expand .navbar-nav .nav-link {
+        padding-right: .6rem;
+        padding-left: .6rem;
+    }
     .text-center {
         /* text-align: inherit !important; */
       }
-      
+      #cboEmpresaFilter + .select2-container.select2-container--default {
+        max-width: 100%; /* Puedes ajustar este valor según tus necesidades */
+    }
     .dt-button-collection {
         right: 0 !important;
         left: initial !important;

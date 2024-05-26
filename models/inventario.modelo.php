@@ -170,7 +170,10 @@ class ModeloInventario
     public static function mdlBuscarCodigo($codigo)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("SELECT i.id, i.descripcion,'1' as cantidad, u.nombre, '0.00' as precio, '' as acciones, i.codigo
+            $e = Conexion::ConexionDB()->prepare("SELECT i.id, i.descripcion,'1' as cantidad, u.nombre, '' as acciones, i.codigo,
+            CASE 
+                WHEN i.fabricado THEN 'disabled' ELSE ''
+                    END as fabricado
             FROM tblinventario i 
             JOIN tblunidad u on i.id_unidad = u.id
             WHERE i.codigo = :codigo");

@@ -38,6 +38,20 @@ class ControladorCombos{
         
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    public function listarDespachado(){
+
+        $data = ModeloCombos::mdlListarDespachado();
+        
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function listarResponsable(){
+
+        $data = ModeloCombos::mdlListarResponsable();
+        
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 
 if (isset($_POST['accion']) && $_POST['accion'] == 1) {
@@ -56,4 +70,10 @@ if (isset($_POST['accion']) && $_POST['accion'] == 1) {
 }else if(isset($_POST['accion']) && $_POST['accion'] == 5){
     $data = new ControladorCombos();
     $data->listarOrdenActivas();
+}else if(isset($_POST['accion']) && $_POST['accion'] == 6){
+    $data = new ControladorCombos();
+    $data->listarDespachado();
+}else if(isset($_POST['accion']) && $_POST['accion'] == 7){
+    $data = new ControladorCombos();
+    $data->listarResponsable();
 }

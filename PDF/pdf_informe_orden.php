@@ -2,12 +2,13 @@
 require('../assets/plugins/fpdf/fpdf.php');
 require('../models/informe.modelo.php');
 
-$id_orden = $_POST['orden'];
+$id_orden = $_POST['id_orden'];
 $info_error = 'NRO. DE ORDEN';
 $datos_fecha = ModeloInforme::mdlInformeFechaOrden($id_orden);
 if ($datos_fecha != null) {
     $cliente = $datos_fecha[0]['cliente'];
     $orden = $datos_fecha[0]['orden_nro'];
+    $filename = $orden . ' ' . $cliente;
     $info_header = $info_error . ': ' . $orden . "         " . 'CLIENTE: ' . $cliente;
     $info = 'CLIENTE: ' . $cliente . "\n" . 'NRO. ORDEN: ' . $orden;
 }
@@ -211,9 +212,9 @@ if ($datos_fecha == null) {
     $pdf->Cell(0, 20, iconv('UTF-8', 'windows-1252', 'NO SE ENCONTRARON DATOS PARA EL ' . $info_error), 0, 0, 'C');
     $pdf->SetTitle("Error", true);
 } else {
-    $pdf->SetTitle("Nro. Orden " . $datos_fecha[0]['orden_nro']);
+    $pdf->SetTitle($orden. '  '. $cliente);
     $pdf->Ln(50);
-    $pdf->Image('../assets/img/logo_pdf.jpeg', 42, null, 128, 45);
+    $pdf->Image('../assets/img/logo_pdf.jpeg', 42, null, 128, 25);
     $pdf->SetFont('Arial', 'B', 22);
     $pdf->MultiCell(0, 10, 'INFORME DE MOVIMIENTOS DE HERRAMIENTAS' . "\n" . 'Y MATERIALES', 0, 'C', 0);
     $pdf->SetFont('Arial', 'B', 16);
@@ -240,27 +241,29 @@ if ($datos_fecha == null) {
     $pdf->SetAutoPageBreak(true, 50);
     $pdf->SetY(25);
     $pdf->SetFont('Arial', 'B', 18);
-    $pdf->SetMargins(15, 0, 15);
-    $pdf->SetWidths(array(20, 80, 20, 20, 20, 20));
+    $pdf->SetMargins(12, 0, 12);
+    $pdf->SetWidths(array(24, 80, 18, 21, 21, 21));
     $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C'));
-    $pdf->SetX(15);
+    $pdf->SetX(12);
+
     foreach ($datos_fecha as $row) {
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de inicio: ' . $row["fecha_emision"]), 0, 1, 'L');
-        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de retorno: ' . $row["fecha_retorno"]), 0, 0, 'L');
+        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de salida: ' . $row["fecha_emision"]), 0, 0, 'L');
+        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Nro. de Guía: ' . $row["nro_guia"]), 0, 1, 'R');
+        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de entrada: ' . $row["fecha_retorno"]), 0, 0, 'L');
         $pdf->Ln(10);
-        $id_fecha = $row["fecha_retorno"];
+        $id_guia = $row["id_guia"];
         $pdf->SetFont('Arial', 'B', 11);
         $header = array('Codigo', 'Descripcion', 'Unidad', 'Salida', 'Entrada', 'Tot. Util.');
         $pdf->Row($header, array(12, 12, 12, 12, 12, 12), 'B');
-        $data = ModeloInforme::mdlInformeOrden($id_orden, $id_fecha);
+        $data = ModeloInforme::mdlInformeOrden($id_orden, $id_guia);
         foreach ($data as $fill) {
             $pdf->SetStartY(20);
             $pdf->SetFont('Arial', '', 10);
             // $resaño = substr($fill["year"], -2);
             $salida = $fill["cantidad_salida"];
             $entrada = $fill["retorno"];
-            $util = $salida - $entrada;
+            $util = $fill["utilizado"];
             $pdf->Row(array(
                 iconv('UTF-8', 'windows-1252', $fill["codigo"]),
                 iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
@@ -272,11 +275,33 @@ if ($datos_fecha == null) {
         }
         $pdf->Ln();
     }
+    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Resumen: '), 0, 1, 'L');
+    $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.');
+    $pdf->SetWidths(array(24, 70, 18, 24, 28, 24));
+    $pdf->Row($header_resumen, array(12, 12, 12, 12, 12, 12), 'B');
+    $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden);
+    foreach ($data_resumen as $fill) {
+        $pdf->SetStartY(20);
+        $pdf->SetFont('Arial', '', 10);
+        // $resaño = substr($fill["year"], -2);
+        $salida = $fill["cantidad_salida"];
+        $entrada = $fill["retorno"];
+        $util = $fill["utilizado"];
+        $pdf->Row(array(
+            iconv('UTF-8', 'windows-1252', $fill["codigo"]),
+            iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
+            iconv('UTF-8', 'windows-1252', $fill["unidad"]),
+            iconv('UTF-8', 'windows-1252', $salida),
+            iconv('UTF-8', 'windows-1252', $entrada),
+            iconv('UTF-8', 'windows-1252', $util)
+        ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
+    }
 }
 // Configurar cabeceras para indicar el tipo de contenido y el nombre de descarga
 
-$pdf->Output();
-
+// Generar el PDF y almacenarlo temporalmente
+$pdf->Output('I', $filename);
 
 
 // $pdf->SetFont('Arial', 'B', 12);

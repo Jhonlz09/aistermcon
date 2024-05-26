@@ -1,6 +1,4 @@
-<?php if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-} ?>
+<?php require_once "../utils/database/config.php";?>
 
 <head>
     <title>Informe</title>
@@ -13,7 +11,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Informe</h1>
             </div>
-            <?php if ($_SESSION["crear8"]) : ?>
+            <?php if (isset($_SESSION["crear5"]) && $_SESSION["crear5"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal-date">
                         <i class="fa fa-file-lines"></i> Generar informe</button>
@@ -61,11 +59,14 @@
                                 <tr>
                                     <th class="text-center">Nº</th>
                                     <th class="text-center">CÓDIGO</th>
+                                    <th>NRO. GUIA</th>
+                                    <th>F. SALIDA</th>
+                                    <th>F. ENTRADA</th>
                                     <th>DESCRIPCION</th>
                                     <th>UND</th>
                                     <th>SALIDA</th>
-                                    <th></th>
                                     <th>ENTRADA</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -100,7 +101,7 @@
                     <input type="hidden" name="id_usuario" id="id_usuario" value="">
                     <div class="row">
                         <div class="col d-flex" style="padding-bottom:.75rem;">
-                            <div style="background-color:var(--select-hover)" class="tabs">
+                            <div style="background-color:var(--primary-color-light)" class="tabs">
                                 <input type="radio" class="rd-i" id="radio-orden" name="tabs" value="1" checked />
                                 <label class="tab" for="radio-orden"> Orden</label>
                                 <input type="radio" class="rd-i" id="radio-cliente" name="tabs" value="2" />
@@ -126,7 +127,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <!-- <form id="form_orden" action=""> -->
-                                        <select id="cboOrden_i" name="orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                        <select id="cboOrden_i" name="id_orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                         </select>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                         <!-- </form> -->
@@ -170,9 +171,9 @@
 
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar4"] || $_SESSION["eliminar4"] ?>';
-    var editar = '<?php echo $_SESSION["editar4"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar4"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar5"] || $_SESSION["eliminar5"] ?>';
+    var editar = '<?php echo $_SESSION["editar5"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar5"] ?>';
     var collapsedGroups = {};
 
     configuracionTable = {
@@ -183,25 +184,19 @@
         "autoWidth": false,
         paging: false, // Esto deshabilita la paginación
         rowGroup: {
-            dataSrc: [5],
+            dataSrc: [9],
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
 
                 rows.nodes().each(function(r) {
-                    r.style.display = collapsed ? '' : 'none';
+                    r.style.visibility = collapsed ? '' : 'collapse';
                 });
 
-                var partes = group.split("-");
-
-                // Acceder a las partes individuales
-                var parte1 = partes[0];
-                var parte2 = partes[1];
-                var parte3 = partes[2];
-
-                var groupText = '<div class="d-flex justify-content-between align-items-center "><strong style="cursor:pointer" class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_salida.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_boleta" class="input_boleta" value=""><button style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' + (editar ? '<button id="editR" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') + (eliminar ? '<button id="eliS" style="color:var(--text-color);font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-trash-can" ></i></button>' : '') + '</div></div>';
+                var groupText = '<div class="d-flex justify-content-between align-items-center " style="cursor:pointer"><strong  class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_informe_orden.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_orden" class="input_boleta" value=""><button style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' + 
+                (editar ? '<button id="editR" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') + ' </div></div>';
 
                 return $('<tr/>')
-                    .append('<td colspan="8">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
+                    .append('<td colspan="9">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -212,20 +207,7 @@
                 className: "text-center",
             },
             {
-                targets: 3,
-                className: "text-center"
-            },
-            {
                 targets: 4,
-                className: "text-center"
-            },
-            {
-                targets: 5,
-                visible: false,
-            },
-            {
-                targets: 6,
-                className: "text-center",
                 render: function(data, type, row, meta) {
                     if (data === null) {
                         return '-';
@@ -234,15 +216,37 @@
                     }
                 }
             },
+            {
+                targets: 7,
+                render: function(data, type, row, meta) {
+                    return `<span style="font-size:1.1rem" class="text-danger font-weight-bold">${data}</span>`;
+                }
+            },
+            {
+                targets: 8,
+                render: function(data, type, row, meta) {
+                    if (data === null) {
+                        return '-';
+                    } else {
+                        return `<span style="font-size:1.1rem" class="text-success font-weight-bold">${data}</span>`;
+                    }
+                }
+            },
+            {
+                targets: 9,
+                visible: false,
+            },
         ],
 
 
     }
 
-    $('#tblInforme tbody').on('click', 'tr.dtrg-start strong', function() {
-        var name = $(this).closest('tr.dtrg-start').data('name');
-        collapsedGroups[name] = !collapsedGroups[name];
-        tabla.draw(false);
+    $('#tblInforme tbody').on('click', 'tr.dtrg-start', function() {
+        if ($(event.target).closest('.txt-wrap-sm').length === 0) {
+            var name = $(this).closest('tr.dtrg-start').data('name');
+            collapsedGroups[name] = !collapsedGroups[name];
+            tabla.draw(false);
+        }
     });
 
     $(document).ready(function() {
@@ -294,14 +298,16 @@
             });
 
             tabla.on('draw.dt', function() {
-                const b = document.body;
-                const s = b.scrollHeight;
-                const w = window.innerHeight;
+                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
+                    const b = document.body;
+                    const s = b.scrollHeight;
+                    const w = window.innerHeight;
 
-                handleScroll(b, s, w);
+                    handleScroll(b, s, w);
+                }
 
-                let tablaData = tabla.rows().data().toArray();
-                localStorage.setItem('i', JSON.stringify(tablaData));
+                // let tablaData = tabla.rows().data().toArray();
+                // localStorage.setItem('i', JSON.stringify(tablaData));
             });
         }
         // let accion = 0;
@@ -310,7 +316,7 @@
         //     elements = document.querySelectorAll('.modal .bg-gradient-success'),
         const form = document.getElementById('formInforme');
         //     // form_pdf = document.getElementById('form_pdf'),
-        //     btnNuevo = document.getElementById('btnNuevo');
+        // btnNuevo = document.getElementById('btnNuevo');
 
         // btnPdf = document.getElementById('pdf');
         // let input_pdf = document.getElementById('input_boleta');
@@ -327,18 +333,17 @@
         const btnGuardar = document.getElementById('btnGuardar');
         const tabsIn = document.querySelectorAll('.tabs .rd-i');
 
-        let tabSelected='1';
+        let tabSelected = '1';
 
         btnGuardar.addEventListener('click', function(event) {
             // Evita que el formulario se envíe
             event.preventDefault();
-
             // Cambia el action del formulario
-            if(tabSelected === '1'){
+            if (tabSelected === '1') {
                 form.action = 'PDF/pdf_informe_orden.php';
-            }else if(tabSelected === '2'){
+            } else if (tabSelected === '2') {
                 form.action = 'PDF/pdf_informe_cliente.php';
-            }else if (tabSelected === '3'){
+            } else if (tabSelected === '3') {
                 form.action = 'PDF/pdf_informe_fecha.php';
             }
 
@@ -351,19 +356,6 @@
                 tabSelected = this.value;
 
                 form.classList.remove('was-validated');
-                // const selectedForm = document.getElementById(`form-${tabSelected}`);
-                // const formContainers = document.querySelectorAll('.form-container');
-
-                // formContainers.forEach(container => {
-                //     container.style.display = 'none';
-                // });
-
-                // if (selectedForm) {
-                //     selectedForm.style.display = 'block';
-                // }
-
-                // console.log(tabSelected)
-                // console.log(row_date);
 
                 if (tabSelected === '1') {
                     cboOrden_i.required = true
@@ -405,13 +397,6 @@
             } else {
                 mes = cboMeses.value;
             }
-            // tarjetasInfo(anio);
-            // let src = new FormData();
-            // src.append('accion', 1);
-            // src.append('mes', mes);
-            // src.append('anio', anio);
-            // actualizarGrafico(src, chartCanvas, barChartData);
-
             tabla.ajax.reload();
         });
 
@@ -426,28 +411,28 @@
                 mes = m;
             }
             anio = cboAnio.options[cboAnio.selectedIndex].text;
-            tabla.ajax.reload();
+            tabla.ajax.reload(null, false);
         });
 
-        // $('#tblInforme').on('submit', '.form_pdf', function(event) {
-        //     event.preventDefault(); // Evita el envío predeterminado del formulario
+        $('#tblInforme').on('submit', '.form_pdf', function(event) {
+            event.preventDefault(); // Evita el envío predeterminado del formulario
+            var id_orden = tabla.row($(this).closest('tr').next()).data()[11];
 
-        //     var id_boleta = tabla.row($(this).closest('tr').next()).data()[7];
-        //     var input_pdf = $(this).find('.input_boleta');
-        //     input_pdf.val(id_boleta);
-        //     console.log(input_pdf.val());
+            var input_pdf = $(this).find('.input_boleta');
+            input_pdf.val(id_orden);
+            console.log(input_pdf.val());
 
-        //     this.submit(); // Envía el formulario actual
-        // });
+            this.submit(); // Envía el formulario actual
+        });
 
-        if (btnNuevo) {
-            btnNuevo.addEventListener('click', () => {
-                accion = 1;
-                // const salida = document.getElementById('radio-2');
-                // control.click();
-                // salida.click();
-            });
-        }
+        // if (btnNuevo) {
+        //     btnNuevo.addEventListener('click', () => {
+        //         accion = 1;
+        //         // const salida = document.getElementById('radio-2');
+        //         // control.click();
+        //         // salida.click();
+        //     });
+        // }
 
         // $('#tblInforme').on('click', '#editS', function() {
         //     id_boleta = tabla.row($(this).closest('tr').next()).data()[7];

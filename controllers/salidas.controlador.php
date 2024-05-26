@@ -19,15 +19,16 @@ class ControladorSalidas
         $data = ModeloSalidas::mdlEliminarSalida($this->id);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    // public function editarSalida()
-    // {
-    //     $data = ModeloSalidas::mdlEditarSalida($this->id,$this->nombres,$this->fecha);
-    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    // }
 
     public function buscarBoleta()
     {
         $data = ModeloSalidas::mdlBuscarBoleta($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function buscarBoletaPDF()
+    {
+        $data = ModeloSalidas::mdlBuscarBoletaPDF($this->id);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -43,12 +44,6 @@ class ControladorSalidas
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-
-    // public function agregarRetorno()
-    // {
-    //     $data = ModeloSalidas::mdlAgregarRetorno($this->id, $this->nombres);
-    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    // }
 }
 
 if (!isset($_POST["accion"])) {
@@ -60,7 +55,7 @@ if (!isset($_POST["accion"])) {
     if ($_POST["accion"] == 1) {
         $data = new ControladorSalidas();
         $data->id = $_POST["id_boleta"];
-        $data->nombres = $_POST["id_producto"];
+        $data->nombres = $_POST["codigo"];
         $data->agregarSalida();
     } //else if ($_POST["accion"] == 2){
     //     $data = new ControladorSalidas();
@@ -81,11 +76,10 @@ if (!isset($_POST["accion"])) {
         $data->id = $_POST["orden"];
         $data->fecha = $_POST["fecha"];
         $data->buscarOrdenFecha();
-        // }else if ($_POST["accion"] == 6){
-        //     $data = new ControladorSalidas();
-        //     $data->id = $_POST["id"];
-        //     $data->nombres = $_POST["retorno"];
-        //     $data->agregarRetorno();
+        }else if ($_POST["accion"] == 6){
+            $data = new ControladorSalidas();
+            $data->id = $_POST["id"];
+            $data->buscarBoletaPDF();
     } else if ($_POST["accion"] == 7) {
         $data = new ControladorSalidas();
         $data->id = $_POST["boleta"];

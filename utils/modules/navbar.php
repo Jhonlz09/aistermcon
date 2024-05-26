@@ -1,10 +1,22 @@
 <?php if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION["crear4"])) {
+    $_SESSION["crear4"] = false;
+}
+
+// Verificar si $_SESSION["crear7"] está definido, si no, establecerlo en false
+if (!isset($_SESSION["crear7"])) {
+    $_SESSION["crear7"] = false;
+}
+
+if (!isset($_SESSION["crear12"])) {
+    $_SESSION["crear12"] = false;
+}
 ?>
 
 <!-- Navbar -->
-<nav class="main-header navbar navbar-expand navbar-light">
+<nav id="navbar-fix" class="main-header navbar navbar-expand navbar-light" style="position:fixed;top:0">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
                 <li class="nav-item">
@@ -12,18 +24,20 @@
                 </li>
     </ul>
     <ul class="navbar-nav">
-    <?php if ($_SESSION["crear2"]) : ?>
+    <?php if ($_SESSION["crear4"] || $_SESSION["crear7"] ) : ?>
         <li class="nav-item">
             <a class="nav-link ctrl-side" id="first_control" data-widget="control-sidebar" data-target=".first-sidebar" data-controlsidebar-slide="true" href="#" role="button">
             <i class="fas fa-clipboard fa-lg"><span style="font-size:1rem"> GUI</span></i>
             </a>
         </li>
     <?php endif; ?>
+    <?php if ($_SESSION["crear12"]) : ?>
         <li class="nav-item">
             <a class="nav-link ctrl-side" id="second_control" data-widget="control-sidebar"  data-target=".second-sidebar" data-controlsidebar-slide="true" href="#" role="button">
             <i class="fas fa-file-invoice-dollar fa-lg"><span style="font-size:1rem"> PPT</span></i>
             </a>
         </li>
+    <?php endif; ?>
     </ul>
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
@@ -40,7 +54,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="utils/database/logout.php" role="button">
+            <a id="btnlogout" class="nav-link" href="utils/database/logout.php" role="button">
                 <i class="fas fa fa-power-off"></i>
             </a>
         </li>

@@ -7,15 +7,16 @@ class ModeloEntradas
     static public function mdlListarEntradas($anio, $mes)
     {
         try {
-            $consulta = "SELECT e.id, i.codigo, e.cantidad_entrada, u.nombre AS unidad, '$ ' || e.precio::text AS precio,
-            i.descripcion, LPAD(b.id::TEXT, 7, '0') || ' - ' || p.nombre || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY') AS grupo,
-            b.id as id_boleta, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha, p.id as proveedor, ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY e.id) AS fila
+            $consulta = "SELECT e.id, i.codigo, e.cantidad_entrada, u.nombre AS unidad, e.precio_uni AS precio,
+			e.precio_total, e.precio_iva, e.precio_total_iva,
+            i.descripcion, b.nombre || '  ' || p.nombre || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY') AS grupo,
+            b.id as id_boleta, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha, p.id as proveedor, b.nombre, ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY e.id) AS fila
         FROM tblentradas e
         JOIN tblinventario i ON e.id_producto = i.id
-		JOIN tblboleta b ON e.id_boleta = b.id
+		JOIN tblfactura b ON e.id_factura = b.id
         JOIN tblproveedores p ON b.id_proveedor = p.id
         JOIN tblunidad u ON i.id_unidad = u.id
-		WHERE EXTRACT(YEAR FROM b.fecha) = :anio ";
+		WHERE EXTRACT(YEAR FROM b.fecha) =  :anio ";
             if ($mes !== '') {
                 $consulta .= "AND EXTRACT(MONTH FROM b.fecha) = :mes ";
             }
@@ -33,14 +34,45 @@ class ModeloEntradas
         }
     }
 
-    static public function mdlAgregarEntrada($boleta, $id_producto)
+    static public function mdlAgregarEntrada($factura, $codigo)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("INSERT INTO tblsalidas(id_boleta,id_producto) VALUES (:boleta,:id_producto)");
+            // Obtener la conexión a la base de datos
+            $db = Conexion::ConexionDB();
 
-            $a->bindParam(":boleta", $boleta, PDO::PARAM_INT);
-            $a->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
-            $a->execute();
+            // Obtener el id_producto a partir del código
+            $stmt_get_product_id = $db->prepare("SELECT id AS id_producto FROM tblinventario WHERE codigo = :codigo");
+            $stmt_get_product_id->bindParam(":codigo", $codigo, PDO::PARAM_STR);
+            $stmt_get_product_id->execute();
+            $id_producto = $stmt_get_product_id->fetchColumn();
+
+            if ($id_producto === false) {
+                return array(
+                    'status' => 'danger',
+                    'm' => 'El código del producto no existe.'
+                );
+            }
+
+            // Verificar si el id_producto ya está relacionado con el id_boleta en tblsalidas
+            $stmt_check = $db->prepare("SELECT COUNT(*) FROM tblentradas WHERE id_producto = :id_producto AND id_factura = :boleta");
+            $stmt_check->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+            $stmt_check->bindParam(":boleta", $factura, PDO::PARAM_INT);
+            $stmt_check->execute();
+            $count = $stmt_check->fetchColumn();
+
+            if ($count > 0) {
+                return array(
+                    'status' => 'danger',
+                    'm' => 'El producto ya existe en la factura'
+                );
+            }
+
+            // Preparar la consulta para insertar en tblentradas
+            $stmt_insert = $db->prepare("INSERT INTO tblentradas(id_factura, id_producto) VALUES (:boleta, :id_producto)");
+            $stmt_insert->bindParam(":boleta", $factura, PDO::PARAM_INT);
+            $stmt_insert->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+            $stmt_insert->execute();
+
             return array(
                 'status' => 'success',
                 'm' => 'El producto se agregó correctamente'
@@ -85,11 +117,8 @@ class ModeloEntradas
     {
         try {
             $pdo = Conexion::ConexionDB();
-            $e = $pdo->prepare("DELETE FROM tblentradas WHERE id_boleta =:id");
-            $e->bindParam(":id", $id, PDO::PARAM_INT);
-            $e->execute();
 
-            $eB = $pdo->prepare("DELETE FROM tblboleta WHERE id = :id");
+            $eB = $pdo->prepare("DELETE FROM tblfactura WHERE id = :id");
             $eB->bindParam(":id", $id, PDO::PARAM_INT);
             $eB->execute();
 
@@ -109,10 +138,10 @@ class ModeloEntradas
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT e.id, i.codigo, e.cantidad_entrada,
-            u.nombre AS unidad,'$ ' || e.precio::text AS precio, i.descripcion
+            u.nombre AS unidad, e.precio_uni::numeric AS precio, i.descripcion
             FROM tblentradas e
             JOIN tblinventario i ON e.id_producto = i.id
-            JOIN tblboleta b ON e.id_boleta = b.id 
+            JOIN tblfactura b ON e.id_factura = b.id 
             JOIN tblunidad u ON i.id_unidad = u.id
                 WHERE b.id= :id
             ORDER BY b.fecha ASC, e.id;");

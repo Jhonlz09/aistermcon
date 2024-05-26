@@ -1,11 +1,11 @@
 <head>
     <title>Inicio</title>
-  
-
 </head>
-
+<script>
+    window.scrollTo(0, 0);
+</script>
 <!-- Contenido Header -->
-<section class="content-header stick-header">
+<section style="top:56px" class="content-header stick-header">
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
@@ -57,7 +57,7 @@
                 <!-- small box -->
                 <div class="small-box bg-3">
                     <div class="inner">
-                        <p>Entradas</p>
+                        <p>Compras</p>
                         <h3 id="entradas">0</h3>
                     </div>
                     <div class="icon">
@@ -244,7 +244,7 @@
             "#6A5ACD4D"
         ];
         
-        let cat = 2;
+        let cat = 3;
         let barChartData, barChartCanvas, barChartOptions, chartCanvas;
         let donutData, donutChartCanvas, donutOptions, donutCanvas;
         let anio = year;
@@ -645,70 +645,5 @@
         //         Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.18)'; // Cambia el color por defecto de las líneas del grid
         //     }
         // }
-
-
-
-        // if (btnNuevo) {
-        //     btnNuevo.addEventListener('click', () => {
-        //         accion = 1;
-        //         const icon = document.querySelector('.modal-title i');
-        //         cambiarModal(span, ' Nuevo Empleado', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-success', modal, 'modal-new', 'modal-change')
-        //         form.reset();
-        //         form.classList.remove('was-validated');
-        //     });
-        // }
-
-        // $('#tblEmpleados tbody').on('click', '.btnEliminar', function() {
-        //     const e = obtenerFila(this, tabla)
-        //     accion = 3
-        //     const id_e = e["id"];
-        //     const name = 'empleados'
-        //     let src = new FormData();
-        //     src.append('accion', accion);
-        //     src.append('id', id_e);
-        //     confirmarEliminar(name, 'este', 'empleado', tabla, src);
-        // });
-
-        // document.addEventListener('keydown', function(e) {
-        //     if (e.key === "Escape") {
-        //         const activeModal = document.querySelector('.modal.show');
-        //         if (activeModal) {
-        //             $(activeModal).modal('hide');
-        //         }
-        //     }
-        // });
-
-        // $('#tblEmpleados tbody').on('click', '.btnEditar', function() {
-        //     let row = obtenerFila(this, tabla);
-        //     accion = 2;
-        //     const icon = document.querySelector('.modal-title i');
-        //     cambiarModal(span, ' Editar Empleado', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
-        //     id.value = row["id"];
-        //     nombre.value = row["nombre"];
-        //     cedula.value = row["cedula"];
-        //     conductor.checked = row["conductor"];
-        // });
-
-        // form.addEventListener("submit", function(e) {
-        //     e.preventDefault();
-        //     $('.ten').hide();
-        //     const ced = cedula.value.trim(),
-        //         nom = nombre.value.trim().toUpperCase(),
-        //         con = conductor.checked;
-        //     if (!this.checkValidity() || ced.length < 10) {
-        //         this.classList.add('was-validated');
-        //         ced.length > 0 && $('.ten').show();
-        //         return;
-        //     }
-        //     console.log("Ejecutando el resto del código...");
-        //     const id_e = id.value;
-        //     let datos = new FormData();
-        //     datos.append('id', id_e);
-        //     datos.append('cedula', ced);
-        //     datos.append('nombre', nom);
-        //     datos.append('conductor', con);
-        //     datos.append('accion', accion);
-        //     confirmarAccion(datos, null, 'empleados', modal, tabla)
-        // });
     })
 </script>

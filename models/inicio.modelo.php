@@ -7,15 +7,14 @@ class ModeloInicio
     static public function mdlListarTarjetas($anio)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT 	
+            $l = Conexion::ConexionDB()->prepare("SELECT
             COALESCE((SELECT COUNT(*) FROM tblinventario WHERE estado=true), 0) AS productos,
-            COALESCE(SUM(CASE WHEN tipo_boleta = 'S' THEN 1 ELSE 0 END), 0) AS retorno,
-            COALESCE(SUM(CASE WHEN tipo_boleta = 'E' THEN 1 ELSE 0 END), 0) AS entradas,
-            COALESCE(SUM(CASE WHEN tipo_boleta IN ('S', 'R') THEN 1 ELSE 0 END), 0) AS salidas
-        FROM 
-            tblboleta
-        WHERE 
-            tipo_boleta IN ('R', 'E', 'S') AND EXTRACT(YEAR FROM fecha) =:anio;");
+            COALESCE((SELECT COUNT(*) FROM tblfactura f WHERE EXTRACT(YEAR FROM f.fecha) = :anio), 0) AS entradas,
+            COUNT(*) AS salidas,
+            COUNT(CASE WHEN retorno =false THEN 1 END) AS retorno
+            FROM
+                tblboleta b
+            WHERE EXTRACT(YEAR FROM b.fecha) = :anio;");
 
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             $l->execute();
@@ -29,13 +28,13 @@ class ModeloInicio
     {
         try {
             $a = Conexion::ConexionDB()->prepare("SELECT c.nombre AS cliente,
-            SUM(CASE WHEN tipo_boleta IN ('S', 'R') THEN 1 ELSE 0 END) AS salidas
-                FROM public.tblboleta b
-                JOIN tblorden o ON b.id_orden = o.id
-                JOIN tblclientes c ON o.id_cliente = c.id
-                WHERE EXTRACT(MONTH FROM b.fecha) = :mes
-                AND EXTRACT(YEAR FROM b.fecha) = :anio
-                    GROUP BY c.nombre;");
+            COUNT(*) AS salidas
+            FROM public.tblboleta b
+            JOIN tblorden o ON b.id_orden = o.id
+            JOIN tblclientes c ON o.id_cliente = c.id
+            WHERE EXTRACT(MONTH FROM b.fecha) = :mes
+            AND EXTRACT(YEAR FROM b.fecha) = :anio
+                GROUP BY c.nombre;");
 
             $a->bindParam(":mes", $mes, PDO::PARAM_INT);
             $a->bindParam(":anio", $anio, PDO::PARAM_INT);

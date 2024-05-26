@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang='es'>
+<html lang='es' style="background-color:#f4f6f9">
 
 <head>
     <meta charset='UTF-8'>
@@ -70,7 +70,7 @@
 <?php if (isset($_SESSION['s_usuario'])) {
 ?>
     <script>
-        var tabla, tblIn, tblReturn, tblDetalleSalida, tblDetalleEntrada;
+        var tabla, tblIn, tblReturn, tblDetalleSalida, tblDetalleEntrada, tblFab;
         var configuracionTable = {};
         let items = [];
         let id_boleta = 0;
@@ -84,8 +84,9 @@
         let datos_cliente = [];
         let datos_orden = [];
         let datos_anio = [];
+        let selectedTab = '2';
         // let datos_und = [];
-        for (let i = 2023; i <= year; i++) {
+        for (let i = 2024; i <= year; i++) {
             datos_anio.push({
                 id: i,
                 text: String(i)
@@ -143,7 +144,7 @@
         ];
     </script>
 
-    <body class='hold-transition sidebar-mini layout-fixed sidebar-mini-xs'>
+    <body class='hold-transition sidebar-mini layout-fixed sidebar-mini-xs layout-navbar-fixed' style="background-color: #f4f6f9;">
         <!-- Preloader -->
         <div class='preloader flex-column justify-content-center align-items-center'>
             <img class='animation__shake' src='assets/img/loading.svg' alt='AdminLTELogo' height='80' width='80'>
@@ -156,7 +157,8 @@
             ?>
             <!-- Content Wrapper.-->
             <div class='content-wrapper'>
-                <?php include_once 'views/' . $_SESSION['s_usuario']->vista; ?>
+                <?php
+                include_once 'views/' . $_SESSION['s_usuario']->vista; ?>
             </div>
 
             <?php
@@ -165,7 +167,6 @@
             ?>
         </div>
         <script>
-            let selectedTab = '2';
             const body = document.querySelector('body'),
                 html = document.querySelector('html'),
                 navbar = body.querySelector('.navbar'),
@@ -174,8 +175,8 @@
                 // modeText = body.querySelector('.mode-text'),
                 controlSide = body.getElementsByClassName('control-sidebar')[0],
                 control = body.querySelectorAll('.ctrl-side'),
-                first_control = control[0],
-                second_control = control[1],
+                first_control = body.querySelector('#first_control'),
+                second_control = document.querySelector('#second_control'),
                 btnSide = document.getElementById('btnSide'),
                 setA = body.querySelectorAll('.setA'),
                 setB = body.querySelectorAll('.setB'),
@@ -184,6 +185,13 @@
                 inputBarras = body.querySelector('#codBarras');
 
             const card_fab = document.getElementById('card_fab');
+
+            const isEntrada = <?php echo ($_SESSION["entrada_mul"]) ? 1 : 0; ?> ;
+            
+           const isSuperAdmin = <?php echo ($_SESSION["s_usuario"]->id_perfil == 1) ? 1 : 0;?> ;
+
+
+            // console.log('este es mi id_pergul ' + id_perfil)
 
 
             setA.forEach((e) => {
@@ -234,7 +242,7 @@
                     // Agregar la clase 'active' al elemento clickeado
                     this.classList.add('active');
 
-                    const parentSetA = this.closest('.menu-is-opening').querySelector('.setA');
+                    const parentSetA = this.closest('.menu-open').querySelector('.setA');
                     // Remover la clase 'active' de todos los elementos setA que no contienen al setB clickeado
                     document.querySelectorAll('.setA').forEach((setA) => {
                         if (setA !== parentSetA) {
@@ -266,6 +274,7 @@
                 accion_inv = 0;
                 scroll = false;
                 $('.' + contenedor).load(contenido, function() {
+
                     if (tablaData) {
                         // Restaurar los datos de la tabla desde localStorage
                         tabla = $("#" + tbl).DataTable({
@@ -301,46 +310,11 @@
                 var ul = this.menu.element;
                 ul.outerWidth(this.element.outerWidth());
             }
-
+            let isLocked = false;
             let activeControl = null;
             control.forEach((e) => {
                 e.addEventListener('click', () => {
-                    // if (activeControl !== e) {
-                    //     // Desactivar el control-sidebar activo anteriormente, si existe
-                    //     if (activeControl) {
-                    //         activeControl.classList.remove('active');
-                    //     }
-                    //     activeControl = e;
-                    //     activeControl.classList.add('active');
 
-                    //     // Contar cuántos control-sidebar están activos
-                    //     const activeControls = document.querySelectorAll('.ctrl-side.active').length;
-
-                    //     // Agregar o quitar la clase 'overflow-body' dependiendo del estado de los control-sidebar
-                    //     if (activeControls > 0) {
-                    //         body.classList.add('overflow-body');
-                    //         html.classList.add('overflow-body');
-                    //     } else {
-                    //         body.classList.remove('overflow-body');
-                    //         html.classList.remove('overflow-body');
-                    //     }
-                    // } else {
-                    //     // Si se hace clic en el mismo control-sidebar, alternar su estado
-                    //     activeControl.classList.toggle('active');
-                    //     activeControl = null;
-
-                    //     // Contar cuántos control-sidebar están activos
-                    //     const activeControls = document.querySelectorAll('.ctrl-side.active').length;
-
-                    //     // Agregar o quitar la clase 'overflow-body' dependiendo del estado de los control-sidebar
-                    //     if (activeControls > 0) {
-                    //         body.classList.add('overflow-body');
-                    //         html.classList.add('overflow-body');
-                    //     } else {
-                    //         body.classList.remove('overflow-body');
-                    //         html.classList.remove('overflow-body');
-                    //     }
-                    // }
                     const clickedControlIsActive = e === activeControl;
 
                     // Desactivar el control-sidebar activo anteriormente, si existe y no es el mismo que el clic actual
@@ -362,114 +336,6 @@
 
                     body.classList.toggle('overflow-body', isOverflow);
                     html.classList.toggle('overflow-body', isOverflow);
-                    // const wasActive = e.classList.contains('active');
-                    // const isActive = e.classList.toggle('active', !wasActive);
-                    // activeControl = isActive ? e : null;
-
-                    // const activeControls = document.querySelectorAll('.ctrl-side.active').length;
-                    // const isOverflow = activeControls > 0;
-
-                    // body.classList.toggle('overflow-body', isOverflow);
-                    // html.classList.toggle('overflow-body', isOverflow);
-                    // const clickedControlIsActive = e === activeControl;
-                    // const isActive = e.classList.toggle('active', !clickedControlIsActive);
-                    // activeControl = isActive ? e : null;
-
-                    // const activeControls = body.querySelectorAll('.ctrl-side.active').length;
-                    // const isOverflow = activeControls > 0;
-
-                    // body.classList.toggle('overflow-body', isOverflow);
-                    // html.classList.toggle('overflow-body', isOverflow);
-
-                    // const isActive = e.classList.contains('active');
-                    // openSidebars += isActive ? -1 : 1; // Si el control está activo, resta 1, de lo contrario, suma 1
-
-                    // if (openSidebars > 0) {
-                    //     body.classList.add('overflow-body');
-                    //     html.classList.add('overflow-body');
-                    // } else {
-                    //     body.classList.remove('overflow-body');
-                    //     html.classList.remove('overflow-body');
-                    // }
-
-                    // e.classList.toggle('active', !isActive);
-
-                    // sidebarActive = !sidebarActive; // Alternar el estado de la barra lateral
-
-                    // if (sidebarActive) {
-                    //     body.classList.add('overflow-body');
-                    //     html.classList.add('overflow-body');
-                    // } else {
-                    //     if (body.classList.contains('overflow-body')) {
-                    //         body.classList.remove('overflow-body');
-                    //         html.classList.remove('overflow-body');
-                    //     }
-                    // }
-
-                    // if (body.classList.contains('overflow-body')){
-                    //     sidebaractive=false
-                    //     console.log("dentro del slide if no scroll")
-                    // }else if (!body.classList.contains('overflow-body') ){
-                    //     sidebaractive=true
-                    //     console.log("dentro del slide else if scroll")
-                    // }
-
-                    // if(sidebaractive){
-                    //     body.classList.add('overflow-body');
-                    //     html.classList.add('overflow-body');
-                    // }else{
-                    //     body.classList.remove('overflow-body');
-                    //     html.classList.remove('overflow-body');
-                    // }
-                    // if (body.classList.contains('control-sidebar-slide-open')) {
-                    //     return;
-                    // } else if(!(body.classList.contains('control-sidebar-slide-open'))) {
-                    //     body.classList.add('overflow-body');
-                    //     html.classList.add('overflow-body');
-                    // }
-
-                    // if ((body.classList.contains('overflow-body'))) {
-                    //     body.classList.remove('overflow-body');
-                    //     html.classList.remove('overflow-body');
-                    //     return;
-                    // } else if (!(body.classList.contains('control-sidebar-slide-open'))) {
-                    //     body.classList.add('overflow-body');
-                    //     html.classList.add('overflow-body');
-                    // }
-
-                    // if (body.classList.contains('control-sidebar-slide-open')) {
-                    //     return;
-                    // } else {
-                    //     body.classList.toggle('overflow-body');
-                    //     html.classList.toggle('overflow-body');
-                    // }
-
-                    // if (body.classList.contains('control-sidebar-slide-open')) {
-                    //     return;
-                    // } else if(!(body.classList.contains('control-sidebar-slide-open'))) {
-                    //     body.classList.add('overflow-body');
-                    //     html.classList.add('overflow-body');
-                    // }
-
-                    // if (body.classList.contains('control-sidebar-slide-open') && body.classList.contains('overflow-body')) {
-                    //     return;
-                    // } else if (!body.classList.contains('control-sidebar-slide-open') && !body.classList.contains('overflow-body')) {
-                    //     body.classList.add('overflow-body');
-                    //     html.classList.add('overflow-body');
-                    // }else  if (body.classList.contains('overflow-body') && !body.classList.contains('control-sidebar-slide-open')) {
-                    //     body.classList.remove('overflow-body');
-                    //     html.classList.remove('overflow-body');
-                    // }
-
-
-
-                    // Remover overflow-body si está presente y no hay control-sidebar-slide-open
-                    // if (body.classList.contains('overflow-body') && !body.classList.contains('control-sidebar-slide-open')) {
-                    //     body.classList.remove('overflow-body');
-                    //     html.classList.remove('overflow-body');
-                    // }
-
-
 
 
                     if (body.classList.contains('control-sidebar-slide-open')) {
@@ -477,8 +343,9 @@
                     } else if (!(body.classList.contains('sidebar-collapse'))) {
                         body.classList.toggle('sidebar-collapse');
                     }
-                });
-            })
+                })
+            });
+
 
 
 
@@ -555,8 +422,18 @@
                         className: "text-center",
                         data: null, // Puedes usar "null" si no estás asociando esta columna con un campo específico en tus datos
                         render: function(data, type, row) {
+                            // Definir el valor del input
                             let value = (row.retorno === null) ? '' : row.retorno;
-                            return '<input value="' + value + '" type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline retorno" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" >';
+
+                            // Definir el HTML del input
+                            let inputHTML = '<input value="' + value + '" type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline retorno" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" >';
+
+                            // Condicional para id_perfil_sistema
+                            if (isEntrada || isSuperAdmin ) {
+                                return inputHTML;
+                            } else {
+                                return row.isentrada ? row.retorno : inputHTML;
+                            }
                         }
                     },
                 ],
@@ -615,7 +492,7 @@
                     "datatype": 'json',
                     "data": function(d) {
                         d.accion = 2,
-                            d.boleta = id_boleta
+                            d.factura = id_boleta
                     }
                 },
                 // "dom": 'pt',
@@ -663,35 +540,38 @@
                             identifier: [0, 'id'],
                             editable: [
                                 [1, 'codigo'],
-                                [2, 'cantidad_salida']
+                                [2, 'cantidad_salida'],
                             ]
                         },
+                        hideIdentifier: true,
                         buttons: {
                             edit: {
                                 class: 'btn btn-sm btn-default',
                                 html: '<span class="text-nowrap"></span>',
                                 html: '<i class="fas fa-pen"></i>',
-                                action: 'edit'
+                                action: 'edit,' + id_boleta
                             },
                             delete: {
                                 class: 'btn btn-sm btn-default',
                                 html: '<i class="fas fa-trash"></i>',
-                                action: 'delete'
+                                action: 'delete,' + id_boleta
                             }
                         },
                         onSuccess: function(data, textStatus, jqXHR) {
-                            if (data.action == 'delete') {
-                                // $('#' + data.id_boleta).remove();
-                                tblDetalleSalida.ajax.reload(null, false);
-                                tabla.ajax.reload(null, false);
-                            }
-                            if (data.action == 'edit') {
-
-                                tblDetalleSalida.ajax.reload(null, false);
-                                tabla.ajax.reload(null, false);
-                            }
+                            let isSuccess = data.status === 'success';
+                            mostrarToast(
+                                data.status,
+                                isSuccess ? "Completado" : "Error",
+                                isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                data.m
+                            );
+                            // $('#' + data.id_boleta).remove();
+                            tblDetalleSalida.ajax.reload(null, false);
+                            tabla.ajax.reload(null, false);
+                            cargarAutocompletado();
                         }
                     })
+
                     $('#tblDetalleSalida').find('input[name="cantidad_salida"]').attr({
                         'inputmode': 'numeric',
                         'autocomplete': 'off',
@@ -713,35 +593,48 @@
                             identifier: [0, 'id'],
                             editable: [
                                 [1, 'codigo'],
-                                [2, 'cantidad_entrada']
+                                [2, 'cantidad_entrada'],
+                                [4, 'precio']
                             ]
                         },
+                        hideIdentifier: true,
                         buttons: {
                             edit: {
                                 class: 'btn btn-sm btn-default',
                                 html: '<span class="text-nowrap"></span>',
                                 html: '<i class="fas fa-pen"></i>',
-                                action: 'edit'
+                                action: 'edit,' + id_boleta
                             },
                             delete: {
                                 class: 'btn btn-sm btn-default',
                                 html: '<i class="fas fa-trash"></i>',
-                                action: 'delete'
+                                action: 'delete,' + id_boleta
                             }
                         },
                         onSuccess: function(data, textStatus, jqXHR) {
-                            if (data.action == 'delete') {
-                                tblDetalleEntrada.ajax.reload(null, false);
-                                tabla.ajax.reload(null, false);
-                            }
-                            if (data.action == 'edit') {
-                                tblDetalleEntrada.ajax.reload(null, false);
-                                tabla.ajax.reload(null, false);
-                            }
+                            let isSuccess = data.status === 'success';
+                            mostrarToast(
+                                data.status,
+                                isSuccess ? "Completado" : "Error",
+                                isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                data.m
+                            );
+                            // $('#' + data.id_boleta).remove();
+                            tblDetalleEntrada.ajax.reload(null, false);
+                            tabla.ajax.reload(null, false);
+                            cargarAutocompletado();
                         }
                     })
 
                     $('#tblDetalleEntrada').find('input[name="cantidad_entrada"]').attr({
+                        'inputmode': 'numeric',
+                        'autocomplete': 'off',
+                        'onpaste': 'validarPegado(this, event)',
+                        'onkeydown': 'validarTecla(event,this)',
+                        'oninput': 'validarNumber(this,/[^0-9.]/g)'
+                    });
+
+                    $('#tblDetalleEntrada').find('input[name="precio"]').attr({
                         'inputmode': 'numeric',
                         'autocomplete': 'off',
                         'onpaste': 'validarPegado(this, event)',
@@ -758,26 +651,29 @@
                 fecha_retorno = document.getElementById('fecha_retorno');
 
             $(document).ready(function() {
-                const cboOrden = document.getElementById('cboOrden'),
+                const nro_guia = document.getElementById('nro_guia'),
+                    nro_factura = document.getElementById('nro_fac'),
+                    cboOrden = document.getElementById('cboOrden'),
                     form_guia = document.getElementById('form_guia'),
                     cboProveedor = document.getElementById('cboProveedores'),
                     cboFab = document.getElementById('cboFabricado'),
-                    cboEmpleado = document.getElementById('cboEmpleado'),
                     cboConductor = document.getElementById('cboConductor'),
+                    cboDespachado = document.getElementById('cboDespachado'),
+                    cboResponsable = document.getElementById('cboResponsable'),
                     btnGuia = document.getElementById('btnGuardarGuia');
 
                 const audio = document.getElementById("scanner");
 
 
                 $(cboOrden).select2({
-                    placeholder: 'SELECCIONA UNA ORDEN',
+                    placeholder: 'SELECCIONE',
                     width: 'auto',
                 })
 
-                $(cboEmpleado).select2({
-                    placeholder: 'SELECCIONA UN EMPLEADO',
-                    width: 'auto',
-                })
+                // $(cboEmpleado).select2({
+                //     placeholder: 'SELECCIONE',
+                //     width: 'auto',
+                // })
 
                 $(cboClientesActivos).select2({
                     placeholder: 'POR CLIENTE',
@@ -790,21 +686,25 @@
                 })
 
                 $(cboProveedor).select2({
-                    placeholder: 'SELECCIONA UN PROVEEDOR',
+                    placeholder: 'SELECCIONE',
                     width: 'auto',
                 })
 
                 $(cboFab).select2({
-                    placeholder: 'SELECCIONA UN PRODUCTO',
+                    placeholder: 'SELECCIONE',
                     width: 'auto',
-
                 })
 
-
-
-
                 $(cboConductor).select2({
-                    placeholder: 'SELECCIONA UN CONDUCTOR',
+                    placeholder: 'SELECCIONE',
+                })
+
+                $(cboDespachado).select2({
+                    placeholder: 'SELECCIONE',
+                    minimumResultsForSearch: -1,
+                })
+                $(cboResponsable).select2({
+                    placeholder: 'SELECCIONE',
                 })
 
                 cargarCombo('Proveedores');
@@ -815,14 +715,17 @@
                         // console.log(datos_cliente)
                     });
 
-                cargarCombo('Empleado')
                 cargarCombo('Conductor', '', 2);
                 cargarCombo('Orden', '', 3, true).then(datos_ => {
                     datos_orden = datos_;
                 });
+                cargarCombo('Despachado', '', 6);
+                cargarCombo('Responsable', '', 7)
+
+
                 cargarCombo('Unidad', '', 1, true).then(datos_ => {
                     $('#cboUnidad_fab').select2({
-                        placeholder: 'SELECCIONA UNA UNIDAD',
+                        placeholder: 'SELECCIONE',
                         width: 'auto',
                         data: datos_
                     })
@@ -875,7 +778,7 @@
                 });
 
                 tblOut = $('#tblOut').DataTable({
-                    "dom": '<"row"<"col-sm-6"B><"col-sm-6"p>>t',
+                    "dom": '<"row"<"col-sm-8"B><"col-sm-4"p>>t',
                     "responsive": true,
                     "lengthChange": false,
                     "ordering": false,
@@ -917,14 +820,21 @@
                             }
                         },
                         {
-                            text: "<i class='fa-regular fa-hammer fa-xl'></i> Fabricación",
-                            className: "btn btn-light text-info",
+                            text: "<i class='fa-regular fa-hammer fa-xl'></i> Agregar a Producción",
+                            className: "btn btn-light text-info btnAgregarPro",
                             action: function(e, dt, node, config) {
-
                                 formFab.reset();
                                 formFab.classList.remove('was-validated');
                                 $('#modal-fab').modal("show");
-
+                            }
+                        },
+                        {
+                            text: "<i class='fas fa-building-magnifying-glass fa-xl'></i> Consultar Producción",
+                            className: "btn btn-light text-dark btnAgregarPro",
+                            action: function(e, dt, node, config) {
+                                formFab.reset();
+                                formFab.classList.remove('was-validated');
+                                $('#modal-fab').modal("show");
                             }
                         },
                         // {
@@ -944,6 +854,58 @@
                         // }
                     ]
                 });
+
+                tblFab = $('#tblFab').DataTable({
+                    "dom": '<"row"<"col-sm-6"><"col-sm-6"p>>t',
+                    "responsive": true,
+                    "lengthChange": false,
+                    "ordering": false,
+                    "autoWidth": false,
+                    columnDefs: [{
+                            targets: 0,
+                            data: null,
+                            className: "text-center",
+                            render: function(data, type, row, meta) {
+                                if (type === 'display') {
+                                    return meta.row + 1;
+                                }
+                                return meta.row;
+                            }
+                        },
+
+                        {
+                            targets: 1,
+                            className: "text-center",
+                        },
+                        {
+                            targets: 3,
+                            className: "text-center ",
+                        },
+
+
+                    ],
+
+                    // {
+                    //     text: "<input type='checkbox' id='checkbox_input'>",
+                    //     init: function(dt, node, config) {
+                    //         $(document).on('change', '#checkbox_input', function() {
+                    //             // Aquí puedes agregar tu lógica para manejar el evento de cambio del checkbox
+                    //             if ($(this).is(':checked')) {
+                    //                 // Acción cuando el checkbox está marcado
+                    //                 console.log('Checkbox marcado');
+                    //             } else {
+                    //                 // Acción cuando el checkbox está desmarcado
+                    //                 console.log('Checkbox desmarcado');
+                    //             }
+                    //         });
+                    //     }
+                    // }
+
+                });
+
+                const btnAgregarPro = document.querySelector('.btnAgregarPro');
+
+
 
                 $('#tblIn tbody').on('click', '.btnEliminarIn', function() {
                     tblIn.row($(this).parents('tr')).remove().draw();
@@ -986,6 +948,8 @@
                 $('#tblOut tbody').on('click', '.btnEliminarIn', function() {
                     tblOut.row($(this).parents('tr')).remove().draw();
                 });
+
+
 
                 //INICIA AUTOCOMPLETAR
                 // $.ajax({
@@ -1042,9 +1006,13 @@
                 const div_proveedor = document.getElementById('div_proveedor');
                 const div_return = document.getElementById('div_return');
                 const div_retorno = document.getElementById('div_retorno');
-                const div_entregado = document.getElementById('div_entregado');
+                const div_nroguia = document.getElementById('div_nroguia');
                 const div_conductor = document.getElementById('div_conductor');
                 const div_productos = document.getElementById('div_productos');
+                const div_nrofactura = document.getElementById('div_nrofac');
+                const div_person = document.getElementById('card_person');
+
+
 
                 // const formOrden = document.getElementById('formOrden'),
                 //     id_orden = document.getElementById('id_orden'),
@@ -1113,14 +1081,14 @@
                 // });
 
                 form_guia.addEventListener("submit", function(e) {
-                    e.preventDefault()
+                    e.preventDefault();
                     btnGuia.click();
                 });
 
                 btnGuia.addEventListener('click', () => {
                     let formData = new FormData();
                     if (selectedTab === '1') {
-                        let elementosAValidar = [fecha, cboProveedor];
+                        let elementosAValidar = [fecha, cboProveedor, nro_factura];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -1133,11 +1101,12 @@
                         }
                         let clases = ['cantidad', 'precio'];
                         formData.append('proveedor', cboProveedor.value);
+                        formData.append('nro_factura', nro_factura.value);
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 1);
                         realizarRegistro(tblIn, formData, clases);
                     } else if (selectedTab === '2') {
-                        let elementosAValidar = [fecha, cboEmpleado, cboConductor];
+                        let elementosAValidar = [fecha, cboOrden, nro_guia, cboDespachado, cboResponsable, cboConductor];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -1148,10 +1117,12 @@
                         if (!isValid) {
                             return;
                         }
-                        let clases = ['cantidad', 'util'];
+                        let clases = ['cantidad'];
                         formData.append('orden', cboOrden.value);
+                        formData.append('nro_guia', nro_guia.value);
                         formData.append('conductor', cboConductor.value);
-                        formData.append('entrega', cboEmpleado.value);
+                        formData.append('despachado', cboDespachado.value);
+                        formData.append('responsable', cboResponsable.value);
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 2);
                         realizarRegistro(tblOut, formData, clases);
@@ -1161,6 +1132,91 @@
                         formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('accion', 3);
                         realizarRegistro(tblReturn, formData, clases, 0);
+                    } else if (selectedTab === '4') {
+                        let elementosAValidar = [fecha, cboOrden, nro_guia, cboDespachado, cboResponsable, cboConductor];
+                        let isValid = true;
+                        elementosAValidar.forEach(function(elemento) {
+                            if (!elemento.checkValidity()) {
+                                isValid = false;
+                                form_guia.classList.add('was-validated');
+                            }
+                        });
+                        if (!isValid) {
+                            return;
+                        }
+                        formData.append('id_boleta', id_boleta);
+                        formData.append('orden', cboOrden.value);
+                        formData.append('nro_guia', nro_guia.value);
+                        formData.append('conductor', cboConductor.value);
+                        formData.append('despachado', cboDespachado.value);
+                        formData.append('responsable', cboResponsable.value);
+                        formData.append('fecha', fecha.value);
+                        formData.append('accion', 4);
+
+                        $.ajax({
+                            url: "controllers/registro.controlador.php",
+                            method: "POST",
+                            data: formData,
+                            cache: false,
+                            dataType: "json",
+                            contentType: false,
+                            processData: false,
+                            success: function(r) {
+                                let isSuccess = r.status === "success";
+
+                                mostrarToast(r.status,
+                                    isSuccess ? "Completado" : "Error",
+                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                    r.m);
+
+                                if (isSuccess) {
+                                    tblDetalleSalida.clear().draw();
+                                    tabla ? tabla.ajax.reload(null, false) : ''
+                                    cargarAutocompletado();
+                                }
+                            }
+                        });
+                    } else if (selectedTab === '5') {
+                        let elementosAValidar = [fecha, cboProveedor, nro_factura];
+                        let isValid = true;
+                        elementosAValidar.forEach(function(elemento) {
+                            if (!elemento.checkValidity()) {
+                                isValid = false;
+                                form_guia.classList.add('was-validated');
+                            }
+                        });
+                        if (!isValid) {
+                            return;
+                        }
+                        formData.append('id_factura', id_boleta);
+                        formData.append('proveedor', cboProveedor.value);
+                        formData.append('nro_factura', nro_factura.value);
+                        formData.append('fecha', fecha.value);
+                        formData.append('accion', 5);
+
+                        $.ajax({
+                            url: "controllers/registro.controlador.php",
+                            method: "POST",
+                            data: formData,
+                            cache: false,
+                            dataType: "json",
+                            contentType: false,
+                            processData: false,
+                            success: function(r) {
+                                let isSuccess = r.status === "success";
+
+                                mostrarToast(r.status,
+                                    isSuccess ? "Completado" : "Error",
+                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                    r.m);
+
+                                if (isSuccess) {
+                                    tblDetalleSalida.clear().draw();
+                                    tabla ? tabla.ajax.reload(null, false) : ''
+                                    cargarAutocompletado();
+                                }
+                            }
+                        });
                     }
                 })
 
@@ -1190,9 +1246,11 @@
                             div_proveedor.style.display = 'block';
                             div_conductor.style.display = 'none';
                             div_retorno.style.display = 'none';
-                            div_entregado.style.display = 'none';
+                            div_nroguia.style.display = 'none';
                             // card_orden.style.display = 'none';
-                            div_return.style.display = 'none'
+                            div_return.style.display = 'none';
+                            div_person.style.display = 'none';
+                            div_nrofactura.style.display = 'block';
                         } else if (selectedTab === '2' || selectedTab === '4') {
                             div_orden.style.display = 'block';
                             div_proveedor.style.display = 'none';
@@ -1201,21 +1259,28 @@
                             div_return.style.display = 'none';
                             div_conductor.style.display = 'block';
                             div_retorno.style.display = 'none';
-                            div_entregado.style.display = 'block';
+                            div_nroguia.style.display = 'block';
+                            div_nrofactura.style.display = 'none';
+                            div_person.style.display = 'block';
+
                         } else if (selectedTab === '3') {
                             div_orden.style.display = 'none';
                             div_proveedor.style.display = 'none';
                             div_productos.style.display = 'none';
                             div_return.style.display = 'block'
                             // card_orden.style.display = 'none';
-                            div_conductor.style.display = 'none';
+                            div_conductor.style.display = 'block';
                             div_retorno.style.display = 'block';
-                            div_entregado.style.display = 'none';
+                            div_nroguia.style.display = 'none';
+                            div_nrofactura.style.display = 'none';
+                            div_person.style.display = 'block';
+
                         }
                     });
                 });
 
                 function CargarProductos(p = "", barras = false) {
+
                     let existingRow = tblIn.row("#producto_" + p);
                     let existingRowOut = tblOut.row("#producto_" + p);
 
@@ -1226,14 +1291,46 @@
                             method: "POST",
                             data: {
                                 'accion': 1, //BUSCAR PRODUCTOS POR id_producto
-                                'id_producto': p,
+                                'codigo': p,
                                 'id_boleta': id_boleta
                             },
                             dataType: 'json',
-                            success: function(respuesta) {
+                            success: function(r) {
                                 tblDetalleSalida.ajax.reload(null, false)
                                 tabla.ajax.reload(null, false);
+                                cargarAutocompletado();
                                 inputauto.value = '';
+                                let isSuccess = r.status === 'success';
+                                mostrarToast(
+                                    r.status,
+                                    isSuccess ? "Completado" : "Error",
+                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                    r.m
+                                );
+                            }
+                        });
+                    } else if (selectedTab === '5') {
+                        $.ajax({
+                            url: "controllers/entradas.controlador.php",
+                            method: "POST",
+                            data: {
+                                'accion': 3, //BUSCAR PRODUCTOS POR id_producto
+                                'codigo': p,
+                                'id_factura': id_boleta
+                            },
+                            dataType: 'json',
+                            success: function(r) {
+                                tblDetalleEntrada.ajax.reload(null, false)
+                                tabla.ajax.reload(null, false);
+                                cargarAutocompletado();
+                                inputauto.value = '';
+                                let isSuccess = r.status === 'success';
+                                mostrarToast(
+                                    r.status,
+                                    isSuccess ? "Completado" : "Error",
+                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                    r.m
+                                );
                             }
                         });
                     } else {
@@ -1292,7 +1389,7 @@
                                             respuesta['id'],
                                             '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['cantidad'] + '">',
                                             respuesta['nombre'],
-                                            '$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['precio'] + '">',
+                                            '$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="0">',
                                             respuesta['descripcion'],
                                             "<center>" +
                                             "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
@@ -1308,14 +1405,6 @@
                                             '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['cantidad'] + '">',
                                             respuesta['nombre'],
                                             respuesta['descripcion'],
-                                            '<center style="vertical-align: middle;display: inline-flex">' +
-                                            '<label class="switch-2">' +
-                                            '<input class="switch__input util" type="checkbox" value="1">' +
-                                            '<svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">' +
-                                            '<polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>' +
-                                            '</label>' +
-                                            "</center>",
-
                                             "<center>" +
                                             "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
                                             "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
@@ -1351,61 +1440,7 @@
                     }
                 }
 
-                function realizarRegistro(table, formData, clases, producto = 1) {
-                    let count = 0;
-                    table.rows().eq(0).each(function(index) {
-                        count = count + 1;
-                    });
-                    if (count > 0) {
-                        var arr = [];
-                        table.rows().eq(0).each(function(index) {
-                            let row = table.row(index);
-                            let data = row.data();
-                            let id = data[producto];
-                            let valores = clases.map(clase => {
-                                let inputElement = row.node().querySelector('input.' + clase);
-                                // Utilizamos el operador ternario para comprobar el tipo de entrada y obtener el valor adecuado
-                                return inputElement.type === 'checkbox' ? inputElement.checked : inputElement.value;
-                            }); // Agrega los valores al array
-                            arr.push(id + "," + valores.join(","));
-                            // Agrega al FormData directamente en este ciclo si es necesario
-                            formData.append('arr[]', arr[index]);
-                        });
 
-                        $.ajax({
-                            url: "controllers/registro.controlador.php",
-                            method: "POST",
-                            data: formData,
-                            cache: false,
-                            dataType: "json",
-                            contentType: false,
-                            processData: false,
-                            success: function(r) {
-                                let isSuccess = r.status === "success";
-
-                                mostrarToast(r.status,
-                                    isSuccess ? "Completado" : "Error",
-                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
-                                    r.m);
-
-                                if (isSuccess) {
-                                    table.clear().draw();
-                                    tabla ? tabla.ajax.reload(null, false) : ''
-                                    cargarAutocompletado();
-
-                                }
-                            }
-                        });
-
-                    } else {
-
-                        mostrarToast('danger', "Error", "fa-solid fa-xmark fa-lg", 'No hay productos en el listado');
-
-                    }
-
-                    $("#iptCodigoVenta").focus();
-
-                }
 
                 inputBarras.addEventListener("input", function(event) {
                     event.preventDefault();
@@ -1413,67 +1448,60 @@
                     if (codigo.length >= 5) {
                         CargarProductos(codigo, true)
                     }
-                    // $.ajax({
-                    //     url: "controllers/inventario.controlador.php",
-                    //     method: "POST",
-                    //     data: {
-                    //         'accion': 4, //BUSCAR PRODUCTOS POR id_producto
-                    //         'codigo': codigo
-                    //     },
-                    //     dataType: 'json',
-                    //     success: function(respuesta) {
-                    //         if (respuesta) {
-                    //             if (selectedTab === '1') {
-                    //                 tblIn.row.add([
-                    //                     '',
-                    //                     respuesta['id'],
-                    //                     '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['cantidad'] + '">',
-                    //                     respuesta['nombre'],
-                    //                     '$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['precio'] + '">',
-                    //                     respuesta['descripcion'],
-                    //                     "<center>" +
-                    //                     "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
-                    //                     "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
-                    //                     "</span>" +
-                    //                     "</center>",
-                    //                 ])
-                    //                 tblIn.draw(false);
-                    //             } else if (selectedTab === '2') {
-                    //                 tblOut.row.add([
-                    //                     ' ',
-                    //                     respuesta['id'],
-                    //                     '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['cantidad'] + '">',
-                    //                     respuesta['nombre'],
-                    //                     respuesta['descripcion'],
-                    //                     "<center>" +
-                    //                     "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
-                    //                     "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
-                    //                     "</span>" +
-                    //                     "</center>",
-                    //                 ]).node().id = "producto_" + respuesta['id'];
-                    //                 tblOut.draw(false);
-                    //             }
-                    //             // Toast.fire({
-                    //             //     icon: 'success',
-                    //             //     title: ' Producto agregado a la guia'
-                    //             // });
-                    //             $(inputauto).val("");
-
-                    //             /*===================================================================*/
-                    //             //SI LA RESPUESTA ES FALSO, NO TRAE ALGUN DATO
-                    //             /*===================================================================*/
-                    //         } else {
-                    //             // Toast.fire({
-                    //             //     icon: 'error',
-                    //             //     title: ' El producto no existe o no tiene stock'
-                    //             // });
-                    //             $(inputauto).val("");
-                    //             $(inputauto).focus();
-                    //         }
-                    //     }
-                    // });
                 })
             });
+
+            function realizarRegistro(table, formData, clases, producto = 1, header = 'productos') {
+                let count = 0;
+                table.rows().eq(0).each(function(index) {
+                    count = count + 1;
+                });
+                if (count > 0) {
+                    var arr = [];
+                    table.rows().eq(0).each(function(index) {
+                        let row = table.row(index);
+                        let data = row.data();
+                        let id = data[producto];
+
+                        let valores = clases.map(clase => {
+                            let inputElement = row.node().querySelector('input.' + clase);
+                            // Si inputElement es null, retornar data[5]
+                            return inputElement ? inputElement.value : data[5];
+                        });
+
+                        arr.push(id + "," + valores.join(","));
+                        // Agrega al FormData directamente en este ciclo si es necesario
+                        formData.append('arr[]', arr[index]);
+                    });
+
+                    $.ajax({
+                        url: "controllers/registro.controlador.php",
+                        method: "POST",
+                        data: formData,
+                        cache: false,
+                        dataType: "json",
+                        contentType: false,
+                        processData: false,
+                        success: function(r) {
+                            let isSuccess = r.status === "success";
+
+                            mostrarToast(r.status,
+                                isSuccess ? "Completado" : "Error",
+                                isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                r.m);
+
+                            if (isSuccess) {
+                                table.clear().draw();
+                            }
+                            tabla ? tabla.ajax.reload(null, false) : ''
+                            cargarAutocompletado();
+                        }
+                    });
+
+                } else {
+                    mostrarToast('danger', "Error", "fa-solid fa-xmark fa-lg", 'No hay ' + header + ' en el listado');
+                }
+            }
         </script>
     </body>
 <?php } else { ?>

@@ -1,7 +1,4 @@
-<?php if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-?>
+<?php require_once "../utils/database/config.php"; ?>
 
 <head>
     <title>Inventario</title>
@@ -13,7 +10,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Inventario</h1>
             </div>
-            <?php if ($_SESSION["crear2"]) : ?>
+            <?php if (isset($_SESSION["crear3"]) && $_SESSION["crear3"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modalI">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -102,7 +99,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="modalI">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl ">
         <div class="modal-content">
             <div class="modal-header bg-gradient-success">
                 <h4 class="modal-title"><i class="fa-solid fa-layer-plus"></i><span> Nuevo Producto</span></h4>
@@ -111,28 +108,28 @@
                 </button>
             </div>
             <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body scroll-modal">
+                <div class="modal-body scroll-modal" style="padding-block:1rem .5rem;">
                     <input type="hidden" id="id" value="">
                     <div class="row" style="align-items:flex-start">
                         <div class="col-md-6">
                             <div class="input-data">
                                 <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
                                 <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="input-data">
                                         <input autocomplete="off" id="codigo" name="codigo" class="input-nuevo" type="text" required>
                                         <label class="label"><i class="fa-solid fa-barcode"></i> Código</label>
-                                        <div class="invalid-feedback">*Este campo es requerido.</div>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="input-data s1">
                                         <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
                                         <label class="label"><i class="fa-solid fa-boxes-stacked"></i> Cantidad</label>
-                                        <div class="invalid-feedback">*Este campo es requerido.</div>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                             </div>
@@ -141,14 +138,14 @@
                                     <div class=" input-data" style="margin-bottom:26px">
                                         <input type="text" id="stock_min" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)" required>
                                         <label style="font-size:21px" id="min" class="label"><i class="fa-solid fa-box-taped"></i> Cantidad Min.</label>
-                                        <div class="invalid-feedback">*Este campo es requerido.</div>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="input-data" style="margin-bottom:26px">
                                         <input type="text" id="stock_mal" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)">
                                         <label class="label"><i class="fa-solid fa-hammer-crash"></i> Dañado</label>
-                                        <div class="invalid-feedback">*Este campo es requerido.</div>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                             </div>
@@ -160,14 +157,14 @@
                                     <div class="col">
                                         <select id="cboCategoria" class="cbo modalB form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                         </select>
-                                        <div id="Categoria" class="invalid-feedback">*Seleccione una categoría</div>
+                                        <div id="Categoria" class="invalid-feedback">*Campo obligatorio</div>
                                     </div>
                                     <div class="span-btn cat" style="padding-right:.5rem;">
                                         <span class="new-span badge bg-gradient-dark" data-icon="fa-tags" data-value="Categoria" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                        <?php if ($_SESSION["editar2"]) : ?>
+                                        <?php if ($_SESSION["editar3"]) : ?>
                                             <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-tags" data-value="Categoria" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
                                         <?php endif; ?>
-                                        <?php if ($_SESSION["eliminar2"]) : ?>
+                                        <?php if ($_SESSION["eliminar3"]) : ?>
                                             <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Categoria" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
                                         <?php endif; ?>
 
@@ -180,14 +177,14 @@
                                     <div class="col">
                                         <select name="cboUnidad" id="cboUnidad" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                         </select>
-                                        <div id="Unidad" class="invalid-feedback">*Seleccione una unidad</div>
+                                        <div id="Unidad" class="invalid-feedback">*Campo obligatorio</div>
                                     </div>
                                     <div class="span-btn u" style="padding-right:.5rem">
                                         <span class="new-span badge bg-gradient-dark" data-icon="fa-ruler" data-value="Unidad" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                        <?php if ($_SESSION["editar2"]) : ?>
+                                        <?php if ($_SESSION["editar3"]) : ?>
                                             <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-ruler" data-value="Unidad" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
                                         <?php endif; ?>
-                                        <?php if ($_SESSION["eliminar2"]) : ?>
+                                        <?php if ($_SESSION["eliminar3"]) : ?>
                                             <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Unidad" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
                                         <?php endif; ?>
                                     </div>
@@ -199,14 +196,14 @@
                                     <div class="col">
                                         <select name="cboUbicacion" id="cboUbicacion" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                         </select>
-                                        <div id="Ubicacion" class="invalid-feedback">*Seleccione una ubicación</div>
+                                        <div id="Ubicacion" class="invalid-feedback">*Campo obligatorio</div>
                                     </div>
                                     <div class="span-btn p" style="padding-right:.5rem;">
                                         <span class="new-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal'><i class="fa-solid fa-plus"></i></span>
-                                        <?php if ($_SESSION["editar2"]) : ?>
+                                        <?php if ($_SESSION["editar3"]) : ?>
                                             <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
                                         <?php endif; ?>
-                                        <?php if ($_SESSION["eliminar2"]) : ?>
+                                        <?php if ($_SESSION["eliminar3"]) : ?>
                                             <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Ubicacion" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
                                         <?php endif; ?>
                                     </div>
@@ -243,7 +240,7 @@
                             <div class="input-data">
                                 <input autocomplete="off" id="nombreS" class="input-nuevo" type="text" required>
                                 <label class="label"></label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
                             </div>
                         </div>
                     </div>
@@ -271,14 +268,14 @@
     });
 
 
-    var mostrarCol = '<?php echo $_SESSION["editar2"] || $_SESSION["eliminar2"] ?>';
-    var editar = '<?php echo $_SESSION["editar2"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar2"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar3"] || $_SESSION["eliminar3"] ?>';
+    var editar = '<?php echo $_SESSION["editar3"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar3"] ?>';
 
     configuracionTable = {
         "dom": mostrarCol ? '<"row"<"col-sm-6"B><"col-sm-6"p>>t' : 'pt',
         "responsive": true,
-        "pageLength": 10, // Cambia este valor según tus necesidades
+        "pageLength": 12, // Cambia este valor según tus necesidades
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
@@ -502,11 +499,13 @@
                 ...configuracionTable
             });
             tabla.on('draw.dt', function() {
-                const b = document.body;
-                const s = b.scrollHeight;
-                const w = window.innerHeight;
+                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
+                    const b = document.body;
+                    const s = b.scrollHeight;
+                    const w = window.innerHeight;
 
-                handleScroll(b, s, w);
+                    handleScroll(b, s, w);
+                }
 
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('i', JSON.stringify(tablaData));
@@ -539,17 +538,17 @@
             select = document.querySelectorAll('.modal-body select.select2');
 
         $(cboCategoria).select2({
-            placeholder: 'SELECCIONA UNA OPCION',
+            placeholder: 'SELECCIONE',
             width: '100%',
         });
 
         $(cboUnidad).select2({
-            placeholder: 'SELECCIONA UNA OPCION',
+            placeholder: 'SELECCIONE',
             width: '100%',
         })
 
         $(cboUbicacion).select2({
-            placeholder: 'SELECCIONA UNA OPCION',
+            placeholder: 'SELECCIONE',
             width: '100%',
         })
 
@@ -579,21 +578,47 @@
 
         $(modalE).on("shown.bs.modal", function() {
             nombre.focus();
+            // if (scroll) {
+            //     const navbar = document.getElementById('navbar-fix');
+            //     console.log('adas quiestoy en bav')
+            //     $(navbar).css('margin-right', '6px');
+            // }
+        });
+
+        $(modalE).on("hidden.bs.modal", function() {
+            if (scroll) {
+                const navbar = document.getElementById('navbar-fix');
+                // $(body).remove('modal-open');
+
+                console.log('adas quiestoy en bav')
+                // $(body).css('padding-right', '6px');
+                $(navbar).css('margin-right', '');
+            }
         });
 
         $(modalS).on("shown.bs.modal", function() {
             inputContent.focus();
+
         });
 
         $(modalS).on('hidden.bs.modal', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            $(body).addClass('modal-open');
-            $(body).css('padding-right', '6px');
+            if (scroll) {
+                const navbar = body.querySelector('.navbar')
+                $(body).addClass('modal-open');
+                $(body).css('padding-right', '6px');
+                // $(navbar).css('margin-right', '6px');
+            }
         });
 
         if (btnNuevo) {
             btnNuevo.addEventListener('click', function() {
+                if (scroll) {
+                    const navbar = document.getElementById('navbar-fix');
+                    // console.log('adas quiestoy en bav')
+                    $(navbar).css('margin-right', '6px');
+                }
                 accion_inv = 1;
                 cambiarModal(span, ' Nuevo Producto', icon, 'fa-layer-plus', elements, 'bg-gradient-blue', 'bg-gradient-success', modalE, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
@@ -608,6 +633,11 @@
         }
 
         $('#tblInventario tbody').on('click', '.btnEditar', function() {
+            if (scroll) {
+                const navbar = document.getElementById('navbar-fix');
+                // console.log('adas quiestoy en bav')
+                $(navbar).css('margin-right', '6px');
+            }
             let row = obtenerFila(this, tabla);
             accion_inv = 2;
             cambiarModal(span, ' Editar Producto', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modalE, 'modal-change', 'modal-new')
@@ -628,6 +658,7 @@
         });
 
         $('#tblInventario tbody').on('click', '.btnEliminar', function() {
+            
             const e = obtenerFila(this, tabla)
             accion_inv = 3
             const id = e["id"];
@@ -716,7 +747,7 @@
                 return;
             } else {
                 const ids = inputId.value;
-                const nombre = inputContent.value.trim().toUpperCase();
+                const nombre = inputContent.value.trim();
                 const tbl = 'tbl' + name.toLowerCase();
                 const data = new FormData();
                 data.append('id', ids);

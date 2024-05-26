@@ -2,9 +2,9 @@
 
 require_once "../utils/database/conexion.php";
 
-class ModeloClientes
+class ModeloHeaders
 {
-    static public function mdlListarClientes()
+    static public function mdlListarHeaders()
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT id, ciruc, nombre, direccion, telefono, correo,  '' as acciones FROM tblclientes WHERE estado=true ORDER BY id");
@@ -15,7 +15,7 @@ class ModeloClientes
         }
     }
 
-    static public function mdlAgregarClientes($nombre)
+    static public function mdlAgregarHeaders($nombre)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -36,7 +36,7 @@ class ModeloClientes
     }
 
 
-    static public function mdlEditarCliente($id, $nombre)
+    static public function mdlEditarHeaders($id, $nombre)
     {
         try {
             $u = Conexion::ConexionDB()->prepare("UPDATE tblclientes SET nombre=:nombre WHERE id=:id");
@@ -56,7 +56,7 @@ class ModeloClientes
         }
     }
 
-    public static function mdlEliminarCliente($id)
+    public static function mdlEliminarHeaders($id)
     {
         try {
             $e = Conexion::ConexionDB()->prepare("UPDATE tblclientes SET estado=false WHERE id=:id");
@@ -70,6 +70,38 @@ class ModeloClientes
             return array(
                 'status' => 'danger',
                 'm' => 'No se pudo eliminar el cliente: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlHeadersTable($id)
+    {
+        try {
+            $e = Conexion::ConexionDB()->prepare("SELECT id, nombre FROM tblencabezados WHERE id=:id");
+            $e->bindParam(":id", $id, PDO::PARAM_INT);
+            $e->execute();
+            return $e->fetch(PDO::FETCH_OBJ);
+
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo consultar el encabezado: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlObtenerEncabezados($id)
+    {
+        try {
+            $e = Conexion::ConexionDB()->prepare("SELECT id, nombre FROM tblencabezados WHERE id=:id");
+            $e->bindParam(":id", $id, PDO::PARAM_INT);
+            $e->execute();
+            return $e->fetch(PDO::FETCH_OBJ);
+
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo consultar el encabezado: ' . $e->getMessage()
             );
         }
     }

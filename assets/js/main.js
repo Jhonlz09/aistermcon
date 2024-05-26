@@ -9,38 +9,6 @@ function confirmarEliminar(art, name, callback) {
   }).then((result) => {
     if (result.value) {
       callback(true);
-      // $.ajax({
-      //   url: "controllers/" + ruta + ".controlador.php",
-      //   method: "POST",
-      //   data: src,
-      //   cache: false,
-      //   dataType: "json",
-      //   contentType: false,
-      //   processData: false,
-      //   success: function (r) {
-      //     if (r.status === "success") {
-      //       // tabla.ajax.reload(null, false);
-      //       tabla === null
-      //         ? cargarCombo(name, s)
-      //         : tabla.ajax.reload(null, false);
-      //       mostrarToast(r.status, "Completado", "fas fa-check fa-lg", r.m);
-      //     } else {
-      //       mostrarToast(r.status, "Error", "fas fa-xmark fa-lg", r.m);
-      //     }
-      //   },
-      // });
-
-      // if (s !== '') {
-      //   confirmarAccion(src,ruta, null, null, function(res){
-      //     if(res){
-      //       cargarCombo(name, s)
-      //     }
-      //   })
-      // }else{
-      //   confirmarAccion(src,ruta, null ,tabla, function(res){
-      //   cargarAutocompletado();
-      //   })
-      // }
     }
   });
 }
@@ -92,31 +60,6 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback) {
     dataType: "json",
     contentType: false,
     processData: false,
-    // success: function (r) {
-    //   if (r.status === "success") {
-    //     tabla !== null
-    //        ?  tabla.ajax.reload(null, false)//cargarCombo(name, s, a, r.res)
-    //     //:
-
-    //     $(modal).modal("hide");
-
-    //     if (typeof callback === "function") {
-    //       callback(r.res); // Llama al callback con el valor de r.res como segundo argumento
-    //     }
-    //     mostrarToast(r.status, "Completado", "fa-solid fa-check fa-lg", r.m);
-    //   } else {
-    //     if (typeof callback === "function") {
-    //       callback(false); // Llama al callback con el valor de r.res como segundo argumento
-    //     }
-    //     mostrarToast(r.status, "Error", "fa-solid fa-xmark fa-lg", r.m);
-    //   }
-    //   // if (auto) {
-    //   //   cargarAutocompletado();
-    //   // }
-    //   // if (combo) {
-    //   //   cargarCombo(name);
-    //   // }
-    // },
     success: function (r) {
       let isSuccess = r.status === "success";
       if (isSuccess && tabla !== null) {
@@ -141,7 +84,7 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback) {
 function mostrarToast(status, title, icon, m) {
   $(document).Toasts("create", {
     autohide: true,
-    delay: 3500,
+    delay: 5500,
     class: "bg-" + status,
     title: title,
     icon: icon,
@@ -190,35 +133,74 @@ function displayModal(elements, ...args) {
 }
 
 function Buscar(tabla, s) {
-  tabla.search($(s).val()).draw();
+  scrollPosition = $(window).scrollTop();
+
+  tabla.search($(s).val()).draw(false);
+  $(window).scrollTop(scrollPosition);
+
 }
 
-function addPadding(b, s, w) {
+function addPadding(b, s, w ) {
+  // let isNav = (nav === null) ? true : false;
   if (s > w) {
     b.classList.remove("no-scroll");
   } else {
     b.classList.add("no-scroll");
+    // if(!isNav){
+    //   nav.classList.add("no-scroll");
+    // }
   }
 }
+
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
+
 
 function handleScroll(b, s, w) {
   if (!scroll && s > w) {
     scroll = true;
-    console.log("El scroll es true (primera vez)");
-    addPadding(b, s, w);
+    addPadding(b, s, w );
   } else if (scroll) {
     addPadding(b, s, w);
   }
 }
+
 function setChange(selectE, value) {
   selectE.value = value;
   selectE.dispatchEvent(new Event("change"));
 }
 
+function convertirArray(arr) {
+if (arr === null || arr === '{NULL}') {
+    // Devolver un arreglo vacío
+    return [];
+  }
+
+  if (typeof arr === "string" && arr.includes("{")) {
+    // El arreglo tiene llaves, lo convertimos a corchetes y luego a un array
+    return JSON.parse(arr.replace("{", "[").replace("}", "]"));
+  } else {
+    // El arreglo ya es un array válido
+    return arr;
+  }
+}
+
 function validarNumber(input, regex, ten = false) {
   input.value = input.value.replace(regex, "");
   if (ten) {
-    $(".ten").toggle(!(input.value.length === 10 || input.value.length === 0));
+    // $(".ten").toggle(!(input.value.length === 10 || input.value.length === 0));
+    // let padreTelefono = input.closest(".input-data");
+    // let mensajeTen = padreTelefono.querySelector(".ten");
+    var mensajeTen = input.parentNode.querySelector(".ten");
+    mensajeTen.style.display =
+      input.value.length !== 10 && input.value.length !== 0 ? "block" : "none";
+
+    // mensajeTen.toggle(!(input.value.length === 10 || input.value.length === 0));
   } else {
     if ((input.value.match(/\./g) || []).length > 1) {
       input.value = input.value.slice(0, -1);
@@ -301,17 +283,20 @@ function obtenerEspacioOcupadoLocalStorage() {
     : (tamanoOcupado / 1024).toFixed(2) + " KB";
 }
 
-function estilosSelect2(cbo, lbl) {
+function estilosSelect2(cbo, lbl, container = "single") {
   let labelElement = $("#" + lbl);
   let select2Container = $(cbo).next(".select2-container");
-  let select2Span = select2Container.find(".select2-selection--single");
+  let select2Span = select2Container.find(".select2-selection--" + container);
+  // let select2SpanMultiple = select2Container.find(".select2-selection--multiple");
 
   // Añade la clase al select actual si tiene una opción seleccionada
-  if ($(cbo).val() === null) {
+  if ($(cbo).val() === null || $(cbo).val().length === 0) {
     select2Span.removeClass("selected-bor");
+    // select2SpanMultiple.removeClass("selected-bor");
     labelElement.removeClass("selected-bor");
   } else {
     select2Span.addClass("selected-bor");
+    // select2SpanMultiple.addClass("selected-bor");
     labelElement.addClass("selected-bor");
   }
 }
@@ -328,7 +313,7 @@ function validarClave(input, sub) {
   }
 }
 
-function cargarAutocompletado(callback= false) {
+function cargarAutocompletado(callback = false) {
   $.ajax({
     url: "controllers/inventario.controlador.php",
     method: "POST",
@@ -348,7 +333,7 @@ function cargarAutocompletado(callback= false) {
         items.push(formattedItem);
       }
       if (typeof callback === "function") {
-        callback(items)
+        callback(items);
       } else {
         $("#codProducto").autocomplete("option", "source", items);
       }
@@ -357,9 +342,10 @@ function cargarAutocompletado(callback= false) {
 }
 
 function evitarEnvio(event) {
-  if (event.keyCode === 13) { // 13 es el código de la tecla "Enter"
+  if (event.keyCode === 13) {
+    // 13 es el código de la tecla "Enter"
     event.preventDefault(); // Evita que el formulario se envíe
     return false; // Evita el envío del formulario
   }
-  return true; 
+  return true;
 }

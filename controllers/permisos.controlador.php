@@ -10,4 +10,14 @@ class PermisosControlador {
         $data = PermisosModelo::mdlObtenerPermisoSubmenu($id, $modulo);
         return $data;
     }
+
+    static public function ctrObtenerNav($id){
+        $data = PermisosModelo::mdlObtenerNav($id);
+        return $data;
+    }
+
+    static public function ctrObtenerConfiguracion(){
+        $data = PermisosModelo::mdlObtenerConfiguracion();
+        return $data;
+    }
 }?>

@@ -18,7 +18,34 @@ class ModeloCombos
     static public function mdlListarConductor()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT id,nombre FROM tblempleado WHERE conductor=true AND estado=true ORDER BY id ASC");
+            $l = Conexion::ConexionDB()->prepare("SELECT ep.id,
+            split_part(e.nombre, ' ', 1) || ' ' || split_part(e.apellido, ' ', 1) || ' / ' || p.nombre AS nombre
+        FROM tblempleado e
+        JOIN tblempleado_placa ep ON e.id = ep.id_empleado AND ep.estado =true
+        JOIN tblplaca p ON ep.id_placa = p.id
+        WHERE e.estado = true;");
+            $l->execute();
+            return $l->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlListarDespachado()
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT id, split_part(nombre, ' ', 1) || ' ' || split_part(apellido, ' ', 1) as nombre FROM tblempleado WHERE id_rol=1 AND estado=true ORDER BY id ASC");
+            $l->execute();
+            return $l->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlListarResponsable()
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT id,split_part(nombre, ' ', 1) || ' ' || split_part(apellido, ' ', 1) as nombre FROM tblempleado WHERE id_rol=3 AND estado=true ORDER BY id ASC");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {

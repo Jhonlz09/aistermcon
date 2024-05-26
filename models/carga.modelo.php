@@ -28,7 +28,7 @@ class ModeloCarga
                     $codigo = strtoupper(trim($doc->getCell("A" . $i)->getValue()));
                     $descripcion = strtoupper(trim($doc->getCell("B" . $i)->getValue()));
                     $categoria = strtoupper(trim($doc->getCell("C" . $i)->getValue()));
-                    $unidad = strtoupper(trim($doc->getCell("D" . $i)->getValue()));
+                    $unidad = trim($doc->getCell("D" . $i)->getValue());
                     $ubicacion = strtoupper(trim($doc->getCell("E" . $i)->getValue()));
                     $stock_min = trim($doc->getCell("F" . $i)->getValue());
                     $stock = trim($doc->getCell("G" . $i)->getValue());
@@ -127,7 +127,6 @@ class ModeloCarga
 
                     $a = Conexion::ConexionDB()->prepare("INSERT INTO tblcategoria(nombre) VALUES (:cat)");
                     $a->bindParam(":cat", $categoria, PDO::PARAM_STR);
-
                     if ($a->execute()) {
                         $registrados++;
                     }
@@ -320,17 +319,23 @@ class ModeloCarga
             //CICLO FOR PARA REGISTROS DE CLIENTES
             for ($i = 4; $i <= $numeroFilas; $i++) {
                 try {
+                    $cedula = trim($doc->getCell("A" . $i)->getValue());
+                    if (empty($cedula)) {
+                        $cedula = null;
+                    } else if (!(preg_match('/^[0-9]+$/', $cedula))) {
+                        $cedula = '1';
+                    } 
                     $clientes = strtoupper(trim($doc->getCell("A" . $i)->getValue()));
                     if (empty($clientes)) {
                         $clientes = null;
                     }
-
                     $a = Conexion::ConexionDB()->prepare("INSERT INTO tblclientes(nombre) VALUES (:cli)");
                     $a->bindParam(":cli", $clientes, PDO::PARAM_STR);
 
                     if ($a->execute()) {
                         $registrados++;
                     }
+
                 } catch (PDOException $e) {
                     if ($e->getCode() == '23505') {
                         $repetidos++;
@@ -370,7 +375,7 @@ class ModeloCarga
             //CICLO FOR PARA REGISTROS DE EMPLEADOS
             for ($i = 4; $i <= $numeroFilas; $i++) {
                 try {
-                    $cedula = strtoupper(trim($doc->getCell("A" . $i)->getValue()));
+                    $cedula = trim($doc->getCell("A" . $i)->getValue());
                     if (empty($cedula)) {
                         $cedula = null;
                     } else if (!(preg_match('/^[0-9]+$/', $cedula))) {
@@ -382,17 +387,23 @@ class ModeloCarga
                         $nombre_empleado = null;
                     }
 
-                    $conductor = $doc->getCell("C" . $i)->getValue();
-                    if (empty($conductor)) {
-                        $conductor = false;
-                    }else{
-                        $conductor = true;
+                    $apellido = strtoupper(trim($doc->getCell("C" . $i)->getValue()));
+                    if (empty($apellido)) {
+                        $apellido = null;
                     }
 
-                    $a = Conexion::ConexionDB()->prepare("INSERT INTO tblempleado(cedula,nombre, conductor) VALUES (:ced,:nom,:con)");
+                    $telefono = trim($doc->getCell("D" . $i)->getValue());
+                    if (empty($telefono)) {
+                        $telefono = null;
+                    } else if (!(preg_match('/^[0-9]+$/', $telefono))) {
+                        $telefono = '1';
+                    } 
+
+                    $a = Conexion::ConexionDB()->prepare("INSERT INTO tblempleado(cedula,nombre,apellido, telefono) VALUES (:ced,:nom,:ape,:tel)");
                     $a->bindParam(":ced", $cedula, PDO::PARAM_STR);
                     $a->bindParam(":nom", $nombre_empleado, PDO::PARAM_STR);
-                    $a->bindParam(":con", $conductor, PDO::PARAM_BOOL);
+                    $a->bindParam(":ape", $apellido, PDO::PARAM_STR);
+                    $a->bindParam(":tel", $telefono, PDO::PARAM_STR);
 
                     if ($a->execute()) {
                         $registrados++;

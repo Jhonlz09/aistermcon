@@ -21,7 +21,6 @@ class ModeloRoles
             $conexion = Conexion::ConexionDB();
             $a = $conexion->prepare("INSERT INTO tblperfil(nombre) VALUES (:nombre)");
             $a->bindParam(":nombre", $nombre, PDO::PARAM_STR);
-
             if ($a->execute()) {
                 // Paso 2: Obtener el id_perfil generado automáticamente
                 $id_perfil = $conexion->lastInsertId();
@@ -33,17 +32,14 @@ class ModeloRoles
                 $b->bindParam(":id_perfil", $id_perfil, PDO::PARAM_INT);
                 $b->execute();
             }
-
-
-
             return array(
                 'status' => 'success',
-                'm' => 'El rol se agregó correctamente'
+                'm' => 'El perfil se agregó correctamente'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo agregar el rol: ' . $e->getMessage()
+                'm' => 'No se pudo agregar el perfil: ' . $e->getMessage()
             );
         }
     }
@@ -58,18 +54,18 @@ class ModeloRoles
             $u->execute();
             return array(
                 'status' => 'success',
-                'm' => 'El rol se editó correctamente'
+                'm' => 'El perfil se editó correctamente'
             );
         } catch (PDOException $e) {
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo editar el rol debido a que ya existe un rol con la misma cedula'
+                    'm' => 'No se pudo editar el perfil debido a que ya existe'
                 );
             } else {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo editar el rol: ' . $e->getMessage()
+                    'm' => 'No se pudo editar el perfil: ' . $e->getMessage()
                 );
             }
         }
@@ -96,9 +92,10 @@ class ModeloRoles
     public static function mdlgetPermisos($id)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT id_modulo, crear, editar, eliminar FROM tblperfil_modulo WHERE id_perfil=:id ORDER BY id_modulo");
+            $l = Conexion::ConexionDB()->prepare("SELECT pm.id_modulo, pm.crear, pm.editar, pm.eliminar FROM tblperfil_modulo pm
+            JOIN tblmodulo m on m.id = pm.id_modulo
+                WHERE id_perfil=:id AND m.vista IS NOT null ORDER BY id_modulo");
             $l->bindParam(":id", $id, PDO::PARAM_INT);
-
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -106,27 +103,34 @@ class ModeloRoles
         }
     }
 
-    public static function mdlSavePermisos($id, $modulo, $crear, $editar, $eliminar)
+    public static function mdlSavePermisos($id, $permisos)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("INSERT INTO tblperfil_modulo(id_perfil, id_modulo, crear, editar, eliminar)
-            VALUES (:id,:modulo,:crear,:editar,:eliminar)");
-            $l->bindParam(":id", $id, PDO::PARAM_INT);
-            $l->bindParam(":modulo", $modulo, PDO::PARAM_INT);
-            $l->bindParam(":crear", $crear, PDO::PARAM_BOOL);
-            $l->bindParam(":editar", $editar, PDO::PARAM_BOOL);
-            $l->bindParam(":eliminar", $eliminar, PDO::PARAM_BOOL);
-            $l->execute();
+            $query = "INSERT INTO tblperfil_modulo (id_perfil, id_modulo, crear, editar, eliminar) VALUES (:id, :modulo, :crear, :editar, :eliminar)";
+
+            $stmt = Conexion::ConexionDB()->prepare($query);
+
+            foreach ($permisos as $permiso) {
+                $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+                $stmt->bindParam(":modulo", $permiso['id_modulo'], PDO::PARAM_INT);
+                $stmt->bindParam(":crear", $permiso['crear'], PDO::PARAM_BOOL);
+                $stmt->bindParam(":editar", $permiso['editar'], PDO::PARAM_BOOL);
+                $stmt->bindParam(":eliminar", $permiso['eliminar'], PDO::PARAM_BOOL);
+                $stmt->execute();
+            }
+
             return array(
                 'status' => 'success',
-                'm' => 'Se guardo los permisos del rol con éxito.'
+                'm' => 'Se guardaron los permisos del rol con éxito.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo guardar los permisos de el rol: ' . $e->getMessage()
-            );        }
+                'm' => 'No se pudieron guardar los permisos del rol: ' . $e->getMessage()
+            );
+        }
     }
+
 
     public static function mdlDeletePermisos($id)
     {
@@ -137,12 +141,12 @@ class ModeloRoles
             $l->execute();
             return array(
                 'status' => 'success',
-                'm' => 'Se editó los permisos del rol con éxito.'
+                'm' => 'Se eliminaron los permisos del rol con éxito.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo editar los permisos de el rol: ' . $e->getMessage()
+                'm' => 'No se pudo eliminar los permisos de el rol: ' . $e->getMessage()
             );
         }
     }

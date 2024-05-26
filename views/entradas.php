@@ -1,6 +1,4 @@
-<?php if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-} ?>
+<?php require_once "../utils/database/config.php";?>
 
 <head>
     <title>Compras</title>
@@ -13,7 +11,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Compras</h1>
             </div>
-            <?php if ($_SESSION["crear3"]) : ?>
+            <?php if (isset($_SESSION["crear7"]) && $_SESSION["crear7"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -62,7 +60,10 @@
                                     <th class="text-center">CÓDIGO</th>
                                     <th>CANTIDAD</th>
                                     <th>UND</th>
-                                    <th class="text-center">PRECIO</th>
+                                    <th class="text-center">P. UNIT.</th>
+                                    <th class="text-center">P. TOT.</th>
+                                    <th class="text-center">IVA</th>
+                                    <th class="text-center">P. FINAL</th>
                                     <th>DESCRIPCION</th>
                                     <th></th>
                                 </tr>
@@ -83,64 +84,12 @@
 </section>
 <!-- /.Contenido -->
 
-<!-- Modal -->
-<!-- <div class="modal fade" id="modal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
-                <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Entrada</span></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body">
-                    <input type="hidden" id="id_empleado" value="">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="input-data">
-                                <input autocomplete="off" id="cedula" inputmode="numeric" class="input-nuevo" type="text" oninput="validarNumber(this,/[^0-9]/g,true)" maxlength="10" required>
-                                <div class="line underline"></div>
-                                <label class="label">
-                                    <i class="fa-solid fa-id-card"></i> Cédula</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
-                                <div class="ten">*La cedula debe contener 10 numeros</div>
-                            </div>
-                            <div class="input-data" style="margin-bottom:2.4em;">
-                                <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
-                                <div class="line underline"></div>
-                                <label class="label"><i class="fa-solid fa-signature"></i> Nombres</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
-                            </div>
-                            <div style="font-size: 1.33rem;margin-bottom:1rem" class="d-flex align-items-center">
-                                <label for="conductor" class="m-0">
-                                    <i class="fa-solid fa-steering-wheel"></i> Conductor
-                                </label>
-                                <label class="switch-2 ml-3">
-                                    <input class="switch__input" type="checkbox" id="conductor" onkeydown="toggleWithEnter(event, this)">
-                                    <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
-                                        <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
-                                    </svg>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div> -->
-
 <script src="assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js"></script>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar3"] || $_SESSION["eliminar3"] ?>';
-    var editar = '<?php echo $_SESSION["editar3"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar3"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar7"] || $_SESSION["eliminar7"] ?>';
+    var editar = '<?php echo $_SESSION["editar7"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar7"] ?>';
     var collapsedGroups = {};
 
     configuracionTable = {
@@ -151,17 +100,20 @@
         "autoWidth": false,
         paging: false, // Esto deshabilita la paginación
         rowGroup: {
-            dataSrc: [6],
+            dataSrc: [9],
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
 
                 rows.nodes().each(function(r) {
-                    r.style.display = collapsed ? '' : 'none';
+                    r.style.visibility = collapsed ? '' : 'collapse';
                 });
 
-                var groupText = '<div class="d-flex justify-content-between align-items-center "><strong style="cursor:pointer" class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + (editar ? '<button id="editE" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button> ' : '') + (eliminar ? '<button id="eliE" style="color:var(--text-color);font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-trash-can"></i></button>' : '') + '</div></div>';
+                var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer"><strong class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + 
+                (editar ? '<button id="editE" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button> ' : '') + 
+                (eliminar ? '<button id="eliE" style="color:var(--text-color);font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-trash-can"></i></button>' : '') + '</div></div>';
+                
                 return $('<tr/>')
-                    .append('<td colspan="8">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
+                    .append('<td colspan="9">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -180,40 +132,34 @@
             },
             {
                 targets: 3,
-                className: "text-center text-nowrap ",
+                className: "text-center",
                 responsivePriority: 2
-
             },
             {
-                targets: 6,
-                visible: false,
+                targets: 4,
             },
-            // {
-            //     targets: 6,
-            //     data: "acciones",
-            //     visible: mostrarCol ? true : false,
-            //     render: function(data, type, row, full, meta) {
-            //         return (
-            //             "<center style='white-space: nowrap;'>" +
-            //             (editar ?
-            //                 " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
-            //                 " <i class='fa-solid fa-pencil'></i>" +
-            //                 "</button>" : "") +
-            //             (eliminar ?
-            //                 " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
-            //                 " <i class='fa fa-trash'></i>" +
-            //                 "</button>" : "") +
-            //             " </center>"
-            //         );
-            //     },
-            // },
+            {
+                targets: 9,
+                visible: false,
+            }
         ],
+        preDrawCallback: function(settings) {
+            // Guardar la posición del scroll antes de redibujar
+            scrollPosition = $(window).scrollTop();
+        },
+        drawCallback: function(settings) {
+            // Restaurar la posición del scroll después de redibujar
+            $(window).scrollTop(scrollPosition);
+        }
     }
 
-    $('#tblEntradas tbody').on('click', 'tr.dtrg-start strong', function() {
-        var name = $(this).closest('tr.dtrg-start').data('name');
-        collapsedGroups[name] = !collapsedGroups[name];
-        tabla.draw(false);
+    $('#tblEntradas tbody').on('click', 'tr.dtrg-start', function() {
+        if ($(event.target).closest('.txt-wrap-sm').length === 0) {
+
+            var name = $(this).closest('tr.dtrg-start').data('name');
+            collapsedGroups[name] = !collapsedGroups[name];
+            tabla.draw(false);
+        }
     });
 
     $(document).ready(function() {
@@ -234,21 +180,13 @@
             });
 
             tabla.on('draw.dt', function() {
-                const b = document.body;
-                const s = b.scrollHeight;
-                const w = window.innerHeight;
+                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
+                    const b = document.body;
+                    const s = b.scrollHeight;
+                    const w = window.innerHeight;
 
-                // tabla.rows({
-                //     page: 'current'
-                // }).every(function() {
-                //     var groupRow = this.node();
-                //     var groupValue = this.data()[4]; // Índice de la columna para obtener el valor del grupo
-
-                //     // Agregar botones HTML al final de la fila de grupo
-                //     $(groupRow).find('.dtrg-start').append('<button class="btn btn-primary">Botón 1</button> <button class="btn btn-danger">Botón 2</button>');
-                // });
-
-                handleScroll(b, s, w);
+                    handleScroll(b, s, w);
+                }
 
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('e', JSON.stringify(tablaData));
@@ -262,11 +200,6 @@
             form = document.getElementById('formNuevo'),
             btnNuevo = document.getElementById('btnNuevo');
 
-        // const id = document.getElementById('id_empleado'),
-        //     cedula = document.getElementById('cedula'),
-        //     nombre = document.getElementById('nombre'),
-        //     conductor = document.getElementById('conductor');
-
         $(cboAnio).select2({
             width: '110%',
             data: datos_anio,
@@ -276,7 +209,7 @@
 
         $(cboMeses).select2({
             minimumResultsForSearch: -1,
-            width: 'calc(100% + 1.5rem)',
+            width: 'calc(100% + .4vw)',
             data: datos_meses,
         });
         setChange(cboMeses, mes);
@@ -309,46 +242,43 @@
             tabla.ajax.reload();
         });
 
-        // $(modal).on("shown.bs.modal", () => {
-        //     // cedula.focus();
-        // });
-
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
                 const entrada = document.getElementById('radio-1');
-                // const icon = document.querySelector('.modal-title i');
-                // cambiarModal(span, ' Nuevo Entrada', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-success', modal, 'modal-new', 'modal-change')
-                // form.reset();
-                // form.classList.remove('was-validated');
-                control.click();
+                first_control.click();
                 entrada.click();
             });
         }
 
         $('#tblEntradas').on('click', '#editE', function() {
-            id_boleta = tabla.row($(this).closest('tr').next()).data()[7];
-            const fecha_id = tabla.row($(this).closest('tr').next()).data()[8];
-            const proveedor_id = tabla.row($(this).closest('tr').next()).data()[9];
+            row = tabla.row($(this).closest('tr').next()).data();
+            id_boleta = row[10];
+            const fecha_id = row[11];
+            const proveedor_id = row[12];
+            const factura = row[13]
             const entrada_radio = document.getElementById('radio-1');
+            const nro_factura = document.getElementById('nro_fac');
             setChange(cboProveedores, proveedor_id)
             fecha.value = fecha_id;
+            nro_factura.value = factura;
             entrada_radio.value = '5';
             entrada_radio.checked = true;
             entrada_radio.dispatchEvent(new Event('change'));
-            control.click();
+            first_control.click();
             tblDetalleEntrada.ajax.reload(null, false);
             entrada_radio.value = '1';
         });
 
         $('#tblEntradas').on('click', '#eliE', function() {
-            let boleta = tabla.row($(this).closest('tr').next()).data()[7];
+            let boleta = tabla.row($(this).closest('tr').next()).data()[10];
             let src = new FormData();
             src.append('accion', 1);
             src.append('id', boleta);
             confirmarEliminar('la', 'entrada', function(r) {
                 if (r) {
-                    confirmarAccion(src, 'entradas', tabla)
+                    confirmarAccion(src, 'entradas', tabla);
+                    cargarAutocompletado();
                 }
             })
         });
@@ -372,7 +302,7 @@
         //         }
         //     }
         // });
-        
+
         // $('#tblEntradas tbody').on('click', '.btnEditar', function() {
         //     let row = obtenerFila(this, tabla);
         //     accion = 2;

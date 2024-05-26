@@ -70,6 +70,15 @@ class ModeloUsuarios
             $u->bindParam(":usuario", $usuario, PDO::PARAM_STR);
             $u->bindParam(":id_perfil", $id_perfil, PDO::PARAM_INT);
             $u->execute();
+
+            if ($id == $_SESSION["s_usuario"]->id) {
+                // Actualizar las variables de sesión
+                $_SESSION["s_usuario"]->nombres = $nombres;
+                $_SESSION["s_usuario"]->nombre_usuario = $usuario;
+                $_SESSION["s_usuario"]->id_perfil = $id_perfil;
+                // Puedes agregar más variables de sesión si es necesario
+            }
+            
             return array(
                 'status' => 'success',
                 'm' => 'El usuario se editó correctamente'

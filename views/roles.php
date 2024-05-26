@@ -1,18 +1,16 @@
-<?php if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-} ?>
+<?php require_once "../utils/database/config.php";?>
 
 <head>
-    <title>Roles</title>
+    <title>Perfil</title>
 </head>
 <!-- Contenido Header -->
 <section class="content-header">
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
-                <h1 class="col-p">Roles</h1>
+                <h1 class="col-p">Perfil</h1>
             </div>
-            <?php if ($_SESSION["crear8"]) : ?>
+            <?php if (isset($_SESSION["crear16"]) && $_SESSION["crear16"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -32,7 +30,7 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col col-p">
-                                    <h3 class="card-title ">Listado de roles</h3>
+                                    <h3 class="card-title ">Listado de perfiles</h3>
                                 </div>
                                 <div class="col-sm-8 p-0">
                                     <div class="card-tools">
@@ -76,17 +74,17 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-gradient-success">
-                <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Rol</span></h4>
+                <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Perfil</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
                 <div class="modal-body">
-                    <input type="hidden" id="id" value="">
+                    <input type="hidden" id="id_rol" value="">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="input-data" style="margin-bottom:1em;">
+                            <div class="input-data">
                                 <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
                                 <div class="line underline"></div>
                                 <label class="label"><i class="fa-solid fa-signature"></i> Descripción</label>
@@ -117,12 +115,12 @@
             </div>
             <div class="modal-body p-0">
                 <form id="formPermisos" autocomplete="off" class="needs-validation" novalidate>
-                    <input type="hidden" id="id_rol" value="">
+                    <input type="hidden" id="id" value="">
                     <div class="table-responsive">
                         <table class="table mb-0 m-auto" id="tblPermisos">
                             <thead>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-desktop"></i> Modulos</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-desktop"></i> Modulos</th>
                                     <th class="text-center"><i class="fa-solid fa-eye"></i> Mostrar</th>
                                     <th class="text-center"><i class="fa-solid fa-plus"></i> Nuevo</th>
                                     <th class="text-center"><i class="fa-solid fa-pen"></i> Editar</th>
@@ -131,7 +129,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-house"></i> Inicio</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-house"></i> Inicio</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="1" value="1" onkeydown="toggleWithEnter(event, this)">
@@ -166,7 +164,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-shelves"></i> Inventario</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-shelves"></i> Inventario</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="3" value="3" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -201,7 +199,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-person-dolly"></i> Movimientos</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-person-dolly"></i> Movimientos</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" id="verE" name="4" value="4" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -236,7 +234,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-chart-pie"></i> Informes</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-chart-pie"></i> Informes</th>
                                     <td class="text-center">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="5" value="5" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -270,14 +268,8 @@
                                         </label>
                                     </td>
                                 </tr>
-
-
-
-
-
-
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-money-check-dollar"></i> Listado de Compras</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-money-check-dollar"></i> Listado de Compras</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" id="verS" name="7" value="7" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -312,7 +304,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-hand-holding-box"></i> Proveedores</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-hand-holding-box"></i> Proveedores</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" id="verEm" name="8" value="8" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -347,7 +339,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-user-helmet-safety"></i> Empleados</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-user-helmet-safety"></i> Empleados</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="10" value="10" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -382,7 +374,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-money-check-dollar-pen"></i> Presupuestos</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-money-check-dollar-pen"></i> Presupuestos</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" id="verInf" name="12" value="12" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -417,7 +409,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-tickets"></i> Ordenes de trabajo</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-tickets"></i> Ordenes de trabajo</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="13" value="13" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this, true)">
@@ -452,7 +444,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-user-tag"></i> Clientes</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-user-tag"></i> Clientes</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" id="verEm" name="14" value="14" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -486,11 +478,11 @@
                                         </label>
                                     </td>
                                 </tr>
-                                
-                               
+
+
 
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-users"></i> Usuarios</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-users"></i> Usuarios</th>
                                     <td class="text-center">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="15" value="15" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -525,7 +517,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-id-card-clip"></i> Roles</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-id-card-clip"></i> Roles</th>
                                     <td class="text-center">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="16" value="16" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -560,7 +552,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-upload"></i> Cargar</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-upload"></i> Cargar</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="17" value="17" onkeydown="toggleWithEnter(event, this)">
@@ -595,7 +587,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" class="sticky-col "><i class="fas fa-users"></i> Configuración</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-users"></i> Configuración</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="18" value="18" onkeydown="toggleWithEnter(event, this)">
@@ -645,9 +637,9 @@
 </div>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar8"] || $_SESSION["eliminar8"] ?>';
-    var editar = '<?php echo $_SESSION["editar8"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar8"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar16"] || $_SESSION["eliminar16"] ?>';
+    var editar = '<?php echo $_SESSION["editar16"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar16"] ?>';
 
     configuracionTable = {
         "responsive": true,
@@ -727,16 +719,18 @@
 
         const id = document.getElementById('id'),
             id_rol = document.getElementById('id_rol'),
-
             nombre = document.getElementById('nombre');
+            
+
 
         $(modal).on("shown.bs.modal", () => {
             nombre.focus();
         });
+
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                cambiarModal(span, ' Nuevo Rol', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-success', modal, 'modal-new', 'modal-change')
+                cambiarModal(span, ' Nuevo Perfil', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-success', modal, 'modal-new', 'modal-change')
                 form.reset();
                 form.classList.remove('was-validated');
             });
@@ -749,7 +743,7 @@
             let src = new FormData();
             src.append('accion', accion);
             src.append('id', id_);
-            confirmarEliminar('este', 'rol', function(r) {
+            confirmarEliminar('este', 'perfil', function(r) {
                 if (r) {
                     confirmarAccion(src, 'roles', tabla)
                 }
@@ -768,7 +762,7 @@
         $('#tblRoles tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             accion = 2;
-            cambiarModal(span, ' Editar Rol', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Editar Perfil', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombre.value = row["nombre"];
         });
@@ -794,11 +788,11 @@
                 success: function(r) {
                     r.forEach(function(obj) {
                         let modulo = obj.id_modulo;
-                        let checkbox = document.querySelectorAll('[name="' + modulo + '"]');
+                        let checkbox = body.querySelectorAll('[name="' + modulo + '"]');
                         checkbox[0].checked = true;
                         checkbox[0].dispatchEvent(new Event('input'));
 
-                        if (modulo === 1 || modulo === 13 || modulo === 14) {
+                        if (modulo === 1 || modulo === 17 || modulo === 18) {
                             return; // Salta este ciclo del forEach
                         }
                         // Buscar el checkbox correspondiente al id_modulo
@@ -822,30 +816,67 @@
                 success: function(r) {
                     let name = [1, 3, 4, 5, 7, 8, 10, 12, 13, 14, 15, 16, 17, 18];
                     let data = [];
+                    let isBodega = true;
+                    let isCompras = true;
+                    let isPersonas = true;
+                    let isOperaciones = true;
+
                     name.forEach(function(id) {
                         let checkbox = document.querySelectorAll('[name="' + id + '"]');
                         if (checkbox[0].checked) {
+                            if (id === 3 || id === 4 || id === 5) {
+                                if (isBodega) {
+                                    let obj = {
+                                        id_modulo: 2,
+                                        crear: true,
+                                        editar: true,
+                                        eliminar: true
+                                    };
+                                    isBodega = false;
+                                    data.push(obj);
+                                }
+                            } else if (id === 7 || id === 8) {
+                                if (isCompras) {
+                                    let obj = {
+                                        id_modulo: 6,
+                                        crear: true,
+                                        editar: true,
+                                        eliminar: true
+                                    };
+                                    isCompras = false;
+                                    data.push(obj);
+                                }
+                            } else if (id === 10) {
+                                if (isPersonas) {
+                                    let obj = {
+                                        id_modulo: 9,
+                                        crear: true,
+                                        editar: true,
+                                        eliminar: true
+                                    };
+                                    isPersonas = false;
+                                    data.push(obj);
+                                }
+                            } else if (id === 12 || id === 13 || id === 14) {
+                                if (isOperaciones) {
+                                    let obj = {
+                                        id_modulo: 11,
+                                        crear: true,
+                                        editar: true,
+                                        eliminar: true
+                                    };
+                                    isOperaciones = false;
+                                    data.push(obj);
+                                }
+                            }
                             let obj = {
                                 id_modulo: checkbox[0].value,
                                 crear: checkbox[1].checked,
                                 editar: checkbox[2].checked,
                                 eliminar: checkbox[3].checked
                             };
+
                             data.push(obj);
-                            // $.ajax({
-                            //     url: "controllers/roles.controlador.php",
-                            //     method: "POST",
-                            //     data: {
-                            //         'id_perfil': id_rol.value,
-                            //         'modulo': obj.id_modulo,
-                            //         'crear': obj.crear,
-                            //         'editar': obj.editar,
-                            //         'eliminar': obj.eliminar,
-                            //         'accion': 6
-                            //     },
-                            //     dataType: "json",
-                            //     success: function(r) {},
-                            // });
                         }
                     });
                     $.ajax({

@@ -1,6 +1,4 @@
-<?php if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-} ?>
+<?php require_once "../utils/database/config.php";?>
 
 <head>
     <title>Proveedores</title>
@@ -12,7 +10,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Proveedores</h1>
             </div>
-            <?php if ($_SESSION["crear7"]) : ?>
+            <?php if (isset($_SESSION["crear8"]) && $_SESSION["crear8"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -107,9 +105,9 @@
 </div>
 
 <script>
-    // var mostrarCol = '<?php echo $_SESSION["editar7"] || $_SESSION["eliminar7"] ?>';
-    // var editar = '<?php echo $_SESSION["editar7"] ?>';
-    // var eliminar = '<?php echo $_SESSION["eliminar7"] ?>';
+    // var mostrarCol = '<?php echo $_SESSION["editar8"] || $_SESSION["eliminar8"] ?>';
+    // var editar = '<?php echo $_SESSION["editar8"] ?>';
+    // var eliminar = '<?php echo $_SESSION["eliminar8"] ?>';
 
     configuracionTable = {
         "responsive": true,

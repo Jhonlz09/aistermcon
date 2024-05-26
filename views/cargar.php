@@ -5,7 +5,7 @@
     window.scrollTo(0, 0);
 </script>
 
-<section class="content-header">
+<section class="content-header" style="padding: 1.6rem .55rem;">
     <div class="container-fluid">
         <div class="row">
             <div class="col">

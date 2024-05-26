@@ -3,7 +3,7 @@ require_once "../models/roles.modelo.php";
 
 class ControladorRoles
 {
-    public $id, $nombres, $modulo, $crear, $editar, $eliminar;
+    public $id, $nombres, $guia, $ppt, $modulo, $crear, $editar, $eliminar;
 
     static public function listarRoles()
     {
@@ -40,12 +40,8 @@ class ControladorRoles
 
     public function savePermisos($datos)
     {
-        $resultados = [];
-        foreach ($datos as $permiso) {
-            $resultado = ModeloRoles::mdlSavePermisos($this->id, $permiso['id_modulo'], $permiso['crear'], $permiso['editar'], $permiso['eliminar']);
-            $resultados[] = $resultado;
-        }
-        echo json_encode($resultados, JSON_UNESCAPED_UNICODE);
+        $resultado = ModeloRoles::mdlSavePermisos($this->id,$datos);
+        echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
     }
 
     public function deletePermisos()

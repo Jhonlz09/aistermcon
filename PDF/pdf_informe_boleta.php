@@ -15,79 +15,110 @@ class PDF extends FPDF
     private $id_boleta; // Propiedad para almacenar el ID de la boleta
     public $orden;
     public $cliente;
+    public $fecha_retorno;
+    public $fecha_emision;
+    private $encabezado = false;
+
 
     function Header()
     {
         $data_detalle = ModeloSalidas::mdlBuscarDetalleBoleta($this->id_boleta);
         $this->orden = $data_detalle[0]['orden'];
         $this->cliente = $data_detalle[0]['cliente'];
+        $this->fecha_emision = $data_detalle[0]['fecha'];
+        $this->fecha_retorno = $data_detalle[0]['fecha_retorno'];
+        // $this->
         // // Arial bold 15
-        $this->SetFont('Arial', '', 11);
+        $this->SetFont('Arial', '', 9);
         $this->SetTextColor(10, 0, 0);
         // Número de página
-        $this->Cell(350, 25, '' . $this->PageNo() . ' / {nb}', 0, 0, 'C');
-        $this->Image('../assets/img/logo_pdf.jpeg', 48, -5, 118, 40);
-        $this->Ln();
-        $this->SetFont('Arial', '', 8);
-        $this->Cell(0, -4, iconv('UTF-8', 'windows-1252', 'Lotización Santa Adriana Mz 16 Solar 11 Mapasingue Este'), 0, 1, 'C');
-        $this->Cell(0, 11, iconv('UTF-8', 'windows-1252', 'Sector A Telf.: 6052288   3082701 Cel.: 099851628'), 0, 1, 'C');
-        $this->Cell(0, -5, iconv('UTF-8', 'windows-1252', 'e-mails: info@aistermcon.com • www.aistermcon.com'), 0, 1, 'C');
-        $this->Cell(0, 11, iconv('UTF-8', 'windows-1252', 'Guayaquil - Ecuador'), 0, 1, 'C');
-        $this->SetFont('Arial', 'B', 14);
-        $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'GUIA DE REMISION'), 0, 1, 'C');
+        // $this->Cell(350, 25, '' . $this->PageNo() . ' / {nb}', 0, 0, 'C');
+        // $this->Ln();
+        if ($this->encabezado) {
+            $this->SetXY(15, 10);
+            $this->MultiCell(0, 5, iconv('UTF-8', 'windows-1252', "NRO. ORDEN:  $this->orden \nCLIENTE: $this->cliente"), 0, 'L', 0);
+            $this->MultiCell(0, 5, iconv('UTF-8', 'windows-1252', "FECHA DE EMISION: $this->fecha_emision \n FECHA DE RETORNO:  $this->fecha_retorno"), 0, 'L', 0);
+        }
+        // $this->SetFont('Arial', '', 8);
+        // $this->Cell(0, -4, iconv('UTF-8', 'windows-1252', 'Lotización Santa Adriana Mz 16 Solar 11 Mapasingue Este'), 0, 1, 'C');
+        // $this->Cell(0, 11, iconv('UTF-8', 'windows-1252', 'Sector A Telf.: 6052288   3082701 Cel.: 099851628'), 0, 1, 'C');
+        // $this->Cell(0, -5, iconv('UTF-8', 'windows-1252', 'e-mails: info@aistermcon.com • www.aistermcon.com'), 0, 1, 'C');
+        // $this->Cell(0, 11, iconv('UTF-8', 'windows-1252', 'Guayaquil - Ecuador'), 0, 1, 'C');
+        // $this->SetFont('Arial', 'B', 14);
+        $this->SetXY(15, 10);
+        // $this->MultiCell(0, 5, iconv('UTF-8', 'windows-1252', "NRO. ORDEN:  $this->orden \nCLIENTE: $this->cliente"), 0, 'L', 0);
+        // $this->MultiCell(0, 5, iconv('UTF-8', 'windows-1252', "FECHA DE EMISION: $this->cliente \nNRO. ORDEN:  $this->orden"), 0, 'L', 0);
 
-        $this->SetFont('Arial', 'B', 9); // Configurar la fuente en negrita
-        $this->Cell(10, 10, iconv('UTF-8', 'windows-1252', 'Fecha de iniciacion del traslado: '), 0, 1, 'L');
-        $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'Fecha de terminacion del traslado: _______________________________'), 0, 1, 'L');
-        $this->SetXY(68, 43);
-        $this->SetFont('Arial', '', 9); // Configurar la fuente en normal
-        $this->Cell(50, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['fecha']), 0, 0, 'L'); // Cambiar a nueva línea al final
-        $this->SetFont('Arial', 'B', 9);
-        $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Punto de partida: _______________________________'), 0, 1, 'L');
-        $this->SetFont('Arial', '', 9);
-        $this->SetXY(148, 43);
-        $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'BODEGA SANTA ADRIANA'), 0, 1, 'L');
-        $this->SetXY(148, 48);
-        $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['fecha']), 0, 1, 'L'); // Cambiar a nueva línea al final
-        $this->SetXY(68, 48);
-        $this->SetFont('Arial', '', 9); // Configurar la fuente en normal
-        $this->Cell(50, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['fecha']), 0, 0, 'L'); // Cambiar a nueva línea al final
-        $this->SetFont('Arial', 'B', 9);
-        $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Fecha de emisión: ______________________________'), 0, 1, 'L');
-        $this->SetFont('Arial', 'B', 11); // Fuente ampliada
-        $this->SetY(53);
-        $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Destinatario'), 0, 1, 'L');
-        $this->SetFont('Arial', 'B', 9); // Fuente ampliada
-        $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'Nombre o razón social: ______________________________________________'), 0, 1, 'L');
-        $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'RUC/C.I.: ___________________________'), 0, 1, 'L');
-        $this->SetXY(48, 58);
-        $this->SetFont('Arial', '', 9); // Fuente ampliada
-        $this->Cell(79, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['cliente']), 0, 0, 'L');
-        $this->SetFont('Arial', 'B', 9); // Fuente ampliada
-        $this->Cell(30, 0, iconv('UTF-8', 'windows-1252', 'Número de orden: _________________________'), 0, 0, 'L');
-        $this->SetFont('Arial', '', 9); // Fuente ampliada
-        $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['orden']), 0, 0, 'L');
-        $this->SetXY(25, 63);
-        $this->Cell(47, 0, iconv('UTF-8', 'windows-1252', '5'), 0, 0, 'L');
-        $this->SetFont('Arial', 'B', 9); // Fuente ampliada
-        $this->Cell(32, 0, iconv('UTF-8', 'windows-1252', 'Punto de llegada: _________________________________________________________'), 0, 0, 'L');
-        $this->SetFont('Arial', '', 9); // Fuente ampliada
-        $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['cliente']), 0, 1, 'L');
-        $this->SetY(68);
-        $this->SetFont('Arial', 'B', 11); // Fuente ampliada
-        $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Identificacion del encargado del transporte'), 0, 1, 'L');
-        $this->SetFont('Arial', 'B', 9); // Fuente ampliada
-        $this->Cell(110, 10, iconv('UTF-8', 'windows-1252', 'Nombre o razón social: ____________________________________________________'), 0, 0, 'L');
-        $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'RUC/C.I.: ___________________________'), 0, 1, 'R');
-        $this->SetXY(48, 73);
-        $this->SetFont('Arial', '', 9); // Fuente ampliada
-        $this->Cell(107, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['conductor']), 0, 0, 'L');
-        $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['cedula_conductor']), 0, 0, 'L');
-        $this->SetY(78);
-        $this->SetFont('Arial', 'B', 11); // Fuente ampliada
-        $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Bienes transportados'), 0, 1, 'L');
+        // $this->SetFont('Arial', 'B', 9); // Configurar la fuente en negrita
+        // $this->Cell(10, 10, iconv('UTF-8', 'windows-1252', 'Fecha de emision: '), 0, 1, 'L');
+        // $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'Fecha de retorno: '), 0, 1, 'L');
+        // $this->SetXY(68, 43);
+        // $this->SetFont('Arial', '', 9); // Configurar la fuente en normal
+        // $this->Cell(50, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['fecha']), 0, 0, 'L'); // Cambiar a nueva línea al final
+        // $this->SetFont('Arial', 'B', 9);
+        // $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Punto de partida: _______________________________'), 0, 1, 'L');
+        // $this->SetFont('Arial', '', 9);
+        // $this->SetXY(148, 43);
+        // $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'BODEGA SANTA ADRIANA'), 0, 1, 'L');
+        // $this->SetXY(148, 48);
+        // $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['fecha']), 0, 1, 'L'); // Cambiar a nueva línea al final
+        // $this->SetXY(68, 48);
+        // $this->SetFont('Arial', '', 9); // Configurar la fuente en normal
+        // $this->Cell(50, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['fecha']), 0, 0, 'L'); // Cambiar a nueva línea al final
+        // $this->SetFont('Arial', 'B', 9);
+        // $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Fecha de emisión: ______________________________'), 0, 1, 'L');
+        // $this->SetFont('Arial', 'B', 11); // Fuente ampliada
+        // $this->SetY(53);
+        // $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Destinatario'), 0, 1, 'L');
+        // $this->SetFont('Arial', 'B', 9); // Fuente ampliada
+        // $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'Nombre o razón social: ______________________________________________'), 0, 1, 'L');
+        // $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'RUC/C.I.: ___________________________'), 0, 1, 'L');
+        // $this->SetXY(48, 58);
+        // $this->SetFont('Arial', '', 9); // Fuente ampliada
+        // $this->Cell(79, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['cliente']), 0, 0, 'L');
+        // $this->SetFont('Arial', 'B', 9); // Fuente ampliada
+        // $this->Cell(30, 0, iconv('UTF-8', 'windows-1252', 'Número de orden: _________________________'), 0, 0, 'L');
+        // $this->SetFont('Arial', '', 9); // Fuente ampliada
+        // $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['orden']), 0, 0, 'L');
+        // $this->SetXY(25, 63);
+        // $this->Cell(47, 0, iconv('UTF-8', 'windows-1252', '5'), 0, 0, 'L');
+        // $this->SetFont('Arial', 'B', 9); // Fuente ampliada
+        // $this->Cell(32, 0, iconv('UTF-8', 'windows-1252', 'Punto de llegada: _________________________________________________________'), 0, 0, 'L');
+        // $this->SetFont('Arial', '', 9); // Fuente ampliada
+        // $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['cliente']), 0, 1, 'L');
+        // $this->SetY(68);
+        // $this->SetFont('Arial', 'B', 11); // Fuente ampliada
+        // $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Identificacion del encargado del transporte'), 0, 1, 'L');
+        // $this->SetFont('Arial', 'B', 9); // Fuente ampliada
+        // $this->Cell(110, 10, iconv('UTF-8', 'windows-1252', 'Nombre o razón social: ____________________________________________________'), 0, 0, 'L');
+        // $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'RUC/C.I.: ___________________________'), 0, 1, 'R');
+        // $this->SetXY(48, 73);
+        // $this->SetFont('Arial', '', 9); // Fuente ampliada
+        // $this->Cell(107, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['conductor']), 0, 0, 'L');
+        // $this->Cell(0, 0, iconv('UTF-8', 'windows-1252', $data_detalle[0]['cedula_conductor']), 0, 0, 'L');
+        // $this->SetY(78);
+        // $this->SetFont('Arial', 'B', 11); // Fuente ampliada
+        // $this->Cell(10, 0, iconv('UTF-8', 'windows-1252', 'Bienes transportados'), 0, 1, 'L');
     }
 
+    function Footer()
+    {
+        // Posiciona el pie de página a 15 mm del final
+        $this->SetY(-15);
+        // Establece el tipo de letra Arial italic 8
+        $this->SetFont('Arial', '', 8);
+        // Agrega el número de página
+        $this->Cell(0, 10,  iconv('UTF-8', 'windows-1252', "Página " . $this->PageNo() . " / {nb}"), 0, 0, 'C');
+    }
+    function desactivarEncabezado()
+    {
+        $this->encabezado = false;
+    }
+
+    function activarEncabezado()
+    {
+        $this->encabezado = true;
+    }
     // // Pie de página
     function __construct($id_boleta)
     {
@@ -256,55 +287,93 @@ class PDF extends FPDF
 $pdf = new PDF($id_boleta);
 $pdf->AliasNbPages();
 $pdf->AddPage();
+$pdf->activarEncabezado();
 $data_boleta = ModeloSalidas::mdlBuscarBoleta($id_boleta);
 $pdf->SetTitle("Nro. Guia " . $data_boleta[0]["id_boleta"]);
 $pdf->SetY($pdf->GetY() + 4);
-$pdf->SetWidths(array(30, 20, 144));
-$pdf->SetAligns(array('C', 'C', 'C'));
-// $pdf->SetMargins(9, 0, 8);
+$pdf->SetWidths(array(24, 82, 18, 22, 22, 22));
+$pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C'));
+$pdf->SetMargins(10, 0, 10);
 $pdf->SetAutoPageBreak(true, 8); // Habilitar salto de página automático con margen inferior
+$pdf->Image('../assets/img/logo_pdf.jpeg', 55, -5, 100, 40);
+$pdf->SetFont('Arial', 'B', 16);
+$pdf->SetY(30);
+$pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'INFORME DE GUIA DE REMISIÓN  ' . $data_boleta[0]["id_boleta"]), 0, 1, 'C');
+$pdf->SetY(40);
+$pdf->SetFont('Arial', 'B', 12);
+$pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'FECHA DE EMISION: ' . $pdf->fecha_emision), 0, 0, 'L');
+$pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'FECHA DE RETORNO: ' . $pdf->fecha_retorno), 0, 1, 'R');
+$pdf->SetY(47);
+
+// $pdf->MultiCell(0, 5, iconv('UTF-8', 'windows-1252', "FECHA DE EMISION: $pdf->fecha_emision            FECHA DE RETORNO:  $pdf->fecha_retorno"), 0, 'L', 0);
+
+$pdf->MultiCell(0, 5, iconv('UTF-8', 'windows-1252', "NRO. ORDEN:  $pdf->orden        CLIENTE: $pdf->cliente"), 0, 'L', 0);
+
+// $pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'CLIENTE: '. $pdf->cliente), 0, 0, 'L');
 
 // $pdf->SetFont('Arial', 'B', 12);
-$pdf->Row(array('Cantidad', 'Unidad', 'Descripcion'), array(12, 12, 12), 'B', 7);
-$rowsPrinted = 0;
-$totalRowsPrinted = 0;
+// $pdf->Row(array('Cantidad', 'Unidad', 'Descripcion'), array(12, 12, 12), 'B', 7);
+// $rowsPrinted = 0;
+// $totalRowsPrinted = 0;
 
-
-
-foreach ($data_boleta as $fill) {
-    // Verificar si se alcanzó el límite de filas por página
-    if ($rowsPrinted >= 24) {
-        // Si se alcanza el límite, dibujar la fila adicional y reiniciar el contador de filas
-        $pdf->SetWidths(array(194));
-        $pdf->SetAligns(array('C'));
-
-        $pdf->Row(array(''. "\n" . ' RECIBIDO POR                                                                              ENTREGADO POR',), array(9), '', 16);
-        $rowsPrinted = 0;
-
-        // Agregar una nueva página si es necesario
-        if ($pdf->GetY() + 40 > $pdf->GetPageHeight() - 10) {
-            $pdf->AddPage();
-            // Dibujar encabezado de tabla en la nueva página
-            $pdf->SetY($pdf->GetY() + 4);
-            $pdf->SetWidths(array(30, 20, 144));
-            $pdf->SetAligns(array('C', 'C', 'C'));
-            $pdf->Row(array('Cantidad', 'Unidad', 'Descripcion'), array(12, 12, 12), 'B', 7);
-            $totalRowsPrinted = 0; // Reiniciar el contador total de filas impresas para la nueva página
-        }
+    $pdf->SetFont('Arial', 'B', 12);   
+    $pdf->Ln(10);
+    $pdf->SetFont('Arial', 'B', 11);
+    $header = array('Codigo', 'Descripcion', 'Unidad', 'Salida', 'Entrada', 'Tot. Util.');
+    $pdf->Row($header, array(12, 12, 12, 12, 12, 12), 'B');
+    foreach ($data_boleta as $fill) {
+        $pdf->SetStartY(20);
+        $pdf->SetFont('Arial', '', 10);
+        // $resaño = substr($fill["year"], -2);
+        $salida = $fill["cantidad_salida"];
+        $entrada = $fill["retorno"];
+        $util = $fill["utilizado"];
+        $pdf->Row(array(
+            iconv('UTF-8', 'windows-1252', $fill["codigo"]),
+            iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
+            iconv('UTF-8', 'windows-1252', $fill["unidad"]),
+            iconv('UTF-8', 'windows-1252', $salida),
+            iconv('UTF-8', 'windows-1252', $entrada),
+            iconv('UTF-8', 'windows-1252', $util)
+        ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
     }
+    $pdf->Ln();
 
-    // Dibujar fila de datos
-    $pdf->SetAligns(array('C', 'C', 'L'));
-    $pdf->Row(array(
-        iconv('UTF-8', 'windows-1252', $fill["cantidad_salida"]),
-        iconv('UTF-8', 'windows-1252', $fill["unidad"]),
-        iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
-    ), array(8, 8, 8), '', 6);
 
-    // Incrementar el contador de filas
-    $rowsPrinted++;
-    $totalRowsPrinted++;
-}
+// foreach ($data_boleta as $fill) {
+//     // Verificar si se alcanzó el límite de filas por página
+//     if ($rowsPrinted >= 24) {
+//         // Si se alcanza el límite, dibujar la fila adicional y reiniciar el contador de filas
+//         $pdf->SetWidths(array(194));
+//         $pdf->SetAligns(array('C'));
+
+//         $pdf->Row(array('' . "\n" . ' RECIBIDO POR                                                                              ENTREGADO POR',), array(9), '', 16);
+//         $rowsPrinted = 0;
+
+//         // Agregar una nueva página si es necesario
+//         if ($pdf->GetY() + 40 > $pdf->GetPageHeight() - 10) {
+//             $pdf->AddPage();
+//             // Dibujar encabezado de tabla en la nueva página
+//             $pdf->SetY($pdf->GetY() + 4);
+//             $pdf->SetWidths(array(30, 20, 144));
+//             $pdf->SetAligns(array('C', 'C', 'C'));
+//             $pdf->Row(array('Cantidad', 'Unidad', 'Descripcion'), array(12, 12, 12), 'B', 7);
+//             $totalRowsPrinted = 0; // Reiniciar el contador total de filas impresas para la nueva página
+//         }
+//     }
+
+//     // Dibujar fila de datos
+//     $pdf->SetAligns(array('C', 'C', 'L'));
+//     $pdf->Row(array(
+//         iconv('UTF-8', 'windows-1252', $fill["cantidad_salida"]),
+//         iconv('UTF-8', 'windows-1252', $fill["unidad"]),
+//         iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
+//     ), array(8, 8, 8), '', 6);
+
+//     // Incrementar el contador de filas
+//     $rowsPrinted++;
+//     $totalRowsPrinted++;
+// }
 
 // Verificar si hay espacio en la página para la fila adicional
 // if ($pdf->GetY() + 50 <= $pdf->GetPageHeight() - 10) {
@@ -319,19 +388,19 @@ foreach ($data_boleta as $fill) {
 // }
 
 //Agregar filas en blanco si es necesario para completar 24 filas en la página final
-$rowsPerPage = 24;
-$remainingRows = $rowsPerPage - $totalRowsPrinted % $rowsPerPage;
-if ($remainingRows > 0) {
-    $blankData = array('', '', ''); // Datos en blanco para las columnas
-    for ($i = 0; $i < $remainingRows; $i++) {
-        $pdf->Row($blankData, array(8, 8, 8), '', 6);
-    }
-    $pdf->SetWidths(array(194));
-    $pdf->SetAligns(array('C'));
+// $rowsPerPage = 24;
+// $remainingRows = $rowsPerPage - $totalRowsPrinted % $rowsPerPage;
+// if ($remainingRows > 0) {
+//     $blankData = array('', '', ''); // Datos en blanco para las columnas
+//     for ($i = 0; $i < $remainingRows; $i++) {
+//         $pdf->Row($blankData, array(8, 8, 8), '', 6);
+//     }
+//     $pdf->SetWidths(array(194));
+//     $pdf->SetAligns(array('C'));
 
-    $pdf->Row(array(''. "\n" . ' RECIBIDO POR                                                                              ENTREGADO POR',), array(9), '', 17);
-    $rowsPrinted = 0;
-}
+//     $pdf->Row(array('' . "\n" . ' RECIBIDO POR                                                                              ENTREGADO POR',), array(9), '', 17);
+//     $rowsPrinted = 0;
+// }
 
 // $rowsPerPage = 24;
 // $remainingRows = $rowsPerPage - $rowsPrinted;
@@ -467,7 +536,7 @@ if ($remainingRows > 0) {
 // }
 
 // Definir el nombre predeterminado del archivo PDF
-$filename =  $data_boleta[0]["id_boleta"] .'_'.$pdf->cliente. '_'.$pdf->orden. ".pdf";
+$filename =  $data_boleta[0]["id_boleta"] . '_' . $pdf->cliente . '_' . $pdf->orden . ".pdf";
 
 // Generar el PDF y almacenarlo temporalmente
 $pdf->Output('I', $filename);
@@ -498,4 +567,3 @@ $pdf->Output('I', $filename);
 
 // // Eliminar el archivo temporal
 // unlink($filename);
-?>

@@ -1,7 +1,4 @@
-<?php if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-} ?>
-
+<?php require_once "../utils/database/config.php";?>
 <head>
     <title>Clientes</title>
 </head>
@@ -12,7 +9,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Clientes</h1>
             </div>
-            <?php if ($_SESSION["crear6"]) : ?>
+            <?php if (isset($_SESSION["crear14"]) && $_SESSION["crear14"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -51,7 +48,11 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">Nº</th>
+                                    <th>RUC / C.I.</th>
                                     <th>CLIENTE</th>
+                                    <th>DIRECCIÓN</th>
+                                    <th>TELÉFONO</th>
+                                    <th>CORREO</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -73,7 +74,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="modal">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-gradient-success">
                 <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Rol</span></h4>
@@ -86,12 +87,52 @@
                     <input type="hidden" id="id" value="">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="input-data" style="margin-bottom:1em;">
-                                <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                            <div class="input-data">
+                                <input autocomplete="off" id="ciruc" class="input-nuevo" type="text" required>
                                 <div class="line underline"></div>
-                                <label class="label"><i class="fa-solid fa-signature"></i> Cliente</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                                <label for="ciruc" class="label"><i class="fas fa-id-card"></i> RUC / C.I.</label>
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="nombre" class="label"><i class="fa-solid fa-signature"></i> Cliente</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="direccion" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="direccion" class="label"><i class="fas fa-map-location-dot"></i> Dirección</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="telefono" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="correo" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="correo" class="label"><i class="fa-solid fa-envelope"></i> Correo</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -107,9 +148,9 @@
 </div>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar6"] || $_SESSION["eliminar6"] ?>';
-    var editar = '<?php echo $_SESSION["editar6"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar6"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar14"] || $_SESSION["eliminar14"] ?>';
+    var editar = '<?php echo $_SESSION["editar14"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar14"] ?>';
 
     configuracionTable = {
         "responsive": true,
@@ -129,7 +170,13 @@
                 }
             },
             {
-                targets: 2,
+                "targets": 5,
+                "render": function(data, type, row, meta) {
+                    return '<a href="mailto:' + data + '" class="text-info">' + data + '</a>';
+                }
+            },
+            {
+                targets: 6,
                 data: "acciones",
                 visible: mostrarCol,
                 render: function(data, type, row, full, meta) {
@@ -162,11 +209,13 @@
             });
 
             tabla.on('draw.dt', function() {
-                const b = document.body;
-                const s = b.scrollHeight;
-                const w = window.innerHeight;
+                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
+                    const b = document.body;
+                    const s = b.scrollHeight;
+                    const w = window.innerHeight;
 
-                handleScroll(b, s, w);
+                    handleScroll(b, s, w);
+                }
 
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('clientes', JSON.stringify(tablaData));
@@ -181,7 +230,13 @@
             btnNuevo = document.getElementById('btnNuevo');
 
         const id = document.getElementById('id'),
-            nombre = document.getElementById('nombre');
+            nombre = document.getElementById('nombre'),
+            ciruc = document.getElementById('ciruc'),
+            correo = document.getElementById('correo'),
+            direccion = document.getElementById('direccion'),
+            telefono = document.getElementById('telefono');
+
+
 
         $(modal).on("shown.bs.modal", () => {
             nombre.focus();
@@ -231,19 +286,30 @@
             cambiarModal(span, ' Editar Cliente', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombre.value = row["nombre"];
+            ciruc.value = row["ciruc"];
+            direccion.value = row["direccion"];
+            telefono.value = row["telefono"]
+            correo.value = row["correo"]
         });
 
         form.addEventListener("submit", function(e) {
             e.preventDefault();
-            const nom = nombre.value.trim().toUpperCase();
+            const nom = nombre.value.trim().toUpperCase(),
+                ruc = ciruc.value.trim(),
+                tel = telefono.value.trim(),
+                dir = direccion.value.trim().toUpperCase(),
+                correo = correo.value.trim();
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
                 return;
             }
-            const id_e = id.value;
             let datos = new FormData();
             datos.append('id', id_e);
             datos.append('nombre', nom);
+            datos.append('ruc', ruc);
+            datos.append('telefono', tel);
+            datos.append('direccion', dir);
+            datos.append('correo', correo);
             datos.append('accion', accion);
             confirmarAccion(datos, 'clientes', tabla, modal, function(r) {
                 if (r) {
