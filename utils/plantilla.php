@@ -186,9 +186,9 @@
 
             const card_fab = document.getElementById('card_fab');
 
-            const isEntrada = <?php echo ($_SESSION["entrada_mul"]) ? 1 : 0; ?> ;
-            
-           const isSuperAdmin = <?php echo ($_SESSION["s_usuario"]->id_perfil == 1) ? 1 : 0;?> ;
+            const isEntrada = <?php echo ($_SESSION["entrada_mul"]) ? 1 : 0; ?>;
+
+            const isSuperAdmin = <?php echo ($_SESSION["s_usuario"]->id_perfil == 1) ? 1 : 0; ?>;
 
 
             // console.log('este es mi id_pergul ' + id_perfil)
@@ -429,7 +429,7 @@
                             let inputHTML = '<input value="' + value + '" type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline retorno" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" >';
 
                             // Condicional para id_perfil_sistema
-                            if (isEntrada || isSuperAdmin ) {
+                            if (isEntrada || isSuperAdmin) {
                                 return inputHTML;
                             } else {
                                 return row.isentrada ? row.retorno : inputHTML;
@@ -654,15 +654,18 @@
                 const nro_guia = document.getElementById('nro_guia'),
                     nro_factura = document.getElementById('nro_fac'),
                     cboOrden = document.getElementById('cboOrden'),
+                    cboOrdenFab = document.getElementById('cboOrdenFab'),
                     form_guia = document.getElementById('form_guia'),
                     cboProveedor = document.getElementById('cboProveedores'),
-                    cboFab = document.getElementById('cboFabricado'),
                     cboConductor = document.getElementById('cboConductor'),
                     cboDespachado = document.getElementById('cboDespachado'),
                     cboResponsable = document.getElementById('cboResponsable'),
                     btnGuia = document.getElementById('btnGuardarGuia');
-
+                const formFab = document.getElementById('formFab'),
+                    formFabCon = document.getElementById('formFabCon'),
+                    formFabNew = document.getElementById('formFabNew');
                 const audio = document.getElementById("scanner");
+
 
 
                 $(cboOrden).select2({
@@ -695,6 +698,11 @@
                     width: 'auto',
                 })
 
+                $(cboFabCon).select2({
+                    placeholder: 'SELECCIONE',
+                    width: 'auto',
+                })
+
                 $(cboConductor).select2({
                     placeholder: 'SELECCIONE',
                 })
@@ -716,8 +724,17 @@
                     });
 
                 cargarCombo('Conductor', '', 2);
+                cargarComboFabricado();
+                cargarCombo('FabricadoCon', '', 9);
                 cargarCombo('Orden', '', 3, true).then(datos_ => {
                     datos_orden = datos_;
+
+                    $(cboOrdenFab).select2({
+                        placeholder: 'SELECCIONE',
+                        width: 'auto',
+                        data: datos_orden
+                    })
+
                 });
                 cargarCombo('Despachado', '', 6);
                 cargarCombo('Responsable', '', 7)
@@ -783,6 +800,7 @@
                     "lengthChange": false,
                     "ordering": false,
                     "autoWidth": false,
+                    "paging": false,
                     columnDefs: [{
                             targets: 0,
                             data: null,
@@ -820,21 +838,57 @@
                             }
                         },
                         {
-                            text: "<i class='fa-regular fa-hammer fa-xl'></i> Agregar a Producción",
-                            className: "btn btn-light text-info btnAgregarPro",
+                            text: "<i class='fa-regular fa-layer-plus fa-xl'></i> Nuevo Prod.",
+                            className: "btn btn-light text-success btnNuevoPro",
                             action: function(e, dt, node, config) {
-                                formFab.reset();
-                                formFab.classList.remove('was-validated');
+                                formFabNew.reset();
+                                formFabNew.classList.remove('was-validated');
+                                accion_fab = 9;
+                                setChange(cboOrdenFab, 0);
+                                cambiarModal(title_fab, ' Nuevo Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-blue', 'bg-gradient-success', modal_fab, 'modal-new', 'modal-change')
+                                select_fab.forEach(function(s) {
+                                    s.classList.remove('select2-warning');
+                                    s.classList.add('select2-success');
+                                });
+                                $('#modal-new-fab').modal("show");
+                            }
+                        },
+                        {
+                            text: "<i class='fa-regular fa-hammer fa-xl'></i> Agregar a Prod.",
+                            className: "btn btn-light text-info",
+                            action: function(e, dt, node, config) {
+                                tblOut.rows().every(function() {
+                                    var row = $(this.node());
+                                    var rowData = this.data();
+                                    // Obtener el valor del input en la tercera columna (índice 2)
+                                    var inputValue = row.find('input.cantidad').val();
+
+                                    // Actualizar el valor en rowData
+                                    rowData[2] = '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + inputValue + '">',
+
+                                        // Agregar la fila con los valores actualizados a tblFab
+                                        tblFab.row.add([
+                                            rowData[0],
+                                            rowData[1],
+                                            rowData[2],
+                                            rowData[3],
+                                            rowData[4],
+                                            rowData[5]
+                                        ]).draw(false);
+                                });
+
+                                // Opcional: Limpiar todas las filas de tblOut después de transferir
+                                tblOut.clear().draw();
                                 $('#modal-fab').modal("show");
                             }
                         },
                         {
-                            text: "<i class='fas fa-building-magnifying-glass fa-xl'></i> Consultar Producción",
+                            text: "<i class='fas fa-building-magnifying-glass fa-xl'></i> Consultar Prod.",
                             className: "btn btn-light text-dark btnAgregarPro",
                             action: function(e, dt, node, config) {
-                                formFab.reset();
-                                formFab.classList.remove('was-validated');
-                                $('#modal-fab').modal("show");
+                                // formFabCon.reset();
+                                // formFabCon.classList.remove('was-validated');
+                                $('#modal-consul').modal("show");
                             }
                         },
                         // {
@@ -855,8 +909,24 @@
                     ]
                 });
 
+                // tblOut.on('draw', function() {
+                //     $('#tblOut tbody tr').each(function() {
+                //         // Desactivar tabindex en la primera columna
+                //         $(this).find('td:first-child *').attr('tabindex', '-1');
+
+                //         // Desactivar tabindex en la última columna
+                //         // $(this).find('td:last-child *').attr('tabindex', '-1');
+
+                //         // Si deseas desactivar tabindex en otras columnas específicas, ajusta los selectores como sea necesario
+                //         // Ejemplo: $(this).find('td:nth-child(3) *').attr('tabindex', '-1'); para la tercera columna
+                //     });
+                // });
+
+                $('#tblOut').on('keydown', 'input.cantidad', moveFocusOnTab);
+
+
                 tblFab = $('#tblFab').DataTable({
-                    "dom": '<"row"<"col-sm-6"><"col-sm-6"p>>t',
+                    "dom": '<"row"<"col-sm-6"B><"col-sm-6"p>>t',
                     "responsive": true,
                     "lengthChange": false,
                     "ordering": false,
@@ -875,35 +945,27 @@
 
                         {
                             targets: 1,
-                            className: "text-center",
+                            visible: false,
+                        },
+                        {
+                            targets: 2,
+                            className: "text-center ",
                         },
                         {
                             targets: 3,
                             className: "text-center ",
                         },
-
-
                     ],
-
-                    // {
-                    //     text: "<input type='checkbox' id='checkbox_input'>",
-                    //     init: function(dt, node, config) {
-                    //         $(document).on('change', '#checkbox_input', function() {
-                    //             // Aquí puedes agregar tu lógica para manejar el evento de cambio del checkbox
-                    //             if ($(this).is(':checked')) {
-                    //                 // Acción cuando el checkbox está marcado
-                    //                 console.log('Checkbox marcado');
-                    //             } else {
-                    //                 // Acción cuando el checkbox está desmarcado
-                    //                 console.log('Checkbox desmarcado');
-                    //             }
-                    //         });
-                    //     }
-                    // }
-
+                    buttons: [{
+                        text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
+                        className: "btn btn-light text-danger",
+                        action: function(e, dt, node, config) {
+                            dt.clear().draw(); // Esta línea vacía los datos de la tabla
+                        }
+                    }, ]
                 });
 
-                const btnAgregarPro = document.querySelector('.btnAgregarPro');
+                // const btnAgregarPro = document.querySelector('.btnAgregarPro');
 
 
 
@@ -911,39 +973,43 @@
                     tblIn.row($(this).parents('tr')).remove().draw();
                 });
 
-                $('#tblOut tbody').on('click', '.btnFab', function() {
-                    // Obtener la fila padre del botón clickeado
-                    var fila = $(this).closest('tr');
-
-                    // Obtener los datos de la fila
-                    var cantidad = fila.find('.cantidad').val();
-                    var descripcion = fila.find('td:eq(3)').text(); // Cambia el índice según la posición de la columna
-                    // Aquí obtén otros datos que necesites según su posición en la fila
-
-                    // Crear una nueva fila en tblFab con los datos obtenidos
-                    var nuevaFila = '<tr>' +
-                        '<td class="text-center">' + cantidad + '</td>' +
-                        '<td>' + descripcion + '</td>' +
-                        '<td class="text-center">' +
-                        '<button type="button" class="btnEliminarFab btn btn-danger">Eliminar</button>' +
-                        '</td>' +
-                        '</tr>';
-
-                    // Agregar la nueva fila a tblFab
-                    $('#tblFab tbody').append(nuevaFila);
-
-                    // Ocultar la tarjeta de fabricación y eliminar la fila de tblIn
-                    card_fab.style.display = 'block'; // Si estás mostrando la tarjeta de fabricación
-                    tblOut.row($(this).parents('tr')).remove().draw();
+                $('#tblFab tbody').on('click', '.btnEliminarIn', function() {
+                    tblFab.row($(this).parents('tr')).remove().draw();
                 });
 
-                $('#tblFab tbody').on('click', '.btnEliminarFab', function() {
-                    // Obtener la fila padre del botón clickeado
-                    var fila = $(this).closest('tr');
+                // $('#tblOut tbody').on('click', '.btnFab', function() {
+                //     // Obtener la fila padre del botón clickeado
+                //     var fila = $(this).closest('tr');
 
-                    // Eliminar la fila de la tabla tblFab
-                    fila.remove();
-                });
+                //     // Obtener los datos de la fila
+                //     var cantidad = fila.find('.cantidad').val();
+                //     var descripcion = fila.find('td:eq(3)').text(); // Cambia el índice según la posición de la columna
+                //     // Aquí obtén otros datos que necesites según su posición en la fila
+
+                //     // Crear una nueva fila en tblFab con los datos obtenidos
+                //     var nuevaFila = '<tr>' +
+                //         '<td class="text-center">' + cantidad + '</td>' +
+                //         '<td>' + descripcion + '</td>' +
+                //         '<td class="text-center">' +
+                //         '<button type="button" class="btnEliminarFab btn btn-danger">Eliminar</button>' +
+                //         '</td>' +
+                //         '</tr>';
+
+                //     // Agregar la nueva fila a tblFab
+                //     $('#tblFab tbody').append(nuevaFila);
+
+                //     // Ocultar la tarjeta de fabricación y eliminar la fila de tblIn
+                //     card_fab.style.display = 'block'; // Si estás mostrando la tarjeta de fabricación
+                //     tblOut.row($(this).parents('tr')).remove().draw();
+                // });
+
+                // $('#tblFab tbody').on('click', '.btnEliminarFab', function() {
+                //     // Obtener la fila padre del botón clickeado
+                //     var fila = $(this).closest('tr');
+
+                //     // Eliminar la fila de la tabla tblFab
+                //     fila.remove();
+                // });
 
                 $('#tblOut tbody').on('click', '.btnEliminarIn', function() {
                     tblOut.row($(this).parents('tr')).remove().draw();

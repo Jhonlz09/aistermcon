@@ -15,14 +15,17 @@ class ModeloClientes
         }
     }
 
-    static public function mdlAgregarClientes($nombre)
+    static public function mdlAgregarClientes($ruc, $nombre, $dir, $correo, $tel)
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblclientes(nombre) VALUES (:nombre)");
+            $a = $conexion->prepare("INSERT INTO tblclientes(ciruc,nombre,direccion,correo,telefono ) VALUES (:ruc, :nombre, :dir, :correo, :tel)");
+            $a->bindParam(":ruc", $ruc, PDO::PARAM_STR);
             $a->bindParam(":nombre", $nombre, PDO::PARAM_STR);
+            $a->bindParam(":dir", $dir, PDO::PARAM_STR);
+            $a->bindParam(":correo", $correo, PDO::PARAM_STR);
+            $a->bindParam(":tel", $tel, PDO::PARAM_STR);
             $a->execute();
-
             return array(
                 'status' => 'success',
                 'm' => 'El cliente se agregó correctamente'
@@ -36,12 +39,17 @@ class ModeloClientes
     }
 
 
-    static public function mdlEditarCliente($id, $nombre)
+    static public function mdlEditarCliente($id, $ruc, $nombre, $dir, $correo, $tel)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("UPDATE tblclientes SET nombre=:nombre WHERE id=:id");
+            $u = Conexion::ConexionDB()->prepare("UPDATE tblclientes SET nombre=:nombre, ciruc=:ruc, direccion=:dir, correo=:correo, telefono=:tel  WHERE id=:id");
             $u->bindParam(":id", $id, PDO::PARAM_INT);
             $u->bindParam(":nombre", $nombre, PDO::PARAM_STR);
+            $u->bindParam(":ruc", $ruc, PDO::PARAM_STR);
+            $u->bindParam(":dir", $dir, PDO::PARAM_STR);
+            $u->bindParam(":correo", $correo, PDO::PARAM_STR);
+            $u->bindParam(":tel", $tel, PDO::PARAM_STR);
+
             $u->execute();
             return array(
                 'status' => 'success',

@@ -117,13 +117,13 @@ class PDF extends FPDF
         $this->MultiCell(0, 12, iconv('UTF-8', 'windows-1252', "  Número de Autorización:"), 0, 'L', 1);
         $this->SetXY(100, 25);
         $this->SetFont('Arial', '', 10);
-        $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  00015555"), 0, 'L', 1);
+        $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  "), 0, 'L', 1);
         $this->SetFont('Arial', 'B', 11);
         $this->SetX(100);
         $this->MultiCell(0, 12, iconv('UTF-8', 'windows-1252', "  Fecha y hora de Autorización: "), 0, 'L', 1);
         $this->SetXY(100, 38);
         $this->SetFont('Arial', '', 10);
-        $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  21/05/2024 10:20:2"), 0, 'L', 1);
+        $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  "), 0, 'L', 1);
 
         $this->SetFont('Arial', 'B', 11);
         $this->SetXY(100, 42);

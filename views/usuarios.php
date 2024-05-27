@@ -91,19 +91,19 @@
                                 <div class="line underline"></div>
                                 <label class="barra label">
                                     <i class="fa-solid fa-signature"></i> Nombres</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
                             </div>
                             <div id="data-usuario" class="input-data">
                                 <input autocomplete="off" id="usuario" class="input-nuevo" type="text" required>
                                 <div class="line underline"></div>
                                 <label class="barra label"><i class="fa-solid fa-user"></i> Nombre de usuario</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
                             </div>
                             <div id="data-clave" class="input-data">
                                 <input autocomplete="off" id="clave" class="input-nuevo" type="password" oninput="validarClave(this, sub)" required>
                                 <div class="line underline"></div>
                                 <label class="barra label"><i class="fa-solid fa-lock"></i> Contraseña</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
                                 <div id="ten" class="ten">*La contraseña debe contener 6 caracteres minimos</div>
 
                             </div>
@@ -111,7 +111,7 @@
                                 <input autocomplete="off" id="clave_con" class="input-nuevo" type="password" oninput="validarConf(this, sub)" required>
                                 <div class="line underline"></div>
                                 <label class="barra label"><i class="fa-solid fa-lock"></i> Confirmar contraseña</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
                                 <div id="c" class="ten">*Las contraseñas no coinciden</div>
                             </div>
                             <div id="data-rol" class="form-group mb-4">
@@ -120,7 +120,7 @@
                                     <div class="col">
                                         <select name="cboPerfil" id="cboPerfil" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                         </select>
-                                        <div class="invalid-feedback">*Seleccione un rol</div>
+                                        <div class="invalid-feedback">*Campo obligatorio</div>
                                     </div>
                                 </div>
                             </div>
@@ -257,7 +257,7 @@
 
 
         $(rol).select2({
-            placeholder: 'SELECCIONA UNA OPCION',
+            placeholder: 'SELECCIONE',
             minimumResultsForSearch: -1,
             width: '100%',
         })
@@ -342,6 +342,27 @@
             setChange(rol, row["id_perfil"]);
         });
 
+        $('#tblUsuarios tbody').on('click', '.btnClaveSup', function() {
+            let row = obtenerFila(this, tabla);
+            let dataElements = [data_nom, data_usu, data_cla, data_cla_con, data_rol];
+            accion = 4;
+            sub = false;
+            rol.required =false;
+            form.classList.remove('was-validated');
+            clave.value = '';
+            clave_.value = '';
+            displayModal(dataElements,'none', 'none', 'block', 'block', 'none')
+            rol.classList.remove('select2-success');
+            rol.classList.add('select2-warning');
+
+            cambiarModal(span, ' Restablecer Contraseña', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            id.value = row["id"];
+            nombres.value = row["nombres"];
+            usuario.value = row["nombre_usuario"];
+            setChange(rol, row["id_perfil"]);
+            
+        });
+
         $('#tblUsuarios tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
             accion = 3
@@ -391,8 +412,6 @@
                 validarClave(clave, sub)
                 validarConf(clave_, sub)
             }
-
-
         });
 
        

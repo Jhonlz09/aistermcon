@@ -52,6 +52,19 @@ class ControladorCombos{
         
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    public function listarProductoFab(){
+
+        $data = ModeloCombos::mdlListarProductosFab();
+        
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+    public function listarProductoFabCon(){
+
+        $data = ModeloCombos::mdlListarProductosFabCon();
+        
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 
 if (isset($_POST['accion']) && $_POST['accion'] == 1) {
@@ -76,4 +89,10 @@ if (isset($_POST['accion']) && $_POST['accion'] == 1) {
 }else if(isset($_POST['accion']) && $_POST['accion'] == 7){
     $data = new ControladorCombos();
     $data->listarResponsable();
+}else if(isset($_POST['accion']) && $_POST['accion'] == 8){
+    $data = new ControladorCombos();
+    $data->listarProductoFab();
+}else if(isset($_POST['accion']) && $_POST['accion'] == 9){
+    $data = new ControladorCombos();
+    $data->listarProductoFabCon();
 }

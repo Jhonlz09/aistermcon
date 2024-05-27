@@ -183,7 +183,7 @@
                                                                                     <th></th>
                                                                                     <th>CANTIDAD</th>
                                                                                     <th>UNIDAD</th>
-                                                                                    <th>PRECIO</th>
+                                                                                    <th>PRECIO UNIT.</th>
                                                                                     <th>DESCRIPCION</th>
                                                                                     <th class="text-center">ACCIONES</th>
                                                                                 </tr>
@@ -304,11 +304,11 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                            <div class="form-group" style="margin-bottom:1.4rem;">
-                                                                                <label class="col-form-label combo" for="codBarras">
-                                                                                <i class="fa-solid fa-clipboard-question"></i> Motivo</label>
-                                                                                <input style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas" >
-                                                                            </div>
+                                                                    <div class="form-group" style="margin-bottom:1.4rem;">
+                                                                        <label class="col-form-label combo" for="codBarras">
+                                                                            <i class="fa-solid fa-clipboard-question"></i> Motivo</label>
+                                                                        <input style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas">
+                                                                    </div>
                                                                 </div>
                                                                 </div>
                                                                 <div class="card">
@@ -324,26 +324,98 @@
 </aside>
 <!-- /.control-sidebar -->
 <div class="modal fade" id="modal-fab">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-rol modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
-                <h4 class="modal-title"><i class="fas fa-screwdriver-wrench"></i><span> Producción</span></h4>
+            <div class="modal-header bg-gradient-blue">
+                <h4 class="modal-title"><i class="fas fa-screwdriver-wrench"></i><span> Agregar Producto a Producción</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formProductoFab" autocomplete="off" class="needs-validation" novalidate>
+            <form id="formFab" autocomplete="off" class="needs-validation" novalidate>
+                <div class="modal-body scroll-modal">
+                    <input type="hidden" id="id_" value="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group" style="margin-bottom:1.5rem;">
+                                <label id="lbl" class="mb-0 combo"><i class="fas fa-trowel-bricks"></i> Producto</label>
+                                <div class="row">
+                                    <div class="col">
+                                        <select id="cboFabricado" class="cbo form-control select2 select2-success flex-grow-1" data-dropdown-css-class="select2-dark" required>
+                                        </select>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                    <div class="span-btn fab" style="padding-right:.5rem">
+                                        <!-- <span style="display: ;" class="badge bg-gradient-dark" id="new_fab" title='Nuevo' data-target='#modal-fab' data-toggle='modal'><i class="fa-solid fa-plus"></i></span> -->
+                                        <span style="display:none" class="dis badge bg-gradient-dark" data-value="Fab" data-target='#modal-new-fab' data-toggle='modal' id="edit_fab" title='Editar'><i class="fa-solid fa-pencil"></i></span>
+                                        <span style="display:none" class="dis badge bg-gradient-dark" data-value="Fab" id="eli_fab" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="tblFab">
+                                <thead style="background:#a7b2c1!important">
+                                    <tr>
+                                        <th class="text-center">Nº</th>
+                                        <th></th>
+                                        <th>CANTIDAD</th>
+                                        <th>UND</th>
+                                        <th>DESCRIPCION</th>
+                                        <th class="text-center">ACCIONES</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="submit" id="btnAgregarFab" class="btn bg-gradient-blue"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="modal-new-fab">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-success">
+                <h4 id="title-fab" class="modal-title"><i class="fas fa-screwdriver-wrench"></i><span> Nuevo Producto en Producción</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formFabNew" autocomplete="off" class="needs-validation" novalidate>
                 <div class="modal-body ">
                     <input type="hidden" id="id_" value="">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-md-12">
+                            <div class="input-data">
+                                <input autocomplete="off" id="nombre_fab" class="input-nuevo" type="text" required>
+                                <div class="line underline"></div>
+                                <label class="barra label">
+                                    <i class="fa-solid fa-signature"></i> Descripción</label>
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
                             <div class="input-data s1">
                                 <input type="text" id="cantidad_fab" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
                                 <label class="label"><i class="fa-solid fa-boxes-stacked"></i> Cantidad</label>
                                 <div class="invalid-feedback">*Este campo es requerido.</div>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <div class="form-group">
                                 <label id="lbl" class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
                                 <div class="row">
@@ -355,43 +427,20 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="input-data">
-                                <input autocomplete="off" id="nombre_fab" class="input-nuevo" type="text" required>
-                                <div class="line underline"></div>
-                                <label class="barra label">
-                                    <i class="fa-solid fa-signature"></i> Descripción</label>
-                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                            </div>
-                            <!-- <div class="form-group mb-4">
-                                <label id="lbl" class="mb-0 combo"><i class="fas fa-receipt"></i> Orden</label>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label id="lbl" class="mb-0 combo"><i class="fas fa-ticket"></i> Nro. de orden</label>
                                 <div class="row">
                                     <div class="col">
-                                        <select name="cboOrdenFab" id="cboOrdenFab" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                        <select name="c" id="cboOrdenFab" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                         </select>
-                                        <div class="invalid-feedback">*Seleccione una orden</div>
+                                        <div class="invalid-feedback">*Campo obligatorio</div>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="table-responsive">
-                            <table class="table" id="tblFab">
-                                <thead style="background:#eef1f3!important">
-                                    <tr>
-                                        <th>NRO</th>
-                                        <th>CANTIDAD</th>
-                                        <th>DESCRIPCION</th>
-                                        <th class="text-center">ACCIONES</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
+
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="submit" id="btnAgregarFab" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
@@ -404,67 +453,50 @@
     <!-- /.modal-dialog -->
 </div>
 
+
+
+
+
 <div class="modal fade" id="modal-consul">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg  modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-navy">
+            <div class="modal-header bg-gradient-dark" style="padding: 1rem">
                 <h4 class="modal-title"><i class="fas fa-screwdriver-wrench"></i><span> Consultar Producción</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formProductoFab" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body ">
-                    <input type="hidden" id="id_" value="">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="input-data s1">
-                                <input type="text" id="cantidad_fab" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
-                                <label class="label"><i class="fa-solid fa-boxes-stacked"></i> Cantidad</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label id="lbl" class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select name="c" id="cboUnidad_fab" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                        </select>
-                                        <div class="invalid-feedback">*Campo obligatorio</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <form id="formFabCon" autocomplete="off" class="needs-validation" novalidate>
+                <div class="modal-body scroll-modal">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: .25rem;">
                                 <label id="lbl" class="mb-0 combo"><i class="fas fa-trowel-bricks"></i> Producto</label>
                                 <div class="row">
-                                    <div class="col-10">
-                                        <select id="cboFabricado" class="cbo form-control select2 select2-success flex-grow-1" data-dropdown-css-class="select2-dark" required>
+                                    <div class="col">
+                                        <select id="cboFabricadoCon" class="cbo form-control select2 select2-success flex-grow-1" data-dropdown-css-class="select2-dark" required>
                                         </select>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
-                                    <div class="span-btn col-2 d-flex align-items-center justify-content-end" id="div_span" style="padding-right:.5rem">
+                                    <!-- <div class="span-btn d-flex align-items-center justify-content-end" id="div_span" style="padding-right:.5rem">
                                         <span class="badge bg-gradient-dark" id="new_orden" title='Nuevo' data-target='#modal-fab' data-toggle='modal'><i class="fa-solid fa-plus"></i></span>
                                         <span style="display:none" class="badge bg-gradient-dark" id="edit_orden" title='Editar'><i class="fa-solid fa-pencil"></i></span>
                                         <span style="display:none" class="badge bg-gradient-dark" id="eli_orden" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="table-responsive">
-                            <table class="table" id="tblFabCon">
-                                <thead style="background:#eef1f3!important">
+                            <table class="table table-bordered table-hover" id="tblFabCon">
+                                <thead style="background-color:#1f2a3dd1!important;color: aliceblue;">
                                     <tr>
-                                        <th>NRO</th>
+                                        <th class="text-center">Nº</th>
                                         <th>CANTIDAD</th>
+                                        <th>UNIDAD</th>
                                         <th>DESCRIPCION</th>
-                                        <th class="text-center">ACCIONES</th>
+                                        <th>FECHA</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -472,10 +504,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardarCon" class="btn bg-gradient-navy"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
-                </div>
+
             </form>
         </div>
         <!-- /.modal-content -->
@@ -485,39 +514,193 @@
 
 <script>
     const btnGuardarFab = document.getElementById('btnAgregarFab');
-    const formFab = document.getElementById('formProductoFab');
-    const modal_fab = document.getElementById('modal-fab');
-    const cantidad_fab = document.getElementById('cantidad_fab');
+    const formFab = document.getElementById('formFab'),
+        formFabCon = document.getElementById('formFabCon'),
+        formFabNew = document.getElementById('formFabNew');
+    const modal_fab = document.getElementById('modal-new-fab');
+
+    const nombre_fab = document.getElementById('nombre_fab'),
+        cboUnidad_fab = document.getElementById('cboUnidad_fab'),
+        cantidad_fab = document.getElementById('cantidad_fab'),
+        cboOrdenFab = document.getElementById('cboOrdenFab');
+
+    const cboFab = document.getElementById('cboFabricado'),
+        cboFabCon = document.getElementById('cboFabricadoCon');
+
+    const edit_fab = document.getElementById('edit_fab'),
+        eli_fab = document.getElementById('eli_fab')
+
+    const title_fab = document.querySelector('#title-fab span'),
+        icon_fab = document.querySelector('.modal-title i'),
+        elements_fab = document.querySelectorAll('#modal-new-fab .bg-gradient-success');
+
+    const select_fab = formFabNew.querySelectorAll('.modal-body select.select2');
 
 
+    let id_e = 0;
+    let accion_fab = 0;
+    let id_producto_fab = 0;
 
     $(modal_fab).on("shown.bs.modal", () => {
-        cantidad_fab.focus();
+        nombre_fab.focus();
+    });
+
+    let tblFabCon = $('#tblFabCon').DataTable({
+        "responsive": true,
+        "dom": 'pt',
+        "lengthChange": false,
+        "ordering": false,
+        "autoWidth": false,
+        "ajax": {
+            "url": "controllers/inventario.controlador.php",
+            "type": "POST",
+            "dataSrc": '',
+            data: function(data) {
+                data.accion = 11;
+                data.id_producto_fab = id_producto_fab;
+            }
+        },
+        columnDefs: [{
+                targets: 0,
+                data: null,
+                className: "text-center",
+                render: function(data, type, row, meta) {
+                    if (type === 'display') {
+                        return meta.row + 1;
+                    }
+                    return meta.row;
+                }
+            },
+            {
+                targets: 1,
+                className: "text-center ",
+            },
+            {
+                targets: 2,
+                className: "text-center ",
+            },
+        ],
+    });
+
+    $(edit_fab).on('click', function() {
+        accion_fab = 10;
+        let data_fab = cboFab.options[cboFab.selectedIndex].dataset;
+        id_e = cboFab.value;
+        let orden_id = data_fab.orden;
+        let cant_id = data_fab.cant;
+        let und_id = data_fab.und;
+        let name_id = data_fab.name;
+
+        nombre_fab.value = name_id
+        cantidad_fab.value = cant_id
+        setChange(cboOrdenFab, orden_id);
+        setChange(cboUnidad_fab, und_id);
+
+        cambiarModal(title_fab, ' Editar Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-success', 'bg-gradient-blue', modal_fab, 'modal-change', 'modal-new')
+
+        select_fab.forEach(function(s) {
+            s.classList.remove('select2-success');
+            s.classList.add('select2-warning');
+        });
+
+        // Muestra el valor en la consola
+        console.log(orden_id);
+        // name = this.dataset.value;
+        // const selectE = document.getElementById('cbo' + name);
+        // const iconS = this.dataset.icon;
+
+        // inputId.value = selectE.value;
+        // inputContent.value = selectE.options[selectE.selectedIndex].textContent;
+        // cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-success', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
+    });
+
+    $(eli_fab).on('click', function() {
+        accion_fab = 3;
+        id_e = cboFab.value;
+        // const id_val = document.getElementById('cbo' + name).value;
+        // const tbl = 'tbl' + name.toLowerCase();
+        let src = new FormData();
+        src.append('accion', accion_fab);
+        src.append('id', id_e);
+        confirmarEliminar('este', 'producto fabricado', function(res) {
+            if (res) {
+                confirmarAccion(src, 'inventario', null, '', function(res) {
+                    cargarAutocompletado();
+                    cargarComboFabricado();
+                    cargarCombo('FabricadoCon', '', 9);
+
+                })
+            }
+        });
+    });
+
+    $(cboFab).change(function() {
+        opcionSelect(this, 'fab')
     });
 
 
-    formFab.addEventListener("submit", function(e) {
-        e.preventDefault();
-        console.log("entro al foem")
-        const cboUnidad = document.getElementById('cboUnidad_fab');
-        const nombre_fab = document.getElementById('nombre_fab');
+    $(cboFabCon).change(function() {
+        if (this.value !== '')
+            id_producto_fab = this.value;
+        tblFabCon.ajax.reload(null, false)
 
+    });
+
+
+
+    formFabNew.addEventListener("submit", function(e) {
+        e.preventDefault();
         if (!this.checkValidity()) {
             this.classList.add('was-validated');
             return;
         }
         let nom = nombre_fab.value.trim().toUpperCase();
-        let und = cboUnidad.value;
+        let und = cboUnidad_fab.value;
         let cant = cantidad_fab.value;
+        let id_orden = cboOrdenFab.value;
 
         let datos = new FormData();
+        datos.append('id_e', id_e);
         datos.append('nombre', nom);
         datos.append('unidad', und);
         datos.append('cantidad', cant);
-        datos.append('accion', 9);
+        datos.append('id_orden', id_orden);
+        datos.append('accion', accion_fab);
         confirmarAccion(datos, 'inventario', null, modal_fab, function(r) {
             cargarAutocompletado();
+            if (id_e != 0) {
+                cargarComboFabricado(id_e);
+            } else {
+                cargarComboFabricado();
+            }
+            cargarCombo('FabricadoCon', '', 9);
+
         })
+
+
+    })
+
+    formFab.addEventListener("submit", function(e) {
+        e.preventDefault();
+        if (!this.checkValidity()) {
+            this.classList.add('was-validated');
+            return;
+        }
+        let formData = new FormData();
+        let clases = ['cantidad'];
+        formData.append('id_producto_fab', cboFab.value);
+        formData.append('accion', 7);
+        realizarRegistro(tblFab, formData, clases);
+        // datos.append('id_e', id_e);
+        // datos.append('nombre', nom);
+        // datos.append('unidad', und);
+        // datos.append('cantidad', cant);
+        // datos.append('id_orden', id_orden);
+        // datos.append('accion', accion_fab);
+        // confirmarAccion(datos, 'inventario', null, modal_fab, function(r) {
+        //     cargarAutocompletado();
+        //     cargarComboFabricado(id_e);
+        // })
 
 
     })

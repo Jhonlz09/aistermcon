@@ -51,6 +51,78 @@ function cargarCombo(id, s, a = 1, isDataCbo = false) {
   });
 }
 
+function cargarComboFabricado(s= 0) {
+    const cbo1 = document.getElementById("cboFabricado");
+    // const cbo2 = document.getElementById("cboFabricadoCon");
+
+    $(cbo1).empty();
+    // $(cbo2).empty();
+    // let tabla = "tbl" + id.toLowerCase();
+    $.ajax({
+      url: "controllers/combo.controlador.php",
+      method: "POST",
+      dataType: "json",
+      data: {
+        accion: 8,
+      },
+      success: function (respuesta) {
+        // let dataCbo = [];
+        var options = "";
+        for (let index = 0; index < respuesta.length; index++) {
+          options += `<option data-orden="${respuesta[index][2]}" data-cant="${respuesta[index][3]}" data-und="${respuesta[index][4]}" data-name="${respuesta[index][5]}" value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
+          // dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
+        }
+        $(cbo1).html(options);
+        // $(cbo2).html(options);
+        $(cbo1).val(s).trigger("change");
+        // $(cbo2).val(0).trigger("change");
+
+      },
+    });
+}
+
+function moveFocusOnTab(event) {
+  if (event.key === 'Tab') {
+      event.preventDefault(); // Evitar el comportamiento predeterminado del Tab
+
+      // Obtener la fila actual y la tabla
+      var currentRow = $(this).closest('tr');
+      var currentTable = currentRow.closest('table').DataTable();
+
+      // Encontrar la siguiente fila
+      var nextRow = currentRow.next();
+
+      // Si hay una siguiente fila, enfocar el input en esa fila
+      if (nextRow.length) {
+          nextRow.find('input.cantidad').focus();
+      } else {
+          // Si no hay una siguiente fila, enfocar el input en la primera fila de la siguiente tabla (opcional)
+          var nextTable = currentTable.table().node().parentElement.nextElementSibling;
+          if ($(nextTable).hasClass('dataTable')) {
+              $(nextTable).find('tbody tr:first-child input.cantidad').focus();
+          }
+      }
+  }
+}
+
+function agregarProductoProduccion(){
+
+}
+
+function opcionSelect(select, name) {
+  if (select.value !== '') {
+      $('.' + name + ' .dis').show();
+      return false
+  } else {
+      $('.' + name + ' .dis').hide();
+      return true
+  }
+}
+
+function agregarProductoProduccion(){
+  
+}
+
 function confirmarAccion(datos, ruta, tabla, modal = "", callback) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
@@ -100,13 +172,13 @@ function obtenerFila(fila, tabla) {
   return row;
 }
 
-function cambiarModal(span, title, iconE, icon, e, bg1, bg2, modalE, m1, m2) {
+function cambiarModal(span, title, iconE, icon, e, bg1, bg2, modalElement, m1, m2) {
   span.textContent = title;
   iconE.classList.remove(...iconE.classList);
   iconE.classList.add("fa-solid", icon);
-  if (modalE !== "") {
-    modalE.classList.add(m1);
-    modalE.classList.remove(m2);
+  if (modalElement !== "") {
+    modalElement.classList.add(m1);
+    modalElement.classList.remove(m2);
   }
 
   if (e !== "") {

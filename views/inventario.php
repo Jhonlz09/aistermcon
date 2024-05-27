@@ -535,7 +535,7 @@
             spanE = document.querySelector('#span-title span'),
             elements = document.querySelectorAll('#modalI .bg-gradient-success'),
             elementsE = document.querySelectorAll('#modalS .bg-gradient-success'),
-            select = document.querySelectorAll('.modal-body select.select2');
+            select = document.querySelectorAll('#formNuevo .modal-body select.select2');
 
         $(cboCategoria).select2({
             placeholder: 'SELECCIONE',
@@ -760,16 +760,6 @@
                     }
                 });
             }
-        });
-
-        function opcionSelect(select, name) {
-            if (select.value !== '') {
-                $('.' + name + ' .dis').show();
-                return false
-            } else {
-                $('.' + name + ' .dis').hide();
-                return true
-            }
-        }
+        });        
     });
 </script>

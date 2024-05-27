@@ -298,18 +298,19 @@
                 ruc = ciruc.value.trim(),
                 tel = telefono.value.trim(),
                 dir = direccion.value.trim().toUpperCase(),
-                correo = correo.value.trim();
+                cor = correo.value.trim();
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
                 return;
             }
             let datos = new FormData();
+            const id_e = id.value;
             datos.append('id', id_e);
             datos.append('nombre', nom);
             datos.append('ruc', ruc);
-            datos.append('telefono', tel);
-            datos.append('direccion', dir);
-            datos.append('correo', correo);
+            datos.append('tel', tel);
+            datos.append('dir', dir);
+            datos.append('correo', cor);
             datos.append('accion', accion);
             confirmarAccion(datos, 'clientes', tabla, modal, function(r) {
                 if (r) {

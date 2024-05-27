@@ -52,6 +52,12 @@ class ajaxRegistro
         $data = ModeloRegistro::mdlRegistrarPlantilla($datos, $nombre);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    public function registrarProductosFab($datos, $id_producto_fab)
+    {
+        $data = ModeloRegistro::mdlRegistrarProductosFab($datos, $id_producto_fab);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 
 if (isset($_POST["accion"]) && $_POST["accion"] == 1) {
@@ -72,4 +78,7 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 1) {
 }else if (isset($_POST["accion"]) && $_POST["accion"] == 6) {
     $entrada = new ajaxRegistro();
     $entrada->registrarPlantilla($_POST["arr"], $_POST["nombre_pla"]);
+}else if (isset($_POST["accion"]) && $_POST["accion"] == 7) {
+    $entrada = new ajaxRegistro();
+    $entrada->registrarProductosFab($_POST["arr"],$_POST["id_producto_fab"]);
 }

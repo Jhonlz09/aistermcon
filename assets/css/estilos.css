@@ -800,7 +800,7 @@ svg {
 }
 
 .scroll-modal {
-    max-height: calc(54vh - 2.2rem);
+    max-height: calc(74vh - 2.2rem);
 }
 
 .dark-mode .text-info {
@@ -830,6 +830,15 @@ svg {
 }
 
 
+#tblFab td{
+background-color: #a0a6c330;
+}
+
+#cboFabricado + .select2-container.select2-container--default .selection .select2-selection--single,
+#cboFabricadoCon + .select2-container.select2-container--default .selection .select2-selection--single {
+    border-color: #000;
+}
+
 .card-body .select2-container--default .select2-selection--single:focus:not(#card_empleados .select2-container--default .select2-selection--single) {
     border-bottom-color: var(--label-new);
 }
@@ -839,6 +848,10 @@ svg {
     .span-btn {
         padding-left: 0.5rem;
         padding-top: 0.5rem;
+    }
+
+    .scroll-modal {
+        max-height: calc(56vh - 2.2rem);
     }
 
 }
@@ -854,9 +867,8 @@ svg {
     
 }
 
-
 @media (max-width: 451px) {
-    .btn-group button span:not(.text-danger span) {
+    .btn-group button span {
         font-size: .8rem !important;
     }
     .col-sm-auto .select2-container--default{

@@ -3,12 +3,18 @@ require_once "../models/inventario.modelo.php";
 class ControladorInventario
 {
     public $id;
-    public $codigo;
+    public $codigo, $id_orden;
     public $nombre, $unidad, $categoria, $percha, $stock, $stock_min, $stock_mal;
 
     static public function listarInventario()
     {
         $data = ModeloInventario::mdlListarInventario();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function listarProductoFab()
+    {
+        $data = ModeloInventario::mdlListarProductoFab($this->id);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -32,13 +38,19 @@ class ControladorInventario
 
     public function agregarInventarioFab()
     {
-        $data = ModeloInventario::mdlAgregarInventarioFab($this->nombre,$this->unidad,$this->stock);
+        $data = ModeloInventario::mdlAgregarInventarioFab($this->nombre,$this->unidad,$this->stock, $this->id_orden);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     public function editarInventario()
     {
         $data = ModeloInventario::mdlEditarInventario($this->id,$this->codigo,$this->nombre,$this->stock,$this->stock_min,$this->stock_mal,$this->categoria,$this->unidad,$this->percha);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function editarInventarioFab()
+    {
+        $data = ModeloInventario::mdlEditarInventarioFab($this->id,$this->nombre,$this->unidad,$this->stock, $this->id_orden);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -121,6 +133,19 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->nombre = $_POST["nombre"];
         $data->unidad = $_POST["unidad"];
         $data->stock = $_POST["cantidad"];
+        $data->id_orden = $_POST["id_orden"];
         $data->agregarInventarioFab();
+    } else if ($_POST["accion"] == 10) {
+        $data = new ControladorInventario();
+        $data->id = $_POST["id_e"];
+        $data->nombre = $_POST["nombre"];
+        $data->unidad = $_POST["unidad"];
+        $data->stock = $_POST["cantidad"];
+        $data->id_orden = $_POST["id_orden"];
+        $data->editarInventarioFab();
+    }else if ($_POST["accion"] == 11) {
+        $data = new ControladorInventario();
+        $data->id = $_POST["id_producto_fab"];
+        $data->listarProductoFab();
     }
 }

@@ -244,7 +244,7 @@
             "#6A5ACD4D"
         ];
         
-        let cat = 3;
+        let cat = 2;
         let barChartData, barChartCanvas, barChartOptions, chartCanvas;
         let donutData, donutChartCanvas, donutOptions, donutCanvas;
         let anio = year;

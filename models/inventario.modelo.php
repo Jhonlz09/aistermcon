@@ -22,6 +22,25 @@ class ModeloInventario
         }
     }
 
+    public static function mdlListarProductoFab($id_producto_fab)
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT s.id, s.cantidad_salida,  u.nombre as unidad,
+            i.descripcion, 
+            to_char(s.fecha_fab, 'DD/MM/YYYY HH24:MI') AS fecha_fab
+            FROM tblsalidas s
+            JOIN tblinventario i ON i.id = s.id_producto
+            JOIN tblunidad u ON u.id = i.id_unidad
+            WHERE s.id_producto_fab = :id_producto_fab");
+
+            $l->bindParam(":id_producto_fab", $id_producto_fab, PDO::PARAM_INT);
+
+            $l->execute();
+            return $l->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
     public static function mdlListarInventarioStock()
     {
         try {
@@ -88,13 +107,16 @@ class ModeloInventario
         }
     }
 
-    public static function mdlAgregarInventarioFab($des, $uni, $sto)
+    public static function mdlAgregarInventarioFab($des, $uni, $sto, $id_orden)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,:sto,:uni, true)");
+            $conexion = Conexion::ConexionDB();
+            $a = $conexion->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado, id_orden) VALUES (generar_codigo_pf(),:des,:sto,:uni, true, :id_orden)");
             $a->bindParam(":des", $des, PDO::PARAM_STR);
             $a->bindParam(":uni", $uni, PDO::PARAM_INT);
             $a->bindParam(":sto", $sto, PDO::PARAM_INT);
+            $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
+
             $a->execute();
             return array(
                 'status' => 'success',
@@ -115,6 +137,35 @@ class ModeloInventario
         }
     }
 
+    public static function mdlEditarInventarioFab($id, $des, $uni, $sto, $id_orden)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            // Cambiar la consulta SQL para hacer un UPDATE
+            $a = $conexion->prepare("UPDATE tblinventario SET descripcion = :des, stock = :sto, id_unidad = :uni, id_orden = :id_orden WHERE id = :id");
+            // Vincular los parámetros
+            $a->bindParam(":id", $id, PDO::PARAM_INT);
+            $a->bindParam(":des", $des, PDO::PARAM_STR);
+            $a->bindParam(":uni", $uni, PDO::PARAM_INT);
+            $a->bindParam(":sto", $sto, PDO::PARAM_INT);
+            $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
+
+            // Ejecutar la consulta
+            $a->execute();
+
+            // Retornar el resultado
+            return array(
+                'status' => 'success',
+                'm' => 'El producto se editó correctamente'
+            );
+        } catch (PDOException $e) {
+            // Manejar el error
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo editar el producto: ' . $e->getMessage()
+            );
+        }
+    }
 
     public static function mdlEditarInventario($id, $codigo, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi)
     {

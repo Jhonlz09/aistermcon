@@ -61,7 +61,7 @@ class ModeloRegistro
             foreach ($arr as $data) {
                 list($idProducto, $cantidad) = explode(',', $data);
                 // Consultar el stock disponible para el producto 
-                $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) as stock, codigo FROM tblinventario WHERE id = :idProducto");
+                $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) as stock, descripcion FROM tblinventario WHERE id = :idProducto");
                 $stmtStock->bindParam(':idProducto', $idProducto, PDO::PARAM_INT);
                 $stmtStock->execute();
                 $resultadoStock = $stmtStock->fetch(PDO::FETCH_ASSOC);
@@ -69,7 +69,7 @@ class ModeloRegistro
                 if (!$resultadoStock || $resultadoStock['stock'] < $cantidad) {
                     return array(
                         'status' => 'danger',
-                        'm' => "No hay suficiente stock disponible para el producto con el codigo '" . $resultadoStock['codigo'] . "'"
+                        'm' => "No hay suficiente stock disponible para el producto '" . $resultadoStock['descripcion'] . "'"
                     );
                 }
             }
@@ -167,56 +167,54 @@ class ModeloRegistro
         }
     }
 
-
-
     static public function mdlRegistrarRetorno($arr, $boleta, $fecha_retorno)
     {
         try {
             $db = Conexion::ConexionDB();
             $db->beginTransaction(); // Iniciar una transacción para asegurar consistencia
-    
+
             foreach ($arr as $data) {
                 list($id, $cantidad) = explode(',', $data);
-    
+
                 if ($cantidad === '') {
                     $cantidad = NULL;
                 }
-    
+
                 // Verificar el valor actual de 'salidas' y 'entradas' para este producto
                 $stmtCheck = $db->prepare("SELECT i.descripcion, s.cantidad_salida, s.retorno FROM tblsalidas s JOIN tblinventario i ON i.id = s.id_producto WHERE s.id = :id");
                 $stmtCheck->bindParam(':id', $id, PDO::PARAM_INT);
                 $stmtCheck->execute();
                 $row = $stmtCheck->fetch(PDO::FETCH_ASSOC);
-    
+
                 if ($row) {
                     $codigo = $row['descripcion'];
                     $salidas = $row['cantidad_salida'];
                     if ($cantidad !== NULL && $cantidad > $salidas) {
                         throw new Exception("La cantidad ingresada para el producto '$codigo' excede la cantidad permitida.");
                     }
-    
+
                     // Realizar la actualización del campo 'retorno' y 'isentrada'
                     $stmtE = $db->prepare("UPDATE tblsalidas SET retorno = :nuevaEntrada, isentrada = :isEntrada WHERE id = :id");
                     $stmtE->bindParam(':nuevaEntrada', $cantidad, PDO::PARAM_STR);
                     $stmtE->bindParam(':isEntrada', $isEntrada, PDO::PARAM_BOOL);
                     $stmtE->bindParam(':id', $id, PDO::PARAM_INT);
-    
+
                     // Determinar el valor de 'isentrada'
                     $isEntrada = $cantidad !== NULL ? 1 : 0;
-    
+
                     $stmtE->execute();
                 } else {
                     throw new Exception("Producto con ID $id no encontrado.");
                 }
             }
-    
+
             $stmtB = $db->prepare("UPDATE tblboleta SET retorno = true, fecha_retorno = :fecha_retorno WHERE id = :boleta");
             $stmtB->bindParam(':fecha_retorno', $fecha_retorno, PDO::PARAM_STR);
             $stmtB->bindParam(':boleta', $boleta, PDO::PARAM_STR);
             $stmtB->execute();
-    
+
             $db->commit(); // Confirmar la transacción
-    
+
             return array(
                 'status' => 'success',
                 'm' => 'La entrada fue registrada correctamente'
@@ -225,15 +223,13 @@ class ModeloRegistro
             if ($db->inTransaction()) {
                 $db->rollBack(); // Revertir la transacción en caso de error
             }
-    
+
             return array(
                 'status' => 'danger',
                 'm' => '' . $e->getMessage()
             );
         }
     }
-    
-
 
     static public function mdlRegistrarPlantilla($arr, $nombre)
     {
@@ -273,5 +269,59 @@ class ModeloRegistro
                 'm' => 'No se pudo registrar la plantilla: ' . $e->getMessage()
             );
         }
+    }
+
+    static public function mdlRegistrarProductosFab($arr, $id_producto_fab)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction(); // Comenzar transacción
+        
+            foreach ($arr as $data) {
+                list($idProducto, $cantidad) = explode(',', $data);
+        
+                // Consultar el stock disponible para el producto 
+                $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) as stock, descripcion FROM tblinventario WHERE id = :idProducto FOR UPDATE");
+                $stmtStock->bindParam(':idProducto', $idProducto, PDO::PARAM_INT);
+                $stmtStock->execute();
+                $resultadoStock = $stmtStock->fetch(PDO::FETCH_ASSOC);
+        
+                if (!$resultadoStock || $resultadoStock['stock'] < $cantidad) {
+                    throw new Exception("No hay suficiente stock disponible para el producto '{$resultadoStock['descripcion']}'");
+                }
+        
+                // Insertar salida
+                $stmtS = $conexion->prepare("INSERT INTO tblsalidas(cantidad_salida, id_producto, fabricado, fecha_fab, id_producto_fab) VALUES(:cantidad, :id, true, CURRENT_TIMESTAMP::timestamp without time zone, :id_producto_fab)");
+                $stmtS->bindParam(':id_producto_fab', $id_producto_fab, PDO::PARAM_INT); // Asumiendo que id_producto_fab es igual a idProducto
+                $stmtS->bindParam(':cantidad', $cantidad, PDO::PARAM_STR);
+                $stmtS->bindParam(':id', $idProducto, PDO::PARAM_INT);
+                $stmtS->execute();
+            }
+        
+            $conexion->commit(); // Confirmar transacción
+            return array(
+                'status' => 'success',
+                'm' => 'Los productos se agregaron a producción correctamente'
+            );
+        } catch (PDOException $e) {
+            // Registro del error detallado para depuración
+            error_log('Error al agregar productos a producción: ' . $e->getMessage());
+            
+            // Mensaje de error genérico para los usuarios
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo agregar los productos a producción. Por favor, inténtalo de nuevo más tarde.'
+            );
+        } catch (Exception $e) {
+            // Registro del error detallado para depuración
+            error_log('Error al agregar productos a producción: ' . $e->getMessage());
+            
+            // Mensaje de error específico para los usuarios
+            return array(
+                'status' => 'danger',
+                'm' => $e->getMessage()
+            );
+        }
+        
     }
 }
