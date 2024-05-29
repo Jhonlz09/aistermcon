@@ -3,7 +3,7 @@ require_once "../models/clientes.modelo.php";
 
 class ControladorClientes
 {
-    public $id,$nombres, $ruc, $dir, $tel, $correo;
+    public $id,$nombres, $ci, $ruc, $razon, $dir, $tel, $correo, $tipo;
 
     static public function listarClientes()
     {
@@ -12,12 +12,12 @@ class ControladorClientes
     }
     public function agregarClientes()
     {
-        $data = ModeloClientes::mdlAgregarClientes($this->ruc, $this->nombres,$this->dir,$this->correo,$this->tel);
+        $data = ModeloClientes::mdlAgregarClientes($this->tipo, $this->ruc, $this->ci,  $this->nombres, $this->razon,  $this->dir,$this->correo,$this->tel);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     public function editarCliente()
     {
-        $data = ModeloClientes::mdlEditarCliente($this->id,$this->ruc, $this->nombres,$this->dir,$this->correo,$this->tel);
+        $data = ModeloClientes::mdlEditarCliente($this->id, $this->tipo, $this->ruc,$this->ci,  $this->nombres, $this->razon,$this->dir,$this->correo,$this->tel);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     
@@ -35,7 +35,10 @@ if (!isset($_POST["accion"])) {
     if ($_POST["accion"] == 1) {
         $data = new ControladorClientes();
         $data->nombres = $_POST["nombre"];
+        $data->razon = $_POST["razon"];
+        $data->tipo = $_POST["id_tipo"];
         $data->ruc = $_POST["ruc"];
+        $data->ci = $_POST["ced"];
         $data->tel = $_POST["tel"];
         $data->dir = $_POST["dir"];
         $data->correo = $_POST["correo"];
@@ -44,7 +47,10 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorClientes();
         $data->id = $_POST["id"];
         $data->nombres = $_POST["nombre"];
+        $data->razon = $_POST["razon"];
+        $data->tipo = $_POST["id_tipo"];
         $data->ruc = $_POST["ruc"];
+        $data->ci = $_POST["ced"];
         $data->tel = $_POST["tel"];
         $data->dir = $_POST["dir"];
         $data->correo = $_POST["correo"];

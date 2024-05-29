@@ -223,7 +223,7 @@ class ModeloSalidas
             $l = Conexion::ConexionDB()->prepare("SELECT b.id,
             TO_CHAR(b.fecha, 'DD/MM/YYYY') as fecha, b.id,
             TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') as fecha_retorno,
-            o.nombre as orden,c.nombre as cliente, c.ciruc, c.direccion as direccion_cliente, c.telefono as cliente_telefono, b.motivo,
+            o.nombre as orden,c.nombre as cliente, c.ruc, c.direccion as direccion_cliente, c.telefono as cliente_telefono, b.motivo,
             e_despachado.nombre as despachado,
 			e_responsable.nombre as responsable,
             e.apellido || ' '|| e.nombre as conductor,

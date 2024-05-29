@@ -325,11 +325,15 @@ class ModeloCarga
                     } else if (!(preg_match('/^[0-9]+$/', $cedula))) {
                         $cedula = '1';
                     } 
-                    $clientes = strtoupper(trim($doc->getCell("A" . $i)->getValue()));
+                    $clientes = strtoupper(trim($doc->getCell("B" . $i)->getValue()));
                     if (empty($clientes)) {
                         $clientes = null;
                     }
-                    $a = Conexion::ConexionDB()->prepare("INSERT INTO tblclientes(nombre) VALUES (:cli)");
+                    $direccion = strtoupper(trim($doc->getCell("C" . $i)->getValue()));
+                    if (empty($direccion)) {
+                        $direccion = null;
+                    }
+                    $a = Conexion::ConexionDB()->prepare("INSERT INTO tblclientes(ciruc,nombre,direccion) VALUES (:cli)");
                     $a->bindParam(":cli", $clientes, PDO::PARAM_STR);
 
                     if ($a->execute()) {

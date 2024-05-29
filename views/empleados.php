@@ -1,4 +1,4 @@
-<?php require_once "../utils/database/config.php";?>
+<?php require_once "../utils/database/config.php"; ?>
 
 <head>
     <title>Empleados/Clientes</title>
@@ -163,6 +163,9 @@
                                         <div class="row">
                                             <div class="col">
                                                 <select id="cboRoles" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE" required>
+                                                    <!-- <option value="1">OBRERO</option>
+                                                    <option value="2">BODEGUERO</option>
+                                                    <option value="2">BODEGUERO</option> -->
                                                 </select>
                                                 <div class="invalid-feedback">*Campo obligatorio</div>
                                             </div>
@@ -344,7 +347,6 @@
 
         let datos_empresa;
 
-        cargarCombo('Roles');
         cargarCombo('Empresa', '', 1, true).then(datos_ => {
             datos_empresa = datos_;
             // $('#cboEmpresaFilter').select2('data', datos_empresa);

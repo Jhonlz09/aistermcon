@@ -320,9 +320,6 @@
             var boleta = tabla.row($(this).closest('tr').next()).data()[11];
             // console.log(id_boleta)
             var input_pdf = $(this).find('.input_boleta');
-            input_pdf.val(boleta);
-            // console.log(input_pdf.val());
-
             this.submit(); // Envía el formulario actual
         });
 
@@ -338,6 +335,7 @@
         $('#tblSalidas').on('click', '#editS', function() {
             let row = tabla.row($(this).closest('tr').next()).data()
             id_boleta = row[11];
+            console.log(id_boleta)
             const orden_id = row[12];
             const fecha_id = row[14];
             const conductor = row[15];
@@ -363,6 +361,7 @@
             row = tabla.row($(this).closest('tr').next()).data()
             // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
             id_boleta = row[11];
+            console.log(id_boleta)
             const orden_id = row[12];
             const cliente = row[13];
             const fecha_id = row[14];

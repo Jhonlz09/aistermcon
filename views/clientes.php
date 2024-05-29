@@ -1,4 +1,5 @@
-<?php require_once "../utils/database/config.php";?>
+<?php require_once "../utils/database/config.php"; ?>
+
 <head>
     <title>Clientes</title>
 </head>
@@ -48,11 +49,14 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">Nº</th>
-                                    <th>RUC / C.I.</th>
-                                    <th>CLIENTE</th>
+                                    <th>TIPO</th>
+                                    <th>RUC</th>
+                                    <th>CÉDULA</th>
+                                    <th>NOMBRE COMERCIAL</th>
+                                    <th>RAZÓN SOCIAL</th>
                                     <th>DIRECCIÓN</th>
                                     <th>TELÉFONO</th>
-                                    <th>CORREO</th>
+                                    <th>EMAIL</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -87,21 +91,66 @@
                     <input type="hidden" id="id" value="">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="input-data">
-                                <input autocomplete="off" id="ciruc" class="input-nuevo" type="text" required>
-                                <div class="line underline"></div>
-                                <label for="ciruc" class="label"><i class="fas fa-id-card"></i> RUC / C.I.</label>
-                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                            </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="mb-0 combo"><i class="fas fa-scale-unbalanced"></i> Tipo</label>
+                                        <div class="row">
+                                            <div class="col">
+                                                <select name="c" id="cboTipo" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                    <option value="1">JURÍDICA</option>
+                                                    <option value="2">NATURAL</option>
+                                                </select>
+                                                <div class="invalid-feedback">*Campo obligatorio</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <div class="input-data">
-                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <input autocomplete="off" inputmode="numeric" id="ruc" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
-                                        <label for="nombre" class="label"><i class="fa-solid fa-signature"></i> Cliente</label>
+                                        <label for="ruc" class="label"><i class="fas fa-building-user"></i> Ruc</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="input-data">
+                                        <input autocomplete="off" inputmode="numeric" maxlength="10" oninput="validarNumber(this,/[^0-9]/g)" id="ci" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="ci" class="label"><i class="fas fa-id-card"></i> Cédula</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="nombre" class="label"><i class="fas fa-signature"></i> Nombre comercial</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="razon_social" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="razon_social" class="label"><i class="fas fa-input-text"></i> Razón social</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-data">
+                                        <input autocomplete="off" inputmode="numeric" id="telefono" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="input-data">
                                         <input autocomplete="off" id="direccion" class="input-nuevo" type="text" required>
@@ -110,19 +159,7 @@
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
-                            </div>
-
-
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="input-data">
-                                        <input autocomplete="off" id="telefono" class="input-nuevo" type="text" required>
-                                        <div class="line underline"></div>
-                                        <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
+                                <div class="col-md-6">
                                     <div class="input-data">
                                         <input autocomplete="off" id="correo" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
@@ -131,8 +168,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -170,13 +205,22 @@
                 }
             },
             {
-                "targets": 5,
-                "render": function(data, type, row, meta) {
-                    return '<a href="mailto:' + data + '" class="text-info">' + data + '</a>';
+                "targets": 8,
+                render: function(data, type, row, meta) {
+                    // Dividir los correos por comas
+                    var emails = data.split(',');
+
+                    // Crear enlaces de correo electrónico
+                    var emailLinks = emails.map(function(email) {
+                        return '<a href="mailto:' + email.trim() + '" class="text-info">' + email.trim() + '</a>';
+                    });
+
+                    // Unir todos los enlaces con un delimitador, como un espacio o una coma
+                    return emailLinks.join(' ');
                 }
             },
             {
-                targets: 6,
+                targets: 9,
                 data: "acciones",
                 visible: mostrarCol,
                 render: function(data, type, row, full, meta) {
@@ -196,6 +240,9 @@
             },
         ],
     }
+
+
+
 
     $(document).ready(function() {
         if (!$.fn.DataTable.isDataTable('#tblClientes')) {
@@ -231,16 +278,26 @@
 
         const id = document.getElementById('id'),
             nombre = document.getElementById('nombre'),
-            ciruc = document.getElementById('ciruc'),
+            ruc = document.getElementById('ruc'),
+            ci = document.getElementById('ci'),
+            razon = document.getElementById('razon_social'),
             correo = document.getElementById('correo'),
             direccion = document.getElementById('direccion'),
-            telefono = document.getElementById('telefono');
+            telefono = document.getElementById('telefono'),
+
+            cboTipo = document.getElementById('cboTipo');
+
 
 
 
         $(modal).on("shown.bs.modal", () => {
-            nombre.focus();
+            ruc.focus();
         });
+
+
+        $('#cboTipo').select2({
+            minimumResultsForSearch: -1,
+        })
 
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
@@ -248,6 +305,9 @@
                 cambiarModal(span, ' Nuevo Cliente', icon, 'fa-user-tag', elements, 'bg-gradient-blue', 'bg-gradient-success', modal, 'modal-new', 'modal-change')
                 form.reset();
                 form.classList.remove('was-validated');
+                setChange(cboTipo, 1)
+                ruc.disabled = false
+                ci.disabled = false
             });
         }
 
@@ -284,9 +344,13 @@
             let row = obtenerFila(this, tabla);
             accion = 2;
             cambiarModal(span, ' Editar Cliente', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+
             id.value = row["id"];
             nombre.value = row["nombre"];
-            ciruc.value = row["ciruc"];
+            ruc.value = row["ruc"];
+            ci.value = row["cedula"];
+            razon.value = row["razon_social"];
+            setChange(cboTipo, row["id_tipo"])
             direccion.value = row["direccion"];
             telefono.value = row["telefono"]
             correo.value = row["correo"]
@@ -295,19 +359,42 @@
         form.addEventListener("submit", function(e) {
             e.preventDefault();
             const nom = nombre.value.trim().toUpperCase(),
-                ruc = ciruc.value.trim(),
+                raz = razon.value.trim().toUpperCase(),
+                ruc_ = ruc.value.trim(),
+                ced = ci.value.trim(),
+                tip = cboTipo.value,
                 tel = telefono.value.trim(),
                 dir = direccion.value.trim().toUpperCase(),
                 cor = correo.value.trim();
-            if (!this.checkValidity()) {
-                this.classList.add('was-validated');
-                return;
+
+
+            if (ruc_ === '' && ced === '') {
+                // No hacer nada y continuar la ejecución fuera del if
             }
+            // Si solo ruc_ está vacío, deshabilitar temporalmente ruc
+            else if (ruc_ === '') {
+                ruc.disabled = true;
+            }
+            // Si solo ced está vacío, deshabilitar temporalmente ced
+            else if (ced === '') {
+                ci.disabled = true;
+            }
+
+            if (!this.checkValidity()) {
+                    this.classList.add('was-validated');
+                    return;
+                }
+
+           
+
             let datos = new FormData();
             const id_e = id.value;
             datos.append('id', id_e);
             datos.append('nombre', nom);
-            datos.append('ruc', ruc);
+            datos.append('razon', raz);
+            datos.append('id_tipo', tip);
+            datos.append('ruc', ruc_);
+            datos.append('ced', ced);
             datos.append('tel', tel);
             datos.append('dir', dir);
             datos.append('correo', cor);

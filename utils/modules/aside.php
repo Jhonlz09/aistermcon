@@ -417,7 +417,7 @@
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label id="lbl" class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
+                                <label class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
                                 <div class="row">
                                     <div class="col">
                                         <select name="c" id="cboUnidad_fab" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
@@ -429,7 +429,7 @@
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label id="lbl" class="mb-0 combo"><i class="fas fa-ticket"></i> Nro. de orden</label>
+                                <label class="mb-0 combo"><i class="fas fa-ticket"></i> Nro. de orden</label>
                                 <div class="row">
                                     <div class="col">
                                         <select name="c" id="cboOrdenFab" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>

@@ -9,7 +9,6 @@ foreach ($permisosUsuario as $permiso) {
 } 
 
 $configuracion = PermisosControlador::ctrObtenerConfiguracion();
-
     $_SESSION["empresa"] = $configuracion[0]->empresa;
     $_SESSION["iva"] = $configuracion[0]->iva;
     $_SESSION["emisor"] = $configuracion[0]->emisor;

@@ -31,7 +31,6 @@
 
     <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
-    <script src='assets/js/main.js'></script>
     <!-- jQuery -->
     <script src='assets/plugins/jquery/jquery.min.js'></script>
     <!-- jquery UI -->
@@ -166,6 +165,7 @@
             include 'modules/slide.php';
             ?>
         </div>
+        <script src='assets/js/main.js'></script>
         <script>
             const body = document.querySelector('body'),
                 html = document.querySelector('html'),
@@ -192,7 +192,11 @@
 
 
             // console.log('este es mi id_pergul ' + id_perfil)
-
+            btnSide.addEventListener("click", () => {
+                    setTimeout(() => {
+                        tabla.columns.adjust().responsive.recalc();
+                    }, 200);
+            });
 
             setA.forEach((e) => {
                 e.addEventListener('click', function() {
@@ -269,7 +273,9 @@
             function cargarContenido(contenedor, contenido, id = '') {
                 let tbl = 'tbl' + id;
                 let ruta = id.toLowerCase();
-
+                setTimeout(() => {
+                    tabla.columns.adjust().responsive.recalc();
+                }, 150);
                 var tablaData = localStorage.getItem(ruta);
                 accion_inv = 0;
                 scroll = false;
@@ -299,9 +305,7 @@
                             "dataSrc": '',
                         };
                         tabla.ajax.reload(null, false);
-                        setTimeout(() => {
-                            tabla.columns.adjust().responsive.recalc();
-                        }, 150);
+
                     }
                 });
             }
@@ -532,6 +536,7 @@
             });
 
             $('#tblDetalleSalida').on('draw.dt', function() {
+                console.log("ID BOLETA EN EL DRA ES: " + id_boleta)
                 if (id_boleta != 0) {
                     $('#tblDetalleSalida').Tabledit({
                         url: 'controllers/Tabledit/acciones_salidas.php',

@@ -330,11 +330,10 @@ class PDF extends FPDF
         $this->SetAutoPageBreak(true, 6); // Habilitar salto de página automático con margen inferior
         $header = array(iconv('UTF-8', 'windows-1252', 'Código'), ' Descripcion', 'Cantidad', 'Unidad');
         $this->Row($header, array(10, 10, 10, 10), 'B', 5);
-
         $this->SetY(129);
         $this->SetFont('Arial', 'B', 11);
         $this->SetX(138);
-        $ruc = $row['ciruc'];
+        $ruc = $row['ruc'];
         $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'RUC/CI:'), 0, 0, 'L');
         $this->SetFont('Arial', '', 10);
         $this->SetX(154);
