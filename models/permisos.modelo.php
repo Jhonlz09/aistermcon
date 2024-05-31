@@ -43,7 +43,9 @@ class PermisosModelo
 
     static public function mdlObtenerConfiguracion()
     {
-        $stmt = Conexion::ConexionDB()->prepare("SELECT empresa, iva, emisor, ruc, matriz, correo1, correo2, telefonos, entradamultiple as entrada FROM tblconfiguracion");
+        $stmt = Conexion::ConexionDB()->prepare("SELECT empresa, iva, emisor, ruc, matriz, correo1, 
+        correo2, telefonos, entradamultiple AS entrada, 
+        (SELECT last_value FROM secuencia_orden) + 1 AS secuencia_orden FROM tblconfiguracion");
         // $stmt->bindParam(":id", $id, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS);

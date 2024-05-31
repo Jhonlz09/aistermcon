@@ -316,10 +316,13 @@
 
         $('#tblSalidas').on('submit', '.form_pdf', function(event) {
             event.preventDefault(); // Evita el envío predeterminado del formulario
-            event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
+            // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
             var boleta = tabla.row($(this).closest('tr').next()).data()[11];
             // console.log(id_boleta)
             var input_pdf = $(this).find('.input_boleta');
+            input_pdf.val(boleta);
+            // console.log(boleta)
+
             this.submit(); // Envía el formulario actual
         });
 

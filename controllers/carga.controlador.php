@@ -10,6 +10,13 @@ class ControladorCarga
         $data = ModeloCarga::mdlCargarProductos($this->file);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    public function cargarActualizacionInventario()
+    {
+        $data = ModeloCarga::mdlActualizacionInventario($this->file);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
     public function cargarCategorias()
     {
         $data = ModeloCarga::mdlCargarCategorias($this->file);
@@ -76,4 +83,8 @@ if ($_POST["accion"] == 1) {
     $data = new ControladorCarga();
     $data->file = $_FILES['fileEmpleados'];
     $data->cargarEmpleados();
+}else if ($_POST["accion"] == 8) {
+    $data = new ControladorCarga();
+    $data->file = $_FILES['fileInv'];
+    $data->cargarActualizacionInventario();
 }

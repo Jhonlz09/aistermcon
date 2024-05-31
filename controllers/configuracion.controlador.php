@@ -26,6 +26,12 @@ class ControladorConfiguracion
         $data = ModeloConfiguracion::mdlEditarConfigGuia($this->ruc,$this->emisor,$this->dir, $this->tel, $this->correo1);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    public function editarConfigPref()
+    {
+        $data = ModeloConfiguracion::mdlEditarConfigPref($this->nombre);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 
 if (isset($_POST["accion"])) {
@@ -49,5 +55,11 @@ if (isset($_POST["accion"])) {
         $data->tel = $_POST["tel"];
         $data->correo1 = $_POST["correo1"];
         $data->editarConfigGuia();
+    }else if ($_POST["accion"] == 5) {
+        $data = new ControladorConfiguracion();
+        $data->nombre = $_POST["SecOrden"];
+        // $data->emisor = $_POST["emisor"];
+
+        $data->editarConfigPref();
     }
 }

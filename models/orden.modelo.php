@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once "../utils/database/conexion.php";
 
 class ModeloOrden
@@ -29,7 +29,13 @@ class ModeloOrden
             $a->bindParam(":des", $nombre, PDO::PARAM_STR);
             $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
 
-            $a->execute();
+            if ($a->execute()) {
+                $stm = $conexion->prepare("SELECT last_value + 1 AS secuencia_orden FROM secuencia_orden;");
+                $stm->execute();
+                $sec = $stm->fetch(PDO::FETCH_ASSOC);
+
+                $_SESSION["secuencia_orden"] = $sec['secuencia_orden'];
+            }
 
             return array(
                 'status' => 'success',

@@ -9,7 +9,7 @@ class ModeloConfiguracion
     static public function mdlEditarConfigDatos($empresa)
     {
         try {
-            
+
             $conexion = Conexion::ConexionDB();
             $a = $conexion->prepare("UPDATE tblconfiguracion SET empresa=:nombre WHERE id=1");
             $a->bindParam(":nombre", $empresa, PDO::PARAM_STR);
@@ -92,6 +92,30 @@ class ModeloConfiguracion
             return array(
                 'status' => 'success',
                 'm' => 'La configuración de guía se editó correctamente'
+            );
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo editar la configuracion: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlEditarConfigPref($nombre)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+
+            $sql = "ALTER SEQUENCE secuencia_orden RESTART WITH " . intval($nombre);
+
+            $e = $conexion->prepare($sql);
+            $e->execute();
+
+            $_SESSION["secuencia_orden"] = $nombre;
+
+            return array(
+                'status' => 'success',
+                'm' => 'La configuración de preferencias se editó correctamente'
             );
         } catch (PDOException $e) {
             return array(

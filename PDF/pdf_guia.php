@@ -15,6 +15,7 @@ class PDF extends FPDF
     private $id_boleta; // Propiedad para almacenar el ID de la boleta
     public $orden;
     public $cliente;
+    public $currentY;
 
     function WordWrap($text, $firstLineWidth, $subsequentLineWidth)
     {
@@ -330,6 +331,9 @@ class PDF extends FPDF
         $this->SetAutoPageBreak(true, 6); // Habilitar salto de página automático con margen inferior
         $header = array(iconv('UTF-8', 'windows-1252', 'Código'), ' Descripcion', 'Cantidad', 'Unidad');
         $this->Row($header, array(10, 10, 10, 10), 'B', 5);
+        $this->currentY = $this->GetY();
+
+
         $this->SetY(129);
         $this->SetFont('Arial', 'B', 11);
         $this->SetX(138);
@@ -559,7 +563,7 @@ $pdf->SetFillColor(235, 235, 235); // Por ejemplo, un gris claro con valores R, 
 // $pdf->SetStartY($pdf->GetY()); // Establecer la posición Y inicial en 30
 
 $total = 0;
-$pdf->SetY($pdf->GetY() + 19);
+$pdf->SetY($pdf->currentY);
 
 foreach ($data_boleta as $fill) {
     $cantidad_salida = floatval($fill["cantidad_salida"]);

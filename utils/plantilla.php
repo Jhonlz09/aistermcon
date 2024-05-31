@@ -30,6 +30,7 @@
     <link rel='stylesheet' href='assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css'>
 
     <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <script src='assets/js/main.js'></script>
 
     <!-- jQuery -->
     <script src='assets/plugins/jquery/jquery.min.js'></script>
@@ -165,7 +166,6 @@
             include 'modules/slide.php';
             ?>
         </div>
-        <script src='assets/js/main.js'></script>
         <script>
             const body = document.querySelector('body'),
                 html = document.querySelector('html'),
@@ -684,12 +684,12 @@
                 // })
 
                 $(cboClientesActivos).select2({
-                    placeholder: 'POR CLIENTE',
+                    placeholder: 'SELECCIONE',
                     width: '100%',
                 })
 
                 $(cboOrdenActivas).select2({
-                    placeholder: 'POR ORDEN',
+                    placeholder: 'SELECCIONE',
                     width: 'auto',
                 })
 
@@ -1059,6 +1059,7 @@
                 cargarAutocompletado(function(items) {
                     $(inputauto).autocomplete({
                         source: items,
+                        minLength: 5,
                         select: function(event, ui) {
                             CargarProductos(ui.item.cod);
                             return false;

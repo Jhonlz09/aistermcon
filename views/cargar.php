@@ -105,6 +105,27 @@
                                 </div>
                             </div>
                         </form>
+
+                        <form method="post" enctype="multipart/form-data" id="form_inv" class="needs-validation" novalidate>
+                            <div class="row align-items-end">
+                                <div class="col-md-10 pad-col">
+                                    <label for="fileInv"><span style="margin-right:.5rem">Actualizar Inventario</span>
+                                        <div class="download">
+                                            <a href="controllers/descargar_formato.php?archivo=FORMATO_PARA_ACT_INVENTARIO.xlsx">
+                                                <i class="fas fa-download"></i> Descargar formato
+                                            </a>
+                                        </div><!-- /.col -->
+                                    </label>
+                                    <input type="file" name="fileInv" id="fileInv" class="form-control" accept=".xls, .xlsx" required>
+                                    <div class="invalid-feedback no-margin">*Campo requerido.</div>
+                                    <div class="ten no-margin">*Debe selecionar un archivo .xls o .xlsx</div>
+
+                                </div>
+                                <div class="col-md-2 pad-col">
+                                    <button style="width:100%" type="submit" value="Cargar" class="btn btn-primary" id="btnCargarInv"><i class="fa-solid fa-arrow-up-from-bracket mr-2"></i><span style="display:inline-block;"> Cargar</span></button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -309,6 +330,7 @@
 <script>
     $(document).ready(function() {
         const form_pro = document.getElementById('form_pro'),
+            form_inv = document.getElementById('form_inv'),
             form_cat = document.getElementById('form_cat'),
             form_und = document.getElementById('form_und'),
             form_ubi = document.getElementById('form_ubi'),
@@ -332,6 +354,12 @@
             e.preventDefault();
             let val = document.getElementById('filePro');
             submitForm(this, val, 1, true);
+        });
+
+        form_inv.addEventListener("submit", function(e) {
+            e.preventDefault();
+            let val = document.getElementById('fileInv');
+            submitForm(this, val, 8,false, 'actualiza');
         });
 
         form_cat.addEventListener("submit", function(e) {
@@ -371,7 +399,7 @@
             submitForm(this, val, 7);
         });
 
-        function submitForm(form, input, action, detail = false) {
+        function submitForm(form, input, action, detail = false,  opcion='inserta') {
             /*===================================================================*/
             //VALIDAR QUE SE SELECCIONE UN ARCHIVO
             /*===================================================================*/
@@ -401,16 +429,16 @@
                 processData: false,
                 dataType: "JSON",
                 success: function(src) {
-                    handleResponse(input, src, form, detail);
+                    handleResponse(input, src, form, detail, opcion);
                 },
             });
         }
 
-        function handleResponse(inpfile, src, form, detail) {
+        function handleResponse(inpfile, src, form, detail, opcion) {
             inpfile.value = '';
             form.classList.remove('was-validated');
-            filasExitosas.textContent = 'Filas insertadas correctamente: ' + src.registrados;
-            filasNo.textContent = 'Filas no insertadas: ' + src.noRegistrados;
+            filasExitosas.textContent = 'Filas '+opcion+'das correctamente: ' + src.registrados;
+            filasNo.textContent = 'Filas no '+opcion+'das: ' + src.noRegistrados;
             filaVacia.textContent = src.vacios;
             filaRep.textContent = src.repetidos;
             filaInc.textContent = src.incorrectos;
@@ -428,14 +456,14 @@
             if (src.registrados > 0) {
                 let txt = '';
                 if (src.noRegistrados > 0) {
-                    txt = 'No se pudieron insertar ' +
+                    txt = 'No se pudieron '+opcion+'r ' +
                         src.noRegistrados +
                         ' fila(s)'
                 }
                 Swal.fire({
                     position: "center",
                     icon: "success",
-                    title: "Se insertaron " +
+                    title: "Se "+opcion+"ron " +
                         src.registrados +
                         " fila(s) correctamente",
                     text: txt,
@@ -452,7 +480,7 @@
                 Swal.fire({
                     position: "center",
                     icon: "error",
-                    title: "No se pudo insertar ninguna fila",
+                    title: "No se pudo "+opcion+"r ninguna fila",
                     showConfirmButton: true,
                     showCancelButton: true,
                     confirmButtonText: "Ver detalles",

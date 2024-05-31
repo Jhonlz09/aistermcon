@@ -7,7 +7,7 @@ class ModeloClientes
     static public function mdlListarClientes()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT c.id, t.tipo, c.ruc, c.cedula, c.nombre, c.razon_social,c.direccion,
+            $l = Conexion::ConexionDB()->prepare("SELECT c.id, t.nombre as tipo, c.ruc, c.cedula, c.nombre, c.razon_social,c.direccion,
             c.telefono, c.correo, '' as acciones, t.id as id_tipo
             FROM tblclientes c
             JOIN tbltipo t ON t.id = c.id_tipo  

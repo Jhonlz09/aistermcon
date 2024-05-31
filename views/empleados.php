@@ -360,6 +360,9 @@
             // setChange(cboEmpresaFilter, 0)
         });
         cargarCombo('Placa');
+
+        cargarCombo('Roles');
+
         OverlayScrollbars(document.querySelector('.scroll-modal'), {
             autoUpdate: true,
             scrollbars: {

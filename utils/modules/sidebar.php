@@ -18,6 +18,8 @@ $configuracion = PermisosControlador::ctrObtenerConfiguracion();
     $_SESSION["correo2"] = $configuracion[0]->correo2;
     $_SESSION["telefono"] = $configuracion[0]->telefonos;
     $_SESSION["entrada_mul"] = $configuracion[0]->entrada;
+    $_SESSION["secuencia_orden"] = $configuracion[0]->secuencia_orden;
+
 
 ?>
 <!-- Main Sidebar Container -->

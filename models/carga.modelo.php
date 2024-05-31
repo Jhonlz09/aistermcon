@@ -86,6 +86,63 @@ class ModeloCarga
         }
     }
 
+
+    static public function mdlActualizacionInventario($file)
+    {
+        $resultados = [];
+        $registrados = 0;
+        // $categoriaNoRegistrada = [];
+        // $unidadNoRegistrada = [];
+        // $ubicacionNoRegistrada = [];
+        try {
+            $doc = IOFactory::load($file['tmp_name'])->getSheet(0);
+            $numeroFilas = $doc->getHighestDataRow();
+            $repetidos = 0;
+            $vacios = 0;
+            $incorrectos = 0;
+            $noRegistrados = 0;
+            //CICLO FOR PARA REGISTROS DE PRODUCTOS
+            for ($i = 4; $i <= $numeroFilas; $i++) {
+                try {
+                    $codigo = strtoupper(trim($doc->getCell("A" . $i)->getValue()));
+
+                    $stock = trim($doc->getCell("B" . $i)->getValue());
+
+
+                    $a = Conexion::ConexionDB()->prepare("UPDATE tblinventario SET stock=:sto WHERE codigo=:cod");
+                    $a->bindParam(":cod", $codigo, PDO::PARAM_STR);
+                    $a->bindParam(":sto", $stock, PDO::PARAM_INT);
+                    if ($a->execute()) {
+                        $registrados++;
+                    }
+                } catch (PDOException $e) {
+                    if ($e->getCode() == '23505') {
+                        $repetidos++;
+                    } else if ($e->getCode() == '22P02') {
+                        $vacios++;
+                    } else {
+                        $incorrectos++;
+                    }
+                    $noRegistrados++;
+                }
+            }
+            $resultados = [
+                'registrados' => $registrados,
+                'noRegistrados' => $noRegistrados,
+                'repetidos' => $repetidos,
+                'vacios' => $vacios,
+                'incorrectos' => $incorrectos,
+                // 'categoriaNoRegistrada' => $categoriaNoRegistrada,
+                // 'unidadNoRegistrada' => $unidadNoRegistrada,
+                // 'ubicacionNoRegistrada' => $ubicacionNoRegistrada,
+            ];
+            return $resultados;
+        } catch (SpreadException $exception) {
+
+            return $resultados;
+        }
+    }
+
     static private function mdlObtenerId($tabla, $valor)
     {
         if (empty($valor)) {
@@ -309,6 +366,8 @@ class ModeloCarga
     {
         $resultados = [];
         $registrados = 0;
+        $tipoNoRegistrado = [];
+
         try {
             $doc = IOFactory::load($file['tmp_name'])->getSheet(0);
             $numeroFilas = $doc->getHighestDataRow();
@@ -319,27 +378,57 @@ class ModeloCarga
             //CICLO FOR PARA REGISTROS DE CLIENTES
             for ($i = 4; $i <= $numeroFilas; $i++) {
                 try {
-                    $cedula = trim($doc->getCell("A" . $i)->getValue());
-                    if (empty($cedula)) {
-                        $cedula = null;
-                    } else if (!(preg_match('/^[0-9]+$/', $cedula))) {
-                        $cedula = '1';
-                    } 
-                    $clientes = strtoupper(trim($doc->getCell("B" . $i)->getValue()));
-                    if (empty($clientes)) {
-                        $clientes = null;
+                    $tipo = strtoupper(trim($doc->getCell("A" . $i)->getValue()));
+                    $id_tipo = self::mdlObtenerId('tbltipo', $tipo);
+                    if ($id_tipo == null && !empty($tipo)) {
+                        $tipoNoRegistrado[] = $tipo;
                     }
-                    $direccion = strtoupper(trim($doc->getCell("C" . $i)->getValue()));
-                    if (empty($direccion)) {
-                        $direccion = null;
+                    $ruc = trim($doc->getCell("B" . $i)->getValue());
+                    if (empty($ruc)) {
+                        $ruc = null;
+                    } else if (!(preg_match('/^[0-9]+$/', $ruc))) {
+                        $ruc = '1';
                     }
-                    $a = Conexion::ConexionDB()->prepare("INSERT INTO tblclientes(ciruc,nombre,direccion) VALUES (:cli)");
-                    $a->bindParam(":cli", $clientes, PDO::PARAM_STR);
+                    $ci = trim($doc->getCell("C" . $i)->getValue());
+                    if (empty($ci)) {
+                        $ci = null;
+                    } else if (!(preg_match('/^[0-9]+$/', $ci))) {
+                        $ci = '1';
+                    }
+                    $nombre = strtoupper(trim($doc->getCell("D" . $i)->getValue()));
+                    if (empty($nombre)) {
+                        $nombre = null;
+                    }
+                    $razon = strtoupper(trim($doc->getCell("E" . $i)->getValue()));
+                    if (empty($razon)) {
+                        $razon = null;
+                    }
+                    $dir = strtoupper(trim($doc->getCell("F" . $i)->getValue()));
+                    if (empty($dir)) {
+                        $dir = null;
+                    }
+                    $tel = strtoupper(trim($doc->getCell("G" . $i)->getValue()));
+                    if (empty($tel)) {
+                        $tel = null;
+                    }
+                    $correo = strtoupper(trim($doc->getCell("H" . $i)->getValue()));
+                    if (empty($correo)) {
+                        $correo = null;
+                    }
 
+                    $a = Conexion::ConexionDB()->prepare("INSERT INTO tblclientes(id_tipo, ruc, cedula, nombre, razon_social, direccion, correo, telefono) 
+                    VALUES (:id_tipo, :ruc, :ced, :nombre, :razon, :dir, :correo, :tel)");
+                    $a->bindParam(":id_tipo", $id_tipo, PDO::PARAM_INT);
+                    $a->bindParam(":ruc", $ruc, PDO::PARAM_STR);
+                    $a->bindParam(":ced", $ci, PDO::PARAM_STR);
+                    $a->bindParam(":nombre", $nombre, PDO::PARAM_STR);
+                    $a->bindParam(":razon", $razon, PDO::PARAM_STR);
+                    $a->bindParam(":dir", $dir, PDO::PARAM_STR);
+                    $a->bindParam(":correo", $correo, PDO::PARAM_STR);
+                    $a->bindParam(":tel", $tel, PDO::PARAM_STR);
                     if ($a->execute()) {
                         $registrados++;
                     }
-
                 } catch (PDOException $e) {
                     if ($e->getCode() == '23505') {
                         $repetidos++;
@@ -357,6 +446,7 @@ class ModeloCarga
                 'repetidos' => $repetidos,
                 'vacios' => $vacios,
                 'incorrectos' => $incorrectos,
+                'categoriaNoRegistrada' => $tipoNoRegistrado,
             ];
             return $resultados;
         } catch (SpreadException $exception) {
@@ -384,8 +474,7 @@ class ModeloCarga
                         $cedula = null;
                     } else if (!(preg_match('/^[0-9]+$/', $cedula))) {
                         $cedula = '1';
-                    } 
-
+                    }
                     $nombre_empleado = strtoupper(trim($doc->getCell("B" . $i)->getValue()));
                     if (empty($nombre_empleado)) {
                         $nombre_empleado = null;
@@ -401,7 +490,7 @@ class ModeloCarga
                         $telefono = null;
                     } else if (!(preg_match('/^[0-9]+$/', $telefono))) {
                         $telefono = '1';
-                    } 
+                    }
 
                     $a = Conexion::ConexionDB()->prepare("INSERT INTO tblempleado(cedula,nombre,apellido, telefono) VALUES (:ced,:nom,:ape,:tel)");
                     $a->bindParam(":ced", $cedula, PDO::PARAM_STR);
@@ -419,7 +508,6 @@ class ModeloCarga
                         $vacios++;
                     } else {
                         $incorrectos++;
-                        
                     }
                     $noRegistrados++;
                 }
