@@ -1,5 +1,5 @@
 host=localhost
-dbname=dbaistermcon
+dbname=aistermcondb
 username=admin
 password=%KKXJoHm5uec
 port=5432
