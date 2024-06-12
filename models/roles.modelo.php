@@ -121,12 +121,12 @@ class ModeloRoles
 
             return array(
                 'status' => 'success',
-                'm' => 'Se guardaron los permisos del rol con éxito.'
+                'm' => 'Se guardaron los permisos del perfil correctamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudieron guardar los permisos del rol: ' . $e->getMessage()
+                'm' => 'No se pudieron guardar los permisos del perfil: ' . $e->getMessage()
             );
         }
     }
@@ -141,12 +141,12 @@ class ModeloRoles
             $l->execute();
             return array(
                 'status' => 'success',
-                'm' => 'Se eliminaron los permisos del rol con éxito.'
+                'm' => 'Se eliminaron los permisos del perfil correctamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo eliminar los permisos de el rol: ' . $e->getMessage()
+                'm' => 'No se pudo eliminar los permisos de el perfil: ' . $e->getMessage()
             );
         }
     }

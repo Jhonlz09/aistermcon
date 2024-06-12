@@ -2,21 +2,18 @@
 require_once "../../utils/database/conexion.php";
 
 if (isset($_POST['action'])) {
-    $actionWithId = $_POST['action'];
-    $actionAndIdArray = explode(',', $actionWithId);
+    $action = $_POST['action'];
+    $idAndBoleta = $_POST['id'];
+    $idAndIdArray = explode(',', $idAndBoleta);
 
-    // Ahora $actionAndIdArray[0] contendrá la acción ('edit') y $actionAndIdArray[1] contendrá la id_boleta
-
-    $action = $actionAndIdArray[0]; // Esto será 'edit'
-    $id_boleta = $actionAndIdArray[1];
+    $id_salida = $idAndIdArray[0]; // Esto será 'edit'
+    $id_boleta = $idAndIdArray[1];
 }
-
-
 if ($action == 'edit') {
     $data = array(
         'codigo' => $_POST['codigo'],
         'cantidad' => $_POST['cantidad_salida'],
-        'id' => $_POST['id'],
+        'id' => $id_salida,
         'id_boleta' => $id_boleta
     );
 
@@ -54,18 +51,38 @@ if ($action == 'edit') {
                 'm' => 'El producto ya existe en la guía.'
             ));
         } else {
-            // El id_producto no está relacionado con el id_boleta, proceder con la actualización
-            $stmt_update = $conn->prepare("UPDATE tblsalidas SET id_producto = :id_producto, cantidad_salida = :cantidad, id_boleta = :id_boleta WHERE id = :id");
-            $stmt_update->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
-            $stmt_update->bindParam(":cantidad", $data['cantidad'], PDO::PARAM_STR);
-            $stmt_update->bindParam(":id_boleta", $data['id_boleta'], PDO::PARAM_INT);
-            $stmt_update->bindParam(":id", $data['id'], PDO::PARAM_INT);
-            $stmt_update->execute();
+            // Verificar si hay suficiente stock antes de proceder con la actualización
+            $stmt_stock = $conn->prepare("SELECT 
+                COALESCE(s.cantidad_salida, 0) AS cantidad_salida,
+                (i.stock - i.stock_mal) AS stock, 
+                i.descripcion 
+                FROM tblinventario i 
+                LEFT JOIN tblsalidas s ON i.id = s.id_producto AND s.id = :id
+                WHERE i.id = :id_producto");
+            $stmt_stock->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $stmt_stock->bindParam(":id", $data['id'], PDO::PARAM_INT);
+            $stmt_stock->execute();
+            $resultado_stock = $stmt_stock->fetch(PDO::FETCH_ASSOC);
 
-            echo json_encode(array(
-                'status' => 'success',
-                'm' => 'Producto actualizado correctamente.'
-            ));
+            if (!$resultado_stock || $resultado_stock['stock'] + $resultado_stock['cantidad_salida'] < $data['cantidad']) {
+                echo json_encode(array(
+                    'status' => 'danger',
+                    'm' => "No hay suficiente stock disponible para el producto '" . $resultado_stock['descripcion'] . "'"
+                ));
+            } else {
+                // El id_producto no está relacionado con el id_boleta y hay suficiente stock, proceder con la actualización
+                $stmt_update = $conn->prepare("UPDATE tblsalidas SET id_producto = :id_producto, cantidad_salida = :cantidad, id_boleta = :id_boleta WHERE id = :id");
+                $stmt_update->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+                $stmt_update->bindParam(":cantidad", $data['cantidad'], PDO::PARAM_STR);
+                $stmt_update->bindParam(":id_boleta", $data['id_boleta'], PDO::PARAM_INT);
+                $stmt_update->bindParam(":id", $data['id'], PDO::PARAM_INT);
+                $stmt_update->execute();
+
+                echo json_encode(array(
+                    'status' => 'success',
+                    'm' => 'Se ha actualizado el producto correctamente.'
+                ));
+            }
         }
     } catch (PDOException $e) {
         echo json_encode(array(
@@ -75,22 +92,21 @@ if ($action == 'edit') {
     }
 } else if ($action == 'delete') {
     $data = array(
-        'id' => $_POST['id'],
+        'id' => $id_salida,
     );
-    try{
+    try {
         $stmt = Conexion::ConexionDB()->prepare("DELETE FROM tblsalidas WHERE id=:id");
-    $stmt->bindParam(":id", $data['id'], PDO::PARAM_INT);
-    $stmt->execute();
+        $stmt->bindParam(":id", $data['id'], PDO::PARAM_INT);
+        $stmt->execute();
 
-    echo json_encode(array(
-        'status' => 'success',
-        'm' => 'Producto eliminado correctamente.'
-    ));
-    }catch (PDOException $e) {
+        echo json_encode(array(
+            'status' => 'success',
+            'm' => 'Se ha eliminado el producto correctamente.'
+        ));
+    } catch (PDOException $e) {
         echo json_encode(array(
             'status' => 'danger',
             'm' => 'No se pudo eliminar el producto: ' . $e->getMessage()
         ));
     }
-    
 }

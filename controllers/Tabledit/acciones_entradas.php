@@ -3,13 +3,12 @@ require_once "../../utils/database/conexion.php";
 
 
 if (isset($_POST['action'])) {
-    $actionWithId = $_POST['action'];
-    $actionAndIdArray = explode(',', $actionWithId);
+    $action = $_POST['action'];
+    $idAndFactura = $_POST['id'];
+    $idAndIdArray = explode(',', $idAndFactura);
 
-    // Ahora $actionAndIdArray[0] contendrá la acción ('edit') y $actionAndIdArray[1] contendrá la id_boleta
-
-    $action = $actionAndIdArray[0]; // Esto será 'edit'
-    $id_factura = $actionAndIdArray[1];
+    $id_entrada = $idAndIdArray[0]; // Esto será 'edit'
+    $id_boleta = $idAndIdArray[1];
 }
 
 if($action == 'edit'){
@@ -17,15 +16,14 @@ if($action == 'edit'){
         'codigo' => $_POST['codigo'],
         'cantidad' => $_POST['cantidad_entrada'],
         'precio' => $_POST['precio'],
-        'id' => $_POST['id'],
-        'id_factura' => $id_factura
+        'id' => $id_entrada,
+        'id_factura' => $id_boleta
     );
 
      // Conexión a la base de datos
     $conn = Conexion::ConexionDB();
 
     try {
-
          // Obtener el id_producto a partir del código
         $stmt_get_product_id = $conn->prepare("SELECT id FROM tblinventario WHERE codigo = :codigo");
         $stmt_get_product_id->bindParam(":codigo", $data['codigo'], PDO::PARAM_STR);
@@ -55,7 +53,6 @@ if($action == 'edit'){
                 'm' => 'El producto ya existe en la factura.'
             ));
         }else{
-
             $precio = str_replace('.', ',', $data['precio']);
 
             $stmt_update = $conn->prepare("UPDATE tblentradas SET id_producto = :id_producto, cantidad_entrada = :cantidad, precio_uni= :precio, id_factura = :id_factura WHERE id = :id");
@@ -68,7 +65,7 @@ if($action == 'edit'){
 
             echo json_encode(array(
                 'status' => 'success',
-                'm' => 'Producto actualizado correctamente.'
+                'm' => 'Se ha actualizado el producto correctamente.'
             ));
         }
 
@@ -81,7 +78,7 @@ if($action == 'edit'){
 
 }else if($action ==  'delete'){
     $data = array(
-        'id' => $_POST['id'],
+        'id' => $id_entrada,
     );
 
     try{
@@ -91,7 +88,7 @@ if($action == 'edit'){
 
     echo json_encode(array(
         'status' => 'success',
-        'm' => 'Producto eliminado correctamente.'
+        'm' => 'Se ha eliminado el producto correctamente.'
     ));
     }catch (PDOException $e) {
         echo json_encode(array(

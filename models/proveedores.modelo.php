@@ -7,7 +7,7 @@ class ModeloProveedores
     static public function mdlListarProveedores()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT id, nombre, '' as acciones FROM tblproveedores WHERE estado=true ORDER BY id");
+            $l = Conexion::ConexionDB()->prepare("SELECT id, nombre, telefono, direccion, correo, '' as acciones FROM tblproveedores WHERE estado=true ORDER BY id");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -15,12 +15,15 @@ class ModeloProveedores
         }
     }
 
-    static public function mdlAgregarProveedores($nombre)
+    static public function mdlAgregarProveedores($nombre,$dir, $correo, $tel)
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblproveedores(nombre) VALUES (:nombre)");
+            $a = $conexion->prepare("INSERT INTO tblproveedores(nombre,direccion, correo, telefono) VALUES (:nombre,:dir, :correo, :tel)");
             $a->bindParam(":nombre", $nombre, PDO::PARAM_STR);
+            $a->bindParam(":dir", $dir, PDO::PARAM_STR);
+            $a->bindParam(":correo", $correo, PDO::PARAM_STR);
+            $a->bindParam(":tel", $tel, PDO::PARAM_STR);
             $a->execute();
 
             return array(
@@ -36,12 +39,15 @@ class ModeloProveedores
     }
 
 
-    static public function mdlEditarProveedor($id, $nombre)
+    static public function mdlEditarProveedor($id, $nombre,$dir, $correo, $tel)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("UPDATE tblproveedores SET nombre=:nombre WHERE id=:id");
+            $u = Conexion::ConexionDB()->prepare("UPDATE tblproveedores SET nombre=:nombre, direccion = :dir, correo = :correo, telefono = :tel WHERE id=:id");
             $u->bindParam(":id", $id, PDO::PARAM_INT);
             $u->bindParam(":nombre", $nombre, PDO::PARAM_STR);
+            $u->bindParam(":dir", $dir, PDO::PARAM_STR);
+            $u->bindParam(":correo", $correo, PDO::PARAM_STR);
+            $u->bindParam(":tel", $tel, PDO::PARAM_STR);
             $u->execute();
             return array(
                 'status' => 'success',

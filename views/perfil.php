@@ -23,7 +23,7 @@
                         <h3 class="profile-username text-center"><?php echo isset($_SESSION["s_usuario"]->nombres) ? $_SESSION["s_usuario"]->nombres : ''; ?></h3>
                         <p class="text-muted text-center"><?php echo isset($_SESSION["s_usuario"]->nombre_usuario) ? $_SESSION["s_usuario"]->nombre_usuario : ''; ?></p>
 
-                        <div class="alert bg-gradient-navy text-center" role="alert">
+                        <div style="font-size:95%;padding:.5rem .5rem;border-radius: 2rem;" class="alert bg-gradient-navy text-center" role="alert">
                         <?php echo isset($_SESSION["s_usuario"]->perfil) ? $_SESSION["s_usuario"]->perfil : ''; ?>
                         </div>
                     </div>

@@ -915,6 +915,8 @@ body .ui-tooltip {
 	background-color: var(--open-select);
 	color: var(--text-color);
 	backdrop-filter: blur(65px);
+	-webkit-backdrop-filter:blur(65px);
+	backdrop-filter: blur(65px);
 
 }
 .ui-widget-content a {

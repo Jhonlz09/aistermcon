@@ -9,19 +9,18 @@ class ModeloEntradas
         try {
             $consulta = "SELECT e.id, i.codigo, e.cantidad_entrada, u.nombre AS unidad, e.precio_uni AS precio,
 			e.precio_total, e.precio_iva, e.precio_total_iva,
-            i.descripcion, b.nombre || '  ' || p.nombre || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY') AS grupo,
-            b.id as id_boleta, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha, p.id as proveedor, b.nombre, ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY e.id) AS fila
-        FROM tblentradas e
-        JOIN tblinventario i ON e.id_producto = i.id
-		JOIN tblfactura b ON e.id_factura = b.id
-        JOIN tblproveedores p ON b.id_proveedor = p.id
-        JOIN tblunidad u ON i.id_unidad = u.id
-		WHERE EXTRACT(YEAR FROM b.fecha) =  :anio ";
+            i.descripcion, b.nombre || '  ' || p.nombre || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY HH24:MI') AS grupo, p.nombre as pro, b.nombre as nro_fac,
+            b.id as id_boleta, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha, p.id as proveedor, ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY e.id) AS fila
+                FROM tblentradas e
+                JOIN tblinventario i ON e.id_producto = i.id
+		        JOIN tblfactura b ON e.id_factura = b.id
+                JOIN tblproveedores p ON b.id_proveedor = p.id
+                JOIN tblunidad u ON i.id_unidad = u.id
+		    WHERE EXTRACT(YEAR FROM b.fecha) =  :anio ";
             if ($mes !== '') {
                 $consulta .= "AND EXTRACT(MONTH FROM b.fecha) = :mes ";
             }
             $consulta .= "ORDER BY b.fecha DESC, e.id;";
-
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             if ($mes !== '') {
@@ -124,12 +123,12 @@ class ModeloEntradas
 
             return array(
                 'status' => 'success',
-                'm' => 'Se eliminó la guia con éxito.'
+                'm' => 'Se eliminó la factura con éxito.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo eliminar la guia: ' . $e->getMessage()
+                'm' => 'No se pudo eliminar la factura: ' . $e->getMessage()
             );
         }
     }
@@ -137,7 +136,7 @@ class ModeloEntradas
     static public function mdlDetalleBoletaEntrada($id_boleta)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT e.id, i.codigo, e.cantidad_entrada,
+            $l = Conexion::ConexionDB()->prepare("SELECT e.id || ',' || b.id as id , i.codigo, e.cantidad_entrada,
             u.nombre AS unidad, e.precio_uni::numeric AS precio, i.descripcion
             FROM tblentradas e
             JOIN tblinventario i ON e.id_producto = i.id

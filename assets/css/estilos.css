@@ -35,7 +35,8 @@
     --content-wrap: #f4f6f9;
     --a-color: #5f666d;
     --icon-neon: #14e01b;
-
+    --btn-row-color:#721c24;
+    --btn-row-hover:#a3161f;
 }
 
 ::selection{
@@ -128,6 +129,7 @@ input[type=file]::file-selector-button {
     left: 0;
     transform: translateY(-50%);
     background-color: rgba(0, 0, 0, 0.55);
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
     z-index: 9999;
     display: none;
@@ -166,7 +168,12 @@ input[type=file] {
 
 
 #cboEmpresaFilter + .select2-container.select2-container--default {
-    max-width: 280px; /* Puedes ajustar este valor según tus necesidades */
+    max-width:calc(60% + 1rem);
+    min-width: 120px;
+}
+
+#cboEmpresaFilter + .select2-container.select2-container--default .selection .select2-selection--single {
+border-bottom: none;
 }
 
 #cboMeses + .select2-container.select2-container--default {
@@ -410,6 +417,7 @@ input[type="number"] {
     z-index: 999;
     background-color: var(--select-hover);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     /* box-shadow: 0 5px 5px rgba(0,0,0,.125), 0 5px 5px rgba(0,0,0,.2); */
 }
 
@@ -471,35 +479,57 @@ input[type="number"] {
     white-space: nowrap;
 }
 
-#tblSalidas thead {
+/* #tblSalidas thead {
     visibility: collapse;
-}
+} */
 
 #tblSalidas tr.dtrg-group {
-    background: linear-gradient(to bottom, #911c24, #954045, #911c24) !important;
-    color: aliceblue;
+    color: #721c24;
+    background-color: #f8d7da;
 }
+#tblSalidas tr.dtrg-group td{
+    border:1px solid  #f5c2c7;
+
+}
+
 #tblInforme tr.dtrg-group {
-    background: linear-gradient(to bottom, #5c85bcc7, #709cd8, #4a6b97c7) !important;
+    color: #004085;
+    background-color: #cfe6fe;
+    --btn-row-color :#004085;
+    --btn-row-hover:#0065d1;
+}
+
+#tblInforme tr.dtrg-group td{
+    border:1px solid  #b8daff;
 }
 
 #tblEntradas tr.dtrg-group {
-    background: linear-gradient(to bottom, #7fc762, #96d78a, #61a745) !important;
+    color: #155724;
+    background-color: #d4edda;
+    --btn-row-color :#155724;
+    --btn-row-hover:#279b41;
 }
-
+#tblEntradas tr.dtrg-group td{
+    border:1px solid  #c3e6cb;
+}
 .overflow-body{
     overflow: hidden;
 }
   
 .btn-row{
-    color: aliceblue;
+    color: var(--btn-row-color);
     font-size: 1.55rem;
     padding-inline: .5rem !important;
 }
 .btn-row:hover{
-    color: #fff!important;
+    color: var(--btn-row-hover) !important;
     
 }
+
+
+
+
+
 .sidebar nav {
     height: calc(100% - 1rem);
     display: flex;
@@ -703,6 +733,10 @@ input:focus-visible {
     font-weight: 600 !important;
 }
 
+.dtr-details{
+    overflow-wrap:anywhere;
+}
+
 .modal-body .input-data input:valid~.label {
     color: var(--label-new);
 }
@@ -737,6 +771,7 @@ input:focus-visible {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     background-color: var(--open-select);
+    -webkit-backdrop-filter: blur(15px);
     backdrop-filter: blur(15px)
 }
 
@@ -808,8 +843,11 @@ svg {
 }
 
 
+
 .dtsp-nameButton, .dtsp-countButton, .clearButton{
-    display:none
+    visibility:collapse;
+    width:0;
+    padding:0;
 }
 
 .dtsp-subRow1 .input-group .input-group-append{
@@ -825,7 +863,10 @@ svg {
 #select2-cboConductor-container .select2-selection__placeholder,
 #select2-cboEmpleado-container .select2-selection__placeholder,
 #select2-cboOrden-container .select2-selection__placeholder,
-#select2-cboFabricado-container .select2-selection__placeholder{
+#select2-cboFabricado-container .select2-selection__placeholder,
+#select2-cboClienteEntrada-container .select2-selection__placeholder,
+#select2-cboDespachado-container .select2-selection__placeholder,
+#select2-cboResponsable-container .select2-selection__placeholder{
     font-size: 1.1rem;
 }
 
@@ -839,7 +880,7 @@ background-color: #a0a6c330;
     border-color: #000;
 }
 
-.card-body .select2-container--default .select2-selection--single:focus:not(#card_empleados .select2-container--default .select2-selection--single) {
+.card-body .select2-container--default .select2-selection--single:focus:not(#card_empleados .select2-container--default .select2-selection--single, #card_preferencia .select2-container--default .select2-selection--single) {
     border-bottom-color: var(--label-new);
 }
 
@@ -875,14 +916,22 @@ background-color: #a0a6c330;
         width: 100% !important;
     }
     .navbar-expand .navbar-nav .nav-link {
-        padding-right: .6rem;
-        padding-left: .6rem;
+        padding-right: .58rem;
+        padding-left: .58rem;
     }
     .text-center {
         /* text-align: inherit !important; */
       }
+    .paginate_button .page-link{
+        padding: .5rem .5rem!important
+    }
       #cboEmpresaFilter + .select2-container.select2-container--default {
         max-width: 100%; /* Puedes ajustar este valor según tus necesidades */
+        
+    }
+
+    #rowFilter{
+        flex-wrap: wrap!important;
     }
     .dt-button-collection {
         right: 0 !important;
@@ -896,12 +945,15 @@ background-color: #a0a6c330;
         padding:0
     }
 }
+.dtr-details .text-center{
+    text-align: inherit !important;
+}
 
 @media (min-width: 768px) and (max-width:829px) {
     .fsize-1 {
         font-size: 1.058rem !important;
     }
-
+    
     .col-sm-6 .input-data .invalid-feedback {
         font-size: 13px;
     }
@@ -912,6 +964,14 @@ background-color: #a0a6c330;
         font-size: 1rem !important;
         ;
     }
+}
+
+.sidebar-collapse .main-sidebar:hover .nav-sidebar.nav-child-indent .nav-treeview .nav-link{
+    padding-left: 1rem;
+    width: calc(250px - .5rem * 2 - 1rem);
+}
+.sidebar-collapse .main-sidebar:hover .nav-sidebar.nav-child-indent .nav-treeview {
+    padding-left: 1rem;
 }
 
 @media (min-width: 992px) and (max-width:1152px) {

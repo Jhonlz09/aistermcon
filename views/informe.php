@@ -1,4 +1,4 @@
-<?php require_once "../utils/database/config.php";?>
+<?php require_once "../utils/database/config.php"; ?>
 
 <head>
     <title>Informe</title>
@@ -13,7 +13,7 @@
             </div>
             <?php if (isset($_SESSION["crear5"]) && $_SESSION["crear5"] === true) : ?>
                 <div class="col">
-                    <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal-date">
+                    <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal-date">
                         <i class="fa fa-file-lines"></i> Generar informe</button>
                 </div>
             <?php endif; ?>
@@ -30,7 +30,7 @@
                     <div class="card-header">
                         <div class="col-12">
                             <div class="row">
-                                <div style="padding-right: .3rem" class="col-auto col-p">
+                                <div  class="col-auto col-p" style="padding-right: .3rem" >
                                     <h3 class="card-title ">Listado de informe</h3>
                                 </div>
 
@@ -43,17 +43,18 @@
                                         <option value="null">TODO</option>
                                     </select>
                                 </div>
+                                <div class="col-sm">
+                                    <div style="margin-block:.4rem;height:33px;" class="input-group">
+                                        <span class="input-group-text" style="height:30px;"><i class="fas fa-search icon"></i></span>
+                                        <input autocomplete="off" style="border:none;" style="height:30px" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-0">
-                        <div class="col">
-                            <div style="margin-block:.4rem;height:33px;" class="input-group">
-                                <span class="input-group-text" style="height:30px;"><i class="fas fa-search icon"></i></span>
-                                <input autocomplete="off" style="border:none;" style="height:30px" type="text" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
-                            </div>
-                        </div>
+
                         <table id="tblInforme" class="table table-bordered table-striped" style="width:100%">
                             <thead>
                                 <tr>
@@ -89,7 +90,7 @@
 <div class="modal fade" id="modal-date">
     <div class="modal-dialog modal-sm">
         <div class="modal-content modal-nuevo">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fas fa-file-lines"> </i> Generar Informe</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -100,7 +101,7 @@
                     <input type="hidden" name="variable" id="variable" value="">
                     <input type="hidden" name="id_usuario" id="id_usuario" value="">
                     <div class="row">
-                        <div class="col d-flex" style="padding-bottom:.75rem;">
+                        <!-- <div class="col d-flex" style="padding-bottom:.75rem;">
                             <div style="background-color:var(--primary-color-light)" class="tabs">
                                 <input type="radio" class="rd-i" id="radio-orden" name="tabs" value="1" checked />
                                 <label class="tab" for="radio-orden"> Orden</label>
@@ -110,8 +111,8 @@
                                 <label class="tab" for="radio-fecha">Fecha</label>
                                 <span class="glider"></span>
                             </div>
-                        </div>
-                        <div class="col col-sm-6" id="col_group">
+                        </div> -->
+                        <div class="col col-sm" id="col_group">
                             <div class="form-group" id="groupCliente" style="display:none">
                                 <label class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
                                 <div class="row">
@@ -155,7 +156,7 @@
 
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-success"><i class="fas fa-file-lines"> </i><span class="button-text"> </span>Generar informe</button>
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-file-lines"> </i><span class="button-text"> </span>Generar informe</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -192,8 +193,9 @@
                     r.style.visibility = collapsed ? '' : 'collapse';
                 });
 
-                var groupText = '<div class="d-flex justify-content-between align-items-center " style="cursor:pointer"><strong  class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_informe_orden.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_orden" class="input_boleta" value=""><button style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' + 
-                (editar ? '<button id="editR" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') + ' </div></div>';
+                var groupText = '<div class="d-flex justify-content-between align-items-center " style="cursor:pointer"><strong  class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_informe_orden.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_orden" class="input_boleta" value=""><button style="font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf btn-row"><i class="fas fa-file-pdf"></i></button></form>' +
+                    // (editar ? '<button id="editR" style="font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-clipboard-list-check"></i></button>' : '') 
+                    ' </div></div>';
 
                 return $('<tr/>')
                     .append('<td colspan="9">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
@@ -218,12 +220,18 @@
             },
             {
                 targets: 7,
+                className: "text-center",
                 render: function(data, type, row, meta) {
-                    return `<span style="font-size:1.1rem" class="text-danger font-weight-bold">${data}</span>`;
+                    if (data === null) {
+                        return '-';
+                    } else {
+                        return `<span style="font-size:1.1rem" class="text-danger font-weight-bold">${data}</span>`;
+                    }
                 }
             },
             {
                 targets: 8,
+                className: "text-center",
                 render: function(data, type, row, meta) {
                     if (data === null) {
                         return '-';
@@ -237,15 +245,30 @@
                 visible: false,
             },
         ],
-
-
+        "preDrawCallback": function(settings) {
+            // Guardar la posición del scroll antes de redibujar
+            console.log("Guardando posición del scroll:", $(window).scrollTop());
+            scrollPosition = $(window).scrollTop();
+        },
+        "drawCallback": function(settings) {
+            // Restaurar la posición del scroll después de redibujar
+            setTimeout(function() {
+                console.log("Restaurando posición del scroll:", scrollPosition);
+                $(window).scrollTop(scrollPosition);
+            }, 3);
+        }
     }
 
     $('#tblInforme tbody').on('click', 'tr.dtrg-start', function() {
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
-            var name = $(this).closest('tr.dtrg-start').data('name');
+            var windowScrollTop = $(window).scrollTop();
+            var tableScrollTop = $('#tblInforme_wrapper').scrollTop();
+            var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
             tabla.draw(false);
+            $(window).scrollTop(windowScrollTop);
+            $('#tblInforme_wrapper').scrollTop(tableScrollTop);
+
         }
     });
 
@@ -277,7 +300,7 @@
 
         $(cboMeses).select2({
             minimumResultsForSearch: -1,
-            width: 'calc(100% + 1.5rem)',
+            width: 'calc(100% + .4vw)',
             data: datos_meses,
         });
 
@@ -313,7 +336,7 @@
         // let accion = 0;
         // const modal = document.querySelector('.modal'),
         //     span = document.querySelector('.modal-title span'),
-        //     elements = document.querySelectorAll('.modal .bg-gradient-success'),
+        //     elements = document.querySelectorAll('.modal .bg-gradient-green'),
         const form = document.getElementById('formInforme');
         //     // form_pdf = document.getElementById('form_pdf'),
         // btnNuevo = document.getElementById('btnNuevo');
@@ -333,31 +356,31 @@
         const btnGuardar = document.getElementById('btnGuardar');
         const tabsIn = document.querySelectorAll('.tabs .rd-i');
 
-        let tabSelected = '1';
+        let tabSelecteds = '1';
 
         btnGuardar.addEventListener('click', function(event) {
             // Evita que el formulario se envíe
             event.preventDefault();
             // Cambia el action del formulario
-            if (tabSelected === '1') {
+            if (tabSelecteds === '1') {
                 form.action = 'PDF/pdf_informe_orden.php';
-            } else if (tabSelected === '2') {
+            } else if (tabSelecteds === '2') {
                 form.action = 'PDF/pdf_informe_cliente.php';
-            } else if (tabSelected === '3') {
+            } else if (tabSelecteds === '3') {
                 form.action = 'PDF/pdf_informe_fecha.php';
             }
 
             // Envía el formulario manualmente
             form.submit();
         });
-        console.log(tabsIn);
+        // console.log(tabsIn);
         tabsIn.forEach(tab => {
             tab.addEventListener('change', function() {
-                tabSelected = this.value;
+                tabSelecteds = this.value;
 
                 form.classList.remove('was-validated');
 
-                if (tabSelected === '1') {
+                if (tabSelecteds === '1') {
                     cboOrden_i.required = true
                     cboCliente_i.required = false
                     desde.required = false
@@ -366,23 +389,23 @@
                     groupOrden.style.display = 'block';
                     groupCliente.style.display = 'none';
                     col_group.style.display = 'block';
-                } else if (tabSelected === '2') {
-                    cboOrden_i.required = false
-                    cboCliente_i.required = true
-                    desde.required = true
-                    hasta.required = true
-                    row_date.style.display = 'flex';
-                    groupOrden.style.display = 'none';
-                    groupCliente.style.display = 'block';
-                    col_group.style.display = 'block';
-                } else if (tabSelected === '3') {
-                    row_date.style.display = 'flex';
-                    col_group.style.display = 'none';
-                    cboOrden_i.required = false
-                    cboCliente_i.required = false
-                    desde.required = true
-                    hasta.required = true
-                }
+                } //else if (tabSelecteds === '2') {
+                //     cboOrden_i.required = false
+                //     cboCliente_i.required = true
+                //     desde.required = true
+                //     hasta.required = true
+                //     row_date.style.display = 'flex';
+                //     groupOrden.style.display = 'none';
+                //     groupCliente.style.display = 'block';
+                //     col_group.style.display = 'block';
+                // } else if (tabSelecteds === '3') {
+                //     row_date.style.display = 'flex';
+                //     col_group.style.display = 'none';
+                //     cboOrden_i.required = false
+                //     cboCliente_i.required = false
+                //     desde.required = true
+                //     hasta.required = true
+                // }
             });
         });
 
@@ -490,35 +513,6 @@
         //             $(activeModal).modal('hide');
         //         }
         //     }
-        // });
-
-        // $('#tblInforme tbody').on('click', '.btnEditar', function() {
-        //     let row = obtenerFila(this, tabla);
-        //     accion = 2;
-        //     const icon = document.querySelector('.modal-title i');
-        //     cambiarModal(span, ' Editar Entrada', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
-        //     id.value = row["id_empleado"];
-        //     nombre.value = row["nombres_empleado"];
-        //     cedula.value = row["cedula"];
-        //     conductor.checked = row["conductor"];
-        // });
-
-        // form.addEventListener("submit", function(e) {
-        //     e.preventDefault();
-        //     if (!this.checkValidity()) {
-        //         this.classList.add('was-validated');
-        //         return;
-        //     }
-        //     this.submit();
-        //     //     console.log("Ejecutando el resto del código...");
-        //     //     const id_e = id.value;
-        //     //     let datos = new FormData();
-        //     //     datos.append('id_empleado', id_e);
-        //     //     datos.append('cedula', ced);
-        //     //     datos.append('nombres_empleado', nom);
-        //     //     datos.append('conductor', con);
-        //     //     datos.append('accion', accion);
-        //     //     confirmarAccion(datos, null, 'empleados', modal, tabla)
         // });
     })
 </script>

@@ -32,9 +32,9 @@
                         <h3 id="productos">0</h3>
                     </div>
                     <div class="icon">
-                        <i class="fa-solid fa-shelves"></i>
+                        <i class="fas fa-shelves"></i>
                     </div>
-                    <a onclick="masInfo()" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a onclick="masInfo('Inventario')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- TARJETA TOTAL PENDIENTES -->
@@ -48,7 +48,7 @@
                     <div class="icon">
                         <i class="fas fa-cart-minus"></i>
                     </div>
-                    <a onclick="masInfo()" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a onclick="masInfo('Movimientos')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
 
@@ -63,7 +63,7 @@
                     <div class="icon">
                         <i class="fas fa-cart-plus"></i>
                     </div>
-                    <a onclick="masInfo()" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a onclick="masInfo('Listado de compras')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <div class="col-lg-3">
@@ -74,9 +74,9 @@
                         <h3 id="retorno">0</h3>
                     </div>
                     <div class="icon">
-                        <i class="fa-solid fa-person-digging"></i>
+                        <i class="fas fa-person-digging"></i>
                     </div>
-                    <a onclick="masInfo()" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a onclick="masInfo('Movimientos')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
         </div> <!-- ./row Tarjetas Informativas -->

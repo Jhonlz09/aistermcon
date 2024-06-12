@@ -7,27 +7,27 @@ class ModeloSalidas
     static public function mdlListarSalidas($anio, $mes)
     {
         try {
-            $consulta = "SELECT s.id, i.codigo, s.cantidad_salida,
-            u.nombre AS unidad, i.descripcion,  
-            o.nombre || ' '|| c.nombre  || ' - '|| LPAD(b.nro_guia::TEXT, 9, '0') || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY') AS grupo, 
-            s.fabricado,s.retorno, o.nombre as orden, c.nombre as cliente,
-            LPAD(b.nro_guia::TEXT, 9, '0') as boleta, b.id as id_boleta, 
-            o.id as id_orden, c.id as id_cliente, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha,
-            b.id_conductor,b.id_despachado, b.id_responsable,b.nro_guia,
-            ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila
-        FROM 
-            tblsalidas s
-            JOIN tblinventario i ON s.id_producto = i.id
-            JOIN tblboleta b ON s.id_boleta = b.id 
-            JOIN tblorden o ON b.id_orden = o.id
-            JOIN tblclientes c ON c.id = o.id_cliente
-            JOIN tblunidad u ON i.id_unidad = u.id
-            WHERE 
-                EXTRACT(YEAR FROM b.fecha) = :anio ";
+            $consulta = "SELECT s.id, i.codigo, 
+                i.descripcion,  u.nombre AS unidad,
+                o.nombre || ' '|| c.nombre  || ' - '|| LPAD(b.nro_guia::TEXT, 9, '0') || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY HH24:MI') AS grupo, 
+                s.cantidad_salida,s.retorno, o.nombre as orden, c.nombre as cliente,
+                LPAD(b.nro_guia::TEXT, 9, '0') as boleta, b.id as id_boleta, 
+                o.id as id_orden, c.id as id_cliente, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha,
+                b.id_conductor,b.id_despachado, b.id_responsable,b.nro_guia,b.motivo,
+                ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila
+            FROM 
+                tblsalidas s
+                JOIN tblinventario i ON s.id_producto = i.id
+                JOIN tblboleta b ON s.id_boleta = b.id
+                JOIN tblorden o ON b.id_orden = o.id
+                JOIN tblclientes c ON c.id = o.id_cliente
+                JOIN tblunidad u ON i.id_unidad = u.id
+                WHERE 
+                    EXTRACT(YEAR FROM b.fecha) = :anio ";
             if ($mes !== '') {
                 $consulta .= "AND EXTRACT(MONTH FROM b.fecha) = :mes ";
             }
-            $consulta .= "ORDER BY b.fecha DESC, s.id;";
+            $consulta .= "ORDER BY b.fecha DESC, s.id";
 
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
@@ -60,6 +60,19 @@ class ModeloSalidas
                 );
             }
 
+            // Verificar el stock disponible del producto
+            $stmt_check_stock = $db->prepare("SELECT (stock - stock_mal) as stock, descripcion FROM tblinventario WHERE id = :id_producto");
+            $stmt_check_stock->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+            $stmt_check_stock->execute();
+            $resultado_stock = $stmt_check_stock->fetch(PDO::FETCH_ASSOC);
+
+            if (!$resultado_stock || $resultado_stock['stock'] < 1) {
+                return array(
+                    'status' => 'danger',
+                    'm' => 'No hay suficiente stock disponible para el producto ' . $resultado_stock['descripcion']
+                );
+            }
+
             // Verificar si el id_producto ya está relacionado con el id_boleta en tblsalidas
             $stmt_check = $db->prepare("SELECT COUNT(*) FROM tblsalidas WHERE id_producto = :id_producto AND id_boleta = :boleta");
             $stmt_check->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
@@ -74,15 +87,17 @@ class ModeloSalidas
                 );
             }
 
+
+
             // Preparar la consulta para insertar en tblsalidas
-            $stmt_insert = $db->prepare("INSERT INTO tblsalidas(id_boleta, id_producto) VALUES (:boleta, :id_producto)");
+            $stmt_insert = $db->prepare("INSERT INTO tblsalidas(cantidad_salida,id_boleta, id_producto) VALUES (1,:boleta, :id_producto)");
             $stmt_insert->bindParam(":boleta", $boleta, PDO::PARAM_INT);
             $stmt_insert->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
             $stmt_insert->execute();
 
             return array(
                 'status' => 'success',
-                'm' => 'El producto se agregó correctamente'
+                'm' => 'El producto se agregó a la guía correctamente'
             );
         } catch (PDOException $e) {
             return array(
@@ -103,9 +118,8 @@ class ModeloSalidas
             $e->execute();
             return array(
                 'status' => 'success',
-                'm' => 'Se eliminó la guía con éxito.'
+                'm' => 'Se eliminó la guía de remision correctamente.'
             );
-
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
@@ -145,9 +159,9 @@ class ModeloSalidas
     static public function mdlBuscarBoleta($id_boleta)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT s.id, s.cantidad_salida,u.nombre AS unidad,
-            i.descripcion, s.cantidad_salida as salidas, s.retorno, LPAD(b.id::TEXT, 7, '0') as id_boleta, 
-            (s.cantidad_salida - s.retorno) as utilizado, i.codigo, s.isentrada
+            $l = Conexion::ConexionDB()->prepare("SELECT s.id,
+            i.descripcion, u.nombre AS unidad, s.cantidad_salida as salidas, s.retorno, LPAD(b.id::TEXT, 7, '0') as id_boleta, 
+            i.codigo, s.isentrada
             FROM tblsalidas s
             JOIN tblinventario i ON s.id_producto = i.id
             JOIN tblboleta b ON s.id_boleta = b.id 
@@ -167,15 +181,15 @@ class ModeloSalidas
     static public function mdlDetalleBoleta($id_boleta)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT s.id, i.codigo, s.cantidad_salida,u.nombre AS unidad,
-                i.descripcion, s.cantidad_salida as salidas, s.retorno
-                FROM tblsalidas s
-                JOIN tblinventario i ON s.id_producto = i.id
-                JOIN tblboleta b ON s.id_boleta = b.id 
-                JOIN tblorden o ON b.id_orden = o.id
-                JOIN tblunidad u ON i.id_unidad = u.id
-		            WHERE b.id=:id
-                ORDER BY b.fecha ASC, s.id;");
+            $l = Conexion::ConexionDB()->prepare("SELECT s.id || ',' || b.id as id , i.codigo, s.cantidad_salida,u.nombre AS unidad,
+            i.descripcion, s.cantidad_salida as salidas, s.retorno
+            FROM tblsalidas s
+            JOIN tblinventario i ON s.id_producto = i.id
+            JOIN tblboleta b ON s.id_boleta = b.id 
+            JOIN tblorden o ON b.id_orden = o.id
+            JOIN tblunidad u ON i.id_unidad = u.id
+                WHERE b.id= :id
+            ORDER BY b.fecha ASC, s.id;");
             $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
             $l->execute();
 
@@ -221,24 +235,21 @@ class ModeloSalidas
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT b.id,
-            TO_CHAR(b.fecha, 'DD/MM/YYYY') as fecha,
-            TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') as fecha_retorno,
-            o.nombre as orden,c.nombre as cliente, c.ruc, c.direccion as direccion_cliente, c.telefono as cliente_telefono, b.motivo,
-            e_despachado.nombre as despachado,
-			e_responsable.nombre as responsable,
-            e.apellido || ' '|| e.nombre as conductor,
-			e.cedula as cedula_conductor,
-			e.telefono as telefono_conductor,
-			p.nombre as placa,
-            LPAD(b.nro_guia::TEXT, 9, '0') as id_boleta
+            TO_CHAR(b.fecha, 'DD/MM/YYYY') AS fecha,
+            TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') AS fecha_retorno,
+            o.nombre AS orden,c.nombre AS cliente,COALESCE(c.ruc, e.cedula) AS ruc,c.direccion AS direccion_cliente,
+            c.telefono AS cliente_telefono,b.motivo,e_despachado.nombre AS despachado,
+            e_responsable.nombre AS responsable,e.apellido || ' ' || e.nombre AS conductor,
+            e.cedula AS cedula_conductor,e.telefono AS telefono_conductor,p.nombre AS placa,
+            LPAD(b.nro_guia::TEXT, 9, '0') AS id_boleta
                 FROM tblboleta b
                 JOIN tblorden o ON b.id_orden = o.id
                 JOIN tblclientes c ON c.id = o.id_cliente
-                JOIN tblempleado_placa e_conductor ON e_conductor.id = b.id_conductor
-				JOIN tblempleado e_despachado ON e_despachado.id = b.id_despachado
-				JOIN tblempleado e_responsable ON e_responsable.id = b.id_responsable
-				JOIN tblempleado e ON e.id = e_conductor.id_empleado
-				JOIN tblplaca p ON p.id = e_conductor.id_placa
+                LEFT JOIN tblempleado_placa e_conductor ON e_conductor.id = b.id_conductor
+                LEFT JOIN tblempleado e_despachado ON e_despachado.id = b.id_despachado
+                LEFT JOIN tblempleado e_responsable ON e_responsable.id = b.id_responsable
+                LEFT JOIN tblempleado e ON e.id = e_conductor.id_empleado
+                LEFT JOIN tblplaca p ON p.id = e_conductor.id_placa
                 WHERE b.id = :id;");
             $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
             $l->execute();

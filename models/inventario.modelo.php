@@ -27,12 +27,11 @@ class ModeloInventario
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT s.id, s.cantidad_salida,  u.nombre as unidad,
             i.descripcion, 
-            to_char(s.fecha_fab, 'DD/MM/YYYY HH24:MI') AS fecha_fab
+            to_char(s.fecha_fab, 'DD/MM/YYYY HH24:MI') AS fecha_fab, i.codigo, COALESCE(s.retorno::text, '-') AS retorno,COALESCE(s.diferencia::text, '-') as utilizado
             FROM tblsalidas s
             JOIN tblinventario i ON i.id = s.id_producto
             JOIN tblunidad u ON u.id = i.id_unidad
             WHERE s.id_producto_fab = :id_producto_fab");
-
             $l->bindParam(":id_producto_fab", $id_producto_fab, PDO::PARAM_INT);
 
             $l->execute();
@@ -126,7 +125,7 @@ class ModeloInventario
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo agregar el producto debido a que ya existe un producto con el mismo codigo'
+                    'm' => 'No se pudo agregar el producto debido a que ya existe un producto con el mismo codigo'.$e->getMessage()
                 );
             } else {
                 return array(

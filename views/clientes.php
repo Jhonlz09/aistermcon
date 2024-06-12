@@ -12,7 +12,7 @@
             </div>
             <?php if (isset($_SESSION["crear14"]) && $_SESSION["crear14"] === true) : ?>
                 <div class="col">
-                    <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
+                    <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
                 </div>
             <?php endif; ?>
@@ -36,7 +36,7 @@
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="text" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>
@@ -52,7 +52,7 @@
                                     <th>TIPO</th>
                                     <th>RUC</th>
                                     <th>CÉDULA</th>
-                                    <th>NOMBRE COMERCIAL</th>
+                                    <th>CLIENTE</th>
                                     <th>RAZÓN SOCIAL</th>
                                     <th>DIRECCIÓN</th>
                                     <th>TELÉFONO</th>
@@ -80,7 +80,7 @@
 <div class="modal fade" id="modal">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Rol</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -172,7 +172,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -189,7 +189,7 @@
 
     configuracionTable = {
         "responsive": true,
-        "dom": 'pt',
+        "dom": mostrarCol ? '<"row"<"col-md-6"B><"col-md-6"p>>t' : 'pt',
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
@@ -203,6 +203,18 @@
                     }
                     return meta.row; // Devuelve el índice de la fila
                 }
+            },
+            {
+                "targets": 1,
+                visible: false,
+            },
+            {
+                "targets": 5,
+                visible: false,
+            },
+            {
+                "targets": 7,
+                className: '.txt-ellipsis'
             },
             {
                 "targets": 8,
@@ -222,7 +234,7 @@
             {
                 targets: 9,
                 data: "acciones",
-                visible: mostrarCol,
+                visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
                     return (
                         "<center style='white-space: nowrap;'>" +
@@ -239,6 +251,112 @@
                 },
             },
         ],
+        buttons: [{
+                extend: "excelHtml5",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied",
+                },
+                text: "<i class='fa-regular fa-file-xls fa-xl'style='color: #0a8f00'></i>",
+                titleAttr: "Exportar a Excel",
+                title: "LISTADO DE CLIENTES",
+                className: "btn btn-light",
+            },
+            {
+                extend: "pdfHtml5",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied",
+                },
+                text: "<i class='fa-regular fa-file-pdf fa-xl' style='color: #bd0000'></i>",
+                titleAttr: "Exportar a PDF",
+                className: "btn btn-light",
+                title: "LISTADO DE CLIENTES",
+                customize: function(doc) {
+                    var now = new Date();
+                    var jsDate = now.getDate() + "/" + (now.getMonth() + 1) + "/" + now.getFullYear();
+                    doc.content.splice(0, 1);
+                    doc.pageMargins = [40, 90, 40, 50];
+                    doc["header"] = function() {
+                        return {
+                            columns: [{
+                                    alignment: "left",
+                                    text: "LISTADO DE CLIENTES",
+                                    fontSize: 14,
+                                    margin: [20, 25],
+                                },
+                                {
+                                    alignment: "right",
+                                    margin: [20, 0],
+                                    text: ["Creado el: ", {
+                                        text: jsDate.toString()
+                                    }],
+                                },
+
+                            ],
+                            margin: 20,
+                        };
+                    };
+
+                    var objLayout = {};
+                    objLayout["hLineWidth"] = function(i) {
+                        return 1;
+                    };
+                    objLayout["vLineWidth"] = function(i) {
+                        return 0.5;
+                    };
+                    objLayout["hLineColor"] = function(i) {
+                        return "#aaa";
+                    };
+                    objLayout["vLineColor"] = function(i) {
+                        return "#aaa";
+                    };
+                    doc.content[0].layout = objLayout;
+
+                    doc["footer"] = function(page, pages) {
+                        return {
+                            columns: [{
+                                alignment: "right",
+                                text: [
+                                    "pag ",
+                                    {
+                                        text: page.toString()
+                                    },
+                                    " de ",
+                                    {
+                                        text: pages.toString()
+                                    },
+                                ],
+                            }, ],
+                            margin: [20, 10, 40, 10],
+                        };
+                    };
+                },
+            },
+            {
+                extend: "print",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied"
+                },
+                oSelectorOpts: {
+                    filter: "applied",
+                    order: "current"
+                },
+                text: "<i class='fa fa-print fa-xl'</i>",
+                titleAttr: "Imprimir",
+                className: "btn btn-light",
+                title: "LISTADO DE PRODUCTOS",
+            },
+            {
+                extend: "colvis",
+                className: "btn btn-light font-weight-bold",
+                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            }
+        ]
     }
 
 
@@ -271,7 +389,7 @@
         let accion = 0;
         const modal = document.getElementById('modal'),
             span = document.querySelector('.modal-title span'),
-            elements = document.querySelectorAll('.modal .bg-gradient-success'),
+            elements = document.querySelectorAll('.modal .bg-gradient-green'),
             form = document.getElementById('formNuevo'),
             icon = document.querySelector('.modal-title i'),
             btnNuevo = document.getElementById('btnNuevo');
@@ -302,7 +420,7 @@
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                cambiarModal(span, ' Nuevo Cliente', icon, 'fa-user-tag', elements, 'bg-gradient-blue', 'bg-gradient-success', modal, 'modal-new', 'modal-change')
+                cambiarModal(span, ' Nuevo Cliente', icon, 'fa-user-tag', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 form.reset();
                 form.classList.remove('was-validated');
                 setChange(cboTipo, 1)
@@ -322,9 +440,8 @@
                 if (r) {
                     confirmarAccion(src, 'clientes', tabla, '', function(r) {
                         if (r) {
-                            // cargarCombo('Clientes', '', 1, true).then(datos_ => {
-                            //     datos_cliente = datos_;
-                            // });
+                            cargarCombo('Clientes', '', 1)
+                            cargarCombo('ClienteEntrada',  '', 1)
                         }
                     })
                 }
@@ -343,17 +460,20 @@
         $('#tblClientes tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             accion = 2;
-            cambiarModal(span, ' Editar Cliente', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
-
+            cambiarModal(span, ' Editar Cliente', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            ci.disabled=false;
             id.value = row["id"];
             nombre.value = row["nombre"];
             ruc.value = row["ruc"];
             ci.value = row["cedula"];
+
             razon.value = row["razon_social"];
             setChange(cboTipo, row["id_tipo"])
             direccion.value = row["direccion"];
-            telefono.value = row["telefono"]
-            correo.value = row["correo"]
+            telefono.value = row["telefono"];
+            correo.value = row["correo"];
+            form.classList.remove('was-validated');
+
         });
 
         form.addEventListener("submit", function(e) {
@@ -404,6 +524,8 @@
                     // cargarCombo('Clientes', '', 1, true).then(datos_ => {
                     //     datos_cliente = datos_;
                     // });
+                    cargarCombo('Clientes', '', 1)
+                    cargarCombo('ClienteEntrada',  '', 1)
                 }
             })
 

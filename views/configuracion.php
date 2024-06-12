@@ -212,17 +212,38 @@
 
                                     </div>
                                     <div class="tab-pane fade " id="vert-tabs-messages" role="tabpanel" aria-labelledby="vert-tabs-messages-tab">
-                                        <div class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
-                                            <form id="formConfigP" autocomplete="off" class="form-horizontal needs-validation" style="align-items:flex-start" novalidate>
-                                                <div class="form-group row mb-3">
-                                                    <label style="padding-block:.5rem;max-width:max-content" for="inputSecOrden" class="col-sm-3 col-form-label">Establecer secuencia nro. de orden en </label>
-                                                    <div class="col">
-                                                        <input style="max-width:10rem;text-align:center;" type="text" oninput="validarNumber(this,/[^0-9]/g)" autocomplete="off" maxlength="3" value="<?php echo isset($_SESSION["secuencia_orden"]) ? $_SESSION["secuencia_orden"] : ''; ?>" class="form-control border-2" id="inputSecOrden" spellcheck="false" data-ms-editor="true" required>
-                                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                        <div id="card_preferencia" class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
+                                            <form id="formConfigP" autocomplete="off" class="needs-validation" style="align-items:flex-start" novalidate>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="cboBodeguero" class="mb-0 combo"><i class="fa-solid fa-person-carry-box"></i> Bodeguero</label>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <select id="cboBodeguero" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                                    </select>
+                                                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="cboTransportista" class="mb-0 combo"><i class="fas fa-steering-wheel"></i> Conductor</label>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <select id="cboTransportista" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                                    </select>
+                                                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
                                                     </div>
                                                 </div>
 
-                                                <div class="form-group row mb-3">
+
+                                                <!-- <div class="form-group row mb-3">
                                                     <label style="cursor:pointer;padding-block:.5rem;max-width:max-content" for="isEntradaEdit" class="col-sm-3 col-form-label"> Activar alerta poco stock</label>
                                                     <label class="switch-2 ml-3" for="isAlert">
                                                         <input class="switch__input" type="checkbox" id="isAlert" onkeydown="toggleWithEnter(event, this)" <?php echo (isset($_SESSION["entrada_mul"]) && $_SESSION["entrada_mul"] == 1) ? 'checked' : ''; ?>>
@@ -230,7 +251,7 @@
                                                             <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                                         </svg>
                                                     </label>
-                                                </div>
+                                                </div> -->
                                                 <br>
                                                 <div class="col-sm-12 p-0">
                                                     <button class="btn btn-primary btn-small w-100 text-center" id="btnGuardarC">
@@ -284,6 +305,19 @@
             formConfigG = document.getElementById('formConfigG'),
             formConfigP = document.getElementById('formConfigP');
 
+        const cboBodeguero = document.getElementById('cboBodeguero'),
+            cboTransportista = document.getElementById('cboTransportista');
+
+        cargarCombo('Transportista', conductorPorDefecto, 2);
+        cargarCombo('Bodeguero', bodegueroPorDefecto, 6);
+
+        $(cboBodeguero).select2({
+            placeholder: 'SELECCIONE',
+        })
+
+        $(cboTransportista).select2({
+            placeholder: 'SELECCIONE',
+        })
 
         const forms = [{
                 form: formConfigD,
@@ -360,9 +394,14 @@
             {
                 form: formConfigP,
                 fields: [{
-                        id: 'inputSecOrden',
-                        key: 'SecOrden',
-                        transform: (element) => element.value.trim()
+                        id: 'cboBodeguero',
+                        key: 'bodeguero',
+                        transform: (element) => element.value
+                    },
+                    {
+                        id: 'cboTransportista',
+                        key: 'conductor',
+                        transform: (element) => element.value
                     },
                     {
                         key: 'accion',
@@ -400,8 +439,12 @@
                     }
                     datos.append(key, fieldValue);
                 });
-
                 confirmarAccion(datos, 'configuracion', null);
+                if (form == formConfigC) {
+                    setTimeout(function() {
+                        location.reload();
+                    }, 700);
+                }
             });
         });
 

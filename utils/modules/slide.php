@@ -154,7 +154,7 @@
 <div class="modal fade" id="modal-pla">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fa-solid fa-pager"></i><span> Nueva Plantilla</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -219,7 +219,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnAgregarPla" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnAgregarPla" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -232,7 +232,7 @@
 <div class="modal fade" id="modal-encabezado" style="background-color:#424a51b0;backdrop-filter:blur(16px);">
     <div class="modal-dialog modal-sm" style="top:20%">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 id="span-title" class="modal-title"><i class="fa-solid fa-input-text"></i><span> Nuevo Encabezado</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -252,7 +252,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardarS" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnGuardarS" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>

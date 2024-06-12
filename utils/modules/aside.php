@@ -13,7 +13,7 @@
 
                             <div class="tabs-container">
                                 <div class="row" style="align-items:normal">
-                                    <div class="col-md-5 d-flex">
+                                    <div class="col-md-4 d-flex">
                                         <div class="tabs" style="margin-block: 0.5rem 1.8rem ">
                                             <?php if ($_SESSION["crear4"] && !$_SESSION["crear7"]) : ?>
                                                 <input type="radio" id="radio-2" name="tabs" value="2" checked />
@@ -23,7 +23,6 @@
                                                 <span style="width:50%;" class="glider"></span>
 
                                             <?php endif; ?>
-
                                             <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
                                                 <script>
                                                     selectedTab = '1';
@@ -46,7 +45,7 @@
                                             <!-- <span class="glider"></span> -->
                                         </div>
                                     </div>
-                                    <div class="col-md-7">
+                                    <div class="col-md-8">
                                         <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
 
                                             <div id="div_orden" style="display:none;line-height:1">
@@ -54,9 +53,14 @@
                                                 <div id="div_orden" style="display:block;line-height:1">
                                                 <?php endif; ?>
                                                 <div class="row">
-                                                    <div class="col form-group">
-                                                        <label id="lblO" class="mb-0 combo"><i class="fas fa-ticket"></i> Orden</label>
-                                                        <select id="cboOrden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                    <div class=" col-md-6 form-group">
+                                                        <label class="col-form-label combo" for="nro_orden">
+                                                            <i class="fas fa-ticket"></i> Orden</label>
+                                                        <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="6" oninput="formatInputOrden(this, 'cboClientes')" type="text" class="form-control form-control-sm" id="nro_orden" placeholder="Ingrese el nro. de orden">
+                                                    </div>
+                                                    <div class=" col-md-6 form-group">
+                                                        <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
+                                                        <select id="cboClientes" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                                         </select>
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
@@ -79,15 +83,15 @@
                                                         <div class="form-group mb-0" id="div_return" style="display:none;line-height:1">
                                                             <div class="row">
                                                                 <div class="col-md-6" style="margin-bottom:1.8rem">
-                                                                    <label id="lblP" class="mb-0 combo"><i class="fas fa-ticket"></i> Orden</label>
-                                                                    <select id="cboPorOrden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                                                    </select>
+                                                                    <label class="col-form-label combo" for="nro_ordenEntrada">
+                                                                        <i class="fas fas fa-ticket"></i> Orden</label>
+                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="6" oninput="formatInputOrden(this, 'cboClienteEntrada')" type="text" class="form-control form-control-sm" id="nro_ordenEntrada" placeholder="Ingrese el nro. de orden">
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 <div class="col-md-6" style="margin-bottom:1.8rem">
                                                                     <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
 
-                                                                    <select id="cboPorCliente" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                                    <select id="cboClienteEntrada" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                                                     </select>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
@@ -96,19 +100,26 @@
                                                     </div>
                                             </div>
                                             <div class="row" style="line-height:1;">
-                                                <div class="col-sm-4" style="margin-bottom:1.8rem;">
+                                                <div id="div_fecha" class="col-sm-4" style="margin-bottom:1.8rem;">
                                                     <div class="form-group mb-0">
-                                                        <label class="combo" for="fecha">
-                                                            <i class="fas fa-calendar"></i> Fecha</label>
-                                                        <input id="fecha" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control" required>
+                                                        <label class="col-form-label combo" for="fecha">
+                                                            <i class="fas fa-calendar"></i> Fecha inicio</label>
+                                                        <input id="fecha" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
+                                                <!-- <div id="div_motivo" class="col" style="margin-bottom:1.8rem;display:none">
+                                                    <div class="form-group mb-0">
+                                                        <label class="col-form-label combo" for="inpMotivoEntrada">
+                                                            <i class="fa-solid fa-clipboard-question"></i> Motivo</label>
+                                                        <input style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpMotivoEntrada" placeholder="Traslado de herramientas">
+                                                    </div>
+                                                </div> -->
                                                 <div class="col-sm-4" id="div_retorno" style="display:none">
                                                     <div class="form-group">
-                                                        <label class="combo" for="fecha_retorno">
-                                                            <i class="fas fa-calendar"></i> Fecha entrada</label>
-                                                        <input id="fecha_retorno" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control" required>
+                                                        <label class="col-form-label combo" for="fecha_retorno">
+                                                            <i class="fas fa-calendar"></i> Fecha fin</label>
+                                                        <input id="fecha_retorno" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
@@ -118,9 +129,9 @@
                                                         <div class="col" id="div_nrofac" style="display:none;margin-bottom:1.8rem">
                                                         <?php endif; ?>
                                                         <div class="form-group mb-0">
-                                                            <label class="combo" for="nro_fac">
+                                                            <label class="col-form-label combo" for="nro_fac">
                                                                 <i class="fas fa-list-ol"></i> Nro. Factura</label>
-                                                            <input id="nro_fac" inputmode="numeric" autocomplete="off" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control" placeholder="Ingrese el nro. de factura" required>
+                                                            <input id="nro_fac" inputmode="numeric" autocomplete="off" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" placeholder="Ingrese el nro. de factura" required>
                                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                                         </div>
                                                         </div>
@@ -130,10 +141,16 @@
                                                             <?php else : ?>
                                                                 <div class="col-sm-4" id="div_nroguia" style="display:block;margin-bottom:1.8rem">
                                                                 <?php endif; ?>
-                                                                <div class="form-group mb-0">
-                                                                    <label class="combo" for="nro_guia">
+                                                                <div id="card_nro_guia" class="form-group mb-0">
+                                                                    <label class="col-form-label combo" for="nro_guia">
                                                                         <i class="fas fa-list-ol"></i> Nro. Guia</label>
-                                                                    <input id="nro_guia" maxlength="9" inputmode="numeric" autocomplete="off" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia" required>
+                                                                    <input id="nro_guia" maxlength="9" inputmode="numeric" autocomplete="off" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia">
+                                                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                </div>
+                                                                <div style="display: none;" id="card_nro_guiaE" class="form-group mb-0">
+                                                                    <label class="col-form-label combo" for="nro_guia">
+                                                                        <i class="fas fa-list-ol"></i> Nro. Guia</label>
+                                                                    <input id="nro_guiaEntrada" maxlength="9" inputmode="numeric" autocomplete="off" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia">
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 </div>
@@ -142,9 +159,16 @@
                                                                     <?php else : ?>
                                                                         <div class="col-sm-4" id="div_conductor" style="display:block;margin-bottom:1.8rem">
                                                                         <?php endif; ?>
-                                                                        <div class="form-group mb-0">
+                                                                        <div id="card_conductor" class="form-group mb-0">
                                                                             <label id="lbl" class="mb-0 combo"><i class="fas fa-steering-wheel"></i> Transportista</label>
                                                                             <select id="cboConductor" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                                            </select>
+                                                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                        </div>
+
+                                                                        <div style="display: none;" id="card_conductorE" class="form-group mb-0">
+                                                                            <label id="lbl" class="mb-0 combo"><i class="fas fa-steering-wheel"></i> Transportista</label>
+                                                                            <select id="cboConductorEntrada" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                                                             </select>
                                                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                         </div>
@@ -156,7 +180,7 @@
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label combo" for="codProducto">
                                                                                     <i class="fas fa-arrow-up-a-z"></i> Productos</label>
-                                                                                <input style="border-bottom: 2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="codProducto" placeholder="Ingrese el nombre del producto" onkeypress="return evitarEnvio(event)">
+                                                                                <input style="border-bottom: 2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="codProducto" placeholder="Ingrese el nombre del producto">
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-lg-4">
@@ -169,21 +193,22 @@
                                                                     </div>
                                                             </div>
                                                             <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
-
                                                                 <div id="form-1" style="display: block" class="card-body form-container">
                                                                 <?php else : ?>
                                                                     <div id="form-1" class="card-body form-container">
-
                                                                     <?php endif; ?>
                                                                     <div class="table-responsive">
-                                                                        <table id="tblIn" class="table table-bordered w-100 table-striped">
+                                                                        <table id="tblCompra" class="table table-bordered w-100 table-striped">
                                                                             <thead>
                                                                                 <tr>
                                                                                     <th class="text-center">Nº</th>
                                                                                     <th></th>
                                                                                     <th>CANTIDAD</th>
                                                                                     <th>UNIDAD</th>
-                                                                                    <th>PRECIO UNIT.</th>
+                                                                                    <th>P. UNIT.</th>
+                                                                                    <th>P. TOT.</th>
+                                                                                    <th>IVA</th>
+                                                                                    <th>P. FINAL</th>
                                                                                     <th>DESCRIPCION</th>
                                                                                     <th class="text-center">ACCIONES</th>
                                                                                 </tr>
@@ -208,7 +233,6 @@
                                                                                             <th>CANTIDAD</th>
                                                                                             <th>UNIDAD</th>
                                                                                             <th>DESCRIPCION</th>
-                                                                                            <!-- <th class="text-center">UTIL.</th> -->
                                                                                             <th class="text-center">ACCIONES</th>
                                                                                         </tr>
                                                                                     </thead>
@@ -217,16 +241,14 @@
                                                                                 </table>
                                                                             </div>
                                                                             </div>
-
-                                                                            <div id="form-3" class="form-container">
+                                                                            <div id="form-6" class="form-container">
                                                                                 <div class="table-responsive">
                                                                                     <table id="tblReturn" class="table table-bordered w-100 table-striped">
                                                                                         <thead>
                                                                                             <tr>
                                                                                                 <th class="text-center">Nº</th>
-                                                                                                <th>CANTIDAD</th>
-                                                                                                <th>UNIDAD</th>
                                                                                                 <th>DESCRIPCION</th>
+                                                                                                <th>UNIDAD</th>
                                                                                                 <th>SALIDA</th>
                                                                                                 <th>ENTRADA</th>
                                                                                             </tr>
@@ -236,7 +258,6 @@
                                                                                     </table>
                                                                                 </div>
                                                                             </div>
-
                                                                             <div id="form-4" class="form-container">
                                                                                 <div class="table-responsive">
                                                                                     <table id="tblDetalleSalida" class="table table-bordered w-100 table-striped">
@@ -257,16 +278,32 @@
 
                                                                             <div id="form-5" class="form-container">
                                                                                 <div class="table-responsive">
-                                                                                    <table id="tblDetalleEntrada" class="table table-bordered w-100 table-striped">
+                                                                                    <table id="tblDetalleCompra" class="table table-bordered w-100 table-striped">
                                                                                         <thead>
                                                                                             <tr>
                                                                                                 <th class="text-center">ID</th>
                                                                                                 <th class="text-center">CÓDIGO</th>
                                                                                                 <th class="text-center">CANTIDAD</th>
                                                                                                 <th class="text-center">UNIDAD</th>
-                                                                                                <th class="text-center">PRECIO</th>
+                                                                                                <th class="text-center">PRECIO UNIT.</th>
                                                                                                 <th>DESCRIPCION</th>
                                                                                             </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div id="form-3" class="form-container">
+                                                                                <div class="table-responsive">
+                                                                                    <table id="tblIn" class="table table-bordered w-100 table-striped">
+                                                                                        <thead>
+                                                                                            <th class="text-center">Nº</th>
+                                                                                            <th></th>
+                                                                                            <th>CANTIDAD</th>
+                                                                                            <th>UNIDAD</th>
+                                                                                            <th>DESCRIPCION</th>
+                                                                                            <th class="text-center">ACCIONES</th>
                                                                                         </thead>
                                                                                         <tbody>
                                                                                         </tbody>
@@ -298,13 +335,13 @@
                                                                         <label id="lbl" class="mb-0 combo"><i class="fas fa-user-helmet-safety"></i> Responsable</label>
                                                                         <div class="row">
                                                                             <div class="col-12">
-                                                                                <select id="cboResponsable" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                                                <select id="cboResponsable" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
                                                                                 </select>
                                                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="form-group" style="margin-bottom:1.4rem;">
+                                                                    <div class="form-group" style="margin-bottom:0.8rem;">
                                                                         <label class="col-form-label combo" for="codBarras">
                                                                             <i class="fa-solid fa-clipboard-question"></i> Motivo</label>
                                                                         <input style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas">
@@ -314,6 +351,7 @@
                                                                 <div class="card">
                                                                     <div class="card-body">
                                                                         <button type="button" id="btnGuardarGuia" style="margin-bottom:.75rem;background:var(--label-star) linear-gradient(180deg, var(--label-star), var(--label-new)) repeat-x;color:#fff" class="btn w-100"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                                                                        <button type="button" id="Cancelar" style="margin-bottom:.75rem;display:none" onclick="limpiar(this);" class="btn bg-gradient-navy w-100"><i class="fas fa-xmark"></i><span class="button-text"> </span>Cancelar </button>
                                                                         <button type="button" id="Cerrar" onclick="first_control.click();" style="border-color:#d6d8df69" class="btn bg-gradient-light w-100"><i class="fas fa-right-from-bracket"></i><span class="button-text"> </span>Cerrar</button>
                                                                     </div>
                                                                 </div>
@@ -382,12 +420,10 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-
-
 <div class="modal fade" id="modal-new-fab">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 id="title-fab" class="modal-title"><i class="fas fa-screwdriver-wrench"></i><span> Nuevo Producto en Producción</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -440,10 +476,9 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnAgregarFab" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnAgregarFab" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -452,11 +487,6 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-
-
-
-
-
 <div class="modal fade" id="modal-consul">
     <div class="modal-dialog modal-lg  modal-dialog-scrollable">
         <div class="modal-content">
@@ -471,7 +501,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group" style="margin-bottom: .25rem;">
-                                <label id="lbl" class="mb-0 combo"><i class="fas fa-trowel-bricks"></i> Producto</label>
+                                <label class="mb-0 combo"><i class="fas fa-trowel-bricks"></i> Producto</label>
                                 <div class="row">
                                     <div class="col">
                                         <select id="cboFabricadoCon" class="cbo form-control select2 select2-success flex-grow-1" data-dropdown-css-class="select2-dark" required>
@@ -518,6 +548,7 @@
         formFabCon = document.getElementById('formFabCon'),
         formFabNew = document.getElementById('formFabNew');
     const modal_fab = document.getElementById('modal-new-fab');
+    // modal_consul = document.getElementById('modal-consul') ;
 
     const nombre_fab = document.getElementById('nombre_fab'),
         cboUnidad_fab = document.getElementById('cboUnidad_fab'),
@@ -532,7 +563,7 @@
 
     const title_fab = document.querySelector('#title-fab span'),
         icon_fab = document.querySelector('.modal-title i'),
-        elements_fab = document.querySelectorAll('#modal-new-fab .bg-gradient-success');
+        elements_fab = document.querySelectorAll('#modal-new-fab .bg-gradient-green');
 
     const select_fab = formFabNew.querySelectorAll('.modal-body select.select2');
 
@@ -544,6 +575,7 @@
     $(modal_fab).on("shown.bs.modal", () => {
         nombre_fab.focus();
     });
+
 
     let tblFabCon = $('#tblFabCon').DataTable({
         "responsive": true,
@@ -596,7 +628,7 @@
         setChange(cboOrdenFab, orden_id);
         setChange(cboUnidad_fab, und_id);
 
-        cambiarModal(title_fab, ' Editar Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-success', 'bg-gradient-blue', modal_fab, 'modal-change', 'modal-new')
+        cambiarModal(title_fab, ' Editar Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-green', 'bg-gradient-blue', modal_fab, 'modal-change', 'modal-new')
 
         select_fab.forEach(function(s) {
             s.classList.remove('select2-success');
@@ -611,7 +643,7 @@
 
         // inputId.value = selectE.value;
         // inputContent.value = selectE.options[selectE.selectedIndex].textContent;
-        // cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-success', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
+        // cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-green', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
     });
 
     $(eli_fab).on('click', function() {

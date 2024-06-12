@@ -12,7 +12,7 @@
             </div>
             <?php if (isset($_SESSION["crear15"]) && $_SESSION["crear15"] === true) : ?>
                 <div class="col">
-                    <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
+                    <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
                 </div>
             <?php endif; ?>
@@ -36,7 +36,7 @@
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="text" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>
@@ -51,7 +51,7 @@
                                     <th class="text-center">Nº</th>
                                     <th>NOMBRES</th>
                                     <th>USUARIO</th>
-                                    <th class="text-center">ROL</th>
+                                    <th class="text-center">PERFIL</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -75,7 +75,7 @@
 <div class="modal fade" id="modal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Usuario</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -115,7 +115,7 @@
                                 <div id="c" class="ten">*Las contraseñas no coinciden</div>
                             </div>
                             <div id="data-rol" class="form-group mb-4">
-                                <label id="lbl" class="mb-0 combo"><i class="fa-solid fa-id-card-clip"></i> Rol</label>
+                                <label id="lbl" class="mb-0 combo"><i class="fa-solid fa-id-card-clip"></i> Perfil</label>
                                 <div class="row">
                                     <div class="col">
                                         <select name="cboPerfil" id="cboPerfil" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
@@ -128,7 +128,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -162,8 +162,9 @@
             },
             {
                 targets: 3,
+                className: "text-center",
                 render: function(data, type, full, meta) {
-                    return "<center><span class='badge bg-gradient-blue'>" + data + "</span></center>";
+                    return "<span class='alert alert-default-primary'>" + data + "</span>";
                 }
             },
             {
@@ -237,7 +238,7 @@
         let accion = 0;
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
-            elements = document.querySelectorAll('.modal .bg-gradient-success'),
+            elements = document.querySelectorAll('.modal .bg-gradient-green'),
             icon = document.querySelector('.modal-title i'),
             form = document.getElementById('formNuevo'),
             btnNuevo = document.getElementById('btnNuevo');
@@ -278,7 +279,7 @@
                 // data_usu.style.marginBottom = '3.3em';
                 rol.classList.remove('select2-warning');
                 rol.classList.add('select2-success');
-                cambiarModal(span, ' Nuevo Usuario', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-success', modal, 'modal-new', 'modal-change')
+                cambiarModal(span, ' Nuevo Usuario', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 rol.required=true;
                 form.reset();
                 $(rol).val(0).trigger("change");
@@ -298,7 +299,7 @@
             rol.classList.add('select2-warning');
             clave.value = 'noedit';
             clave_.value = 'noedit';
-            cambiarModal(span, ' Editar Usuario', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Editar Usuario', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombres.value = row["nombres"];
             usuario.value = row["nombre_usuario"];
@@ -316,7 +317,7 @@
             clave.value = 'noedit';
             clave_.value = 'noedit';
             rol.required = false;
-            cambiarModal(span, ' Editar Usuario', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Editar Usuario', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombres.value = row["nombres"];
             usuario.value = row["nombre_usuario"];
@@ -335,7 +336,7 @@
             rol.classList.remove('select2-success');
             rol.classList.add('select2-warning');
 
-            cambiarModal(span, ' Restablecer Contraseña', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Restablecer Contraseña', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombres.value = row["nombres"];
             usuario.value = row["nombre_usuario"];
@@ -355,7 +356,7 @@
             rol.classList.remove('select2-success');
             rol.classList.add('select2-warning');
 
-            cambiarModal(span, ' Restablecer Contraseña', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Restablecer Contraseña', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombres.value = row["nombres"];
             usuario.value = row["nombre_usuario"];

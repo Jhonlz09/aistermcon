@@ -35,7 +35,7 @@
     <!-- jQuery -->
     <script src='assets/plugins/jquery/jquery.min.js'></script>
     <!-- jquery UI -->
-    <script src="assets/plugins/jquery-ui/jquery-ui.js"></script>
+    <script src="assets/plugins/jquery-ui/jquery-ui.min.js"></script>
     <!-- Bootstrap 4 -->
     <script src='assets/plugins/bootstrap/js/bootstrap.bundle.min.js'></script>
     <!-- AdminLTE App -->
@@ -70,7 +70,7 @@
 <?php if (isset($_SESSION['s_usuario'])) {
 ?>
     <script>
-        var tabla, tblIn, tblReturn, tblDetalleSalida, tblDetalleEntrada, tblFab;
+        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblFab;
         var configuracionTable = {};
         let items = [];
         let id_boleta = 0;
@@ -81,18 +81,20 @@
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
+        const mes = month.toString().padStart(2, '0');
+        const dia = now.getDate().toString().padStart(2, '0');
+
         let datos_cliente = [];
         let datos_orden = [];
         let datos_anio = [];
         let selectedTab = '2';
         // let datos_und = [];
-        for (let i = 2024; i <= year; i++) {
+        for (let i = 2023; i <= year; i++) {
             datos_anio.push({
                 id: i,
                 text: String(i)
             });
         }
-
         const datos_meses = [{
                 id: 1,
                 text: 'ENERO'
@@ -180,22 +182,23 @@
                 btnSide = document.getElementById('btnSide'),
                 setA = body.querySelectorAll('.setA'),
                 setB = body.querySelectorAll('.setB'),
-
                 inputauto = body.querySelector('#codProducto'),
                 inputBarras = body.querySelector('#codBarras');
 
             const card_fab = document.getElementById('card_fab');
 
+            const iva_config = <?php echo $_SESSION["iva"]; ?>;
             const isEntrada = <?php echo ($_SESSION["entrada_mul"]) ? 1 : 0; ?>;
-
             const isSuperAdmin = <?php echo ($_SESSION["s_usuario"]->id_perfil == 1) ? 1 : 0; ?>;
 
+            const bodegueroPorDefecto = <?php echo ($_SESSION["bodeguero"] == null) ? 0 : $_SESSION["bodeguero"]; ?>;
+            const conductorPorDefecto = <?php echo ($_SESSION["conductor"] == null) ? 0 : $_SESSION["conductor"]; ?>;
 
             // console.log('este es mi id_pergul ' + id_perfil)
             btnSide.addEventListener("click", () => {
-                    setTimeout(() => {
-                        tabla.columns.adjust().responsive.recalc();
-                    }, 200);
+                setTimeout(() => {
+                    tabla.columns.adjust().responsive.recalc();
+                }, 250);
             });
 
             setA.forEach((e) => {
@@ -238,7 +241,6 @@
                 });
             });
 
-
             setB.forEach((e) => {
                 e.addEventListener('click', function() {
                     // Remover la clase 'active' de todos los elementos setB
@@ -246,7 +248,7 @@
                     // Agregar la clase 'active' al elemento clickeado
                     this.classList.add('active');
 
-                    const parentSetA = this.closest('.menu-open').querySelector('.setA');
+                    const parentSetA = this.closest('.sub').querySelector('.setA');
                     // Remover la clase 'active' de todos los elementos setA que no contienen al setB clickeado
                     document.querySelectorAll('.setA').forEach((setA) => {
                         if (setA !== parentSetA) {
@@ -273,9 +275,9 @@
             function cargarContenido(contenedor, contenido, id = '') {
                 let tbl = 'tbl' + id;
                 let ruta = id.toLowerCase();
-                setTimeout(() => {
-                    tabla.columns.adjust().responsive.recalc();
-                }, 150);
+                // setTimeout(() => {
+                //     tabla.columns.adjust().responsive.recalc();
+                // }, 150);
                 var tablaData = localStorage.getItem(ruta);
                 accion_inv = 0;
                 scroll = false;
@@ -383,7 +385,7 @@
             // }
 
             tblReturn = $('#tblReturn').DataTable({
-                "dom": 'pt',
+                "dom": 'fpt',
                 "responsive": true,
                 "lengthChange": false,
                 "ordering": false,
@@ -410,19 +412,15 @@
                         }
                     },
                     {
-                        targets: 1,
-                        className: "text-center",
-                    },
-                    {
                         targets: 2,
                         className: "text-center",
                     },
                     {
-                        targets: 4,
+                        targets: 3,
                         className: "text-center ",
                     },
                     {
-                        targets: 5,
+                        targets: 4,
                         className: "text-center",
                         data: null, // Puedes usar "null" si no estás asociando esta columna con un campo específico en tus datos
                         render: function(data, type, row) {
@@ -489,7 +487,7 @@
                 dom: 't',
             });
 
-            tblDetalleEntrada = $('#tblDetalleEntrada').DataTable({
+            tblDetalleCompra = $('#tblDetalleCompra').DataTable({
                 "ajax": {
                     "url": "controllers/entradas.controlador.php",
                     "type": "POST",
@@ -549,17 +547,18 @@
                             ]
                         },
                         hideIdentifier: true,
+                        restoreButton: false,
                         buttons: {
                             edit: {
                                 class: 'btn btn-sm btn-default',
                                 html: '<span class="text-nowrap"></span>',
                                 html: '<i class="fas fa-pen"></i>',
-                                action: 'edit,' + id_boleta
+                                action: 'edit'
                             },
                             delete: {
                                 class: 'btn btn-sm btn-default',
                                 html: '<i class="fas fa-trash"></i>',
-                                action: 'delete,' + id_boleta
+                                action: 'delete'
                             }
                         },
                         onSuccess: function(data, textStatus, jqXHR) {
@@ -589,9 +588,9 @@
 
             })
 
-            $('#tblDetalleEntrada').on('draw.dt', function() {
+            $('#tblDetalleCompra').on('draw.dt', function() {
                 if (id_boleta != 0) {
-                    $('#tblDetalleEntrada').Tabledit({
+                    $('#tblDetalleCompra').Tabledit({
                         url: 'controllers/Tabledit/acciones_entradas.php',
                         dataType: 'json',
                         columns: {
@@ -603,17 +602,23 @@
                             ]
                         },
                         hideIdentifier: true,
+                        restoreButton: false,
                         buttons: {
                             edit: {
                                 class: 'btn btn-sm btn-default',
                                 html: '<span class="text-nowrap"></span>',
                                 html: '<i class="fas fa-pen"></i>',
-                                action: 'edit,' + id_boleta
+                                action: 'edit'
                             },
                             delete: {
                                 class: 'btn btn-sm btn-default',
                                 html: '<i class="fas fa-trash"></i>',
-                                action: 'delete,' + id_boleta
+                                action: 'delete'
+                            },
+                            restore: {
+                                class: '',
+                                html: '',
+                                action: 'restore'
                             }
                         },
                         onSuccess: function(data, textStatus, jqXHR) {
@@ -625,13 +630,13 @@
                                 data.m
                             );
                             // $('#' + data.id_boleta).remove();
-                            tblDetalleEntrada.ajax.reload(null, false);
+                            tblDetalleCompra.ajax.reload(null, false);
                             tabla.ajax.reload(null, false);
                             cargarAutocompletado();
                         }
                     })
 
-                    $('#tblDetalleEntrada').find('input[name="cantidad_entrada"]').attr({
+                    $('#tblDetalleCompra').find('input[name="cantidad_entrada"]').attr({
                         'inputmode': 'numeric',
                         'autocomplete': 'off',
                         'onpaste': 'validarPegado(this, event)',
@@ -639,7 +644,7 @@
                         'oninput': 'validarNumber(this,/[^0-9.]/g)'
                     });
 
-                    $('#tblDetalleEntrada').find('input[name="precio"]').attr({
+                    $('#tblDetalleCompra').find('input[name="precio"]').attr({
                         'inputmode': 'numeric',
                         'autocomplete': 'off',
                         'onpaste': 'validarPegado(this, event)',
@@ -650,40 +655,50 @@
 
             })
 
-            const cboClientesActivos = document.getElementById('cboPorCliente'),
+            const cboClienteEntrada = document.getElementById('cboClienteEntrada'),
+                cboClientes = document.getElementById('cboClientes'),
                 cboOrdenActivas = document.getElementById('cboPorOrden'),
                 fecha = document.getElementById('fecha'),
-                fecha_retorno = document.getElementById('fecha_retorno');
+                fecha_retorno = document.getElementById('fecha_retorno'),
+                motivo = document.getElementById('inpMotivo');
+
 
             $(document).ready(function() {
+
                 const nro_guia = document.getElementById('nro_guia'),
+                    nro_guiaEntrada = document.getElementById('nro_guiaEntrada'),
                     nro_factura = document.getElementById('nro_fac'),
-                    cboOrden = document.getElementById('cboOrden'),
+                    nro_orden = document.getElementById('nro_orden'),
+                    nro_ordenEntrada = document.getElementById('nro_ordenEntrada'),
                     cboOrdenFab = document.getElementById('cboOrdenFab'),
+                    // motivoEntrada = document.getElementById('inpMotivoEntrada'),
                     form_guia = document.getElementById('form_guia'),
                     cboProveedor = document.getElementById('cboProveedores'),
                     cboConductor = document.getElementById('cboConductor'),
+                    cboConductorEntrada = document.getElementById('cboConductorEntrada'),
                     cboDespachado = document.getElementById('cboDespachado'),
                     cboResponsable = document.getElementById('cboResponsable'),
                     btnGuia = document.getElementById('btnGuardarGuia');
-                const formFab = document.getElementById('formFab'),
-                    formFabCon = document.getElementById('formFabCon'),
-                    formFabNew = document.getElementById('formFabNew');
+                // const formFab = document.getElementById('formFab'),
+                //     formFabCon = document.getElementById('formFabCon'),
+                //     formFabNew = document.getElementById('formFabNew');
                 const audio = document.getElementById("scanner");
 
 
 
-                $(cboOrden).select2({
-                    placeholder: 'SELECCIONE',
-                    width: 'auto',
-                })
+                // $(cboOrden).select2({
+                //     placeholder: 'SELECCIONE',
+                //     width: 'auto',
+                // })
 
                 // $(cboEmpleado).select2({
                 //     placeholder: 'SELECCIONE',
                 //     width: 'auto',
                 // })
 
-                $(cboClientesActivos).select2({
+
+
+                $(cboClientes).select2({
                     placeholder: 'SELECCIONE',
                     width: '100%',
                 })
@@ -712,6 +727,11 @@
                     placeholder: 'SELECCIONE',
                 })
 
+                $(cboConductorEntrada).select2({
+                    placeholder: 'SELECCIONE',
+                })
+
+
                 $(cboDespachado).select2({
                     placeholder: 'SELECCIONE',
                     minimumResultsForSearch: -1,
@@ -722,13 +742,24 @@
 
                 cargarCombo('Proveedores');
                 cargarCombo('Unidad');
-                cargarCombo('Clientes', '', 1, true)
-                    .then(datos_ => {
-                        datos_cliente = datos_;
-                        // console.log(datos_cliente)
-                    });
+                // cargarCombo('Clientes', '', 1, true)
+                //     .then(datos_ => {
+                //         datos_cliente = datos_;
+                //         // console.log(datos_cliente)
+                //     });
+                cargarCombo('Clientes', '', 1, true).then(datos_ => {
+                    datos_cliente = datos_;
+                    $(cboClienteEntrada).select2({
+                        placeholder: 'SELECCIONE',
+                        width: '100%',
+                        data: datos_cliente
+                    })
+                    setChange(cboClienteEntrada, 0)
 
-                cargarCombo('Conductor', '', 2);
+                });
+                cargarCombo('Conductor', conductorPorDefecto, 2);
+                cargarCombo('ConductorEntrada', conductorPorDefecto, 2);
+
                 cargarComboFabricado();
                 cargarCombo('FabricadoCon', '', 9);
                 cargarCombo('Orden', '', 3, true).then(datos_ => {
@@ -741,7 +772,7 @@
                     })
 
                 });
-                cargarCombo('Despachado', '', 6);
+                cargarCombo('Despachado', bodegueroPorDefecto, 6);
                 cargarCombo('Responsable', '', 7)
 
 
@@ -753,15 +784,16 @@
                     })
                 })
 
-                cargarCombo('PorCliente', '', 4)
-                cargarCombo('PorOrden', '', 5)
+                // cargarCombo('Cli', '', 4)
+                // cargarCombo('PorOrden', '', 5)
 
-                tblIn = $('#tblIn').DataTable({
+                tblCompra = $('#tblCompra').DataTable({
                     "dom": '<"row"<"col-sm-6"B><"col-sm-6"p>>t',
                     "responsive": true,
                     "lengthChange": false,
                     "ordering": false,
                     "autoWidth": false,
+                    "paging": false,
                     columnDefs: [{
                             targets: 0,
                             data: null,
@@ -850,7 +882,7 @@
                                 formFabNew.classList.remove('was-validated');
                                 accion_fab = 9;
                                 setChange(cboOrdenFab, 0);
-                                cambiarModal(title_fab, ' Nuevo Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-blue', 'bg-gradient-success', modal_fab, 'modal-new', 'modal-change')
+                                cambiarModal(title_fab, ' Nuevo Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-blue', 'bg-gradient-green', modal_fab, 'modal-new', 'modal-change')
                                 select_fab.forEach(function(s) {
                                     s.classList.remove('select2-warning');
                                     s.classList.add('select2-success');
@@ -888,30 +920,62 @@
                             }
                         },
                         {
-                            text: "<i class='fas fa-building-magnifying-glass fa-xl'></i> Consultar Prod.",
+                            text: "<i class='fa-regular fa-building-magnifying-glass fa-xl'></i> Consultar Prod.",
                             className: "btn btn-light text-dark btnAgregarPro",
                             action: function(e, dt, node, config) {
                                 // formFabCon.reset();
                                 // formFabCon.classList.remove('was-validated');
+                                setChange(cboFabricadoCon, 0)
                                 $('#modal-consul').modal("show");
+
                             }
                         },
-                        // {
-                        //     text: "<input type='checkbox' id='checkbox_input'>",
-                        //     init: function(dt, node, config) {
-                        //         $(document).on('change', '#checkbox_input', function() {
-                        //             // Aquí puedes agregar tu lógica para manejar el evento de cambio del checkbox
-                        //             if ($(this).is(':checked')) {
-                        //                 // Acción cuando el checkbox está marcado
-                        //                 console.log('Checkbox marcado');
-                        //             } else {
-                        //                 // Acción cuando el checkbox está desmarcado
-                        //                 console.log('Checkbox desmarcado');
-                        //             }
-                        //         });
-                        //     }
-                        // }
                     ]
+                });
+
+                tblIn = $('#tblIn').DataTable({
+                    "dom": '<"row"<"col-sm-8"B><"col-sm-4"p>>t',
+                    "responsive": true,
+                    "lengthChange": false,
+                    "ordering": false,
+                    "autoWidth": false,
+                    "paging": false,
+                    columnDefs: [{
+                            targets: 0,
+                            data: null,
+                            className: "text-center",
+                            render: function(data, type, row, meta) {
+                                if (type === 'display') {
+                                    return meta.row + 1;
+                                }
+                                return meta.row;
+                            }
+                        },
+                        {
+                            targets: 1,
+                            visible: false
+                        },
+                        {
+                            targets: 2,
+                            className: "text-center",
+                        },
+                        {
+                            targets: 3,
+                            className: "text-center ",
+                        },
+                        {
+                            targets: 5,
+                            className: "text-center",
+                        },
+
+                    ],
+                    buttons: [{
+                        text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
+                        className: "btn btn-light text-danger",
+                        action: function(e, dt, node, config) {
+                            dt.clear().draw(); // Esta línea vacía los datos de la tabla
+                        }
+                    }, ]
                 });
 
                 // tblOut.on('draw', function() {
@@ -974,92 +1038,26 @@
 
 
 
-                $('#tblIn tbody').on('click', '.btnEliminarIn', function() {
-                    tblIn.row($(this).parents('tr')).remove().draw();
+                $('#tblCompra tbody').on('click', '.btnEliminarIn', function() {
+                    tblCompra.row($(this).parents('tr')).remove().draw();
                 });
 
                 $('#tblFab tbody').on('click', '.btnEliminarIn', function() {
                     tblFab.row($(this).parents('tr')).remove().draw();
                 });
 
-                // $('#tblOut tbody').on('click', '.btnFab', function() {
-                //     // Obtener la fila padre del botón clickeado
-                //     var fila = $(this).closest('tr');
-
-                //     // Obtener los datos de la fila
-                //     var cantidad = fila.find('.cantidad').val();
-                //     var descripcion = fila.find('td:eq(3)').text(); // Cambia el índice según la posición de la columna
-                //     // Aquí obtén otros datos que necesites según su posición en la fila
-
-                //     // Crear una nueva fila en tblFab con los datos obtenidos
-                //     var nuevaFila = '<tr>' +
-                //         '<td class="text-center">' + cantidad + '</td>' +
-                //         '<td>' + descripcion + '</td>' +
-                //         '<td class="text-center">' +
-                //         '<button type="button" class="btnEliminarFab btn btn-danger">Eliminar</button>' +
-                //         '</td>' +
-                //         '</tr>';
-
-                //     // Agregar la nueva fila a tblFab
-                //     $('#tblFab tbody').append(nuevaFila);
-
-                //     // Ocultar la tarjeta de fabricación y eliminar la fila de tblIn
-                //     card_fab.style.display = 'block'; // Si estás mostrando la tarjeta de fabricación
-                //     tblOut.row($(this).parents('tr')).remove().draw();
-                // });
-
-                // $('#tblFab tbody').on('click', '.btnEliminarFab', function() {
-                //     // Obtener la fila padre del botón clickeado
-                //     var fila = $(this).closest('tr');
-
-                //     // Eliminar la fila de la tabla tblFab
-                //     fila.remove();
-                // });
-
                 $('#tblOut tbody').on('click', '.btnEliminarIn', function() {
                     tblOut.row($(this).parents('tr')).remove().draw();
                 });
 
-
-
-                //INICIA AUTOCOMPLETAR
-                // $.ajax({
-                //     url: "controllers/inventario.controlador.php",
-                //     method: "POST",
-                //     data: {
-                //         'accion': 7
-                //     },
-                //     dataType: 'json',
-                //     success: function(respuesta) {
-
-                //         for (let i = 0; i < respuesta.length; i++) {
-                //             var formattedItem = {
-                //                 label: respuesta[i]['descripcion'],
-                //                 value: respuesta[i]['descripcion'],
-                //                 id: respuesta[i]['id'],
-                //                 cantidad: respuesta[i]['cantidad']
-                //             };
-                //             items.push(formattedItem);
-                //         }
-
-                //         $(inputauto).autocomplete({
-                //             source: items,
-                //             select: function(event, ui) {
-                //                 CargarProductos(ui.item.id);
-                //                 return false;
-                //             }
-                //         }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                //             return $("<li>")
-                //                 .append("<div>" + item.label + "<strong class='large-text'>CANTIDAD: " + item.cantidad + "</strong></div>")
-                //                 .appendTo(ul);
-                //         };
-                //     }
-                // });
+                $('#tblIn tbody').on('click', '.btnEliminarIn', function() {
+                    tblIn.row($(this).parents('tr')).remove().draw();
+                });
 
                 cargarAutocompletado(function(items) {
                     $(inputauto).autocomplete({
                         source: items,
-                        minLength: 5,
+                        minLength: 3,
                         select: function(event, ui) {
                             CargarProductos(ui.item.cod);
                             return false;
@@ -1074,6 +1072,8 @@
 
                 let action;
                 const tabs = document.querySelectorAll('.tabs input');
+                const btnCancelarTrans = document.getElementById('Cancelar')
+                const div_fecha = document.getElementById('div_fecha')
                 const div_orden = document.getElementById('div_orden');
                 const div_proveedor = document.getElementById('div_proveedor');
                 const div_return = document.getElementById('div_return');
@@ -1082,7 +1082,14 @@
                 const div_conductor = document.getElementById('div_conductor');
                 const div_productos = document.getElementById('div_productos');
                 const div_nrofactura = document.getElementById('div_nrofac');
+                // const div_motivo = document.getElementById('div_motivo');
                 const div_person = document.getElementById('card_person');
+
+                const card_nro_guia = document.getElementById('card_nro_guia');
+                const card_nro_guiaEntrada = document.getElementById('card_nro_guiaE');
+
+                const card_conductor = document.getElementById('card_conductor');
+                const card_conductorEntrada = document.getElementById('card_conductorE');
 
 
 
@@ -1095,16 +1102,16 @@
                 //     edit_orden = document.getElementById('edit_orden'),
                 //     eli_orden = document.getElementById('edit_orden');
 
-                document.addEventListener("keydown", function(event) {
-                    // Verifica si se presionó la tecla 'g' y la tecla 'ctrl' (o 'command' en Mac)
-                    if (event.ctrlKey && (event.key === "g" || event.key === "G")) {
-                        // Evita el comportamiento por defecto del navegador
-                        event.preventDefault();
+                // document.addEventListener("keydown", function(event) {
+                //     // Verifica si se presionó la tecla 'g' y la tecla 'ctrl' (o 'command' en Mac)
+                //     if (event.ctrlKey && (event.key === "g" || event.key === "G")) {
+                //         // Evita el comportamiento por defecto del navegador
+                //         event.preventDefault();
 
-                        // Simula el clic en el botón
-                        control.click();
-                    }
-                });
+                //         // Simula el clic en el botón
+                //         control.click();
+                //     }
+                // });
 
 
                 // new_orden.addEventListener('click', () => {
@@ -1176,9 +1183,9 @@
                         formData.append('nro_factura', nro_factura.value);
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 1);
-                        realizarRegistro(tblIn, formData, clases);
+                        realizarRegistro(tblCompra, formData, clases);
                     } else if (selectedTab === '2') {
-                        let elementosAValidar = [fecha, cboOrden, nro_guia, cboDespachado, cboResponsable, cboConductor];
+                        let elementosAValidar = [fecha, nro_orden, cboClientes, nro_guia, cboDespachado, cboConductor];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -1190,22 +1197,43 @@
                             return;
                         }
                         let clases = ['cantidad'];
-                        formData.append('orden', cboOrden.value);
+                        formData.append('orden', nro_orden.value);
                         formData.append('nro_guia', nro_guia.value);
+                        formData.append('cliente', cboClientes.value);
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
+                        formData.append('motivo', motivo.value);
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 2);
                         realizarRegistro(tblOut, formData, clases);
                     } else if (selectedTab === '3') {
-                        let clases = ['retorno'];
-                        formData.append('boleta', id_boleta);
+                        let elementosAValidar = [fecha_retorno, nro_ordenEntrada, cboClienteEntrada];
+                        let isValid = true;
+                        elementosAValidar.forEach(function(elemento) {
+                            if (!elemento.checkValidity()) {
+                                isValid = false;
+                                form_guia.classList.add('was-validated');
+                            }
+                        });
+                        if (!isValid) {
+                            return;
+                        }
+                        let clases = ['cantidad'];
+                        formData.append('orden', nro_ordenEntrada.value);
+                        formData.append('cliente', cboClienteEntrada.value);
+                        // formData.append('nro_guia', nro_guiaEntrada.value);
+                        formData.append('conductor', cboConductorEntrada.value);
+                        formData.append('responsable', cboResponsable.value);
+                        formData.append('despachado', cboDespachado.value);
+                        formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('fecha_retorno', fecha_retorno.value);
-                        formData.append('accion', 3);
-                        realizarRegistro(tblReturn, formData, clases, 0);
+                        formData.append('fecha', fecha.value);
+
+                        formData.append('accion', 8);
+                        realizarRegistro(tblIn, formData, clases);
                     } else if (selectedTab === '4') {
-                        let elementosAValidar = [fecha, cboOrden, nro_guia, cboDespachado, cboResponsable, cboConductor];
+                        let elementosAValidar = [fecha, nro_orden, cboClientes, nro_guia, cboDespachado, cboResponsable, cboConductor];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -1217,14 +1245,15 @@
                             return;
                         }
                         formData.append('id_boleta', id_boleta);
-                        formData.append('orden', cboOrden.value);
+                        formData.append('orden', nro_orden.value);
+                        formData.append('cliente', cboClientes.value);
                         formData.append('nro_guia', nro_guia.value);
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
                         formData.append('fecha', fecha.value);
+                        formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('accion', 4);
-
                         $.ajax({
                             url: "controllers/registro.controlador.php",
                             method: "POST",
@@ -1245,6 +1274,7 @@
                                     tblDetalleSalida.clear().draw();
                                     tabla ? tabla.ajax.reload(null, false) : ''
                                     cargarAutocompletado();
+                                    btnCancelarTrans.click();
                                 }
                             }
                         });
@@ -1289,17 +1319,28 @@
                                 }
                             }
                         });
+                    } else if (selectedTab === '6') {
+                        let clases = ['retorno'];
+                        formData.append('boleta', id_boleta);
+                        formData.append('fecha_retorno', fecha_retorno.value);
+                        formData.append('nro_guia', nro_guia.value)
+                        formData.append('accion', 3);
+                        realizarRegistro(tblReturn, formData, clases, 0, 'productos', function(response) {
+                            if (response) {
+
+                                btnCancelarTrans.click();
+                            }
+                        });
+
                     }
                 })
 
                 tabs.forEach(tab => {
                     tab.addEventListener('change', function() {
                         selectedTab = this.value;
-                        if (selectedTab === '1') {
-                            tblOut.clear().draw(); // Esta línea vacía los datos de la tabla
-                            tblIn.clear().draw();
-                        }
+                        // if (selectedTab === '4') {
 
+                        // }
                         form_guia.classList.remove('was-validated');
                         const selectedForm = document.getElementById(`form-${selectedTab}`);
                         const formContainers = document.querySelectorAll('.form-container');
@@ -1314,71 +1355,181 @@
 
                         if (selectedTab === '1' || selectedTab === '5') {
                             div_orden.style.display = 'none';
+                            div_fecha.style.display = 'block'
                             div_productos.style.display = 'flex';
                             div_proveedor.style.display = 'block';
                             div_conductor.style.display = 'none';
                             div_retorno.style.display = 'none';
                             div_nroguia.style.display = 'none';
-                            // card_orden.style.display = 'none';
+
+                            // div_motivo.style.display = 'none';
+                            card_nro_guia.style.display = 'none';
+                            card_nro_guiaEntrada.style.display = 'none';
+
+                            card_conductor.style.display = 'none';
+                            card_conductorEntrada.style.display = 'none';
                             div_return.style.display = 'none';
                             div_person.style.display = 'none';
                             div_nrofactura.style.display = 'block';
+                            if (selectedTab === '1') {
+                                btnCancelarTrans.style.display = 'none'
+                            } else {
+                                btnCancelarTrans.style.display = 'block'
+                            }
                         } else if (selectedTab === '2' || selectedTab === '4') {
                             div_orden.style.display = 'block';
                             div_proveedor.style.display = 'none';
+                            div_fecha.style.display = 'block'
                             div_productos.style.display = 'flex';
-                            // card_orden.style.display = 'none';
+                            // div_motivo.style.display = 'none';
                             div_return.style.display = 'none';
                             div_conductor.style.display = 'block';
                             div_retorno.style.display = 'none';
                             div_nroguia.style.display = 'block';
                             div_nrofactura.style.display = 'none';
                             div_person.style.display = 'block';
+                            card_nro_guia.style.display = 'block';
+                            card_nro_guiaEntrada.style.display = 'none';
 
-                        } else if (selectedTab === '3') {
+                            card_conductor.style.display = 'block';
+                            card_conductorEntrada.style.display = 'none';
+
+                            if (selectedTab === '2') {
+                                btnCancelarTrans.style.display = 'none'
+                            } else {
+                                btnCancelarTrans.style.display = 'block'
+
+                            }
+
+                        } else if (selectedTab === '3' || selectedTab === '6') {
                             div_orden.style.display = 'none';
                             div_proveedor.style.display = 'none';
-                            div_productos.style.display = 'none';
                             div_return.style.display = 'block'
-                            // card_orden.style.display = 'none';
-                            div_conductor.style.display = 'block';
-                            div_retorno.style.display = 'block';
-                            div_nroguia.style.display = 'none';
                             div_nrofactura.style.display = 'none';
                             div_person.style.display = 'block';
+                            div_retorno.style.display = 'block';
+                            card_nro_guia.style.display = 'none';
 
+                            card_conductor.style.display = 'none';
+                            card_conductorEntrada.style.display = 'block';
+                            div_conductor.style.display = 'block';
+
+
+
+                            if (selectedTab === '3') {
+                                btnCancelarTrans.style.display = 'none';
+
+                                div_fecha.style.display = 'block';
+
+                                div_productos.style.display = 'flex';
+                                card_nro_guiaEntrada.style.display = 'none';
+                                div_nroguia.style.display = 'none';
+
+                                // div_person.style.display = 'none';
+                                // div_nroguia.style.display = 'none';
+                                // div_motivo.style.display = 'block';
+                                // div_retorno.style.display = 'none';
+                                // div_conductor.style.display = 'none';
+                                // div_fecha.style.display = 'block'
+                            } else {
+                                btnCancelarTrans.style.display = 'block';
+                                div_productos.style.display = 'none';
+                                card_nro_guiaEntrada.style.display = 'block';
+                                div_nroguia.style.display = 'block';
+                                div_fecha.style.display = 'none';
+
+
+                                // div_person.style.display = 'block';
+                                // div_nroguia.style.display = 'block';
+                                // div_motivo.style.display = 'none';
+                            }
                         }
                     });
                 });
 
                 function CargarProductos(p = "", barras = false) {
 
-                    let existingRow = tblIn.row("#producto_" + p);
-                    let existingRowOut = tblOut.row("#producto_" + p);
 
-                    // var id_producto = p;
+                    function manejarRespuesta(r, tblDetalle, tabla) {
+                        tblDetalle.ajax.reload(null, false);
+                        tabla.ajax.reload(null, false);
+                        cargarAutocompletado();
+                        inputauto.value = '';
+                        let isSuccess = r.status === 'success';
+                        mostrarToast(
+                            r.status,
+                            isSuccess ? "Completado" : "Error",
+                            isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                            r.m
+                        );
+                    }
+
+                    function actualizarCantidad(row) {
+                        audio.play();
+                        if (barras) inputBarras.disabled = true;
+                        var cantidadInput = row.node().querySelector('.cantidad');
+                        cantidadInput.value = parseFloat(cantidadInput.value) + 1;
+                        audio.onended = function() {
+                            if (barras) {
+                                inputBarras.disabled = false;
+                                inputBarras.focus();
+                            }
+                            $(inputBarras).val("");
+                        };
+                    }
+
+                    function agregarFila(respuesta, tabla) {
+                        let nuevaFila = [
+                            '',
+                            respuesta['id'],
+                            `<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" 
+                            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                            oninput="validarNumber(this,/[^0-9.]/g)" value="${respuesta['cantidad']}">`,
+                            respuesta['nombre']
+                        ];
+
+                        if (tabla === tblCompra) {
+                            nuevaFila.push('$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="0">');
+                            nuevaFila.push('<span class="total">$0.00</span>', '<span class="iva">$0.00</span>', '<span class="precio_final">$0.00</span>');
+                        }
+
+                        nuevaFila.push(
+                            respuesta['descripcion'],
+                            `<center>
+                            <span class='btnEliminarIn text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
+                            data-bs-placement='top' title='Eliminar producto'> 
+                                <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
+                                </i> </span>
+                            </center>`
+                        );
+
+                        tabla.row.add(nuevaFila).node().id = "producto_" + respuesta['codigo'];
+                        tabla.draw(false);
+                        audio.onplay = function() {
+                            $(inputauto).val("");
+                        };
+                        audio.onended = function() {
+                            if (barras) {
+                                inputBarras.disabled = false;
+                                inputBarras.focus();
+                            }
+                            $(inputBarras).val("");
+                        };
+                    }
+
                     if (selectedTab === '4') {
                         $.ajax({
                             url: "controllers/salidas.controlador.php",
                             method: "POST",
                             data: {
-                                'accion': 1, //BUSCAR PRODUCTOS POR id_producto
+                                'accion': 1,
                                 'codigo': p,
                                 'id_boleta': id_boleta
                             },
                             dataType: 'json',
                             success: function(r) {
-                                tblDetalleSalida.ajax.reload(null, false)
-                                tabla.ajax.reload(null, false);
-                                cargarAutocompletado();
-                                inputauto.value = '';
-                                let isSuccess = r.status === 'success';
-                                mostrarToast(
-                                    r.status,
-                                    isSuccess ? "Completado" : "Error",
-                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
-                                    r.m
-                                );
+                                manejarRespuesta(r, tblDetalleSalida, tabla);
                             }
                         });
                     } else if (selectedTab === '5') {
@@ -1386,132 +1537,82 @@
                             url: "controllers/entradas.controlador.php",
                             method: "POST",
                             data: {
-                                'accion': 3, //BUSCAR PRODUCTOS POR id_producto
+                                'accion': 3,
                                 'codigo': p,
                                 'id_factura': id_boleta
                             },
                             dataType: 'json',
                             success: function(r) {
-                                tblDetalleEntrada.ajax.reload(null, false)
-                                tabla.ajax.reload(null, false);
-                                cargarAutocompletado();
-                                inputauto.value = '';
-                                let isSuccess = r.status === 'success';
-                                mostrarToast(
-                                    r.status,
-                                    isSuccess ? "Completado" : "Error",
-                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
-                                    r.m
-                                );
+                                manejarRespuesta(r, tblDetalleCompra, tabla);
                             }
                         });
                     } else {
-                        if (existingRow.any()) {
-                            audio.play();
-                            if (barras) {
-                                inputBarras.disabled = true;
+                        if (selectedTab == '1') {
+                            let existingRow = tblCompra.row("#producto_" + p);
+                            if (existingRow.any()) {
+                                actualizarCantidad(existingRow);
+                                return;
                             }
-                            // Si el id_producto ya está en el DataTable, actualizar la cantidad
-                            var rowData = existingRow.data();
-                            var cantidadInput = existingRow.node().querySelector('.cantidad');
-                            var cantidad = parseFloat(cantidadInput.value) + 1; // Incrementar la cantidad
-                            cantidadInput.value = cantidad; // Actualizar el valor en el input
-                            audio.onended = function() {
-                                if (barras) {
-                                    inputBarras.disabled = false;
-                                    inputBarras.focus();
-                                }
-                                $(inputBarras).val("");
-                            }
-                            return;
                         }
-
-                        if (existingRowOut.any()) {
-                            audio.play();
-                            var rowData = existingRowOut.data();
-                            var cantidadInput = existingRowOut.node().querySelector('.cantidad');
-                            var cantidad = parseFloat(cantidadInput.value) + 1; // Incrementar la cantidad
-                            cantidadInput.value = cantidad; // Actualizar el valor en el input
-                            audio.onended = function() {
-                                $(inputBarras).val("");
+                        if (selectedTab == '2') {
+                            let existingRowOut = tblOut.row("#producto_" + p);
+                            if (existingRowOut.any()) {
+                                actualizarCantidad(existingRowOut);
+                                return;
                             }
-                            return;
-                            // audio.play = function() {
-                            //     // Si el id_producto ya está en el DataTable, actualizar la cantidad
-
-                            // };
+                        }
+                        if (selectedTab == '3') {
+                            let existingRowIn = tblIn.row("#producto_" + p);
+                            if (existingRowIn.any()) {
+                                actualizarCantidad(existingRowIn);
+                                return;
+                            }
                         }
                         $.ajax({
                             url: "controllers/inventario.controlador.php",
                             method: "POST",
                             data: {
-                                'accion': 4, //BUSCAR PRODUCTOS POR id_producto
+                                'accion': 4,
                                 'id': p
                             },
                             dataType: 'json',
                             success: function(respuesta) {
                                 if (respuesta) {
                                     audio.play();
-                                    if (barras) {
-                                        inputBarras.disabled = true;
-                                    }
+                                    if (barras) inputBarras.disabled = true;
                                     if (selectedTab === '1') {
-                                        tblIn.row.add([
-                                            '',
-                                            respuesta['id'],
-                                            '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['cantidad'] + '">',
-                                            respuesta['nombre'],
-                                            '$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="0">',
-                                            respuesta['descripcion'],
-                                            "<center>" +
-                                            "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
-                                            "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
-                                            "</span>" +
-                                            "</center>",
-                                        ]).node().id = "producto_" + respuesta['codigo'];
-                                        tblIn.draw(false);
+                                        agregarFila(respuesta, tblCompra);
                                     } else if (selectedTab === '2') {
-                                        tblOut.row.add([
-                                            ' ',
-                                            respuesta['id'],
-                                            '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + respuesta['cantidad'] + '">',
-                                            respuesta['nombre'],
-                                            respuesta['descripcion'],
-                                            "<center>" +
-                                            "<span class='btnEliminarIn text-danger'style='cursor:pointer;' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar producto'> " +
-                                            "<i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> </i> " +
-                                            "</span>" +
-                                            "</center>",
-                                        ]).node().id = "producto_" + respuesta['codigo'];
-                                        tblOut.draw(false);
-                                    }
-                                    audio.onplay = function() {
-                                        $(inputauto).val("");
-                                    }
-                                    audio.onended = function() {
-                                        if (barras) {
-                                            inputBarras.disabled = false;
-                                            inputBarras.focus();
-                                        }
-                                        $(inputBarras).val("");
-
-                                    }
-                                    /*===================================================================*/
-                                    //SI LA RESPUESTA ES FALSO, NO TRAE ALGUN DATO
-                                    /*===================================================================*/
+                                        agregarFila(respuesta, tblOut);
+                                    } else if (selectedTab === '3')
+                                        agregarFila(respuesta, tblIn)
                                 } else {
-                                    // Toast.fire({
-                                    //     icon: 'error',
-                                    //     title: ' El producto no existe o no tiene stock'
-                                    // });
-                                    // $(inputauto).val("");
-                                    // $(inputauto).focus();
+                                    // Manejar el caso en el que la respuesta sea falsa
                                 }
                             }
                         });
                     }
                 }
 
+                $('#tblCompra').on('input keydown', '.cantidad, .precio', function() {
+                    // Encuentra la fila del input cambiado
+                    let $row = $(this).closest('tr');
+
+                    // Obtiene los valores de cantidad y precio
+                    let cantidad = parseFloat($row.find('.cantidad').val()) || 0;
+                    let precio = parseFloat($row.find('.precio').val()) || 0;
+
+                    // Calcula el total
+                    let precio_total = cantidad * precio;
+                    let iva = precio_total * iva_config / 100
+                    let precio_final = precio_total + iva;
+
+                    // Actualiza la columna del total
+                    $row.find('.total').text('$' + precio_total.toFixed(2));
+                    $row.find('.iva').text('$' + iva.toFixed(2));
+                    $row.find('.precio_final').text('$' + precio_final.toFixed(2));
+
+                });
 
 
                 inputBarras.addEventListener("input", function(event) {
@@ -1523,53 +1624,69 @@
                 })
             });
 
-            function realizarRegistro(table, formData, clases, producto = 1, header = 'productos') {
+            function realizarRegistro(table, formData, clases, producto = 1, header = 'productos', callback = null) {
                 let count = 0;
                 table.rows().eq(0).each(function(index) {
                     count = count + 1;
                 });
                 if (count > 0) {
                     var arr = [];
-                    table.rows().eq(0).each(function(index) {
-                        let row = table.row(index);
-                        let data = row.data();
-                        let id = data[producto];
+                    Swal.fire({
+                        title: "¿Estás seguro que deseas guardar los datos?",
+                        // text: "Una vez eliminado no podrá recuperarlo",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Sí, Guardar",
+                        cancelButtonText: "Cancelar",
+                        timer: 5000, // El SweetAlert2 se cerrará automáticamente después de 3 segundos (3000 milisegundos)
+                        timerProgressBar: true,
+                    }).then((result) => {
+                        if (result.value) {
+                            table.rows().eq(0).each(function(index) {
+                                let row = table.row(index);
+                                let data = row.data();
+                                let id = data[producto];
 
-                        let valores = clases.map(clase => {
-                            let inputElement = row.node().querySelector('input.' + clase);
-                            // Si inputElement es null, retornar data[5]
-                            return inputElement ? inputElement.value : data[5];
-                        });
+                                let valores = clases.map(clase => {
+                                    let inputElement = row.node().querySelector('input.' + clase);
+                                    // Si inputElement es null, retornar data[5]
+                                    return inputElement ? inputElement.value : data[5];
+                                });
 
-                        arr.push(id + "," + valores.join(","));
-                        // Agrega al FormData directamente en este ciclo si es necesario
-                        formData.append('arr[]', arr[index]);
-                    });
+                                arr.push(id + "," + valores.join(","));
+                                // Agrega al FormData directamente en este ciclo si es necesario
+                                formData.append('arr[]', arr[index]);
+                            });
 
-                    $.ajax({
-                        url: "controllers/registro.controlador.php",
-                        method: "POST",
-                        data: formData,
-                        cache: false,
-                        dataType: "json",
-                        contentType: false,
-                        processData: false,
-                        success: function(r) {
-                            let isSuccess = r.status === "success";
+                            $.ajax({
+                                url: "controllers/registro.controlador.php",
+                                method: "POST",
+                                data: formData,
+                                cache: false,
+                                dataType: "json",
+                                contentType: false,
+                                processData: false,
+                                success: function(r) {
+                                    let isSuccess = r.status === "success";
 
-                            mostrarToast(r.status,
-                                isSuccess ? "Completado" : "Error",
-                                isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
-                                r.m);
+                                    mostrarToast(r.status,
+                                        isSuccess ? "Completado" : "Error",
+                                        isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                        r.m);
 
-                            if (isSuccess) {
-                                table.clear().draw();
-                            }
-                            tabla ? tabla.ajax.reload(null, false) : ''
-                            cargarAutocompletado();
+                                    if (isSuccess) {
+                                        table.clear().draw();
+                                    }
+                                    tabla ? tabla.ajax.reload(null, false) : ''
+                                    cargarAutocompletado();
+
+                                    if (typeof callback === 'function') {
+                                        callback(isSuccess);
+                                    }
+                                }
+                            });
                         }
                     });
-
                 } else {
                     mostrarToast('danger', "Error", "fa-solid fa-xmark fa-lg", 'No hay ' + header + ' en el listado');
                 }

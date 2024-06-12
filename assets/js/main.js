@@ -13,6 +13,64 @@ function confirmarEliminar(art, name, callback) {
   });
 }
 
+function limpiar(btn) {
+  if (selectedTab === "4") {
+    const salida_radio = document.getElementById("radio-2");
+    setChange(cboConductor, conductorPorDefecto);
+    setChange(cboDespachado, bodegueroPorDefecto);
+    setChange(cboResponsable, 0);
+    fecha.value = `${year}-${mes}-${dia}`;
+    nro_guia.value = "";
+    nro_orden.value = "";
+    motivo.value = "";
+    setChange(cboClientes, 0);
+    salida_radio.value = "2";
+    salida_radio.dispatchEvent(new Event("change"));
+
+    btn.style.display = "none";
+  } else if (selectedTab === "6") {
+    const retorno = document.getElementById("radio-3");
+    setChange(cboConductor, conductorPorDefecto);
+    cboConductor.disabled = false;
+    setChange(cboDespachado, bodegueroPorDefecto);
+    cboDespachado.disabled = false;
+
+    setChange(cboResponsable, 0);
+    cboResponsable.disabled = false;
+
+    // fecha_retorno.value = `${year}-${mes}-${dia}`;
+    // fecha_retorno.disabled = false;
+
+    nro_guiaEntrada.value = "";
+
+    nro_ordenEntrada.value = "";
+    nro_ordenEntrada.disabled = false;
+
+    motivo.value = "";
+    // motivo.disabled = false;
+
+    setChange(cboClienteEntrada, 0);
+    cboClienteEntrada.disabled = false;
+
+    retorno.value = "3";
+    retorno.dispatchEvent(new Event("change"));
+
+    btn.style.display = "none";
+  } else if (selectedTab === "5") {
+    const entrada_radio = document.getElementById("radio-1");
+    const nro_factura = document.getElementById('nro_fac');
+
+    fecha.value = `${year}-${mes}-${dia}`;
+    setChange(cboProveedores, 0);
+    nro_factura.value = "";
+
+    entrada_radio.value = "1";
+    entrada_radio.dispatchEvent(new Event("change"));
+
+    btn.style.display = "none";
+  }
+}
+
 function cargarCombo(id, s, a = 1, isDataCbo = false) {
   return new Promise((resolve, reject) => {
     const cbo = document.getElementById("cbo" + id);
@@ -34,11 +92,6 @@ function cargarCombo(id, s, a = 1, isDataCbo = false) {
           dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
         }
         $(cbo).html(options);
-        // if (a === 3) {
-        //   $("#cbo" + id)
-        //     .val(res)
-        //     .trigger("change");
-        // } else {
         $(cbo)
           .val(s !== "" ? s : 0)
           .trigger("change");
@@ -51,77 +104,117 @@ function cargarCombo(id, s, a = 1, isDataCbo = false) {
   });
 }
 
-function cargarComboFabricado(s= 0) {
-    const cbo1 = document.getElementById("cboFabricado");
-    // const cbo2 = document.getElementById("cboFabricadoCon");
+function cargarComboFabricado(s = 0) {
+  const cbo1 = document.getElementById("cboFabricado");
+  // const cbo2 = document.getElementById("cboFabricadoCon");
 
-    $(cbo1).empty();
-    // $(cbo2).empty();
-    // let tabla = "tbl" + id.toLowerCase();
-    $.ajax({
-      url: "controllers/combo.controlador.php",
-      method: "POST",
-      dataType: "json",
-      data: {
-        accion: 8,
-      },
-      success: function (respuesta) {
-        // let dataCbo = [];
-        var options = "";
-        for (let index = 0; index < respuesta.length; index++) {
-          options += `<option data-orden="${respuesta[index][2]}" data-cant="${respuesta[index][3]}" data-und="${respuesta[index][4]}" data-name="${respuesta[index][5]}" value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
-          // dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
-        }
-        $(cbo1).html(options);
-        // $(cbo2).html(options);
-        $(cbo1).val(s).trigger("change");
-        // $(cbo2).val(0).trigger("change");
+  $(cbo1).empty();
+  // $(cbo2).empty();
+  // let tabla = "tbl" + id.toLowerCase();
+  $.ajax({
+    url: "controllers/combo.controlador.php",
+    method: "POST",
+    dataType: "json",
+    data: {
+      accion: 8,
+    },
+    success: function (respuesta) {
+      // let dataCbo = [];
+      var options = "";
+      for (let index = 0; index < respuesta.length; index++) {
+        options += `<option data-orden="${respuesta[index][2]}" data-cant="${respuesta[index][3]}" data-und="${respuesta[index][4]}" data-name="${respuesta[index][5]}" value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
+        // dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
+      }
+      $(cbo1).html(options);
+      // $(cbo2).html(options);
+      $(cbo1).val(s).trigger("change");
+      // $(cbo2).val(0).trigger("change");
+    },
+  });
+}
 
-      },
-    });
+function formatInputOrden(input, cbo, isformart = true) {
+  let value = input.value.replace(/\D/g, "");
+
+  // Insertar el espacio después de los dos primeros dígitos
+  if (value.length > 2) {
+    value = value.slice(0, 2) + " " + value.slice(2);
+  }
+  input.value = value;
+
+  if (isformart) {
+    if (value.length === 6 && value !== "00 000") {
+      fetchOrderId(value, cbo);
+    } else if (value.length === 0) {
+      const cboCli = document.getElementById(cbo);
+      setChange(cboCli, 0);
+      cboCli.disabled = false;
+    }
+  }
+  // Si la longitud es 6, realizar la consulta AJAX
+}
+
+function fetchOrderId(nombre, cbo) {
+  $.ajax({
+    url: "controllers/orden.controlador.php", // Cambia 'tu_script_php.php' por la ruta correcta de tu script PHP
+    type: "POST",
+    dataSrc: "",
+    data: {
+      nombre: nombre,
+      accion: 4,
+    },
+    cache: false,
+    dataType: "json",
+
+    success: function (response) {
+      const cboCli = document.getElementById(cbo);
+      let id_cli = response[0]["id_cliente"];
+      setChange(cboCli, id_cli);
+      if (id_cli === 0) {
+        cboCli.disabled = false;
+      } else {
+        cboCli.disabled = true;
+      }
+    },
+  });
 }
 
 function moveFocusOnTab(event) {
-  if (event.key === 'Tab') {
-      event.preventDefault(); // Evitar el comportamiento predeterminado del Tab
+  if (event.key === "Tab") {
+    event.preventDefault(); // Evitar el comportamiento predeterminado del Tab
 
-      // Obtener la fila actual y la tabla
-      var currentRow = $(this).closest('tr');
-      var currentTable = currentRow.closest('table').DataTable();
+    // Obtener la fila actual y la tabla
+    var currentRow = $(this).closest("tr");
+    var currentTable = currentRow.closest("table").DataTable();
 
-      // Encontrar la siguiente fila
-      var nextRow = currentRow.next();
+    // Encontrar la siguiente fila
+    var nextRow = currentRow.next();
 
-      // Si hay una siguiente fila, enfocar el input en esa fila
-      if (nextRow.length) {
-          nextRow.find('input.cantidad').focus();
-      } else {
-          // Si no hay una siguiente fila, enfocar el input en la primera fila de la siguiente tabla (opcional)
-          var nextTable = currentTable.table().node().parentElement.nextElementSibling;
-          if ($(nextTable).hasClass('dataTable')) {
-              $(nextTable).find('tbody tr:first-child input.cantidad').focus();
-          }
+    // Si hay una siguiente fila, enfocar el input en esa fila
+    if (nextRow.length) {
+      nextRow.find("input.cantidad").focus();
+    } else {
+      // Si no hay una siguiente fila, enfocar el input en la primera fila de la siguiente tabla (opcional)
+      var nextTable = currentTable.table().node()
+        .parentElement.nextElementSibling;
+      if ($(nextTable).hasClass("dataTable")) {
+        $(nextTable).find("tbody tr:first-child input.cantidad").focus();
       }
+    }
   }
-}
-
-function agregarProductoProduccion(){
-
 }
 
 function opcionSelect(select, name) {
-  if (select.value !== '') {
-      $('.' + name + ' .dis').show();
-      return false
+  if (select.value !== "") {
+    $("." + name + " .dis").show();
+    return false;
   } else {
-      $('.' + name + ' .dis').hide();
-      return true
+    $("." + name + " .dis").hide();
+    return true;
   }
 }
 
-function agregarProductoProduccion(){
-  
-}
+function agregarProductoProduccion() {}
 
 function confirmarAccion(datos, ruta, tabla, modal = "", callback) {
   $.ajax({
@@ -172,7 +265,18 @@ function obtenerFila(fila, tabla) {
   return row;
 }
 
-function cambiarModal(span, title, iconE, icon, e, bg1, bg2, modalElement, m1, m2) {
+function cambiarModal(
+  span,
+  title,
+  iconE,
+  icon,
+  e,
+  bg1,
+  bg2,
+  modalElement,
+  m1,
+  m2
+) {
   span.textContent = title;
   iconE.classList.remove(...iconE.classList);
   iconE.classList.add("fa-solid", icon);
@@ -207,39 +311,40 @@ function displayModal(elements, ...args) {
 function Buscar(tabla, s) {
   scrollPosition = $(window).scrollTop();
 
-  tabla.search($(s).val()).draw(false);
+  tabla.search($(s).val()).draw();
   $(window).scrollTop(scrollPosition);
-
 }
 
-function addPadding(b, s, w ) {
-  // let isNav = (nav === null) ? true : false;
+function addPadding(b, s, w) {
   if (s > w) {
     b.classList.remove("no-scroll");
   } else {
     b.classList.add("no-scroll");
-    // if(!isNav){
-    //   nav.classList.add("no-scroll");
-    // }
   }
 }
 
-function debounce(func, wait) {
-  let timeout;
-  return function(...args) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(this, args), wait);
-  };
-}
-
+// function debounce(func, wait) {
+//   let timeout;
+//   return function(...args) {
+//       clearTimeout(timeout);
+//       timeout = setTimeout(() => func.apply(this, args), wait);
+//   };
+// }
 
 function handleScroll(b, s, w) {
   if (!scroll && s > w) {
     scroll = true;
-    addPadding(b, s, w );
+    addPadding(b, s, w);
+    console.log(b + " " + s + " hanfle " + w);
   } else if (scroll) {
     addPadding(b, s, w);
+    console.log(b + " " + s + " hanfle " + w);
   }
+}
+
+function masInfo(modulo) {
+  let button = document.getElementById(modulo);
+  button.click();
 }
 
 function setChange(selectE, value) {
@@ -248,7 +353,7 @@ function setChange(selectE, value) {
 }
 
 function convertirArray(arr) {
-if (arr === null || arr === '{NULL}') {
+  if (arr === null || arr === "{NULL}") {
     // Devolver un arreglo vacío
     return [];
   }

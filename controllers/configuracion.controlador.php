@@ -29,7 +29,7 @@ class ControladorConfiguracion
 
     public function editarConfigPref()
     {
-        $data = ModeloConfiguracion::mdlEditarConfigPref($this->nombre);
+        $data = ModeloConfiguracion::mdlEditarConfigPref($this->nombre,$this->emisor);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
@@ -57,9 +57,8 @@ if (isset($_POST["accion"])) {
         $data->editarConfigGuia();
     }else if ($_POST["accion"] == 5) {
         $data = new ControladorConfiguracion();
-        $data->nombre = $_POST["SecOrden"];
-        // $data->emisor = $_POST["emisor"];
-
+        $data->nombre = $_POST["bodeguero"];
+        $data->emisor = $_POST["conductor"];
         $data->editarConfigPref();
     }
 }

@@ -70,7 +70,7 @@ class ModeloCombos
     static public function mdlListarClientesActivos()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT c.id, c.nombre from tblclientes c JOIN tblorden o ON o.id_cliente = c.id where o.obra_estado = true AND o.estado=true GROUP BY c.id");
+            $l = Conexion::ConexionDB()->prepare("SELECT c.id, c.nombre FROM tblclientes c JOIN tblorden o ON o.id_cliente = c.id WHERE o.obra_estado = true AND o.estado=true GROUP BY c.id");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -115,6 +115,21 @@ class ModeloCombos
             JOIN tblorden o ON o.id = i.id_orden
             JOIN tblclientes c ON c.id = o.id_cliente
             where i.fabricado = true AND i.estado=true");
+            $l->execute();
+            return $l->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlListarEmpresaFilter()
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT 0 AS id, 'TODO' AS nombre
+            UNION ALL
+            SELECT id, nombre
+            FROM tblempresa
+            WHERE estado=true");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {

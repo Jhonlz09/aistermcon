@@ -1,7 +1,9 @@
-<?php require_once "../utils/database/config.php";?>
+<?php require_once "../utils/database/config.php"; ?>
 
 <head>
     <title>Compras</title>
+    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 </head>
 
 <!-- Contenido Header -->
@@ -13,7 +15,7 @@
             </div>
             <?php if (isset($_SESSION["crear7"]) && $_SESSION["crear7"] === true) : ?>
                 <div class="col">
-                    <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
+                    <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
                 </div>
             <?php endif; ?>
@@ -42,17 +44,17 @@
                                         <option value="null">TODO</option>
                                     </select>
                                 </div>
+                                <div class="col-sm">
+                                    <div style="margin-block:.4rem;height:33px;" class="input-group">
+                                        <span class="input-group-text" style="height:30px;"><i class="fas fa-search icon"></i></span>
+                                        <input autocomplete="off" style="border:none;" style="height:30px" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-0">
-                        <div class="col">
-                            <div style="margin-block:.4rem;height:33px;" class="input-group">
-                                <span class="input-group-text" style="height:30px;"><i class="fas fa-search icon"></i></span>
-                                <input autocomplete="off" style="border:none;" style="height:30px" type="text" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
-                            </div>
-                        </div>
                         <table id="tblEntradas" class="table table-bordered table-striped" style="width:100%">
                             <thead>
                                 <tr>
@@ -66,6 +68,8 @@
                                     <th class="text-center">P. FINAL</th>
                                     <th>DESCRIPCION</th>
                                     <th></th>
+                                    <th>PROVEEDOR</th>
+                                    <th>NRO. FACTURA</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -83,9 +87,11 @@
     <!-- /.container-fluid -->
 </section>
 <!-- /.Contenido -->
-
 <script src="assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js"></script>
-
+<script src="assets/plugins/datatables-searchpanes/js/dataTables.searchPanes.min.js" type="text/javascript"></script>
+<script src="assets/plugins/datatables-searchpanes/js/searchPanes.bootstrap4.min.js" type="text/javascript"></script>
+<script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
+<script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar7"] || $_SESSION["eliminar7"] ?>';
     var editar = '<?php echo $_SESSION["editar7"] ?>';
@@ -94,10 +100,21 @@
 
     configuracionTable = {
         "responsive": true,
-        "dom": 't',
+        "dom": 'Pt',
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
+        searchPanes: {
+            cascadePanes: true,
+            columns: [8,10,11],
+            initCollapsed: true,
+            threshold: 0.8, // Ajusta este valor según tus necesidades
+            dtOpts: {
+                select: {
+                    style: 'multiple'
+                }
+            },
+        },
         paging: false, // Esto deshabilita la paginación
         rowGroup: {
             dataSrc: [9],
@@ -108,10 +125,10 @@
                     r.style.visibility = collapsed ? '' : 'collapse';
                 });
 
-                var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer"><strong class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + 
-                (editar ? '<button id="editE" style="color:var(--text-color);font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button> ' : '') + 
-                (eliminar ? '<button id="eliE" style="color:var(--text-color);font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0"><i class="fas fa-trash-can"></i></button>' : '') + '</div></div>';
-                
+                var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer"><strong class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' +
+                    (editar ? '<button id="editE" style="font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button> ' : '') +
+                    (eliminar ? '<button id="eliE" style="font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : '') + '</div></div>';
+
                 return $('<tr/>')
                     .append('<td colspan="9">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
                     .attr('data-name', group)
@@ -128,7 +145,6 @@
                 targets: 2,
                 className: "text-center",
                 responsivePriority: 1
-
             },
             {
                 targets: 3,
@@ -141,24 +157,39 @@
             {
                 targets: 9,
                 visible: false,
-            }
+            },
+            {
+                targets: 10,
+                visible: false,
+            },
+            {
+                targets: 11,
+                visible: false,
+            },
         ],
-        preDrawCallback: function(settings) {
+        "preDrawCallback": function(settings) {
             // Guardar la posición del scroll antes de redibujar
+            console.log("Guardando posición del scroll:", $(window).scrollTop());
             scrollPosition = $(window).scrollTop();
         },
-        drawCallback: function(settings) {
+        "drawCallback": function(settings) {
             // Restaurar la posición del scroll después de redibujar
-            $(window).scrollTop(scrollPosition);
+            setTimeout(function() {
+                console.log("Restaurando posición del scroll:", scrollPosition);
+                $(window).scrollTop(scrollPosition);
+            }, 3);
         }
     }
 
     $('#tblEntradas tbody').on('click', 'tr.dtrg-start', function() {
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
-
-            var name = $(this).closest('tr.dtrg-start').data('name');
+            var windowScrollTop = $(window).scrollTop();
+            var tableScrollTop = $('#tblEntradas_wrapper').scrollTop();
+            var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
             tabla.draw(false);
+            $(window).scrollTop(windowScrollTop);
+            $('#tblEntradas_wrapper').scrollTop(tableScrollTop);
         }
     });
 
@@ -178,7 +209,6 @@
                 },
                 ...configuracionTable
             });
-
             tabla.on('draw.dt', function() {
                 if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
                     const b = document.body;
@@ -196,7 +226,7 @@
         let accion = 0;
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
-            elements = document.querySelectorAll('.modal .bg-gradient-success'),
+            elements = document.querySelectorAll('.modal .bg-gradient-green'),
             form = document.getElementById('formNuevo'),
             btnNuevo = document.getElementById('btnNuevo');
 
@@ -253,10 +283,10 @@
 
         $('#tblEntradas').on('click', '#editE', function() {
             row = tabla.row($(this).closest('tr').next()).data();
-            id_boleta = row[10];
-            const fecha_id = row[11];
-            const proveedor_id = row[12];
-            const factura = row[13]
+            id_boleta = row[12];
+            const fecha_id = row[13];
+            const proveedor_id = row[14];
+            const factura = row[11];
             const entrada_radio = document.getElementById('radio-1');
             const nro_factura = document.getElementById('nro_fac');
             setChange(cboProveedores, proveedor_id)
@@ -266,12 +296,12 @@
             entrada_radio.checked = true;
             entrada_radio.dispatchEvent(new Event('change'));
             first_control.click();
-            tblDetalleEntrada.ajax.reload(null, false);
-            entrada_radio.value = '1';
+            tblDetalleCompra.ajax.reload(null, false);
+            // entrada_radio.value = '1';
         });
 
         $('#tblEntradas').on('click', '#eliE', function() {
-            let boleta = tabla.row($(this).closest('tr').next()).data()[10];
+            let boleta = tabla.row($(this).closest('tr').next()).data()[12];
             let src = new FormData();
             src.append('accion', 1);
             src.append('id', boleta);
@@ -282,58 +312,5 @@
                 }
             })
         });
-
-        // $('#tblEntradas tbody').on('click', '.btnEliminar', function() {
-        //     const e = obtenerFila(this, tabla)
-        //     accion = 3
-        //     const id_e = e["id_empleado"];
-        //     const name = 'empleados'
-        //     let src = new FormData();
-        //     src.append('accion', accion);
-        //     src.append('id_empleado', id_e);
-        //     confirmarEliminar(name, 'este', 'empleado', tabla, src);
-        // });
-
-        // document.addEventListener('keydown', function(e) {
-        //     if (e.key === "Escape") {
-        //         const activeModal = document.querySelector('.modal.show');
-        //         if (activeModal) {
-        //             $(activeModal).modal('hide');
-        //         }
-        //     }
-        // });
-
-        // $('#tblEntradas tbody').on('click', '.btnEditar', function() {
-        //     let row = obtenerFila(this, tabla);
-        //     accion = 2;
-        //     const icon = document.querySelector('.modal-title i');
-        //     cambiarModal(span, ' Editar Entrada', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
-        //     id.value = row["id_empleado"];
-        //     nombre.value = row["nombres_empleado"];
-        //     cedula.value = row["cedula"];
-        //     conductor.checked = row["conductor"];
-        // });
-
-        // form.addEventListener("submit", function(e) {
-        //     e.preventDefault();
-        //     $('.ten').hide();
-        //     const ced = cedula.value.trim(),
-        //         nom = nombre.value.trim().toUpperCase(),
-        //         con = conductor.checked;
-        //     if (!this.checkValidity() || ced.length < 10) {
-        //         this.classList.add('was-validated');
-        //         ced.length > 0 && $('.ten').show();
-        //         return;
-        //     }
-        //     console.log("Ejecutando el resto del código...");
-        //     const id_e = id.value;
-        //     let datos = new FormData();
-        //     datos.append('id_empleado', id_e);
-        //     datos.append('cedula', ced);
-        //     datos.append('nombres_empleado', nom);
-        //     datos.append('conductor', con);
-        //     datos.append('accion', accion);
-        //     confirmarAccion(datos, null, 'empleados', modal, tabla)
-        // });
     })
 </script>

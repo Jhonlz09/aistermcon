@@ -101,17 +101,21 @@ class ModeloConfiguracion
         }
     }
 
-    public static function mdlEditarConfigPref($nombre)
+    public static function mdlEditarConfigPref($id_bodeguero, $id_conductor)
     {
         try {
             $conexion = Conexion::ConexionDB();
 
-            $sql = "ALTER SEQUENCE secuencia_orden RESTART WITH " . intval($nombre);
-
+            // Actualiza los valores de id_bodeguero y id_conductor en la tabla tblconfiguracion
+            $sql = "UPDATE tblconfiguracion SET bodeguero = :id_bodeguero, conductor = :id_conductor";
             $e = $conexion->prepare($sql);
+            $e->bindParam(':id_bodeguero', $id_bodeguero);
+            $e->bindParam(':id_conductor', $id_conductor);
             $e->execute();
 
-            $_SESSION["secuencia_orden"] = $nombre;
+            // Actualiza las sesiones con los nuevos valores
+            $_SESSION["bodeguero"] = $id_bodeguero;
+            $_SESSION["conductor"] = $id_conductor;
 
             return array(
                 'status' => 'success',

@@ -15,7 +15,7 @@
             </div>
             <?php if (isset($_SESSION["crear4"]) && $_SESSION["crear4"] === true) : ?>
                 <div class="col">
-                    <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
+                    <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
                 </div>
             <?php endif; ?>
@@ -47,7 +47,7 @@
                                 <div class="col-sm">
                                     <div style="margin-block:.4rem;height:33px;" class="input-group">
                                         <span class="input-group-text" style="height:30px;"><i class="fas fa-search icon"></i></span>
-                                        <input autocomplete="off" style="border:none;" style="height:30px" type="text" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                        <input autocomplete="off" style="border:none;" style="height:30px" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                     </div>
                                 </div>
                             </div>
@@ -55,17 +55,15 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-0">
-
                         <table id="tblSalidas" class="table table-bordered table-striped" style="width:100%">
                             <thead>
                                 <tr>
                                     <th class="text-center">Nº</th>
-                                    <th class="text-center">CÓDIGO</th>
-                                    <th>CANTIDAD</th>
-                                    <th>UND</th>
+                                    <th>CÓDIGO</th>
                                     <th>DESCRIPCION</th>
+                                    <th>UND</th>
                                     <th></th>
-                                    <th class="text-center">UTIL.</th>
+                                    <th>SALIDA</th>
                                     <th>ENTRADA</th>
                                     <th>NRO. ORDEN</th>
                                     <th>CLIENTE</th>
@@ -110,7 +108,7 @@
         paging: false, // Esto deshabilita la paginación
         searchPanes: {
             cascadePanes: true,
-            columns: [4, 8, 9, 10],
+            columns: [2, 8, 9],
             initCollapsed: true,
             threshold: 0.8, // Ajusta este valor según tus necesidades
             dtOpts: {
@@ -120,7 +118,7 @@
             },
         },
         rowGroup: {
-            dataSrc: [5],
+            dataSrc: [4],
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
 
@@ -146,34 +144,20 @@
             },
             {
                 targets: 2,
-                className: "text-center",
+                // className: "text-center",
                 responsivePriority: 1
             },
-
             {
                 targets: 3,
                 className: "text-center",
                 responsivePriority: 2
-
             },
-           
+            {
+                targets: 4,
+                visible: false,
+            },
             {
                 targets: 5,
-                visible: false,
-            },
-            {
-                targets: 6,
-                className: "text-center",
-                visible: false,
-                render: function(data, type, row) {
-                    let resultado = row.fabricado;
-                    let texto = resultado ? 'SI' : 'NO';
-                    let className = resultado ? 'text-success' : 'text-danger';
-                    return `<span style='font-size:1rem' class="${className} font-weight-bold">${texto}</span>`;
-                }
-            },
-            {
-                targets: 7,
                 className: "text-center",
                 render: function(data, type, row, meta) {
                     if (data === null) {
@@ -184,24 +168,39 @@
                 }
             },
             {
+                targets: 6,
+                className: "text-center",
+                render: function(data, type, row, meta) {
+                    if (data === null) {
+                        return '-';
+                    } else {
+                        return data;
+                    }
+                }
+            },
+            {
+                targets: 7,
+                visible: false,
+            }, {
                 targets: 8,
                 visible: false,
             }, {
                 targets: 9,
                 visible: false,
-            }, {
-                targets: 10,
-                visible: false,
             },
             
         ],
-        preDrawCallback: function(settings) {
+        "preDrawCallback": function(settings) {
             // Guardar la posición del scroll antes de redibujar
+            console.log("Guardando posición del scroll:", $(window).scrollTop());
             scrollPosition = $(window).scrollTop();
         },
-        drawCallback: function(settings) {
+        "drawCallback": function(settings) {
             // Restaurar la posición del scroll después de redibujar
-            $(window).scrollTop(scrollPosition);
+            setTimeout(function() {
+                console.log("Restaurando posición del scroll:", scrollPosition);
+                $(window).scrollTop(scrollPosition);
+            }, 3);
         }
     }
 
@@ -225,7 +224,7 @@
     $(document).ready(function() {
         let anio = year;
         let mes = month;
-        console.log(anio);
+        
         if (!$.fn.DataTable.isDataTable('#tblSalidas')) {
             tabla = $("#tblSalidas").DataTable({
                 "ajax": {
@@ -243,7 +242,7 @@
             tabla.on('draw.dt', function() {
                 if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
                     const b = document.body;
-                    const s = b.scrollHeight;
+                    const s = b.scrollHeight + 58;
                     const w = window.innerHeight;
 
                     handleScroll(b, s, w);
@@ -253,14 +252,14 @@
                 localStorage.setItem('s', JSON.stringify(tablaData));
             });
         }
+
         let accion = 0;
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
-            elements = document.querySelectorAll('.modal .bg-gradient-success'),
+            elements = document.querySelectorAll('.modal .bg-gradient-green'),
             form = document.getElementById('formNuevo'),
             form_pdf = document.getElementById('form_pdf'),
             btnNuevo = document.getElementById('btnNuevo');
-        // btnPdf = document.getElementById('pdf');
         let input_pdf = document.getElementById('input_boleta');
 
 
@@ -290,12 +289,6 @@
             } else {
                 mes = cboMeses.value;
             }
-            // tarjetasInfo(anio);
-            // let src = new FormData();
-            // src.append('accion', 1);
-            // src.append('mes', mes);
-            // src.append('anio', anio);
-            // actualizarGrafico(src, chartCanvas, barChartData);
             tabla.ajax.reload();
         });
 
@@ -317,7 +310,7 @@
         $('#tblSalidas').on('submit', '.form_pdf', function(event) {
             event.preventDefault(); // Evita el envío predeterminado del formulario
             // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
-            var boleta = tabla.row($(this).closest('tr').next()).data()[11];
+            var boleta = tabla.row($(this).closest('tr').next()).data()[10];
             // console.log(id_boleta)
             var input_pdf = $(this).find('.input_boleta');
             input_pdf.val(boleta);
@@ -337,56 +330,78 @@
 
         $('#tblSalidas').on('click', '#editS', function() {
             let row = tabla.row($(this).closest('tr').next()).data()
-            id_boleta = row[11];
-            console.log(id_boleta)
-            const orden_id = row[12];
-            const fecha_id = row[14];
-            const conductor = row[15];
-            const despachado_id = row[16];
-            const entrega = row[17];
-            const guia = row[18];
+            id_boleta = row[10];
+            // console.log(id_boleta)
+            const orden = row[7],
+                id_cliente = row[12],
+                fecha_id = row[13],
+                conductor = row[14],
+                despachado_id = row[15],
+                entrega = row[16],
+                guia = row[17];
+            const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18] ;
             const salida_radio = document.getElementById('radio-2');
-            setChange(cboOrden, orden_id)
+            const cancelar = document.getElementById('Cancelar');
+            // setChange(nro, orden_id)
             setChange(cboConductor, conductor)
             setChange(cboDespachado, despachado_id)
             setChange(cboResponsable, entrega)
             fecha.value = fecha_id;
             nro_guia.value = guia;
+            nro_orden.value = orden;
+            motivo.value = motivo_text;
+            setChange(cboClientes, id_cliente)
             salida_radio.value = '4';
             salida_radio.checked = true;
             salida_radio.dispatchEvent(new Event('change'));
             first_control.click();
+            cancelar.style.display = 'block'
             tblDetalleSalida.ajax.reload(null, false);
-            salida_radio.value = '2';
+            // salida_radio.value = '2';
         });
 
         $('#tblSalidas').on('click', '#editR', function() {
             row = tabla.row($(this).closest('tr').next()).data()
             // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
-            id_boleta = row[11];
-            console.log(id_boleta)
-            const orden_id = row[12];
-            const cliente = row[13];
-            const fecha_id = row[14];
-            const conductor = row[15];
-            const despachado_id = row[16];
-            const entrega = row[17];
-            const guia = row[18];
-            const retorno = document.getElementById('radio-3');
-            setChange(cboOrdenActivas, orden_id)
-            setChange(cboClientesActivos, cliente)
+            id_boleta = row[10];
+            // console.log(id_boleta)
+            const orden = row[7],
+                id_cliente = row[12],
+                fecha_id = row[13],
+                conductor = row[14],
+                despachado_id = row[15],
+                entrega = row[16],
+                guia = row[17],
+                retorno = document.getElementById('radio-3');
+            const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18] ;
+
+            // setChange(cboOrdenActivas, orden_id)
+            // setChange(cboClientesActivos, cliente)
+            setChange(cboClienteEntrada, id_cliente)
+            cboClienteEntrada.disabled = true;
             setChange(cboConductor, conductor)
+            // cboConductor.disabled = true;
             setChange(cboDespachado, despachado_id)
+            // cboDespachado.disabled = true;
             setChange(cboResponsable, entrega)
-            fecha.value = fecha_id;
+            // cboResponsable.disabled = true;
+            fecha_retorno.value = fecha_id;
+            // fecha.disabled = true;
+            nro_ordenEntrada.value = orden;
+            nro_ordenEntrada.disabled = true;
             nro_guia.value = guia;
-            retorno.click();
+            motivo.value = motivo_text;
+            // motivo.disabled = true;
+            // retorno.click();
+            retorno.value = '6';
+            retorno.checked = true;
+            retorno.dispatchEvent(new Event('change'));
             first_control.click();
             tblReturn.ajax.reload(null, false);
         });
 
         $('#tblSalidas').on('click', '#eliS', function() {
-            const boleta = tabla.row($(this).closest('tr').next()).data()[11];
+            const boleta = tabla.row($(this).closest('tr').next()).data()[10];
             let src = new FormData();
             src.append('accion', 3);
             src.append('id', boleta);
@@ -415,7 +430,7 @@
         //     let row = obtenerFila(this, tabla);
         //     accion = 2;
         //     const icon = document.querySelector('.modal-title i');
-        //     cambiarModal(span, ' Editar Entrada', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+        //     cambiarModal(span, ' Editar Entrada', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
         //     id.value = row["id_empleado"];
         //     nombre.value = row["nombres_empleado"];
         //     cedula.value = row["cedula"];

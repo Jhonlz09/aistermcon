@@ -1,4 +1,4 @@
-<?php require_once "../utils/database/config.php";?>
+<?php require_once "../utils/database/config.php"; ?>
 
 <head>
     <title>Proveedores</title>
@@ -12,7 +12,7 @@
             </div>
             <?php if (isset($_SESSION["crear8"]) && $_SESSION["crear8"] === true) : ?>
                 <div class="col">
-                    <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
+                    <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
                 </div>
             <?php endif; ?>
@@ -36,7 +36,7 @@
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="text" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>
@@ -50,6 +50,9 @@
                                 <tr>
                                     <th class="text-center">Nº</th>
                                     <th>PROVEEDOR</th>
+                                    <th>TELÉFONO</th>
+                                    <th>DIRECCIÓN</th>
+                                    <th>EMAIL</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -73,7 +76,7 @@
 <div class="modal fade" id="modal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Rol</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -84,17 +87,47 @@
                     <input type="hidden" id="id" value="">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="input-data" style="margin-bottom:1em;">
-                                <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
-                                <div class="line underline"></div>
-                                <label class="label"><i class="fa-solid fa-signature"></i> Proveedor</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label class="label"><i class="fa-solid fa-signature"></i> Proveedor</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" inputmode="numeric" id="telefono" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-data" style="margin-bottom:1rem;">
+                                        <input autocomplete="off" id="direccion" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="direccion" class="label"><i class="fas fa-map-location-dot"></i> Dirección</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-data" style="margin-bottom:1rem;">
+                                        <input autocomplete="off" id="correo" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="correo" class="label"><i class="fa-solid fa-envelope"></i> Correo</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -105,9 +138,9 @@
 </div>
 
 <script>
-    // var mostrarCol = '<?php echo $_SESSION["editar8"] || $_SESSION["eliminar8"] ?>';
-    // var editar = '<?php echo $_SESSION["editar8"] ?>';
-    // var eliminar = '<?php echo $_SESSION["eliminar8"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar6"] || $_SESSION["eliminar6"] ?>';
+    var editar = '<?php echo $_SESSION["editar6"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar6"] ?>';
 
     configuracionTable = {
         "responsive": true,
@@ -127,22 +160,20 @@
                 }
             },
             {
-                targets: 2,
+                targets: 5,
                 data: "acciones",
                 visible: true,
                 render: function(data, type, row, full, meta) {
                     return (
                         "<center style='white-space: nowrap;'>" +
-                        // (editar ?
+                        (editar ?
                             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
-                            "</button>"//: "") +
-                        // (eliminar ?
-                        +
+                            "</button>" : "") +
+                        (eliminar ?
                             " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
-                            "</button>" //: "") +
-                            +
+                            "</button>" : "") +
                         " </center>"
                     );
                 },
@@ -175,13 +206,16 @@
         let accion = 0;
         const modal = document.getElementById('modal'),
             span = document.querySelector('.modal-title span'),
-            elements = document.querySelectorAll('.modal .bg-gradient-success'),
+            elements = document.querySelectorAll('.modal .bg-gradient-green'),
             form = document.getElementById('formNuevo'),
             icon = document.querySelector('.modal-title i'),
             btnNuevo = document.getElementById('btnNuevo');
 
         const id = document.getElementById('id'),
-            nombre = document.getElementById('nombre');
+            nombre = document.getElementById('nombre'),
+            correo = document.getElementById('correo'),
+            direccion = document.getElementById('direccion'),
+            telefono = document.getElementById('telefono');
 
         $(modal).on("shown.bs.modal", () => {
             nombre.focus();
@@ -190,7 +224,7 @@
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                cambiarModal(span, ' Nuevo Proveedor', icon, 'fa-hand-holding-box', elements, 'bg-gradient-blue', 'bg-gradient-success', modal, 'modal-new', 'modal-change')
+                cambiarModal(span, ' Nuevo Proveedor', icon, 'fa-hand-holding-box', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 form.reset();
                 form.classList.remove('was-validated');
             });
@@ -203,13 +237,13 @@
             let src = new FormData();
             src.append('accion', accion);
             src.append('id', id_);
-            confirmarEliminar('este', 'proveedor', function(r){
-                if(r){
-                    confirmarAccion(src, 'proveedores', tabla,'',function(r) {
+            confirmarEliminar('este', 'proveedor', function(r) {
+                if (r) {
+                    confirmarAccion(src, 'proveedores', tabla, '', function(r) {
                         if (r) {
                             cargarCombo('Proveedores');
                         }
-                    })
+                    });
                 }
             });
         });
@@ -226,14 +260,21 @@
         $('#tblProveedores tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             accion = 2;
-            cambiarModal(span, ' Editar Proveedor', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Editar Proveedor', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombre.value = row["nombre"];
+            direccion.value = row["direccion"];
+            telefono.value = row["telefono"];
+            correo.value = row["correo"];
         });
 
         form.addEventListener("submit", function(e) {
             e.preventDefault();
-            const nom = nombre.value.trim().toUpperCase();
+            const nom = nombre.value.trim().toUpperCase(),
+                tel = telefono.value.trim(),
+                dir = direccion.value.trim().toUpperCase(),
+                cor = correo.value.trim();
+
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
                 return;
@@ -242,9 +283,12 @@
             let datos = new FormData();
             datos.append('id', id_e);
             datos.append('nombre', nom);
+            datos.append('tel', tel);
+            datos.append('dir', dir);
+            datos.append('correo', cor);
             datos.append('accion', accion);
-            confirmarAccion(datos,'proveedores', tabla, modal, function(r){
-                if(r){
+            confirmarAccion(datos, 'proveedores', tabla, modal, function(r) {
+                if (r) {
                     cargarCombo('Proveedores');
                 }
             })

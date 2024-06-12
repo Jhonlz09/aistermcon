@@ -92,6 +92,20 @@ class PDF extends FPDF
     function Header()
     {
         $data_detalle = ModeloSalidas::mdlBuscarDetalleBoleta($this->id_boleta);
+
+        if (empty($data_detalle)) {
+            // Establecer la fuente y color
+            $this->SetFont('Arial', 'B', 14);
+            $this->SetTextColor(220, 0, 0);
+    
+            // Añadir un mensaje al PDF
+            $this->Cell(0, 30, 'Por favor, configura las preferencias en el modulo de configuracion.', 0, 1, 'C');
+    
+            // Detener la ejecución del script
+            $this->Output();
+            exit;
+        }
+
         $row = $data_detalle[0];
         $this->orden = $row['orden'];
         $this->cliente = $row['cliente'];
@@ -310,12 +324,19 @@ class PDF extends FPDF
         $this->Cell(0, 6, iconv('UTF-8', 'windows-1252', "  Dirección:"), 0, 0, 'L', 1);
         $this->SetFont('Arial', '', 10);
         $firstLineX = 29; // Initial X position for the first line
-        $rightFillWidth = 72;
+        $rightFillWidth = 66;
+        $leftFillWidth = 1.8; 
+        $firstLineWidth = 109;
+        $subsequentLineWidth = 109 + ($firstLineX - $subsequentLineX);
         $this->CustomMultiCell($firstLineWidth, $subsequentLineWidth, 6, $direccion_cliente, $firstLineX, $subsequentLineX, $leftFillWidth, $rightFillWidth);
 
         $this->SetX(6);
         $this->SetFont('Arial', 'B', 11);
         $motivo = $row['motivo'];
+
+        if ($motivo == ''){
+            $motivo = 'TRANSLADO DE HERRAMIENTAS';
+        }
         $this->Cell(0, 6, iconv('UTF-8', 'windows-1252', '  Motivo:'), 0, 0, 'L', 1);
         $this->SetFont('Arial', '', 10);
         $firstLineX = 24;

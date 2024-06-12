@@ -7,7 +7,7 @@ class ModeloRegistro
 
     public $resultado;
 
-    static public function mdlRegistrarEntrada($arr, $nro_factura, $proveedor, $fecha)
+    static public function mdlRegistrarCompra($arr, $nro_factura, $proveedor, $fecha)
     {
         try {
             $hora = date('H:i:s');
@@ -49,83 +49,234 @@ class ModeloRegistro
         }
     }
 
-
-    static public function mdlRegistrarSalida($arr, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable)
-    {
+    static public function mdlRegistrarSalida($arr, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo) {
         try {
-
             $conexion = Conexion::ConexionDB();
-            $hora = date('H:i:s');
-            $fechaHora = $fecha . ' ' . $hora;
-
+            $conexion->beginTransaction();
+    
+            // Validar el stock disponible para cada producto
             foreach ($arr as $data) {
                 list($idProducto, $cantidad) = explode(',', $data);
-                // Consultar el stock disponible para el producto 
+
+                if ($cantidad == 0) {
+                    throw new Exception("La cantidad de salida de los productos no puede ser 0");
+                }
+                
                 $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) as stock, descripcion FROM tblinventario WHERE id = :idProducto");
                 $stmtStock->bindParam(':idProducto', $idProducto, PDO::PARAM_INT);
                 $stmtStock->execute();
                 $resultadoStock = $stmtStock->fetch(PDO::FETCH_ASSOC);
-
+    
                 if (!$resultadoStock || $resultadoStock['stock'] < $cantidad) {
-                    return array(
-                        'status' => 'danger',
-                        'm' => "No hay suficiente stock disponible para el producto '" . $resultadoStock['descripcion'] . "'"
-                    );
+                    throw new Exception("No hay suficiente stock disponible para el producto '{$resultadoStock['descripcion']}'");
                 }
             }
-
-            $stmtB = $conexion->prepare("INSERT INTO tblboleta(fecha, id_orden, nro_guia, id_conductor, id_despachado, id_responsable) VALUES(:fecha,:orden,:nro_guia, :conductor, :despachado, :responsable)");
-            $stmtB->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
-            $stmtB->bindParam(':orden', $orden, PDO::PARAM_INT);
-            $stmtB->bindParam(':nro_guia', $nro_guia, PDO::PARAM_STR);
-            $stmtB->bindParam(':conductor', $conductor, PDO::PARAM_INT);
-            $stmtB->bindParam(':despachado', $despachado, PDO::PARAM_INT);
-            $stmtB->bindParam(':responsable', $responsable, PDO::PARAM_INT);
-
-            $stmtB->execute();
-            $id_boleta = $conexion->lastInsertId();
-            // Recorre el array e inserta la salida de cada producto en tblsalidas y actualiza tblinventario
-            foreach ($arr as $data) {
-                list($id, $cantidad) = explode(',', $data);
-                $stmtE = Conexion::ConexionDB()->prepare("INSERT INTO tblsalidas(id_boleta,cantidad_salida, id_producto) VALUES(:id_boleta, :cantidad, :id )");
-                $stmtE->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
-                $stmtE->bindParam(':cantidad', $cantidad, PDO::PARAM_STR);
-                // $stmtE->bindParam(':fab', $fab, PDO::PARAM_BOOL);
-                $stmtE->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmtE->execute();
-            }
-
+    
+            // Insertar orden si es necesario
+            $id_orden = self::insertarOrden($conexion, $orden, $cliente, $responsable, $fecha);
+    
+            // Insertar boleta
+            $id_boleta = self::insertarBoleta($conexion, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo);
+    
+            // Insertar salidas
+            self::insertarSalidas($conexion, $id_boleta, $arr);
+    
+            $conexion->commit();
+    
             return array(
                 'status' => 'success',
-                'm' => 'La salida fue registrada correctamente'
+                'm' => 'La guía fue registrada correctamente' 
             );
         } catch (PDOException $e) {
+            $conexion->rollBack();
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo registrar la salida: ' . $e->getMessage()
+                'm' => 'No se pudo registrar la guía: ' . $e->getMessage()
+            );
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => '' . $e->getMessage()
             );
         }
     }
 
-    static public function mdlEditarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable)
+    static public function mdlRegistrarEntrada($arr, $orden, $cliente, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado) {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+    
+            // Insertar orden si es necesario
+            $id_orden = self::insertarOrden($conexion, $orden, $cliente, $responsable, $fecha);
+            // var_dump($id_orden);
+            // Insertar boleta
+            $id_boleta = self::insertarBoletaEntrada($conexion, $id_orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado );
+    
+            // Insertar salidas
+            self::insertarEntradas($conexion, $id_boleta, $arr);
+    
+            $conexion->commit();
+    
+            return array(
+                'status' => 'success',
+                'm' => 'La guía fue registrada correctamente'
+            );
+        } catch (PDOException $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo registrar la guía: ' . $e->getMessage().$id_boleta .' ' .$id_orden
+            );
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo registrar la guía: ' . $e->getMessage()
+            );
+        }
+    }
+    
+    static private function insertarOrden($conexion, $orden, $cliente, $responsable, $fecha) {
+        if ($orden == '') {
+            $stmtO = $conexion->prepare("INSERT INTO tblorden(id_cliente, id_encargado) VALUES (:id_cliente, :responsable)");
+            $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
+            if ($responsable === null || $responsable == '') {
+                $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
+            } else {
+                $stmtO->bindParam(':responsable', $responsable, PDO::PARAM_INT);
+            }            
+            $stmtO->execute();
+            return $conexion->lastInsertId();
+        } else {
+            $anioActual = date('Y', strtotime($fecha));
+            $stmtVerificar = $conexion->prepare("SELECT id FROM tblorden WHERE nombre = :orden AND (EXTRACT(YEAR FROM fecha) = :anioActual OR obra_estado=true)");
+            $stmtVerificar->bindParam(':orden', $orden, PDO::PARAM_STR);
+            $stmtVerificar->bindParam(':anioActual', $anioActual, PDO::PARAM_INT);
+            $stmtVerificar->execute();
+            $resultadoVerificar = $stmtVerificar->fetch(PDO::FETCH_ASSOC);
+            if ($resultadoVerificar) {
+                return $resultadoVerificar['id'];
+            } else {
+                $stmtO = $conexion->prepare("INSERT INTO tblorden(nombre, id_cliente, id_encargado) VALUES (:orden, :id_cliente, :responsable)");
+                $stmtO->bindParam(':orden', $orden, PDO::PARAM_STR);
+                $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
+                if ($responsable === null || $responsable == '' ) {
+                    $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
+                } else {
+                    $stmtO->bindParam(':responsable', $responsable, PDO::PARAM_INT);
+                }
+                $stmtO->execute();
+                return $conexion->lastInsertId();
+            }
+        }
+    }
+    
+    static private function insertarBoleta($conexion, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable,$motivo) {
+        $hora = date('H:i:s');
+        $fechaHora = $fecha . ' ' . $hora;
+        $stmtB = $conexion->prepare("INSERT INTO tblboleta(fecha, id_orden, nro_guia, id_conductor, id_despachado, id_responsable, motivo) VALUES(:fecha, :orden, :nro_guia, :conductor, :despachado, :responsable, :motivo)");
+        $stmtB->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
+        $stmtB->bindParam(':orden', $id_orden, PDO::PARAM_INT);
+        $stmtB->bindParam(':nro_guia', $nro_guia, PDO::PARAM_STR);
+        $stmtB->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+
+        if ($conductor === null || $conductor == '') {
+            $stmtB->bindValue(':conductor', null, PDO::PARAM_NULL);
+        } else {
+            $stmtB->bindParam(':conductor', $conductor, PDO::PARAM_INT);
+        }
+        if ($despachado === null || $despachado == '') {
+            $stmtB->bindValue(':despachado', null, PDO::PARAM_NULL);
+        } else {
+            $stmtB->bindParam(':despachado', $despachado, PDO::PARAM_INT);
+        }
+        
+        if ($responsable === null || $responsable == '') {
+            $stmtB->bindValue(':responsable', null, PDO::PARAM_NULL);
+        } else {
+            $stmtB->bindParam(':responsable', $responsable, PDO::PARAM_INT);
+        }
+        $stmtB->execute();
+        return $conexion->lastInsertId();
+    }
+
+    static private function insertarBoletaEntrada($conexion, $id_orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado) {
+        $hora = date('H:i:s');
+        $fechaHora = $fecha . ' ' . $hora;
+        $fechaHora2 = $fecha_entrada . ' ' . $hora;
+
+        $stmtB = $conexion->prepare("INSERT INTO tblboleta(fecha, fecha_entrada, id_orden, nro_guia, motivo, id_conductor, id_responsable, id_despachado) VALUES(:fecha, :fecha_retorno, :orden, generar_nro_guia(),:motivo, :conductor, :responsable, :despachado)");
+        $stmtB->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
+        $stmtB->bindParam(':fecha_retorno', $fechaHora2, PDO::PARAM_STR);
+        $stmtB->bindParam(':orden', $id_orden, PDO::PARAM_INT);
+        if ($conductor === null || $conductor == '') {
+            $stmtB->bindValue(':conductor', null, PDO::PARAM_NULL);
+        } else {
+            $stmtB->bindParam(':conductor', $conductor, PDO::PARAM_INT);
+        }
+        if ($despachado === null || $despachado == '') {
+            $stmtB->bindValue(':despachado', null, PDO::PARAM_NULL);
+        } else {
+            $stmtB->bindParam(':despachado', $despachado, PDO::PARAM_INT);
+        }
+        
+        if ($responsable === null || $responsable == '') {
+            $stmtB->bindValue(':responsable', null, PDO::PARAM_NULL);
+        } else {
+            $stmtB->bindParam(':responsable', $responsable, PDO::PARAM_INT);
+        }
+        $stmtB->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+        $stmtB->execute();
+        return $conexion->lastInsertId('tblboleta_id_seq'); // Nota: 'tblboleta_id_seq' es el nombre de la secuencia
+    }
+    
+    static private function insertarSalidas($conexion, $id_boleta, $arr) {
+        foreach ($arr as $data) {
+            list($id, $cantidad) = explode(',', $data);
+            $stmtE = $conexion->prepare("INSERT INTO tblsalidas(id_boleta, cantidad_salida, id_producto) VALUES(:id_boleta, :cantidad, :id)");
+            $stmtE->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+            $stmtE->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
+            $stmtE->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmtE->execute();
+        }
+    }
+
+
+    static private function insertarEntradas($conexion, $id_boleta, $arr) {
+        foreach ($arr as $data) {
+            list($id, $cantidad) = explode(',', $data);
+            $stmtE = $conexion->prepare("INSERT INTO tblsalidas(id_boleta, retorno, id_producto) VALUES(:id_boleta, :cantidad, :id)");
+            $stmtE->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+            $stmtE->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
+            $stmtE->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmtE->execute();
+        }
+    }
+
+    static public function mdlEditarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable,$motivo)
     {
         try {
             $conexion = Conexion::ConexionDB();
-
-            // Prepara la consulta SQL para actualizar solo la fecha y no la hora
+            $id_orden = self::insertarOrden($conexion, $orden, $cliente, null, $fecha);
             $stmtB = $conexion->prepare("UPDATE tblboleta 
             SET fecha = to_timestamp(:fecha || ' ' || to_char(fecha, 'HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS'),
             id_conductor = :conductor,id_despachado = :despachado,
-            id_responsable = :responsable,nro_guia = :nro_guia, id_orden = :orden 
-            WHERE id=:id_boleta ");
+            id_responsable = :responsable,nro_guia = :nro_guia, id_orden = :orden, motivo=:motivo
+            WHERE id=:id_boleta");
 
             $stmtB->bindParam(':fecha', $fecha, PDO::PARAM_STR);
             $stmtB->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
-            $stmtB->bindParam(':orden', $orden, PDO::PARAM_INT);
+            $stmtB->bindParam(':orden', $id_orden, PDO::PARAM_INT);
             $stmtB->bindParam(':nro_guia', $nro_guia, PDO::PARAM_STR);
+            $stmtB->bindParam(':motivo', $motivo, PDO::PARAM_STR);
             $stmtB->bindParam(':conductor', $conductor, PDO::PARAM_INT);
             $stmtB->bindParam(':despachado', $despachado, PDO::PARAM_INT);
-            $stmtB->bindParam(':responsable', $responsable, PDO::PARAM_INT);
+            if ($responsable === '') {
+                $stmtB->bindValue(':responsable', null, PDO::PARAM_NULL);
+            } else {
+                $stmtB->bindParam(':responsable', $responsable, PDO::PARAM_INT);
+            }
             $stmtB->execute();
 
             return array(
@@ -140,7 +291,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlEditarRegistroEntrada($id_factura, $nro_factura, $proveedor, $fecha)
+    static public function mdlEditarRegistroCompra($id_factura, $nro_factura, $proveedor, $fecha)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -167,7 +318,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlRegistrarRetorno($arr, $boleta, $fecha_retorno)
+    static public function mdlRegistrarRetorno($arr, $boleta, $fecha_retorno, $nro_guia)
     {
         try {
             $db = Conexion::ConexionDB();
@@ -276,20 +427,20 @@ class ModeloRegistro
         try {
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction(); // Comenzar transacción
-        
+
             foreach ($arr as $data) {
                 list($idProducto, $cantidad) = explode(',', $data);
-        
+
                 // Consultar el stock disponible para el producto 
                 $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) as stock, descripcion FROM tblinventario WHERE id = :idProducto FOR UPDATE");
                 $stmtStock->bindParam(':idProducto', $idProducto, PDO::PARAM_INT);
                 $stmtStock->execute();
                 $resultadoStock = $stmtStock->fetch(PDO::FETCH_ASSOC);
-        
+
                 if (!$resultadoStock || $resultadoStock['stock'] < $cantidad) {
                     throw new Exception("No hay suficiente stock disponible para el producto '{$resultadoStock['descripcion']}'");
                 }
-        
+
                 // Insertar salida
                 $stmtS = $conexion->prepare("INSERT INTO tblsalidas(cantidad_salida, id_producto, fabricado, fecha_fab, id_producto_fab) VALUES(:cantidad, :id, true, CURRENT_TIMESTAMP::timestamp without time zone, :id_producto_fab)");
                 $stmtS->bindParam(':id_producto_fab', $id_producto_fab, PDO::PARAM_INT); // Asumiendo que id_producto_fab es igual a idProducto
@@ -297,7 +448,7 @@ class ModeloRegistro
                 $stmtS->bindParam(':id', $idProducto, PDO::PARAM_INT);
                 $stmtS->execute();
             }
-        
+
             $conexion->commit(); // Confirmar transacción
             return array(
                 'status' => 'success',
@@ -306,7 +457,7 @@ class ModeloRegistro
         } catch (PDOException $e) {
             // Registro del error detallado para depuración
             error_log('Error al agregar productos a producción: ' . $e->getMessage());
-            
+
             // Mensaje de error genérico para los usuarios
             return array(
                 'status' => 'danger',
@@ -315,13 +466,12 @@ class ModeloRegistro
         } catch (Exception $e) {
             // Registro del error detallado para depuración
             error_log('Error al agregar productos a producción: ' . $e->getMessage());
-            
+
             // Mensaje de error específico para los usuarios
             return array(
                 'status' => 'danger',
                 'm' => $e->getMessage()
             );
         }
-        
     }
 }

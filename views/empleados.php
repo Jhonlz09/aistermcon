@@ -8,11 +8,11 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
-                <h1 class="col-p">Empleados/Clientes</h1>
+                <h1 class="col-p">Empleados / Clientes</h1>
             </div>
             <?php if (isset($_SESSION["crear10"]) && $_SESSION["crear10"] === true) : ?>
                 <div class="col">
-                    <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modal">
+                    <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
                 </div>
             <?php endif; ?>
@@ -30,13 +30,13 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col col-p">
-                                    <h3 style="white-space:normal;" class="card-title ">Listado de empleados/clientes</h3>
+                                    <h3 style="white-space:normal;" class="card-title ">Listado de empleados / clientes</h3>
                                 </div>
                                 <div class="col-sm-8 p-0">
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="text" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>
@@ -78,7 +78,7 @@
 <div class="modal fade" id="modal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Empleado/Cliente</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -142,7 +142,7 @@
                                                 <div id="Empresa" class="invalid-feedback">*Campo obligatorio</div>
                                             </div>
                                             <div class="span-btn cat" style="padding-right:.5rem;">
-                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-buildings" data-value="Empresa" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
+                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-buildings" data-title='Nueva' data-value="Empresa" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
                                                 <?php if ($_SESSION["editar10"]) : ?>
                                                     <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-buildings" data-value="Empresa" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
                                                 <?php endif; ?>
@@ -162,28 +162,29 @@
                                         <label id="lblR" class="mb-0 combo"><i class="fas fa-id-badge"></i> Rol</label>
                                         <div class="row">
                                             <div class="col">
-                                                <select id="cboRoles" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE" required>
-                                                    <!-- <option value="1">OBRERO</option>
-                                                    <option value="2">BODEGUERO</option>
-                                                    <option value="2">BODEGUERO</option> -->
+                                                <select id="cboRol" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE" required>
                                                 </select>
                                                 <div class="invalid-feedback">*Campo obligatorio</div>
                                             </div>
+                                            <div class="span-btn r" style="padding-right:.5rem;">
+                                            <span class="new-span badge bg-gradient-dark" data-icon="fa-id-badge" data-title='Nuevo' data-value="Rol" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
+                                                <span style="display:none" class="dis e-span badge bg-gradient-dark" data-target='#modalS' data-icon="fa-id-badge" data-value="Rol" data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6" id="div_placas">
                                     <div class="form-group mb-4">
-                                        <label id="lblP" class="mb-0 combo"><i class="fas fa-rectangle-barcode"></i> Placa</label>
+                                        <label id="lblP" class="mb-0 combo"><i class="fas fa-rectangle-barcode"></i> Placa <span style="font-size:70%;">(opcional)</span> </label>
                                         <div class="row">
                                             <div class="col">
-                                                <select id="cboPlaca" class="form-control select2 select2-success" multiple="multiple" data-dropdown-css-class="select2-dark" style="width: 100%;" disabled>
+                                                <select id="cboPlaca" class="form-control select2 select2-success" multiple="multiple" data-dropdown-css-class="select2-dark" style="width: 100%;">
                                                 </select>
                                                 <div class="invalid-feedback">*Campo obligatorio</div>
                                             </div>
-                                            <div class="span-btn cat" style="padding-right:.5rem;">
-                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-rectangle-barcode" data-value="Placa" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-
+                                            <div class="span-btn p" style="padding-right:.5rem;">
+                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-rectangle-barcode" data-title='Nueva' data-value="Placa" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
                                             </div>
                                         </div>
                                     </div>
@@ -193,7 +194,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-success"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -202,11 +203,11 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<div class="modal fade" id="modalS" style="background-color:#424a51b0;backdrop-filter:blur(16px);">
-    <div class="modal-dialog" style="top:20%">
+<div class="modal fade" id="modalS" style="background-color:#424a51b0;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);">
+    <div class="modal-dialog modal-sm" style="top:20%">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
-                <h4 id="span-title" class="modal-title"><i class="fa-solid fa-route"></i><span></span></h4>
+            <div class="modal-header bg-gradient-green">
+                <h4 id="span-title" class="modal-title"><i class="fa-solid "></i><span></span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -225,7 +226,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardarS" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnGuardarS" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -287,7 +288,8 @@
 
     $(document).ready(function() {
         let accion = 0;
-        let empresa_filter = '1';
+        let accion_select = 0;
+        let empresa_filter = 0;
 
         if (!$.fn.DataTable.isDataTable('#tblEmpleados')) {
             tabla = $("#tblEmpleados").DataTable({
@@ -316,16 +318,16 @@
                 localStorage.setItem('empleados', JSON.stringify(tablaData));
             });
         }
-        $('.select-filter').html('<div class="row" style="padding:.25rem .55rem .25rem" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem" class="col-form-label" ><i class="fas fa-buildings"></i> Empresa:</label></div> <div class="col-sm"><select id="cboEmpresaFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"></select> </div>  </div>');
+        $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-buildings"></i> Empresa:</label></div> <div class="col-sm"><select id="cboEmpresaFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"></select> </div>  </div>');
         // $('.select-filter').html('<div class="row"><div class="col-sm-2"><label>Empresa: </label></div><div class="col-sm-10"><select id="cboEmpresaFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE"></select></div></div>');
 
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
-            elements = document.querySelectorAll('.modal .bg-gradient-success'),
+            elements = document.querySelectorAll('.modal .bg-gradient-green'),
             form = document.getElementById('formNuevo'),
             div_placa = document.getElementById('div_placa'),
             modalS = document.getElementById('modalS'),
-            elementsE = document.querySelectorAll('#modalS .bg-gradient-success'),
+            elementsE = document.querySelectorAll('#modalS .bg-gradient-green'),
             select = document.querySelectorAll('.modal-body select.select2'),
             formS = document.getElementById('formNuevoS'),
             spanE = document.querySelector('#span-title span'),
@@ -342,26 +344,32 @@
             celular = document.getElementById('celular'),
             cboEmpresa = document.getElementById('cboEmpresa'),
             cboEmpresaFilter = document.getElementById('cboEmpresaFilter'),
-            cboRol = document.getElementById('cboRoles'),
+            cboRol = document.getElementById('cboRol'),
             cboPlaca = document.getElementById('cboPlaca');
 
         let datos_empresa;
 
-        cargarCombo('Empresa', '', 1, true).then(datos_ => {
-            datos_empresa = datos_;
-            // $('#cboEmpresaFilter').select2('data', datos_empresa);
-            datos_empresa.unshift({
-                id: 1,
-                text: 'TODO'
-            });
-            $('#cboEmpresaFilter').select2({
-                data: datos_empresa
-            });
-            // setChange(cboEmpresaFilter, 0)
-        });
+        cargarCombo('Empresa');
+
+        cargarCombo('EmpresaFilter', '', 10)
+
         cargarCombo('Placa');
 
-        cargarCombo('Roles');
+        cargarCombo('Rol');
+
+        $('#cboRol').select2({
+            minimumResultsForSearch: -1,
+        })
+
+        $('#cboEmpresa').select2({
+            minimumResultsForSearch: -1,
+        })
+
+        $('#cboPlaca').select2({})
+
+        $('#cboEmpresaFilter').select2({
+            width: '100%',
+        })
 
         OverlayScrollbars(document.querySelector('.scroll-modal'), {
             autoUpdate: true,
@@ -385,19 +393,28 @@
                 $(body).addClass('modal-open');
                 $(body).css('padding-right', '6px');
             }
-
         });
 
         $(".new-span").on('click', function() {
-            accion = 1;
+            accion_select = 1;
             name = this.dataset.value;
             const selectE = document.querySelector('#cbo' + name);
             const iconS = this.dataset.icon;
+            const titleS = this.dataset.title;
             inputId.value = selectE.value;
-
-            cambiarModal(spanE, ' Nueva ' + name, iconElement, iconS, elementsE, 'bg-gradient-blue', 'bg-gradient-success', modalS, 'modal-new', 'modal-change')
+            cambiarModal(spanE, ' ' + titleS + ' ' + name, iconElement, iconS, elementsE, 'bg-gradient-blue', 'bg-gradient-green', modalS, 'modal-new', 'modal-change')
             formS.reset();
             formS.classList.remove('was-validated');
+        });
+
+        $(".e-span").on('click', function() {
+            accion_select = 2;
+            name = this.dataset.value;
+            const selectE = document.getElementById('cbo' + name);
+            const iconS = this.dataset.icon;
+            inputId.value = selectE.value;
+            inputContent.value = selectE.options[selectE.selectedIndex].textContent;
+            cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-green', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
         });
 
         formS.addEventListener('submit', function(e) {
@@ -413,11 +430,12 @@
                 const data = new FormData();
                 data.append('id', ids);
                 data.append('nombre', nombre);
-                data.append('accion', accion);
+                data.append('accion', accion_select);
                 data.append('tabla', tbl);
                 confirmarAccion(data, 'producto', null, modalS, function(res) {
                     if (res) {
                         cargarCombo(name, ids);
+                        cargarCombo('EmpresaFilter', '', 10)
                     }
                 });
             }
@@ -436,7 +454,7 @@
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
                 const icon = document.querySelector('.modal-title i');
-                cambiarModal(span, ' Nuevo Empleado/Cliente', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-success', modal, 'modal-new', 'modal-change')
+                cambiarModal(span, ' Nuevo Empleado/Cliente', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
@@ -445,36 +463,10 @@
                 form.classList.remove('was-validated');
                 setChange(cboEmpresa, 0);
                 setChange(cboRol, 0);
-
+                setChange(cboPlaca, []);
                 $('.ten').hide();
             });
         }
-
-        $('#cboRoles').select2({
-            minimumResultsForSearch: -1,
-        })
-
-        $('#cboEmpresa').select2({
-            minimumResultsForSearch: -1,
-        })
-
-        $('#cboPlaca').select2({})
-
-        $('#cboEmpresaFilter').select2({
-            width: '100%',
-        })
-
-        $(cboRol).on("change", function() {
-            if (this.value === '2') {
-                cboPlaca.disabled = false;
-                cboPlaca.required = true;
-                console.log("entre al evenot rol")
-            } else {
-                cboPlaca.disabled = true;
-                $(cboPlaca).val([]).trigger('change');
-            }
-            estilosSelect2(this, 'lblR')
-        });
 
         $(cboEmpresaFilter).on("change", function() {
             // if (this.value === '') {
@@ -487,12 +479,18 @@
             // }
             // estilosSelect2(this, 'lblR')
             empresa_filter = this.value;
+            console.log(empresa_filter)
             accion = 0;
-            tabla.ajax.reload(null, false)
+            tabla.ajax.reload(null, false);
         });
 
         $(cboEmpresa).change(function() {
             estilosSelect2(this, 'lblE')
+        });
+
+        $(cboRol).change(function() {
+            opcionSelect(this, 'r')
+            estilosSelect2(this, 'lblR')
         });
 
         $(cboPlaca).change(function() {
@@ -503,12 +501,11 @@
             const e = obtenerFila(this, tabla)
             accion = 3
             const id_e = e["id"];
-            const name = 'empleados'
+            console.log(id_e)
             let src = new FormData();
             src.append('accion', accion);
             src.append('id', id_e);
             accion = 0;
-            empresa_filter = cboEmpresaFilter.value;
             confirmarEliminar('este', 'empleado', function(r) {
                 if (r) {
                     confirmarAccion(src, 'empleados', tabla, '', function(r) {
@@ -524,7 +521,7 @@
             let row = obtenerFila(this, tabla);
             accion = 2;
             const icon = document.querySelector('.modal-title i');
-            cambiarModal(span, ' Editar Empleado/Cliente', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Editar Empleado/Cliente', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             select.forEach(function(s) {
                 s.classList.remove('select2-success');
                 s.classList.add('select2-warning');
@@ -550,13 +547,12 @@
                 emp = cboEmpresa.value,
                 rol = cboRol.value,
                 pla = $(cboPlaca).val();
-            console.log(pla)
 
-            if (rol === '2') {
-                cboPlaca.required = true
-            } else {
-                cboPlaca.required = false
-            }
+            // if (rol === '2') {
+            //     cboPlaca.required = true
+            // } else {
+            //     cboPlaca.required = false
+            // }
 
             if (!this.checkValidity() || ced.length < 10 || tel.length < 10) {
                 this.classList.add('was-validated');
@@ -584,7 +580,7 @@
             confirmarAccion(datos, 'empleados', tabla, modal, function(r) {
                 cargarCombo('Conductor', '', 2);
                 cargarCombo('Despachado', '', 6);
-                cargarCombo('Responsable', '', 7)
+                cargarCombo('Responsable', '', 7);
             })
         });
     })

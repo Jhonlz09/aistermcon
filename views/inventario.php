@@ -12,7 +12,7 @@
             </div>
             <?php if (isset($_SESSION["crear3"]) && $_SESSION["crear3"] === true) : ?>
                 <div class="col">
-                    <button id="btnNuevo" class="btn bg-gradient-success" data-toggle="modal" data-target="#modalI">
+                    <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modalI">
                         <i class="fa fa-plus"></i> Nuevo</button>
                 </div>
             <?php endif; ?>
@@ -53,11 +53,11 @@
                                     </label> -->
                                 </div>
 
-                                <div class="col-sm-8 p-0">
+                                <div class="col-sm p-0">
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="text" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>
@@ -101,7 +101,7 @@
 <div class="modal fade" id="modalI">
     <div class="modal-dialog modal-xl ">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fa-solid fa-layer-plus"></i><span> Nuevo Producto</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -213,7 +213,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -223,10 +223,10 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- Modal SELECTS -->
-<div class="modal fade" id="modalS" style="background-color:#424a51b0;backdrop-filter:blur(16px);">
-    <div class="modal-dialog" style="top:20%">
+<div class="modal fade" id="modalS" style="background-color:#424a51b0;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);">
+    <div class="modal-dialog modal-sm" style="top:20%">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-success">
+            <div class="modal-header bg-gradient-green">
                 <h4 id="span-title" class="modal-title"><i class="fa-solid fa-route"></i><span></span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -246,7 +246,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardarS" class="btn bg-gradient-success"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnGuardarS" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -273,7 +273,7 @@
     var eliminar = '<?php echo $_SESSION["eliminar3"] ?>';
 
     configuracionTable = {
-        "dom": mostrarCol ? '<"row"<"col-sm-6"B><"col-sm-6"p>>t' : 'pt',
+        "dom": mostrarCol ? '<"row"<"col-md-6"B><"col-md-6"p>>t' : 'pt',
         "responsive": true,
         "pageLength": 12, // Cambia este valor según tus necesidades
         "lengthChange": false,
@@ -498,12 +498,13 @@
                 },
                 ...configuracionTable
             });
+
             tabla.on('draw.dt', function() {
                 if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
                     const b = document.body;
-                    const s = b.scrollHeight;
+                    const s = b.scrollHeight +20;
                     const w = window.innerHeight;
-
+                    console.log(b + ' ' + s + ' hanfle '+ w)
                     handleScroll(b, s, w);
                 }
 
@@ -512,6 +513,7 @@
             });
         }
         let name;
+        let opcion= 0;
         const id = document.getElementById('id'),
             codigo = document.getElementById('codigo'),
             descripcion = document.getElementById('nombre'),
@@ -533,8 +535,8 @@
             formS = document.getElementById('formNuevoS'),
             span = document.querySelector('.modal-title span'),
             spanE = document.querySelector('#span-title span'),
-            elements = document.querySelectorAll('#modalI .bg-gradient-success'),
-            elementsE = document.querySelectorAll('#modalS .bg-gradient-success'),
+            elements = document.querySelectorAll('#modalI .bg-gradient-green'),
+            elementsE = document.querySelectorAll('#modalS .bg-gradient-green'),
             select = document.querySelectorAll('#formNuevo .modal-body select.select2');
 
         $(cboCategoria).select2({
@@ -578,11 +580,6 @@
 
         $(modalE).on("shown.bs.modal", function() {
             nombre.focus();
-            // if (scroll) {
-            //     const navbar = document.getElementById('navbar-fix');
-            //     console.log('adas quiestoy en bav')
-            //     $(navbar).css('margin-right', '6px');
-            // }
         });
 
         $(modalE).on("hidden.bs.modal", function() {
@@ -594,6 +591,7 @@
                 // $(body).css('padding-right', '6px');
                 $(navbar).css('margin-right', '');
             }
+            accion_inv = 0;
         });
 
         $(modalS).on("shown.bs.modal", function() {
@@ -603,13 +601,13 @@
 
         $(modalS).on('hidden.bs.modal', function(e) {
             e.preventDefault();
-            e.stopPropagation();
             if (scroll) {
                 const navbar = body.querySelector('.navbar')
                 $(body).addClass('modal-open');
                 $(body).css('padding-right', '6px');
                 // $(navbar).css('margin-right', '6px');
             }
+            
         });
 
         if (btnNuevo) {
@@ -620,7 +618,7 @@
                     $(navbar).css('margin-right', '6px');
                 }
                 accion_inv = 1;
-                cambiarModal(span, ' Nuevo Producto', icon, 'fa-layer-plus', elements, 'bg-gradient-blue', 'bg-gradient-success', modalE, 'modal-new', 'modal-change')
+                cambiarModal(span, ' Nuevo Producto', icon, 'fa-layer-plus', elements, 'bg-gradient-blue', 'bg-gradient-green', modalE, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
@@ -640,7 +638,7 @@
             }
             let row = obtenerFila(this, tabla);
             accion_inv = 2;
-            cambiarModal(span, ' Editar Producto', icon, 'fa-pen-to-square', elements, 'bg-gradient-success', 'bg-gradient-blue', modalE, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Editar Producto', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modalE, 'modal-change', 'modal-new')
             select.forEach(function(s) {
                 s.classList.remove('select2-success');
                 s.classList.add('select2-warning');
@@ -658,7 +656,7 @@
         });
 
         $('#tblInventario tbody').on('click', '.btnEliminar', function() {
-            
+
             const e = obtenerFila(this, tabla)
             accion_inv = 3
             const id = e["id"];
@@ -699,35 +697,35 @@
         });
 
         $(".new-span").on('click', function() {
-            accion_inv = 1;
+            opcion = 1;
             name = this.dataset.value;
             const selectE = document.querySelector('#cbo' + name);
             const iconS = this.dataset.icon;
 
             inputId.value = selectE.value;
-            cambiarModal(spanE, ' Nueva ' + name, iconElement, iconS, elementsE, 'bg-gradient-blue', 'bg-gradient-success', modalS, 'modal-new', 'modal-change')
+            cambiarModal(spanE, ' Nueva ' + name, iconElement, iconS, elementsE, 'bg-gradient-blue', 'bg-gradient-green', modalS, 'modal-new', 'modal-change')
             formS.reset();
             formS.classList.remove('was-validated');
         });
 
         $(".e-span").on('click', function() {
-            accion_inv = 2;
+            opcion = 2;
             name = this.dataset.value;
             const selectE = document.getElementById('cbo' + name);
             const iconS = this.dataset.icon;
 
             inputId.value = selectE.value;
             inputContent.value = selectE.options[selectE.selectedIndex].textContent;
-            cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-success', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
+            cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-green', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
         });
 
         $(".d-span").on('click', function() {
-            accion_inv = 3;
+            opcion = 3;
             name = this.dataset.value;
             const id_val = document.getElementById('cbo' + name).value;
             const tbl = 'tbl' + name.toLowerCase();
             let src = new FormData();
-            src.append('accion', accion_inv);
+            src.append('accion', opcion);
             src.append('id', id_val);
             src.append('tabla', tbl);
             confirmarEliminar('esta', name, function(res) {
@@ -752,7 +750,7 @@
                 const data = new FormData();
                 data.append('id', ids);
                 data.append('nombre', nombre);
-                data.append('accion', accion_inv);
+                data.append('accion', opcion);
                 data.append('tabla', tbl);
                 confirmarAccion(data, 'producto', null, modalS, function(res) {
                     if (res) {
@@ -760,6 +758,6 @@
                     }
                 });
             }
-        });        
+        });
     });
 </script>

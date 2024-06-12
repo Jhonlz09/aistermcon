@@ -42,22 +42,50 @@ class ModeloInforme
     static public function mdlInformeFechaOrden($id_orden)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("SELECT 
+            $a = Conexion::ConexionDB()->prepare("			SELECT 
 			TO_CHAR(DATE(b.fecha), 'DD/MM/YYYY') AS fecha_emision,
             TO_CHAR(DATE(b.fecha_retorno), 'DD/MM/YYYY') AS fecha_retorno,
-            cl.nombre as cliente,
-			o.nombre as orden_nro,
 			b.id as id_guia,
-			LPAD(b.nro_guia::TEXT,9,'0') as nro_guia
+			b.motivo,
+			LPAD(b.nro_guia::TEXT,9,'0') as nro_guia,
+			e_despachado.nombre || ' '  || e_despachado.apellido AS despachado,
+            e_responsable.nombre AS responsable,
+			e.nombre || ' ' || e.apellido AS conductor,
+			p.nombre AS placa
         FROM 
-            tblsalidas s
-            JOIN tblboleta b ON s.id_boleta = b.id 
+            tblboleta b
             JOIN tblorden o ON b.id_orden = o.id 
 			JOIN tblclientes cl ON cl.id = o.id_cliente
+			LEFT JOIN tblempleado_placa e_conductor ON e_conductor.id = b.id_conductor
+            LEFT JOIN tblempleado e_despachado ON e_despachado.id = b.id_despachado
+            LEFT JOIN tblempleado e_responsable ON e_responsable.id = b.id_responsable
+            LEFT JOIN tblempleado e ON e.id = e_conductor.id_empleado
+            LEFT JOIN tblplaca p ON p.id = e_conductor.id_placa
 			WHERE 
 				o.id = :id_orden
-			GROUP BY DATE(b.fecha),DATE(b.fecha_retorno),cl.nombre, o.nombre, b.id,b.nro_guia
             ORDER BY DATE(b.fecha);");
+
+            $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
+            $a->execute();
+            return $a->fetchAll();
+        } catch (PDOException $e) {
+
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlInformeDetalleOrden($id_orden)
+    {
+        try {
+            $a = Conexion::ConexionDB()->prepare("SELECT 
+            cl.nombre as cliente,
+			o.nombre as orden_nro,
+			o.descripcion
+        FROM 
+            tblorden o 
+			JOIN tblclientes cl ON cl.id = o.id_cliente
+			WHERE 
+				o.id = :id_orden");
 
             $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
             $a->execute();
@@ -71,8 +99,8 @@ class ModeloInforme
     static public function mdlInformeOrden($id_orden, $id_guia)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("SELECT i.codigo, s.cantidad_salida, 
-            u.nombre AS unidad, i.descripcion, 
+            $u = Conexion::ConexionDB()->prepare("SELECT i.id as id_producto, i.codigo, 
+            s.cantidad_salida, u.nombre AS unidad, i.descripcion, i.fabricado,
             COALESCE(s.retorno::text, '-') AS retorno,
             COALESCE(s.diferencia::text, '-') as utilizado
         FROM 
@@ -96,7 +124,7 @@ class ModeloInforme
     static public function mdlInformeOrdenResumen($id_orden)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("SELECT i.codigo,i.descripcion, 
+            $u = Conexion::ConexionDB()->prepare("SELECT i.id as id_producto, i.fabricado, i.codigo,i.descripcion, 
             u.nombre AS unidad, SUM(s.cantidad_salida) AS cantidad_salida, 
             SUM(s.retorno) AS retorno,
             SUM(s.cantidad_salida) - SUM(s.retorno) AS utilizado
@@ -109,7 +137,7 @@ class ModeloInforme
             JOIN tblunidad u ON i.id_unidad = u.id
         WHERE 
             o.id=:id_orden
-        GROUP BY s.id_producto,i.codigo, i.descripcion, u.nombre
+        GROUP BY s.id_producto,i.codigo, i.descripcion, u.nombre,i.id,i.fabricado
         ORDER BY s.id_producto;");
 
             $u->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
@@ -120,28 +148,27 @@ class ModeloInforme
         }
     }
 
-    public static function mdlEliminarSalida($id)
+    static public function mdlInformeOrdenResumenFab($id_fab)
     {
         try {
-            $pdo = Conexion::ConexionDB();
-            $e = $pdo->prepare("DELETE FROM tblsalidas WHERE id_boleta =:id");
-            $e->bindParam(":id", $id, PDO::PARAM_INT);
-            $e->execute();
-
-            $eB = $pdo->prepare("DELETE FROM tblboleta WHERE id = :id");
-            $eB->bindParam(":id", $id, PDO::PARAM_INT);
-            $eB->execute();
-            return array(
-                'status' => 'success',
-                'm' => 'Se eliminó la guia con éxito.'
-            );
+            $u = Conexion::ConexionDB()->prepare("SELECT SUM(s.cantidad_salida) AS cantidad_salida, SUM(s.retorno) AS retorno, u.nombre as unidad,
+            i.descripcion, SUM(s.cantidad_salida) - SUM(s.retorno) AS utilizado,
+            i.codigo
+            FROM tblsalidas s
+            JOIN tblinventario i ON i.id = s.id_producto
+            JOIN tblunidad u ON u.id = i.id_unidad
+            WHERE s.id_producto_fab = :id_fab
+		GROUP BY s.id_producto,i.codigo, i.descripcion, u.nombre,i.id,i.fabricado
+		    ORDER BY s.id_producto;");
+            $u->bindParam(":id_fab", $id_fab, PDO::PARAM_INT);
+            $u->execute();
+            return $u->fetchAll();
         } catch (PDOException $e) {
-            return array(
-                'status' => 'danger',
-                'm' => 'No se pudo eliminar la guia: ' . $e->getMessage()
-            );
+            return "Error en la consulta: " . $e->getMessage();
         }
     }
+
+   
 
     static public function mdlBuscarBoleta($id_boleta)
     {
@@ -220,7 +247,7 @@ class ModeloInforme
     static public function mdlBuscarDetalleBoleta($id_boleta)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT TO_CHAR(b.fecha, 'DD/MM/YYYY') as fecha,
+            $l = Conexion::ConexionDB()->prepare("SELECT TO_CHAR(DATE(b.fecha), 'DD/MM/YYYY') as fecha,
             o.nombre as orden,
             c.nombre as cliente,
             e_entrega.nombre as entrega,
