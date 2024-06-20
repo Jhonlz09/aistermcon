@@ -444,14 +444,14 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <div class="input-data s1">
                                 <input type="text" id="cantidad_fab" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
                                 <label class="label"><i class="fa-solid fa-boxes-stacked"></i> Cantidad</label>
                                 <div class="invalid-feedback">*Este campo es requerido.</div>
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <div class="form-group">
                                 <label class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
                                 <div class="row">
@@ -463,7 +463,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <!-- <div class="col-sm-4">
                             <div class="form-group">
                                 <label class="mb-0 combo"><i class="fas fa-ticket"></i> Nro. de orden</label>
                                 <div class="row">
@@ -474,7 +474,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -552,8 +552,8 @@
 
     const nombre_fab = document.getElementById('nombre_fab'),
         cboUnidad_fab = document.getElementById('cboUnidad_fab'),
-        cantidad_fab = document.getElementById('cantidad_fab'),
-        cboOrdenFab = document.getElementById('cboOrdenFab');
+        cantidad_fab = document.getElementById('cantidad_fab');
+        // cboOrdenFab = document.getElementById('cboOrdenFab');
 
     const cboFab = document.getElementById('cboFabricado'),
         cboFabCon = document.getElementById('cboFabricadoCon');
@@ -618,14 +618,14 @@
         accion_fab = 10;
         let data_fab = cboFab.options[cboFab.selectedIndex].dataset;
         id_e = cboFab.value;
-        let orden_id = data_fab.orden;
+        // let orden_id = data_fab.orden;
         let cant_id = data_fab.cant;
         let und_id = data_fab.und;
         let name_id = data_fab.name;
 
         nombre_fab.value = name_id
         cantidad_fab.value = cant_id
-        setChange(cboOrdenFab, orden_id);
+        // setChange(cboOrdenFab, orden_id);
         setChange(cboUnidad_fab, und_id);
 
         cambiarModal(title_fab, ' Editar Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-green', 'bg-gradient-blue', modal_fab, 'modal-change', 'modal-new')
@@ -636,7 +636,6 @@
         });
 
         // Muestra el valor en la consola
-        console.log(orden_id);
         // name = this.dataset.value;
         // const selectE = document.getElementById('cbo' + name);
         // const iconS = this.dataset.icon;
@@ -689,14 +688,14 @@
         let nom = nombre_fab.value.trim().toUpperCase();
         let und = cboUnidad_fab.value;
         let cant = cantidad_fab.value;
-        let id_orden = cboOrdenFab.value;
+        // let id_orden = cboOrdenFab.value;
 
         let datos = new FormData();
         datos.append('id_e', id_e);
         datos.append('nombre', nom);
         datos.append('unidad', und);
         datos.append('cantidad', cant);
-        datos.append('id_orden', id_orden);
+        // datos.append('id_orden', id_orden);
         datos.append('accion', accion_fab);
         confirmarAccion(datos, 'inventario', null, modal_fab, function(r) {
             cargarAutocompletado();
@@ -706,10 +705,7 @@
                 cargarComboFabricado();
             }
             cargarCombo('FabricadoCon', '', 9);
-
         })
-
-
     })
 
     formFab.addEventListener("submit", function(e) {

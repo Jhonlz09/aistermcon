@@ -260,8 +260,9 @@
             },
             {
                 targets: 6,
+                className: "text-center",
                 render: function(data, type, full, meta) {
-                    return "<center><span class='badge bg-gradient-blue'>" + data + "</span></center>";
+                    return "<span class='alert alert-default-primary'>" + data + "</span>";
                 }
             },
             {

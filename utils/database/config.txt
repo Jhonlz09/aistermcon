@@ -1,5 +1,5 @@
 host=localhost
-dbname=aistermcondb
-username=admin
-password=%KKXJoHm5uec
+dbname=dbaistermcon
+username=postgres
+password=admin
 port=5432

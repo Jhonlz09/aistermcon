@@ -106,15 +106,15 @@ class ModeloInventario
         }
     }
 
-    public static function mdlAgregarInventarioFab($des, $uni, $sto, $id_orden)
+    public static function mdlAgregarInventarioFab($des, $uni, $sto)
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado, id_orden) VALUES (generar_codigo_pf(),:des,:sto,:uni, true, :id_orden)");
+            $a = $conexion->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,:sto,:uni, true)");
             $a->bindParam(":des", $des, PDO::PARAM_STR);
             $a->bindParam(":uni", $uni, PDO::PARAM_INT);
             $a->bindParam(":sto", $sto, PDO::PARAM_INT);
-            $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
+            // $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
 
             $a->execute();
             return array(
@@ -141,13 +141,13 @@ class ModeloInventario
         try {
             $conexion = Conexion::ConexionDB();
             // Cambiar la consulta SQL para hacer un UPDATE
-            $a = $conexion->prepare("UPDATE tblinventario SET descripcion = :des, stock = :sto, id_unidad = :uni, id_orden = :id_orden WHERE id = :id");
+            $a = $conexion->prepare("UPDATE tblinventario SET descripcion = :des, stock = :sto, id_unidad = :unis WHERE id = :id");
             // Vincular los parámetros
             $a->bindParam(":id", $id, PDO::PARAM_INT);
             $a->bindParam(":des", $des, PDO::PARAM_STR);
             $a->bindParam(":uni", $uni, PDO::PARAM_INT);
             $a->bindParam(":sto", $sto, PDO::PARAM_INT);
-            $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
+            // $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
 
             // Ejecutar la consulta
             $a->execute();

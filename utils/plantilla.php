@@ -194,6 +194,43 @@
             const bodegueroPorDefecto = <?php echo ($_SESSION["bodeguero"] == null) ? 0 : $_SESSION["bodeguero"]; ?>;
             const conductorPorDefecto = <?php echo ($_SESSION["conductor"] == null) ? 0 : $_SESSION["conductor"]; ?>;
 
+            document.addEventListener('click', function() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "utils/database/save_session.php", true);
+                xhr.send();
+            });
+
+            function checkSession() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "utils/database/check_session.php", true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.status == 'expired') {
+                            // alert('La sesion ha expirado');
+                            clearInterval(checkSessionInterval);
+                            Swal.fire({
+                                title: 'Sesión Terminada',
+                                text: 'Su sesión ha terminado. Será redirigido a la página de inicio de sesión.',
+                                icon: 'warning',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                confirmButtonText: 'Aceptar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    const btnlogout = document.getElementById('btnlogout')
+                                    btnlogout.click();
+                                }
+                            });
+                        }
+                    }
+                };
+                xhr.send();
+            }
+
+            // Verificar el estado de la sesión cada 5 minutos (300000 milisegundos)
+            checkSessionInterval = setInterval(checkSession, 300000);
+
             // console.log('este es mi id_pergul ' + id_perfil)
             btnSide.addEventListener("click", () => {
                 setTimeout(() => {
@@ -525,6 +562,7 @@
                     },
                     {
                         targets: 4,
+                        className: "text-center",
                         data: 'precio'
                     },
                 ],
@@ -649,7 +687,7 @@
                         'autocomplete': 'off',
                         'onpaste': 'validarPegado(this, event)',
                         'onkeydown': 'validarTecla(event,this)',
-                        'oninput': 'validarNumber(this,/[^0-9.]/g)'
+                        'oninput': 'validarNumber(this,/[^0-9.]/g,false,3)'
                     });
                 }
 
@@ -881,7 +919,7 @@
                                 formFabNew.reset();
                                 formFabNew.classList.remove('was-validated');
                                 accion_fab = 9;
-                                setChange(cboOrdenFab, 0);
+                                // setChange(cboOrdenFab, 0);
                                 cambiarModal(title_fab, ' Nuevo Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-blue', 'bg-gradient-green', modal_fab, 'modal-new', 'modal-change')
                                 select_fab.forEach(function(s) {
                                     s.classList.remove('select2-warning');
@@ -1490,7 +1528,7 @@
                         ];
 
                         if (tabla === tblCompra) {
-                            nuevaFila.push('$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="0">');
+                            nuevaFila.push('$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,3)" value="0">');
                             nuevaFila.push('<span class="total">$0.00</span>', '<span class="iva">$0.00</span>', '<span class="precio_final">$0.00</span>');
                         }
 

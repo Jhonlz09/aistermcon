@@ -53,12 +53,12 @@ if($action == 'edit'){
                 'm' => 'El producto ya existe en la factura.'
             ));
         }else{
-            $precio = str_replace('.', ',', $data['precio']);
+            // $precio = str_replace('.', ',', $data['precio']);
 
             $stmt_update = $conn->prepare("UPDATE tblentradas SET id_producto = :id_producto, cantidad_entrada = :cantidad, precio_uni= :precio, id_factura = :id_factura WHERE id = :id");
             $stmt_update->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
             $stmt_update->bindParam(":cantidad", $data['cantidad'], PDO::PARAM_STR);
-            $stmt_update->bindParam(":precio", $precio, PDO::PARAM_STR);
+            $stmt_update->bindParam(":precio", $data['precio'], PDO::PARAM_STR);
             $stmt_update->bindParam(":id_factura", $data['id_factura'], PDO::PARAM_INT);
             $stmt_update->bindParam(":id", $data['id'], PDO::PARAM_INT);
             $stmt_update->execute();

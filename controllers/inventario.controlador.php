@@ -38,7 +38,7 @@ class ControladorInventario
 
     public function agregarInventarioFab()
     {
-        $data = ModeloInventario::mdlAgregarInventarioFab($this->nombre,$this->unidad,$this->stock, $this->id_orden);
+        $data = ModeloInventario::mdlAgregarInventarioFab($this->nombre,$this->unidad,$this->stock);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -133,7 +133,6 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->nombre = $_POST["nombre"];
         $data->unidad = $_POST["unidad"];
         $data->stock = $_POST["cantidad"];
-        $data->id_orden = $_POST["id_orden"];
         $data->agregarInventarioFab();
     } else if ($_POST["accion"] == 10) {
         $data = new ControladorInventario();
@@ -141,7 +140,6 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->nombre = $_POST["nombre"];
         $data->unidad = $_POST["unidad"];
         $data->stock = $_POST["cantidad"];
-        $data->id_orden = $_POST["id_orden"];
         $data->editarInventarioFab();
     }else if ($_POST["accion"] == 11) {
         $data = new ControladorInventario();

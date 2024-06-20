@@ -861,6 +861,7 @@ svg {
 #select2-cboProveedores-container .select2-selection__placeholder,
 #select2-cboClientes-container .select2-selection__placeholder,
 #select2-cboConductor-container .select2-selection__placeholder,
+#select2-cboConductorEntrada-container .select2-selection__placeholder,
 #select2-cboEmpleado-container .select2-selection__placeholder,
 #select2-cboOrden-container .select2-selection__placeholder,
 #select2-cboFabricado-container .select2-selection__placeholder,

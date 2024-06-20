@@ -122,7 +122,7 @@ function cargarComboFabricado(s = 0) {
       // let dataCbo = [];
       var options = "";
       for (let index = 0; index < respuesta.length; index++) {
-        options += `<option data-orden="${respuesta[index][2]}" data-cant="${respuesta[index][3]}" data-und="${respuesta[index][4]}" data-name="${respuesta[index][5]}" value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
+        options += `<option data-cant="${respuesta[index][2]}" data-und="${respuesta[index][3]}" data-name="${respuesta[index][4]}" value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
         // dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
       }
       $(cbo1).html(options);
@@ -367,7 +367,7 @@ function convertirArray(arr) {
   }
 }
 
-function validarNumber(input, regex, ten = false) {
+function validarNumber(input, regex, ten = false, decimal=2) {
   input.value = input.value.replace(regex, "");
   if (ten) {
     // $(".ten").toggle(!(input.value.length === 10 || input.value.length === 0));
@@ -383,8 +383,8 @@ function validarNumber(input, regex, ten = false) {
       input.value = input.value.slice(0, -1);
     }
     const partes = input.value.split(".");
-    if (partes[1] && partes[1].length > 2) {
-      input.value = partes[0] + "." + partes[1].slice(0, 2);
+    if (partes[1] && partes[1].length > decimal) {
+      input.value = partes[0] + "." + partes[1].slice(0, decimal);
     }
   }
 }

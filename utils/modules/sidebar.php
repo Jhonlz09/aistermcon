@@ -130,16 +130,16 @@ $_SESSION["conductor"] = $configuracion[0]->conductor;
                     hoverTimeout = setTimeout(function() {
                         var subMenu = $(self).find('.nav-treeview');
                         if (!subMenu.is(':visible')) {
-                            subMenu.stop(true, true).slideDown();
+                            subMenu.slideDown();
                             $(self).addClass('menu-open');
                         }
-                    }, 400); // Tiempo en milisegundos que el mouse debe permanecer sobre el elemento (por ejemplo, 500ms)
+                    }, 380); // Tiempo en milisegundos que el mouse debe permanecer sobre el elemento (por ejemplo, 500ms)
                 },
                 function() {
                     clearTimeout(hoverTimeout); // Cancela el timeout si el mouse sale antes de tiempo
                     var subMenu = $(this).find('.nav-treeview');
                     if (subMenu.is(':visible')) {
-                        subMenu.stop(true, true).slideUp();
+                        subMenu.slideUp();
                         $(this).removeClass('menu-open');
                         $(this).removeClass('menu-is-opening');
                     }

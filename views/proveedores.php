@@ -101,7 +101,6 @@
                                         <input autocomplete="off" inputmode="numeric" id="telefono" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                             </div>
@@ -119,7 +118,6 @@
                                         <input autocomplete="off" id="correo" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label for="correo" class="label"><i class="fa-solid fa-envelope"></i> Correo</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                             </div>
@@ -227,6 +225,8 @@
                 cambiarModal(span, ' Nuevo Proveedor', icon, 'fa-hand-holding-box', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 form.reset();
                 form.classList.remove('was-validated');
+                correo.disabled = false;
+                telefono.disabled = false;
             });
         }
 
@@ -266,6 +266,8 @@
             direccion.value = row["direccion"];
             telefono.value = row["telefono"];
             correo.value = row["correo"];
+            correo.disabled = false;
+            telefono.disabled = false;
         });
 
         form.addEventListener("submit", function(e) {
@@ -274,6 +276,12 @@
                 tel = telefono.value.trim(),
                 dir = direccion.value.trim().toUpperCase(),
                 cor = correo.value.trim();
+            if (tel === '') {
+                telefono.disabled = true;
+            }
+            if (cor === '') {
+                correo.disabled = true;
+            }
 
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');

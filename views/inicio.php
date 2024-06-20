@@ -42,7 +42,7 @@
                 <!-- small box -->
                 <div class="small-box bg-2">
                     <div class="inner">
-                        <p>Salidas</p>
+                        <p>Movimientos</p>
                         <h3 id="salidas">0</h3>
                     </div>
                     <div class="icon">

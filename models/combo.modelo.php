@@ -92,13 +92,11 @@ class ModeloCombos
     static public function mdlListarProductosFab()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT i.id, o.nombre || ' | '|| i.stock::double precision || ' '|| u.nombre || ' | '||i.descripcion AS nombre,
-            o.id, i.stock::double precision , u.id, i.descripcion
+            $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.stock::double precision || ' '|| u.nombre || ' | '||i.descripcion AS nombre,
+            i.stock::double precision , u.id, i.descripcion
             from tblinventario i 
             JOIN tblunidad u on u.id = i.id_unidad
-            JOIN tblorden o ON o.id = i.id_orden
-            JOIN tblclientes c ON c.id = o.id_cliente
-            where i.fabricado = true AND stock != 0 AND i.estado=true");
+            where i.fabricado = true AND stock != 0 AND i.estado=true  ORDER BY i.id desc");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -109,12 +107,10 @@ class ModeloCombos
     static public function mdlListarProductosFabCon()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT i.id, o.nombre || ' '|| c.nombre || ' | '||i.descripcion AS nombre
+            $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo || ' | '||i.descripcion AS nombre
             from tblinventario i 
             JOIN tblunidad u on u.id = i.id_unidad
-            JOIN tblorden o ON o.id = i.id_orden
-            JOIN tblclientes c ON c.id = o.id_cliente
-            where i.fabricado = true AND i.estado=true");
+            where i.fabricado = true AND i.estado=true ORDER BY i.id desc");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {

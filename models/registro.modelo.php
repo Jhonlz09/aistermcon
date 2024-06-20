@@ -26,7 +26,7 @@ class ModeloRegistro
                     // Divide la cadena en id, cantidad y precio
                     list($id, $cantidad, $precio) = explode(',', $data);
 
-                    $precio = str_replace('.', ',', $precio);
+                    // $precio = str_replace('.', ',', $precio);
                     // Inserta la entrada en tblentradas
                     $stmtE = Conexion::ConexionDB()->prepare("INSERT INTO tblentradas(id_factura,cantidad_entrada, id_producto, precio_uni)         
                         VALUES(:id_factura, :cantidad, :id, :precio)");

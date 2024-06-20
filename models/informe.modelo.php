@@ -42,15 +42,15 @@ class ModeloInforme
     static public function mdlInformeFechaOrden($id_orden)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("			SELECT 
+            $a = Conexion::ConexionDB()->prepare("SELECT 
 			TO_CHAR(DATE(b.fecha), 'DD/MM/YYYY') AS fecha_emision,
             TO_CHAR(DATE(b.fecha_retorno), 'DD/MM/YYYY') AS fecha_retorno,
 			b.id as id_guia,
 			b.motivo,
 			LPAD(b.nro_guia::TEXT,9,'0') as nro_guia,
 			e_despachado.nombre || ' '  || e_despachado.apellido AS despachado,
-            e_responsable.nombre AS responsable,
-			e.nombre || ' ' || e.apellido AS conductor,
+            SPLIT_PART(e_responsable.nombre, ' ', 1) || ' ' || SPLIT_PART(e_responsable.apellido, ' ', 1) AS responsable,
+			SPLIT_PART(e.nombre, ' ', 1) || ' ' || SPLIT_PART(e.apellido, ' ', 1) AS conductor,
 			p.nombre AS placa
         FROM 
             tblboleta b
