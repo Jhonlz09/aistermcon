@@ -890,7 +890,7 @@
                         dataType: "json",
                         success: function(r) {
                             $(modalR).modal("hide");
-                            mostrarToast(r.status, "Completado", "fa-solid fa-check fa-lg", r.m);
+                            mostrarToast(r.status, "Completado", "fa-check", r.m);
                         }
                     });
 

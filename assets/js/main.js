@@ -136,48 +136,89 @@ function cargarComboFabricado(s = 0) {
 function formatInputOrden(input, cbo, isformart = true) {
   let value = input.value.replace(/\D/g, "");
 
-  // Insertar el espacio después de los dos primeros dígitos
-  if (value.length > 2) {
-    value = value.slice(0, 2) + " " + value.slice(2);
-  }
+  // Refactorización: Uso de una expresión regular para insertar espacios
+  value = value.replace(/(\d{2})(\d{3})?(\d+)?/, (match, p1, p2, p3) => {
+    return p1 + (p2 ? " " + p2 : "") + (p3 ? " " + p3 : "");
+  });
+
   input.value = value;
+  const cboCli = document.getElementById(cbo);
 
   if (isformart) {
-    if (value.length === 6 && value !== "00 000") {
-      fetchOrderId(value, cbo);
-    } else if (value.length === 0) {
-      const cboCli = document.getElementById(cbo);
-      setChange(cboCli, 0);
-      cboCli.disabled = false;
+    // Simplificación de la lógica de activación/desactivación y consulta AJAX
+    const lengthCheck = value.length === 6 || value.length === 9;
+    const cboValueCheck = cboCli.value !== "0";
+
+    if (lengthCheck) {
+      fetchOrderId(value, function(response) {
+        console.log(response);
+        if(response[0] != null){
+          const id_cli = response[0]["id_cliente"];
+          cboCli.disabled = id_cli !== 0;
+          if (id_cli !== 0) {
+            setChange(cboCli, id_cli);
+          }
+        }else{
+          let isError = response.status === "danger";
+          mostrarToast(response.status, 
+            isError ? "Error" : "Advertencia",
+            isError ? "fa-xmark" : "fa-triangle-exclamation",
+            response.m, 5500);
+          if (!isError) {
+            setChange(cboCli, 0);
+          }
+        }
+      });
+    } else {
+      cboCli.disabled = !cboValueCheck;
+      // if (!cboValueCheck) {
+      //   setChange(cboCli, 0);
+      // }
     }
   }
-  // Si la longitud es 6, realizar la consulta AJAX
 }
 
-function fetchOrderId(nombre, cbo) {
+// function fetchOrderId(nombre, cbo) {
+//   $.ajax({
+//     url: "controllers/orden.controlador.php", // Cambia 'tu_script_php.php' por la ruta correcta de tu script PHP
+//     type: "POST",
+//     dataSrc: "",
+//     data: {
+//       nombre: nombre,
+//       accion: 4,
+//     },
+//     cache: false,
+//     dataType: "json",
+
+//     success: function (response) {
+//       const cboCli = document.getElementById(cbo);
+//       let id_cli = response[0]["id_cliente"];
+//       if (id_cli === 0) {
+//         cboCli.disabled = false;
+//       } else {
+//         setChange(cboCli, id_cli);
+//         cboCli.disabled = true;
+//       }
+//     },
+//   });
+// }
+
+function fetchOrderId(nombre, callback) {
   $.ajax({
-    url: "controllers/orden.controlador.php", // Cambia 'tu_script_php.php' por la ruta correcta de tu script PHP
+    url: "controllers/orden.controlador.php",
     type: "POST",
-    dataSrc: "",
     data: {
       nombre: nombre,
       accion: 4,
     },
     cache: false,
     dataType: "json",
-
     success: function (response) {
-      const cboCli = document.getElementById(cbo);
-      let id_cli = response[0]["id_cliente"];
-      setChange(cboCli, id_cli);
-      if (id_cli === 0) {
-        cboCli.disabled = false;
-      } else {
-        cboCli.disabled = true;
-      }
+        callback(response);
     },
   });
 }
+
 
 function moveFocusOnTab(event) {
   if (event.key === "Tab") {
@@ -214,9 +255,24 @@ function opcionSelect(select, name) {
   }
 }
 
-function agregarProductoProduccion() {}
+function formatNumberInput(input) {
+  // Remove all non-numeric characters except for the decimal point
+  let value = input.value.replace(/[^0-9.]/g, '');
 
-function confirmarAccion(datos, ruta, tabla, modal = "", callback) {
+  // Split the value into integer and decimal parts
+  let parts = value.split('.');
+  let integerPart = parts[0];
+  let decimalPart = parts.length > 1 ? '.' + parts[1].slice(0, 2) : '';
+
+  // Format the integer part with commas
+  integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  // Set the formatted value back to the input
+  input.value = integerPart + decimalPart;
+}
+
+
+function confirmarAccion(datos, ruta, tabla, modal = "", callback, time=5500) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
     method: "POST",
@@ -234,8 +290,8 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback) {
       mostrarToast(
         r.status,
         isSuccess ? "Completado" : "Error",
-        isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
-        r.m
+        isSuccess ? "fa-check" : "fa-xmark",
+        r.m, time
       );
 
       if (typeof callback === "function") {
@@ -246,13 +302,13 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback) {
   });
 }
 
-function mostrarToast(status, title, icon, m) {
+function mostrarToast(status, title, icon, m, time=5500) {
   $(document).Toasts("create", {
     autohide: true,
-    delay: 5500,
+    delay: time,
     class: "bg-" + status,
     title: title,
-    icon: icon,
+    icon: 'fa-solid '+ icon + ' fa-lg',
     body: m,
   });
 }

@@ -127,7 +127,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="input-data s1">
-                                        <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
+                                        <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)" required>
                                         <label class="label"><i class="fa-solid fa-boxes-stacked"></i> Cantidad</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
@@ -308,7 +308,8 @@
                     let stockMin = row.stock_min;
                     let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
 
-                    return `<span style='font-size:1.3rem' class="${comparacion} font-weight-bold">${resultado}</span>`;
+                    let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    return `<span style='font-size:1.3rem' class="${comparacion} font-weight-bold">${formatR}</span>`;
                 }
             },
             {

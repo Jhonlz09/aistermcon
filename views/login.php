@@ -65,7 +65,7 @@
                     } else if (response === 'invalid_password') {
                         mostrarToast('Error',
                              "Error",
-                            "fa-solid fa-xmark fa-lg",
+                            "fa-xmark",
                             'La contraseña es incorrecta'
                         );
                         pass.value = '';
@@ -77,7 +77,7 @@
                         // validarLogin('El usuario no existe', true, btn, user)
                         mostrarToast('Error',
                              "Error",
-                            "fa-solid fa-xmark fa-lg",
+                            "fa-xmark",
                             'El usuario no existe'
                         );
                         user.value = '';

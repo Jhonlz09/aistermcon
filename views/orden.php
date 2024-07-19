@@ -86,7 +86,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
+            <form id="formNuevo" autocomplete="off" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div class="modal-body">
                     <input type="hidden" id="id" value="">
                     <div class="row">
@@ -94,7 +94,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="input-data mb-4">
-                                        <input autocomplete="off" id="orden_nro" class="input-nuevo" type="text" maxlength="6" oninput="formatInputOrden(this, null, false)" required>
+                                        <input autocomplete="off" id="orden_nro" class="input-nuevo" type="text" maxlength="9" oninput="formatInputOrden(this, null, false)" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fas fa-ticket"></i> Nro. orden</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
@@ -114,6 +114,7 @@
                                 </div>
                             </div>
                             <div class="row">
+
                                 <div class="col-md-12">
                                     <div class="input-data mb-4">
                                         <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
@@ -121,6 +122,31 @@
                                         <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
+                                </div>
+                                <div class="col-md-12 mb-4">
+                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-chart-candlestick"></i></i> Estado</label>
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                        <label style="border-left-width: 1px;" class="btn txt-ellipsis">
+                                            <input type="radio" value="0" name="options" id="option_a1" autocomplete="off" checked> <i class="fas fa-clock"></i> En espera
+                                        </label>
+                                        <label for="option_a2" class="btn txt-ellipsis">
+                                            <input type="radio" value="1" name="options" id="option_a2" autocomplete="off"><i class="fas fa-person-digging"></i> En operacion
+                                        </label>
+                                        <label for="option_a3" class="btn txt-ellipsis">
+                                            <input type="radio" value="2" name="options" id="option_a3" autocomplete="off"> <i class="fas fa-check-to-slot"></i> Finalizado
+                                        </label>
+                                        <label for="option_a4" style="border-right-width: 1px;" class="btn txt-ellipsis">
+                                            <input type="radio" value="3" name="options" id="option_a4" autocomplete="off"> <i class="fa-solid fa-money-check-dollar"></i> Facturado
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-12 mb-2">
+                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
+
+                                    <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
+                                    <div class="ten no-margin">*Debe selecionar un archivo .xls o .xlsx</div>
                                 </div>
                             </div>
 
@@ -162,10 +188,37 @@
             {
                 targets: 5,
                 className: "text-center",
-                render: function(data, type, full, meta) {
-                    let text = data ? 'EN OPERACIÓN' : 'FINALIZADO';
-                    let className = data ? 'alert-default-warning' : 'alert-default-success';
-                    return "<span class='alert " + className + "'>" + text + "</span>";
+                render: function(data, type, row, full, meta) {
+
+                    let estado = row.estado_obra;
+
+                    const estadoClases = {
+                        0: 'light',
+                        1: 'warning',
+                        2: 'info',
+                        3: 'success'
+                    };
+
+                    const estadoIcon = {
+                        0: 'clock',
+                        1: 'person-digging',
+                        2: 'check-to-slot',
+                        3: 'money-check-dollar'
+                    };
+
+                    const estadoText = {
+                        0: 'EN ESPERA',
+                        1: 'EN OPERACIÓN',
+                        2: 'FINALIZADO',
+                        3: 'FACTURADO'
+                    };
+
+                    let clase = estadoClases[estado] || 'default';
+                    let icon = estadoIcon[estado] || 'default';
+                    let texto = estadoText[estado] || 'default';
+
+                    return `<span class='alert alert-default-${clase}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
+
                 }
             },
             {
@@ -174,9 +227,18 @@
                 visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
 
-                    let estado = row.obra_estado;
-                    let clase = estado ? 'yellow' : 'success';
-                    let iconName = estado ? 'person-digging' : 'check-to-slot';
+                    const estadoClases = {
+                        0: 'light',
+                        1: 'yellow',
+                        2: 'info',
+                        3: 'success'
+                    };
+
+                    let estado = row.estado_obra;
+                    let ruta = row.ruta;
+                    let clase = estadoClases[estado];
+                    let iconName = 'shuffle';
+
                     return (
                         "<center style='white-space: nowrap;'>" +
                         (editar ?
@@ -189,6 +251,10 @@
                             " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
+                        (ruta !== '' ?
+                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 8px' class='btn btnDescargar' title='Descargar'>" +
+                            " <i class='fas fa-file-pdf'></i>" +
+                            "</a>" : "") +
                         " </center>"
                     );
                 },
@@ -196,7 +262,17 @@
         ],
     }
 
+    function descargarPDF(ruta) {
+        console.log(ruta)
+        window.open('/aistermcon/utils/download.php?file=' + encodeURIComponent(ruta), '_blank');
+
+        // window.location.href = '/aistermcon/utils/download.php?file=' + ruta;
+    }
+
     $(document).ready(function() {
+
+
+
         let anio = year;
         if (!$.fn.DataTable.isDataTable('#tblOrden')) {
             tabla = $("#tblOrden").DataTable({
@@ -224,6 +300,7 @@
             });
         }
         let accion = 0;
+
         const modal = document.getElementById('modal'),
             span = document.querySelector('.modal-title span'),
             elements = document.querySelectorAll('.modal .bg-gradient-green'),
@@ -231,11 +308,16 @@
             icon = document.querySelector('.modal-title i'),
             select = document.querySelectorAll('.modal-body select.select2'),
             btnNuevo = document.getElementById('btnNuevo');
+        const radios = document.querySelectorAll('input[name="options"]');
+
+
 
         const id = document.getElementById('id'),
             nombre = document.getElementById('nombre'),
             orden_nro = document.getElementById('orden_nro'),
-            cboClienteOrden = document.getElementById('cboClientesOrden');
+            cboClienteOrden = document.getElementById('cboClientesOrden'),
+            fileInput = document.getElementById('fileOrden');
+
 
         $(modal).on("shown.bs.modal", () => {
             orden_nro.focus();
@@ -269,6 +351,7 @@
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
+                radios[0].click();
                 cambiarModal(span, ' Nueva Orden', icon, 'fa-ticket', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
@@ -319,10 +402,13 @@
             id.value = row["id"];
             nombre.value = row["descripcion"];
             orden_nro.value = row["nombre"];
+            radios[row["estado_obra"]].click();
+            fileInput.value='';
+
             setChange(cboClienteOrden, row["id_cliente"]);
             nombre.disabled = false;
             form.classList.remove('was-validated');
-            
+
         });
 
         $('#tblOrden tbody').on('click', '.btnEstado', function() {
@@ -330,7 +416,15 @@
             accion = 5;
             cambiarModal(span, ' Editar Orden', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             const id_ = row["id"];
-            const estado = !(row["obra_estado"]);
+
+            const estados = {
+                0: 1,
+                1: 2,
+                2: 3,
+                3: 0
+            };
+            const estado = estados[row["estado_obra"]]
+            // const estado = !(row["obra_estado"]);
             let src = new FormData();
             src.append('accion', accion);
             src.append('estado', estado)
@@ -341,41 +435,104 @@
                     //     datos_orden = datos_;
                     // });
                 }
-            })
+            }, 800)
         });
 
         form.addEventListener("submit", function(e) {
             e.preventDefault();
-            const nom = nombre.value.trim().toUpperCase(),
-                ord = orden_nro.value,
-                cli = cboClienteOrden.value;
 
-            if (nom === '') {
+
+            let datos = obtenerDatosFormulario();
+
+            const file = fileInput.files[0];
+
+            // Validar que el archivo es .pdf
+            if (file && file.type !== "application/pdf") {
+                mostrarToast(
+                    'warning',
+                    'Advertencia',
+                    'fa-triangle-exclamation',
+                    'El archivo insertado no es valido, por favor inserta un archivo .pdf', 3000
+                )
+                return;
+            } else if (file && file.type == "application/pdf") {
+                datos.append('fileOrden', file);
+            }
+
+
+
+
+            if (datos.get('nombre') === '') {
                 nombre.disabled = true;
             }
 
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
-                // nombre.disabled = false;
                 return;
             }
-            const id_e = id.value;
+
+            if (accion == 2) {
+                confirmarAccion(datos, 'orden', tabla, modal, function(r) {
+                    // Callback para acciones después de confirmarAccion si es necesario
+                });
+            } else {
+                fetchOrderId(datos.get('nombre'), function(response) {
+                    console.log(response);
+                    if (response[0] != null) {
+                        confirmarAccion(datos, 'orden', tabla, modal, function(r) {
+                            // Callback para acciones después de confirmarAccion si es necesario
+                        });
+                    } else {
+                        mostrarConfirmacionExistente(datos);
+                    }
+                });
+            }
+        });
+
+        function obtenerDatosFormulario() {
+            const nom = nombre.value.trim().toUpperCase(),
+                ord = orden_nro.value,
+                id_cli = cboClienteOrden.value,
+                cli_name = cboClienteOrden.options[cboClienteOrden.selectedIndex].text;
+
+                id_e = id.value;
+            let selectedEstado;
+
+            radios.forEach(radio => {
+                if (radio.checked) {
+                    selectedEstado = radio.value;
+                }
+            });
+
             let datos = new FormData();
             datos.append('id', id_e);
             datos.append('nombre', nom);
-            datos.append('id_cliente', cli);
+            datos.append('id_cliente', id_cli);
             datos.append('orden', ord);
+            datos.append('cliente', cli_name)
+            datos.append('estado', selectedEstado);
             datos.append('accion', accion);
-            confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                if (r) {
-                    // cargarCombo('Orden', '', 3, true).then(datos_ => {
-                    //     datos_orden = datos_;
-                    // });
-                    // cargarCombo('PorOrden', '', 5)
 
+            return datos;
+        }
 
+        function mostrarConfirmacionExistente(datos) {
+            Swal.fire({
+                title: "Esta orden de trabajo ya existe",
+                text: "¿Estás seguro que deseas continuar?",
+                icon: "warning",
+                showCancelButton: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                confirmButtonText: "Sí, continuar",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    confirmarAccion(datos, 'orden', tabla, modal, function(r) {
+                        // Callback para acciones después de confirmarAccion si es necesario
+                    });
                 }
-            })
-        });
+            });
+        }
     })
 </script>

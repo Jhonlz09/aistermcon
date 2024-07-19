@@ -106,7 +106,7 @@
         "autoWidth": false,
         searchPanes: {
             cascadePanes: true,
-            columns: [8,10,11],
+            columns: [8, 10, 11],
             initCollapsed: true,
             threshold: 0.8, // Ajusta este valor según tus necesidades
             dtOpts: {
@@ -153,6 +153,13 @@
             },
             {
                 targets: 4,
+                "render": function(data, type, row) {
+                    var numericValue = data.replace('$', '').trim();
+                    // Convertir a número flotante y luego a cadena para eliminar ceros innecesarios
+                    var formattedValue = parseFloat(numericValue).toString();
+                    // Volver a agregar el símbolo '$'
+                    return '$ ' + formattedValue;
+                }
             },
             {
                 targets: 9,

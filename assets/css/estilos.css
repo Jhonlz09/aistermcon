@@ -682,6 +682,10 @@ body.sidebar-collapse .text {
     overflow: hidden;
 }
 
+.btn-group-toggle{
+    display: flex!important;
+}
+
 @media (max-width: 991px) {
     .control-sidebar,
     .control-sidebar::before {
@@ -869,6 +873,19 @@ svg {
 #select2-cboDespachado-container .select2-selection__placeholder,
 #select2-cboResponsable-container .select2-selection__placeholder{
     font-size: 1.1rem;
+}
+
+.btn-group-toggle label.btn.active{
+    background-color: var(--label-new);
+    color: #fff;
+    border-color: var(--label-new);
+}
+
+.btn-group-toggle label.btn{
+    /* border-top-width: 1px;
+    border-bottom-width: 1px; */
+    border-width: 1px 0px;
+    border-color: #c1c1c1;
 }
 
 

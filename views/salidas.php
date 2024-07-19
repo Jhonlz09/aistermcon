@@ -1,4 +1,4 @@
-<?php require_once "../utils/database/config.php";?>
+<?php require_once "../utils/database/config.php"; ?>
 
 <head>
     <title>Movimientos</title>
@@ -123,7 +123,13 @@
                 var collapsed = !!collapsedGroups[group];
 
                 rows.nodes().each(function(r) {
-                    r.style.visibility = collapsed ? '' : 'collapse';
+                    r.style.visibility = collapsed ? '' : 'hidden';
+                    r.style.lineHeight = collapsed ? '1.5' : '0';
+                    $(r).find('td').each(function() {
+                        this.style.paddingBlock = collapsed ? '' : '0';
+                        this.style.borderTop = collapsed ? '' : '0';
+                        this.style.borderBottom = collapsed ? '' : '0';
+                    });
                 });
 
                 var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer" ><strong class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_guia.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_boleta" class="input_boleta" value=""><button type="submit" class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' +
@@ -188,7 +194,7 @@
                 targets: 9,
                 visible: false,
             },
-            
+
         ],
         "preDrawCallback": function(settings) {
             // Guardar la posición del scroll antes de redibujar
@@ -224,7 +230,7 @@
     $(document).ready(function() {
         let anio = year;
         let mes = month;
-        
+
         if (!$.fn.DataTable.isDataTable('#tblSalidas')) {
             tabla = $("#tblSalidas").DataTable({
                 "ajax": {
@@ -339,7 +345,7 @@
                 despachado_id = row[15],
                 entrega = row[16],
                 guia = row[17];
-            const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18] ;
+            const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
             const salida_radio = document.getElementById('radio-2');
             const cancelar = document.getElementById('Cancelar');
             // setChange(nro, orden_id)
@@ -373,7 +379,7 @@
                 entrega = row[16],
                 guia = row[17],
                 retorno = document.getElementById('radio-3');
-            const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18] ;
+            const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
 
             // setChange(cboOrdenActivas, orden_id)
             // setChange(cboClientesActivos, cliente)

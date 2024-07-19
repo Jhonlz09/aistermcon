@@ -150,18 +150,19 @@ class ModeloRegistro
             return $conexion->lastInsertId();
         } else {
             $anioActual = date('Y', strtotime($fecha));
-            $stmtVerificar = $conexion->prepare("SELECT id FROM tblorden WHERE nombre = :orden AND (EXTRACT(YEAR FROM fecha) = :anioActual OR obra_estado=true)");
+            $stmtVerificar = $conexion->prepare("SELECT id FROM tblorden WHERE nombre = :orden AND id_cliente = :cliente AND (EXTRACT(YEAR FROM fecha) = :anioActual OR estado_obra IN (0, 1))");
             $stmtVerificar->bindParam(':orden', $orden, PDO::PARAM_STR);
+            $stmtVerificar->bindParam(':cliente', $cliente, PDO::PARAM_INT);
             $stmtVerificar->bindParam(':anioActual', $anioActual, PDO::PARAM_INT);
             $stmtVerificar->execute();
             $resultadoVerificar = $stmtVerificar->fetch(PDO::FETCH_ASSOC);
             if ($resultadoVerificar) {
                 return $resultadoVerificar['id'];
             } else {
-                $stmtO = $conexion->prepare("INSERT INTO tblorden(nombre, id_cliente, id_encargado) VALUES (:orden, :id_cliente, :responsable)");
+                $stmtO = $conexion->prepare("INSERT INTO tblorden(nombre, id_cliente, id_encargado) VALUES (:orden, :id_cliente, :responsable);");
                 $stmtO->bindParam(':orden', $orden, PDO::PARAM_STR);
                 $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
-                if ($responsable === null || $responsable == '' ) {
+                if ($responsable === null || $responsable === '' ) {
                     $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
                 } else {
                     $stmtO->bindParam(':responsable', $responsable, PDO::PARAM_INT);
@@ -206,7 +207,7 @@ class ModeloRegistro
         $fechaHora = $fecha . ' ' . $hora;
         $fechaHora2 = $fecha_entrada . ' ' . $hora;
 
-        $stmtB = $conexion->prepare("INSERT INTO tblboleta(fecha, fecha_entrada, id_orden, nro_guia, motivo, id_conductor, id_responsable, id_despachado) VALUES(:fecha, :fecha_retorno, :orden, generar_nro_guia(),:motivo, :conductor, :responsable, :despachado)");
+        $stmtB = $conexion->prepare("INSERT INTO tblboleta(fecha, fecha_retorno, id_orden, nro_guia, motivo, id_conductor, id_responsable, id_despachado) VALUES(:fecha, :fecha_retorno, :orden, generar_nro_guia(),:motivo, :conductor, :responsable, :despachado)");
         $stmtB->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
         $stmtB->bindParam(':fecha_retorno', $fechaHora2, PDO::PARAM_STR);
         $stmtB->bindParam(':orden', $id_orden, PDO::PARAM_INT);

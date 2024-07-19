@@ -78,16 +78,16 @@ class ModeloCombos
         }
     }
 
-    static public function mdlListarOrdenActivas()
-    {
-        try {
-            $l = Conexion::ConexionDB()->prepare("SELECT o.id, o.nombre from tblorden o where o.obra_estado = true");
-            $l->execute();
-            return $l->fetchAll();
-        } catch (PDOException $e) {
-            return "Error en la consulta: " . $e->getMessage();
-        }
-    }
+    // static public function mdlListarOrdenActivas()
+    // {
+    //     try {
+    //         $l = Conexion::ConexionDB()->prepare("SELECT o.id, o.nombre from tblorden o where o.obra_estado = true");
+    //         $l->execute();
+    //         return $l->fetchAll();
+    //     } catch (PDOException $e) {
+    //         return "Error en la consulta: " . $e->getMessage();
+    //     }
+    // }
 
     static public function mdlListarProductosFab()
     {

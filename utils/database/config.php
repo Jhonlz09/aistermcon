@@ -8,6 +8,13 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+if (isset($_SESSION['s_usuario'])) {
+    return;
+} else {
+    header("Location: /aistermcon");
+    exit();
+}
+
 // Define la duración máxima de inactividad en segundos
 // $inactive= 10800; // 5 minutos
 

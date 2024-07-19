@@ -1,7 +1,10 @@
+<?php require_once "../utils/database/config.php"; ?>
+
 <head>
     <title>Cargar</title>
 </head>
 <script>
+
     window.scrollTo(0, 0);
 </script>
 

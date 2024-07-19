@@ -2,7 +2,7 @@
 session_start();
 
 // Establecer el tiempo de vida de la sesión a 30 minutos
-$session_lifetime = 2100;
+$session_lifetime = 55555;
 
 // Verificar si la sesión ha expirado
 if (isset($_SESSION['last_activity'])) {

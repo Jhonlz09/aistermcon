@@ -37,11 +37,11 @@
 
                                     </div>
                                     <div class="col-md-6 form-group" style="margin-bottom: 1.4rem;">
-                                        <label class="col-form-label combo" for="entrega_ppt">
+                                        <label class="col-form-label combo" >
                                             <i class="fa-solid fa-table-rows"></i> Filas</label>
                                         <div class="row">
                                             <div class="col-12" style="display: flex;align-items:end;">
-                                                <span>Agregar</span> <input id="entrega_ppt" autocomplete="off" style="border-bottom: 2px solid var(--select-border-bottom); text-align: center" type="text" class="form-control form-control-sm" required>
+                                                <span>Agregar</span> <input autocomplete="off" style="border-bottom: 2px solid var(--select-border-bottom); text-align: center" type="text" class="form-control form-control-sm" required>
                                                 <span style="margin-right:.5rem;">Fila(s)</span>
                                                 <div class="span-btn d-flex align-items-center justify-content-end" style="padding:0">
                                                     <span class="badge bg-gradient-dark" id="" title='Nuevo'><i class="fa-solid fa-plus"></i></span>

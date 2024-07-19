@@ -56,7 +56,7 @@
                                                     <div class=" col-md-6 form-group">
                                                         <label class="col-form-label combo" for="nro_orden">
                                                             <i class="fas fa-ticket"></i> Orden</label>
-                                                        <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="6" oninput="formatInputOrden(this, 'cboClientes')" type="text" class="form-control form-control-sm" id="nro_orden" placeholder="Ingrese el nro. de orden">
+                                                        <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="9" oninput="formatInputOrden(this, 'cboClientes')" type="text" class="form-control form-control-sm" id="nro_orden" placeholder="Ingrese el nro. de orden">
                                                     </div>
                                                     <div class=" col-md-6 form-group">
                                                         <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
@@ -85,12 +85,11 @@
                                                                 <div class="col-md-6" style="margin-bottom:1.8rem">
                                                                     <label class="col-form-label combo" for="nro_ordenEntrada">
                                                                         <i class="fas fas fa-ticket"></i> Orden</label>
-                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="6" oninput="formatInputOrden(this, 'cboClienteEntrada')" type="text" class="form-control form-control-sm" id="nro_ordenEntrada" placeholder="Ingrese el nro. de orden">
+                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="9" oninput="formatInputOrden(this, 'cboClienteEntrada')" type="text" class="form-control form-control-sm" id="nro_ordenEntrada" placeholder="Ingrese el nro. de orden">
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 <div class="col-md-6" style="margin-bottom:1.8rem">
                                                                     <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
-
                                                                     <select id="cboClienteEntrada" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                                                     </select>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
@@ -478,7 +477,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnAgregarFab" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnAgregarFabNew" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>

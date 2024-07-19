@@ -1074,8 +1074,6 @@
 
                 // const btnAgregarPro = document.querySelector('.btnAgregarPro');
 
-
-
                 $('#tblCompra tbody').on('click', '.btnEliminarIn', function() {
                     tblCompra.row($(this).parents('tr')).remove().draw();
                 });
@@ -1096,14 +1094,18 @@
                     $(inputauto).autocomplete({
                         source: items,
                         minLength: 3,
+                        focus: function() {
+                            return false;
+                        },
                         select: function(event, ui) {
                             CargarProductos(ui.item.cod);
                             return false;
                         },
                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                        let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         return $("<li>").append(
                             "<div>" + item.label + "<strong class='large-text'>CANTIDAD: " +
-                            item.cantidad + "</strong></div>"
+                            res + "</strong></div>"
                         ).appendTo(ul);
                     };
                 })
@@ -1305,7 +1307,7 @@
 
                                 mostrarToast(r.status,
                                     isSuccess ? "Completado" : "Error",
-                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                    isSuccess ? "fa-check" : "fa-xmark",
                                     r.m);
 
                                 if (isSuccess) {
@@ -1347,7 +1349,7 @@
 
                                 mostrarToast(r.status,
                                     isSuccess ? "Completado" : "Error",
-                                    isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                    isSuccess ? "fa-check" : "fa-xmark",
                                     r.m);
 
                                 if (isSuccess) {
@@ -1497,7 +1499,7 @@
                         mostrarToast(
                             r.status,
                             isSuccess ? "Completado" : "Error",
-                            isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                            isSuccess ? "fa-check" : "fa-xmark",
                             r.m
                         );
                     }
@@ -1709,7 +1711,7 @@
 
                                     mostrarToast(r.status,
                                         isSuccess ? "Completado" : "Error",
-                                        isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                        isSuccess ? "fa-check" : "fa-xmark",
                                         r.m);
 
                                     if (isSuccess) {
@@ -1726,7 +1728,7 @@
                         }
                     });
                 } else {
-                    mostrarToast('danger', "Error", "fa-solid fa-xmark fa-lg", 'No hay ' + header + ' en el listado');
+                    mostrarToast('danger', "Error", "fa-xmark", 'No hay ' + header + ' en el listado');
                 }
             }
         </script>
