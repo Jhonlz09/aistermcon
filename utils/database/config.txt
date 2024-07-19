@@ -1,5 +1,5 @@
 host=localhost
 dbname=dbaistermcon
 username=postgres
-password=admin
+password=%KKXJoHm5uec
 port=5432

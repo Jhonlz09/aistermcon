@@ -1,8 +1,5 @@
 <?php
 // config/session.php
-
-// Establecer el tiempo máximo de vida de la sesión en 5 minutos
-
 // Iniciar la sesión si no ha sido iniciada
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
