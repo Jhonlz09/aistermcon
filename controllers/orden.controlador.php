@@ -17,7 +17,7 @@ class ControladorOrden
 
         if (isset($_FILES['fileOrden']) && $_FILES['fileOrden']['type'] === 'application/pdf') {
             $year = date("Y");
-            $uploadDir = '/var/www/html/uploads/';
+            $uploadDir = '/var/www/uploads/';
             $fileName = basename($_FILES['fileOrden']['name']);
             $filePath = $uploadDir . $year . '/' . $fileName;
 
@@ -66,7 +66,7 @@ class ControladorOrden
         if (isset($_FILES['fileOrden']) && $_FILES['fileOrden']['type'] === 'application/pdf') {
             // $year = date("Y", strtotime($existingPdf['fecha_creacion'])); // Mantener el año de la creación
             list($year, $oldFileName) = explode('/', $existingPdf);
-            $uploadDir = '/var/www/html/uploads/';
+            $uploadDir = '/var/www/uploads/';
             $fileName = basename($_FILES['fileOrden']['name']);
             $filePath = $uploadDir . $year . '/' . $fileName;
 
