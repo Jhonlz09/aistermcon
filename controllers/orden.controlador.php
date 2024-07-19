@@ -37,7 +37,8 @@ class ControladorOrden
             if (move_uploaded_file($_FILES['fileOrden']['tmp_name'], $savePath)) {
                 // Archivo subido exitosamente
             } else {
-                echo json_encode(['status' => 'danger', 'm' => 'Error al subir el archivo. '. $savePath], JSON_UNESCAPED_UNICODE);
+                $error = error_get_last();
+                echo json_encode(['status' => 'error', 'm' => 'Error al subir el archivo.', 'error' => $error], JSON_UNESCAPED_UNICODE);
                 return;
             }
         }
