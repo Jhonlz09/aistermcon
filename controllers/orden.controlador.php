@@ -31,6 +31,7 @@ class ControladorOrden
             $fullNameFinal = $this->orden . '   ' . $this->cliente;
             // Generar un nombre único si el archivo ya existe
             $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
+
             $savePath = $uploadDir . $year .'/'. $filePath;
             $finalPath = $year .'/'. $filePath;
 
@@ -38,7 +39,11 @@ class ControladorOrden
                 // Archivo subido exitosamente
             } else {
                 $error = error_get_last();
-                echo json_encode(['status' => 'danger', 'm' => 'Error al subir el archivo.' . $error . '    ' .$savePath], JSON_UNESCAPED_UNICODE);
+                $errorMessage = 'Error al subir el archivo.';
+                if ($error !== null) {
+                    $errorMessage .= ' Detalles: ' . $error['message'] . ' en ' . $error['file'] . ' línea ' . $error['line'];
+                }
+                echo json_encode(['status' => 'danger', 'm' => $errorMessage]);
                 return;
             }
         }
