@@ -142,7 +142,7 @@ class ModeloOrden
             $e = Conexion::ConexionDB()->prepare("SELECT COALESCE((SELECT id_cliente 
                 FROM tblorden 
                     WHERE nombre = :nombre 
-                AND (EXTRACT(YEAR FROM fecha) = :anioActual OR estado_obra IN (1, 2)) 
+                AND (EXTRACT(YEAR FROM fecha) = :anioActual OR estado_obra IN (0, 1)) 
                 AND estado = true), 0) AS id_cliente;");
             $e->bindParam(":nombre", $nombre, PDO::PARAM_INT);
             $e->bindParam(':anioActual', $anio_actual, PDO::PARAM_INT);
