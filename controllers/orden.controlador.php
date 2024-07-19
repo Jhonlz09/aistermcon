@@ -37,7 +37,7 @@ class ControladorOrden
             if (move_uploaded_file($_FILES['fileOrden']['tmp_name'], $savePath)) {
                 // Archivo subido exitosamente
             } else {
-                echo json_encode(['status' => 'error', 'm' => 'Error al subir el archivo.'], JSON_UNESCAPED_UNICODE);
+                echo json_encode(['status' => 'danger', 'm' => 'Error al subir el archivo.'], JSON_UNESCAPED_UNICODE);
                 return;
             }
         }
@@ -82,9 +82,10 @@ class ControladorOrden
             if (move_uploaded_file($_FILES['fileOrden']['tmp_name'], $savePath)) {
                 
             } else {
-                echo json_encode(['status' => 'error', 'm' => 'Error al subir el archivo.'], JSON_UNESCAPED_UNICODE);
+                echo json_encode(['status' => 'danger', 'm' => 'Error al subir el archivo.'], JSON_UNESCAPED_UNICODE);
                 return;
             }
+
         } else {
             // Mantener la ruta del archivo actual si no se ha subido uno nuevo
             $finalPath = $existingPdf;
