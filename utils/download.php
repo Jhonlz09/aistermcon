@@ -16,7 +16,7 @@ if (!(isset($_SESSION['s_usuario']))) {
 // Obtener el nombre del archivo desde la URL
 $route = $_GET['file'];
 $file = basename($_GET['file']);
-$file_path = 'C:/xampp/uploads/' . $route;
+$file_path = '/var/www/uploads/' . $route;
 
 // Verificar si el archivo existe
 if (file_exists($file_path)) {
@@ -35,7 +35,7 @@ if (file_exists($file_path)) {
         $tplId = $pdf->importPage($pageNo); // Importar la página actual
         $pdf->useTemplate($tplId); // Usar la plantilla importada
     }
-    
+
     // Modificar los metadatos
     $pdf->SetTitle(iconv('UTF-8', 'windows-1252', $file));
     // Enviar encabezados apropiados para mostrar el PDF
