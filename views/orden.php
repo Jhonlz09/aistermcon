@@ -164,7 +164,7 @@
     <!-- /.modal-dialog -->
 </div>
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar13"] || $_SESSION["eliminar13"] ?>';
+    var mostrarCol = true;
     var editar = '<?php echo $_SESSION["editar13"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar13"] ?>';
 
@@ -254,7 +254,10 @@
                         (ruta !== '' ?
                             " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 8px' class='btn btnDescargar' title='Descargar'>" +
                             " <i class='fas fa-file-pdf'></i>" +
-                            "</a>" : "") +
+                            "</a>" :
+                            " <span style='font-size:1.4rem;padding:3px 8px;cursor:not-allowed; color:darkgrey' class='btn' >" +
+                            " <i class='fas fa-file-slash'></i>" +
+                            "</span>"  ) +
                         " </center>"
                     );
                 },
@@ -459,10 +462,7 @@
                 datos.append('fileOrden', file);
             }
 
-
-
-
-            if (datos.get('nombre') === '') {
+            if (nombre.value === '') {
                 nombre.disabled = true;
             }
 
@@ -476,7 +476,7 @@
                     // Callback para acciones después de confirmarAccion si es necesario
                 });
             } else {
-                fetchOrderId(datos.get('nombre'), function(response) {
+                fetchOrderId(datos.get('orden'), function(response) {
                     console.log(response);
                     if (response[0] != null) {
                         confirmarAccion(datos, 'orden', tabla, modal, function(r) {
@@ -493,7 +493,8 @@
             const nom = nombre.value.trim().toUpperCase(),
                 ord = orden_nro.value,
                 id_cli = cboClienteOrden.value,
-                cli_name = cboClienteOrden.options[cboClienteOrden.selectedIndex].text;
+                cli_name = cboClienteOrden.selectedIndex > 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '';
+
 
                 id_e = id.value;
             let selectedEstado;

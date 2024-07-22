@@ -12,8 +12,7 @@ if (isset($_SESSION['s_usuario'])) {
     exit();
 }
 
-// Define la duración máxima de inactividad en segundos
-// $inactive= 10800; // 5 minutos
+// $inactive= 2400; // 5 minutos
 
 // // Comprueba si el usuario ha estado inactivo demasiado tiempo
 // if (isset($_SESSION['last_activity'])) {
