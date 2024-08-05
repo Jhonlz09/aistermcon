@@ -82,7 +82,7 @@ class ModeloInforme
                     o.nombre AS orden_nro,
                     o.descripcion,
                     COALESCE(SPLIT_PART(e_encargado.nombre, ' ', 1) || ' ' || SPLIT_PART(e_encargado.apellido, ' ', 1), '') AS encargado,
-                    TO_CHAR(DATE(o.fecha_inicio), 'DD/MM/YYYY') as fecha_ini,
+                    TO_CHAR(DATE(o.fecha_ini), 'DD/MM/YYYY') as fecha_ini,
                     TO_CHAR(DATE(o.fecha_fin), 'DD/MM/YYYY') as fecha_fin
                 FROM 
                     tblorden o 
