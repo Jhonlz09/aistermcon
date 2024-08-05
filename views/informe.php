@@ -194,7 +194,7 @@
                 });
 
                 var groupText = '<div class="d-flex justify-content-between align-items-center " style="cursor:pointer"><strong  class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_informe_orden.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_orden" class="input_boleta" value=""><button style="font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf btn-row"><i class="fas fa-file-pdf"></i></button></form>' +
-                    '<form style="display:contents" target="_blank" action="EXCEL/xls_informe_orden.php" class="form_xls" method="POST" autocomplete="off"><input type="hidden" name="id_orden" class="input_boleta" value=""><button title="Descargar resumen xls" style="font-size:1.55rem;padding-inline:.5rem!important"  type="submit" class="btn pt-0 pb-0 btn_excel btn-row"><i class="fas fa-file-xls"></i></button></form>' +
+                    '<form style="display:contents"  action="EXCEL/xls_informe_orden.php" class="form_xls" method="POST" autocomplete="off"><input type="hidden" name="id_orden" class="input_boleta" value=""><button title="Descargar resumen xls" style="font-size:1.55rem;padding-inline:.5rem!important"  type="submit" class="btn pt-0 pb-0 btn_excel btn-row"><i class="fas fa-file-xls"></i></button></form>' +
                     ' </div></div>';
 
                 return $('<tr/>')
