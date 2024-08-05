@@ -25,7 +25,7 @@ class ModeloInforme
             if ($mes !== '') {
                 $consulta .= "AND EXTRACT(MONTH FROM b.fecha) = :mes ";
             }
-            $consulta .= "ORDER BY b.fecha_retorno , o.id desc , s.id;";
+            $consulta .= "ORDER BY o.id desc , s.id;";
 
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
@@ -78,14 +78,18 @@ class ModeloInforme
     {
         try {
             $a = Conexion::ConexionDB()->prepare("SELECT 
-            cl.nombre as cliente,
-			o.nombre as orden_nro,
-			o.descripcion
-        FROM 
-            tblorden o 
-			JOIN tblclientes cl ON cl.id = o.id_cliente
-			WHERE 
-				o.id = :id_orden");
+                    cl.nombre AS cliente,
+                    o.nombre AS orden_nro,
+                    o.descripcion,
+                    COALESCE(SPLIT_PART(e_encargado.nombre, ' ', 1) || ' ' || SPLIT_PART(e_encargado.apellido, ' ', 1), '') AS encargado,
+                    TO_CHAR(DATE(o.fecha_inicio), 'DD/MM/YYYY') as fecha_ini,
+                    TO_CHAR(DATE(o.fecha_fin), 'DD/MM/YYYY') as fecha_fin
+                FROM 
+                    tblorden o 
+                    JOIN tblclientes cl ON cl.id = o.id_cliente
+                    LEFT JOIN tblempleado e_encargado ON e_encargado.id = o.id_encargado
+                WHERE 
+                    o.id =:id_orden");
 
             $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
             $a->execute();
@@ -168,20 +172,20 @@ class ModeloInforme
         }
     }
 
-   
+
 
     static public function mdlBuscarBoleta($id_boleta)
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT s.id, s.cantidad_salida,u.nombre AS unidad,
-                i.descripcion, s.cantidad_salida as salidas, s.retorno, LPAD(b.id::TEXT, 7, '0') as id_boleta
-                FROM tblsalidas s
-                JOIN tblinventario i ON s.id_producto = i.id
-                JOIN tblboleta b ON s.id_boleta = b.id 
-                JOIN tblorden o ON b.id_orden = o.id
-                JOIN tblunidad u ON i.id_unidad = u.id
-		            WHERE b.id=:id
-                ORDER BY b.fecha ASC, s.id");
+                    i.descripcion, s.cantidad_salida as salidas, s.retorno, LPAD(b.id::TEXT, 7, '0') as id_boleta
+                    FROM tblsalidas s
+                    JOIN tblinventario i ON s.id_producto = i.id
+                    JOIN tblboleta b ON s.id_boleta = b.id 
+                    JOIN tblorden o ON b.id_orden = o.id
+                    JOIN tblunidad u ON i.id_unidad = u.id
+                        WHERE b.id=:id
+                    ORDER BY b.fecha ASC, s.id");
             $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
             $l->execute();
 

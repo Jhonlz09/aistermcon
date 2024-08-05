@@ -32,6 +32,10 @@
     <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
     <script src='assets/js/main.js'></script>
 
+    <!-- <link href="assets/plugins/autoComplete/autocomplete.min.css" rel="stylesheet" type="text/css">
+    <script src="assets/plugins/autoComplete/autocomplete.min.js"></script> -->
+
+
     <!-- jQuery -->
     <script src='assets/plugins/jquery/jquery.min.js'></script>
     <!-- jquery UI -->
@@ -184,6 +188,49 @@
                 setB = body.querySelectorAll('.setB'),
                 inputauto = body.querySelector('#codProducto'),
                 inputBarras = body.querySelector('#codBarras');
+
+            // const configu = {
+            //     selector: "#autoComplete",
+            //     placeHolder: "Search for numero de orden...",
+            //     data: {
+            //         src: ["00 000", "01 005", "02 021"],
+            //         cache: false,
+            //     },
+            //     resultsList: {
+            //         element: (list, data) => {
+            //             if (!data.results.length) {
+            //                 // Create "No Results" message element
+            //                 const message = document.createElement("div");
+            //                 // Add class to the created element
+            //                 message.setAttribute("class", "no_result");
+            //                 // Add message text content
+            //                 message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
+            //                 // Append message element to the results list
+            //                 list.prepend(message);
+            //             }
+            //         },
+            //         noResults: true,
+            //     },
+            //     resultItem: {
+            //         highlight: true,
+            //     }
+            // }
+            // const autoCompleteJS = new autoComplete({
+            //     configu
+            // });
+
+
+            // inputBarras.addEventListener('focus', function(event) {
+            //     event.target.blur(); // Esto deshabilita el enfoque
+            // });
+
+
+            // document.addEventListener('keydown', function(event) {
+            //     if (event.target.id !== 'codBarras') {
+            //         // let input = document.getElementById('barcodeInput');
+            //         inputBarras.value += event.key;
+            //     }
+            // });
 
             const card_fab = document.getElementById('card_fab');
 
@@ -700,9 +747,7 @@
                 fecha_retorno = document.getElementById('fecha_retorno'),
                 motivo = document.getElementById('inpMotivo');
 
-
             $(document).ready(function() {
-
                 const nro_guia = document.getElementById('nro_guia'),
                     nro_guiaEntrada = document.getElementById('nro_guiaEntrada'),
                     nro_factura = document.getElementById('nro_fac'),
@@ -715,6 +760,7 @@
                     cboConductor = document.getElementById('cboConductor'),
                     cboConductorEntrada = document.getElementById('cboConductorEntrada'),
                     cboDespachado = document.getElementById('cboDespachado'),
+                    cboAutorizado = document.getElementById('cboAutorizado'),
                     cboResponsable = document.getElementById('cboResponsable'),
                     btnGuia = document.getElementById('btnGuardarGuia');
                 // const formFab = document.getElementById('formFab'),
@@ -769,22 +815,21 @@
                     placeholder: 'SELECCIONE',
                 })
 
-
                 $(cboDespachado).select2({
                     placeholder: 'SELECCIONE',
                     minimumResultsForSearch: -1,
-                })
+                });
+
+                $(cboAutorizado).select2({
+                    placeholder: 'SELECCIONE',
+                });
+
                 $(cboResponsable).select2({
                     placeholder: 'SELECCIONE',
-                })
+                });
 
                 cargarCombo('Proveedores');
                 cargarCombo('Unidad');
-                // cargarCombo('Clientes', '', 1, true)
-                //     .then(datos_ => {
-                //         datos_cliente = datos_;
-                //         // console.log(datos_cliente)
-                //     });
                 cargarCombo('Clientes', '', 1, true).then(datos_ => {
                     datos_cliente = datos_;
                     $(cboClienteEntrada).select2({
@@ -793,8 +838,9 @@
                         data: datos_cliente
                     })
                     setChange(cboClienteEntrada, 0)
-
                 });
+
+
                 cargarCombo('Conductor', conductorPorDefecto, 2);
                 cargarCombo('ConductorEntrada', conductorPorDefecto, 2);
 
@@ -1276,6 +1322,7 @@
                         let elementosAValidar = [fecha, nro_orden, cboClientes, nro_guia, cboDespachado, cboResponsable, cboConductor];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
+                            console.log(elemento);
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
@@ -1512,7 +1559,7 @@
                         audio.onended = function() {
                             if (barras) {
                                 inputBarras.disabled = false;
-                                inputBarras.focus();
+                                // inputBarras.focus();
                             }
                             $(inputBarras).val("");
                         };
@@ -1552,7 +1599,7 @@
                         audio.onended = function() {
                             if (barras) {
                                 inputBarras.disabled = false;
-                                inputBarras.focus();
+                                // inputBarras.focus();
                             }
                             $(inputBarras).val("");
                         };

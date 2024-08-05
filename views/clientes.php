@@ -78,7 +78,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="modal">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Rol</span></h4>
@@ -87,7 +87,7 @@
                 </button>
             </div>
             <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body">
+                <div class="modal-body scroll-modal">
                     <input type="hidden" id="id" value="">
                     <div class="row">
                         <div class="col-md-12">
@@ -186,6 +186,13 @@
     var mostrarCol = '<?php echo $_SESSION["editar14"] || $_SESSION["eliminar14"] ?>';
     var editar = '<?php echo $_SESSION["editar14"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar14"] ?>';
+
+    OverlayScrollbars(document.querySelector('.scroll-modal'), {
+        autoUpdate: true,
+        scrollbars: {
+            autoHide: 'leave'
+        }
+    });
 
     configuracionTable = {
         "responsive": true,

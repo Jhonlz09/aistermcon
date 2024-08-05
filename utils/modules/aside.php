@@ -186,7 +186,7 @@
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label combo" for="codBarras">
                                                                                     <i class="fas fa-barcode"></i> Cod. Barras</label>
-                                                                                <input style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="codBarras" placeholder="Ingrese el código de barras" onkeypress="return evitarEnvio(event)">
+                                                                                <input inputmode='none' style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="codBarras" placeholder="Ingrese el código de barras" onkeypress="return evitarEnvio(event)">
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -325,6 +325,16 @@
                                                                         <div class="row">
                                                                             <div class="col-12">
                                                                                 <select id="cboDespachado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                                                </select>
+                                                                                <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group" style="margin-bottom: 1.6rem;">
+                                                                        <label id="lbl" class="mb-0 combo"><i class="fas fa-clipboard-check"></i> Autorizado por</label>
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <select id="cboAutorizado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                                                                 </select>
                                                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                             </div>
@@ -552,7 +562,7 @@
     const nombre_fab = document.getElementById('nombre_fab'),
         cboUnidad_fab = document.getElementById('cboUnidad_fab'),
         cantidad_fab = document.getElementById('cantidad_fab');
-        // cboOrdenFab = document.getElementById('cboOrdenFab');
+    // cboOrdenFab = document.getElementById('cboOrdenFab');
 
     const cboFab = document.getElementById('cboFabricado'),
         cboFabCon = document.getElementById('cboFabricadoCon');

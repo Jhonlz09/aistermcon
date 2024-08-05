@@ -141,7 +141,7 @@ class ModeloInventario
         try {
             $conexion = Conexion::ConexionDB();
             // Cambiar la consulta SQL para hacer un UPDATE
-            $a = $conexion->prepare("UPDATE tblinventario SET descripcion = :des, stock = :sto, id_unidad = :unis WHERE id = :id");
+            $a = $conexion->prepare("UPDATE tblinventario SET descripcion = :des, stock = :sto, id_unidad = :uni WHERE id = :id");
             // Vincular los parámetros
             $a->bindParam(":id", $id, PDO::PARAM_INT);
             $a->bindParam(":des", $des, PDO::PARAM_STR);

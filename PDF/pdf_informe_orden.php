@@ -1,7 +1,20 @@
 <?php
+
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si el usuario está autenticado
+if (!(isset($_SESSION['s_usuario']))) {
+    header("Location: /aistermcon");
+    exit();
+}
+
 require('../assets/plugins/fpdf/fpdf.php');
 require('../models/informe.modelo.php');
 require('../models/inventario.modelo.php');
+
 
 
 $id_orden = $_POST['id_orden'];
@@ -18,7 +31,6 @@ if ($datos_fecha != null) {
 }
 
 class PDF extends FPDF
-
 {
     private $widths;
     private $aligns;
@@ -267,13 +279,14 @@ if ($datos_guias == null) {
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de entrada: ' . $row["fecha_retorno"]), 0, 1, 'L');
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Conductor: ' . $row["conductor"] . ' ' . $row["placa"]), 0, 0, 'L');
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Encargado: ' . $encargado), 0, 1, 'R');
-        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Motivo: ' . $row["motivo"]), 0, 0, 'L');
+        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Motivo: ' . $row["motivo"]), 0, 1, 'L');
         $pdf->Ln(10);
         $id_guia = $row["id_guia"];
         $pdf->SetFont('Arial', 'B', 11);
         $header = array('Codigo', 'Descripcion', 'Unidad', 'Salida', 'Entrada', 'Tot. Util.');
         $pdf->Row($header, array(12, 12, 12, 12, 12, 12), 'B');
         $data = ModeloInforme::mdlInformeOrden($id_orden, $id_guia);
+        
         foreach ($data as $fill) {
             $pdf->SetStartY(20);
             $pdf->SetFont('Arial', '', 10);
@@ -283,7 +296,9 @@ if ($datos_guias == null) {
             $util = $fill["utilizado"];
             $fab_pro = $fill['fabricado'];
             $id_producto = $fill['id_producto'];
-
+            if ($fab_pro == true) {
+                $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fabricado: ' . $fill["descripcion"]), 0, 0, 'L');
+            }else{
             $pdf->Row(array(
                 iconv('UTF-8', 'windows-1252', $fill["codigo"]),
                 iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
@@ -292,6 +307,7 @@ if ($datos_guias == null) {
                 iconv('UTF-8', 'windows-1252', $entrada),
                 iconv('UTF-8', 'windows-1252', $util)
             ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
+        }
             if ($fab_pro == true) {
                 $data_fab = ModeloInventario::mdlListarProductoFab($id_producto);
                 foreach ($data_fab as $fab) {
@@ -324,6 +340,8 @@ if ($datos_guias == null) {
         $util = $fill["utilizado"];
         $fab_pro = $fill['fabricado'];
         $id_producto = $fill['id_producto'];
+
+
         $pdf->Row(array(
             iconv('UTF-8', 'windows-1252', $fill["codigo"]),
             iconv('UTF-8', 'windows-1252', $fill["descripcion"]),

@@ -1,3 +1,21 @@
+// var conn = new WebSocket('ws:/192.168.100.50:8080');
+// conn.onopen = function(e) {
+//     console.log("Connection established!");
+// };
+
+// conn.onmessage = function(e) {
+//     console.log(e.data);
+//     // Actualiza la parte visual aquí
+//     let message = JSON.parse(e.data);
+//     if (message.action === "update") {
+//         // Reload table or update visual elements as needed
+//         console.log('Datos actualizados a las ' + new Date().toLocaleTimeString());
+//         // $('#data').text('Datos actualizados a las ' + new Date().toLocaleTimeString());
+//         tabla.ajax.reload(null, false); // Reload the DataTable
+//     }
+// };
+
+
 function confirmarEliminar(art, name, callback) {
   Swal.fire({
     title: "¿Está seguro de eliminar " + art + " " + name + "?",

@@ -167,7 +167,6 @@
                                         <?php if ($_SESSION["eliminar3"]) : ?>
                                             <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Categoria" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
                                         <?php endif; ?>
-
                                     </div>
                                 </div>
                             </div>
@@ -446,33 +445,33 @@
         const checkbox = document.getElementById('check_stock');
         const icona = document.getElementById('stock_icon');
 
-        setTimeout(function() {
-            $.ajax({
-                url: "controllers/inventario.controlador.php",
-                method: "POST",
-                dataType: "json",
-                data: {
-                    'accion': 8
-                },
-                success: function(respuesta) {
-                    if (respuesta[0]['poco_stock'] > 0) {
-                        Swal.fire({
-                            title: "¡Existen productos con poco stock!",
-                            text: "Hay " + respuesta[0]['poco_stock'] + " producto(s) con poco stock",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonText: "Ver detalles",
-                            cancelButtonText: "Cerrar",
-                        }).then((result) => {
-                            if (result.value) {
-                                checkbox.click();
-                            }
-                        });
-                    }
+        // setTimeout(function() {
+        //     $.ajax({
+        //         url: "controllers/inventario.controlador.php",
+        //         method: "POST",
+        //         dataType: "json",
+        //         data: {
+        //             'accion': 8
+        //         },
+        //         success: function(respuesta) {
+        //             if (respuesta[0]['poco_stock'] > 0) {
+        //                 Swal.fire({
+        //                     title: "¡Existen productos con poco stock!",
+        //                     text: "Hay " + respuesta[0]['poco_stock'] + " producto(s) con poco stock",
+        //                     icon: "warning",
+        //                     showCancelButton: true,
+        //                     confirmButtonText: "Ver detalles",
+        //                     cancelButtonText: "Cerrar",
+        //                 }).then((result) => {
+        //                     if (result.value) {
+        //                         checkbox.click();
+        //                     }
+        //                 });
+        //             }
 
-                },
-            });
-        }, 1000); // Espera 3 segundos (3000 milisegundos)
+        //         },
+        //     });
+        // }, 1000); // Espera 3 segundos (3000 milisegundos)
 
 
         // Agregar evento de cambio al input

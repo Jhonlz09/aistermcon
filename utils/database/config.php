@@ -8,7 +8,7 @@ if (session_status() == PHP_SESSION_NONE) {
 if (isset($_SESSION['s_usuario'])) {
     return;
 } else {
-    header("Location: /aistermcon");
+    header("Location:../../");
     exit();
 }
 

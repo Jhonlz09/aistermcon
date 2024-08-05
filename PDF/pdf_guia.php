@@ -1,4 +1,14 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si el usuario está autenticado
+if (!(isset($_SESSION['s_usuario']))) {
+    header("Location: /aistermcon");
+    exit();
+}
+
 require('../assets/plugins/fpdf/fpdf.php');
 require('../models/salidas.modelo.php');
 
