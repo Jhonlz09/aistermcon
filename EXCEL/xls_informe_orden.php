@@ -8,6 +8,16 @@ if (!(isset($_SESSION['s_usuario']))) {
     header("Location: /aistermcon");
     exit();
 }
+
+$directory = '/aistermcon/EXCEL'; // Cambia esto al directorio donde intentas guardar el archivo
+
+if (is_writable($directory)) {
+    echo "El directorio es escribible.";
+} else {
+    echo "El directorio no es escribible.";
+}
+exit();
+
 require_once "../utils/database/conexion.php";
 require_once('../models/informe.modelo.php');
 
