@@ -252,7 +252,7 @@
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
                         (ruta !== '' ?
-                            " <a href='/aistermcon/utils/pruebaDownload.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 8px' class='btn btnDescargar' title='Descargar'>" +
+                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 8px' class='btn btnDescargar' title='Descargar'>" +
                             " <i class='fas fa-file-pdf'></i>" +
                             "</a>" :
                             " <span style='font-size:1.4rem;padding:3px 8px;cursor:not-allowed; color:darkgrey' class='btn' >" +
