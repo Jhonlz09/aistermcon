@@ -252,7 +252,7 @@
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
                         (ruta !== '' ?
-                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 8px' class='btn btnDescargar' title='Descargar'>" +
+                            " <a href='/aistermcon/utils/pruebaDownload.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 8px' class='btn btnDescargar' title='Descargar'>" +
                             " <i class='fas fa-file-pdf'></i>" +
                             "</a>" :
                             " <span style='font-size:1.4rem;padding:3px 8px;cursor:not-allowed; color:darkgrey' class='btn' >" +
@@ -265,17 +265,14 @@
         ],
     }
 
-    function descargarPDF(ruta) {
-        console.log(ruta)
-        window.open('/aistermcon/utils/download.php?file=' + encodeURIComponent(ruta), '_blank');
+    // function descargarPDF(ruta) {
+    //     console.log(ruta)
+    //     window.open('/aistermcon/utils/download.php?file=' + encodeURIComponent(ruta), '_blank');
 
-        // window.location.href = '/aistermcon/utils/download.php?file=' + ruta;
-    }
+    //     // window.location.href = '/aistermcon/utils/download.php?file=' + ruta;
+    // }
 
     $(document).ready(function() {
-
-
-
         let anio = year;
         if (!$.fn.DataTable.isDataTable('#tblOrden')) {
             tabla = $("#tblOrden").DataTable({
@@ -411,7 +408,6 @@
             setChange(cboClienteOrden, row["id_cliente"]);
             nombre.disabled = false;
             form.classList.remove('was-validated');
-
         });
 
         $('#tblOrden tbody').on('click', '.btnEstado', function() {

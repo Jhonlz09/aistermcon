@@ -45,7 +45,7 @@ class ModeloCombos
     static public function mdlListarResponsable()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT id,split_part(nombre, ' ', 1) || ' ' || split_part(apellido, ' ', 1) as nombre FROM tblempleado WHERE id_rol=3 AND estado=true ORDER BY id ASC");
+            $l = Conexion::ConexionDB()->prepare("SELECT id,split_part(nombre, ' ', 1) || ' ' || split_part(apellido, ' ', 1) as nombre FROM tblempleado WHERE id_empresa=1 AND estado=true ORDER BY id ASC");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
