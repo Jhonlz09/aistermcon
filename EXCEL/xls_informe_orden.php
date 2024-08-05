@@ -36,6 +36,9 @@ try {
 
 $id_orden = $_POST['id_orden'];
 
+var_dump($id_orden);
+exit();
+
 $datos_detalle = ModeloInforme::mdlInformeDetalleOrden($id_orden);
 $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden);
 
