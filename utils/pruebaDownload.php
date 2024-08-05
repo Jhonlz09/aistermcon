@@ -2,7 +2,7 @@
 // Obtén el nombre del archivo de la variable GET y asegúrate de que sea seguro
 if(isset($_GET['file'])) {
     $file = basename($_GET['file']);
-    $file_path = '/var/www/uploads/2024' . $file;
+    $file_path = '/var/www/uploads/2024/' . $file;
 
     // Verifica que el archivo exista
     if(file_exists($file_path)) {
