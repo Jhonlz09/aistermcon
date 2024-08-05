@@ -62,7 +62,6 @@ $sheet->getRowDimension(4)->setRowHeight(20.25);
 
 // Set the cell A1
 $sheet->setCellValue('A1', 'RESUMEN DE OBRA')->getStyle('A1')->getFont()->setSize(18);
-$sheet->getStyle('A1')->getFont()->setBold(true);
 $sheet->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FEA767');
 $sheet->getStyle('A1:F1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
@@ -202,6 +201,7 @@ $sheet->getStyle('F8')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor(
 // Set the cell A11
 $row = 11; // Starting row for data
 
+
 foreach ($data_resumen as $resumen) {
     $sheet->setCellValue('A' . $row, $resumen['codigo']);
     $sheet->setCellValue('B' . $row, $resumen['descripcion']);
@@ -216,6 +216,8 @@ foreach ($data_resumen as $resumen) {
     $sheet->getStyle('A'.$row.':F'.$row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
     $row++; // Increment row for the next data
 }
+// Set the active cell to A1
+$sheet->getStyle('A1')->getFont()->setBold(true);
 
 // $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 $file_name= $datos_detalle[0]['orden_nro'].'  '.$datos_detalle[0]['cliente'].'.xlsx';

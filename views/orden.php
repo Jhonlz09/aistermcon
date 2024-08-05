@@ -243,10 +243,11 @@
                         "<center style='white-space: nowrap;'>" +
                         (editar ?
                             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
-                            " <i class='fa-solid fa-pencil'></i>" +
+                            " <i class='fa-solid fa-pencil'></i>" : "") +
+
                             "</button> <button type='button' class='btn bg-gradient-" + clase + " btnEstado'  title='Estado'>" +
                             " <i class='fas fa-" + iconName + "'></i>" +
-                            "</button>" : "") +
+                            "</button>" +
                         (eliminar ?
                             " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
