@@ -3,11 +3,11 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// // Verificar si el usuario está autenticado
-// if (!(isset($_SESSION['s_usuario']))) {
-//     header("Location: /aistermcon");
-//     exit();
-// }
+// Verificar si el usuario está autenticado
+if (!(isset($_SESSION['s_usuario']))) {
+    header("Location: /aistermcon");
+    exit();
+}
 
 // $directory = '/aistermcon/EXCEL'; // Cambia esto al directorio donde intentas guardar el archivo
 
@@ -25,10 +25,13 @@ require_once('../models/inventario.modelo.php');
 require_once '../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Spreadsheet ;
+use PhpOffice\PhpSpreadsheet\Exception as SpreadException;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+
+try {
 
 
 $id_orden = $_POST['id_orden'];
@@ -223,3 +226,7 @@ $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 $writer->save('php://output');
 exit();
 
+}catch  (SpreadException $e) {
+    echo $e();
+    exit();
+}
