@@ -184,25 +184,25 @@
         "ordering": false,
         "autoWidth": false,
         paging: true, // Esto deshabilita la paginación
-        rowGroup: {
-            dataSrc: [9],
-            startRender: function(rows, group) {
-                var collapsed = !!collapsedGroups[group];
+        // rowGroup: {
+        //     dataSrc: [9],
+        //     startRender: function(rows, group) {
+        //       var collapsed = !!collapsedGroups[group];
 
-                rows.nodes().each(function(r) {
-                    r.style.visibility = collapsed ? '' : 'collapse';
-                });
+        //         rows.nodes().each(function(r) {
+        //             r.style.visibility = collapsed ? '' : 'collapse';
+        //         });
 
-                var groupText = '<div class="d-flex justify-content-between align-items-center " style="cursor:pointer"><strong  class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_informe_orden.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_orden" class="input_boleta" value=""><button style="font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf btn-row"><i class="fas fa-file-pdf"></i></button></form>' +
-                    '<form style="display:contents"  action="EXCEL/xls_informe_orden.php" class="form_xls" method="POST" autocomplete="off"><input type="hidden" name="id_orden" class="input_boleta" value=""><button title="Descargar resumen xls" style="font-size:1.55rem;padding-inline:.5rem!important"  type="submit" class="btn pt-0 pb-0 btn_excel btn-row"><i class="fas fa-file-xls"></i></button></form>' +
-                    ' </div></div>';
+        //         var groupText = '<div class="d-flex justify-content-between align-items-center " style="cursor:pointer"><strong  class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_informe_orden.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_orden" class="input_boleta" value=""><button style="font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf btn-row"><i class="fas fa-file-pdf"></i></button></form>' +
+        //             '<form style="display:contents"  action="EXCEL/xls_informe_orden.php" class="form_xls" method="POST" autocomplete="off"><input type="hidden" name="id_orden" class="input_boleta" value=""><button title="Descargar resumen xls" style="font-size:1.55rem;padding-inline:.5rem!important"  type="submit" class="btn pt-0 pb-0 btn_excel btn-row"><i class="fas fa-file-xls"></i></button></form>' +
+        //             ' </div></div>';
 
-                return $('<tr/>')
-                    .append('<td colspan="9">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
-                    .attr('data-name', group)
-                    .toggleClass('collapsed', collapsed);
-            }
-        },
+        //         return $('<tr/>')
+        //             .append('<td colspan="9">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
+        //             .attr('data-name', group)
+        //             .toggleClass('collapsed', collapsed);
+        //     }
+        // },
         columnDefs: [{
                 targets: 0,
                 data: 'fila',
