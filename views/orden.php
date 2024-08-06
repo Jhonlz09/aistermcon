@@ -189,7 +189,6 @@
                 targets: 5,
                 className: "text-center",
                 render: function(data, type, row, full, meta) {
-
                     let estado = row.estado_obra;
 
                     const estadoClases = {
@@ -213,12 +212,27 @@
                         3: 'FACTURADO'
                     };
 
+                    // const tooltipText = {
+                    //     0: 'La obra está en espera de ser iniciada.',
+                    //     1: 'La obra está actualmente en operación.',
+                    //     2: 'La obra ha sido finalizada.',
+                    //     3: 'La obra ha sido facturada.'
+                    // };
+
+
+                    const tooltipText = {
+                        0: 'Fecha de creacion.',
+                        1: 'La obra está actualmente en operación.',
+                        2: 'La obra ha sido finalizada.',
+                        3: 'La obra ha sido facturada.'
+                    };
+
                     let clase = estadoClases[estado] || 'default';
                     let icon = estadoIcon[estado] || 'default';
                     let texto = estadoText[estado] || 'default';
+                    let tooltip = tooltipText[estado] || 'default';
 
-                    return `<span class='alert alert-default-${clase}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
-
+                    return `<span class='alert alert-default-${clase}' data-toggle='tooltip' title='${tooltip}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
                 }
             },
             {
@@ -245,9 +259,9 @@
                             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" : "") +
 
-                            "</button> <button type='button' class='btn bg-gradient-" + clase + " btnEstado'  title='Estado'>" +
-                            " <i class='fas fa-" + iconName + "'></i>" +
-                            "</button>" +
+                        "</button> <button type='button' class='btn bg-gradient-" + clase + " btnEstado'  title='Estado'>" +
+                        " <i class='fas fa-" + iconName + "'></i>" +
+                        "</button>" +
                         (eliminar ?
                             " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
@@ -258,7 +272,7 @@
                             "</a>" :
                             " <span style='font-size:1.4rem;padding:3px 8px;cursor:not-allowed; color:darkgrey' class='btn' >" +
                             " <i class='fas fa-file-slash'></i>" +
-                            "</span>"  ) +
+                            "</span>") +
                         " </center>"
                     );
                 },
@@ -295,6 +309,8 @@
                     const w = window.innerHeight;
                     handleScroll(b, s, w);
                 }
+                $('[data-toggle="tooltip"]').tooltip();
+
 
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('orden', JSON.stringify(tablaData));
@@ -404,7 +420,7 @@
             nombre.value = row["descripcion"];
             orden_nro.value = row["nombre"];
             radios[row["estado_obra"]].click();
-            fileInput.value='';
+            fileInput.value = '';
 
             setChange(cboClienteOrden, row["id_cliente"]);
             nombre.disabled = false;
@@ -493,7 +509,7 @@
                 cli_name = cboClienteOrden.selectedIndex > 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '';
 
 
-                id_e = id.value;
+            id_e = id.value;
             let selectedEstado;
 
             radios.forEach(radio => {

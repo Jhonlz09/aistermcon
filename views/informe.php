@@ -434,7 +434,7 @@
                 mes = m;
             }
             anio = cboAnio.options[cboAnio.selectedIndex].text;
-            tabla.ajax.reload(null, false);
+            tabla.ajax.reload();
         });
 
         $('#tblInforme').on('submit', '.form_pdf', function(event) {

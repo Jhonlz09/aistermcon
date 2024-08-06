@@ -29,7 +29,7 @@
                 <div class="small-box bg-1">
                     <div class="inner">
                         <p>Productos</p>
-                        <h3 id="productos">0</h3>
+                        <h3 id="pro">0</h3>
                     </div>
                     <div class="icon">
                         <i class="fas fa-shelves"></i>
@@ -43,7 +43,7 @@
                 <div class="small-box bg-2">
                     <div class="inner">
                         <p>Movimientos</p>
-                        <h3 id="salidas">0</h3>
+                        <h3 id="mov">0</h3>
                     </div>
                     <div class="icon">
                         <i class="fas fa-cart-minus"></i>
@@ -58,7 +58,7 @@
                 <div class="small-box bg-3">
                     <div class="inner">
                         <p>Compras</p>
-                        <h3 id="entradas">0</h3>
+                        <h3 id="com">0</h3>
                     </div>
                     <div class="icon">
                         <i class="fas fa-cart-plus"></i>
@@ -71,7 +71,7 @@
                 <div class="small-box bg-4">
                     <div class="inner">
                         <p>En obra</p>
-                        <h3 id="retorno">0</h3>
+                        <h3 id="ope">0</h3>
                     </div>
                     <div class="icon">
                         <i class="fas fa-person-digging"></i>
@@ -610,10 +610,10 @@
                 },
                 dataType: 'json',
                 success: function(respuesta) {
-                    $("#productos").html(respuesta[0]['productos']);
-                    $("#salidas").html(respuesta[0]['salidas']);
-                    $("#entradas").html(respuesta[0]['entradas']);
-                    $("#retorno").html(respuesta[0]['retorno']);
+                    $("#pro").html(respuesta[0]['pro']);
+                    $("#mov").html(respuesta[0]['mov']);
+                    $("#com").html(respuesta[0]['com']);
+                    $("#ope").html(respuesta[0]['ope']);
                 }
             });
         }
