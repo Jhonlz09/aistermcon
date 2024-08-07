@@ -88,6 +88,7 @@
         const mes = month.toString().padStart(2, '0');
         const dia = now.getDate().toString().padStart(2, '0');
 
+        let estado_filter = 'null';
         let datos_cliente = [];
         let datos_orden = [];
         let datos_anio = [];
@@ -173,6 +174,27 @@
             ?>
         </div>
         <script>
+            const estadoClases = {
+                0: 'light',
+                1: 'warning',
+                2: 'info',
+                3: 'success'
+            };
+
+            const estadoIcon = {
+                0: 'clock',
+                1: 'person-digging',
+                2: 'check-to-slot',
+                3: 'money-check-dollar'
+            };
+
+            const estadoText = {
+                0: 'EN ESPERA',
+                1: 'EN OPERACIÓN',
+                2: 'FINALIZADO',
+                3: 'FACTURADO'
+            };
+
             const body = document.querySelector('body'),
                 html = document.querySelector('html'),
                 navbar = body.querySelector('.navbar'),
@@ -277,8 +299,6 @@
 
             // Verificar el estado de la sesión cada 5 minutos (300000 milisegundos)
             checkSessionInterval = setInterval(checkSession, 300000);
-
-            // console.log('este es mi id_pergul ' + id_perfil)
             btnSide.addEventListener("click", () => {
                 setTimeout(() => {
                     tabla.columns.adjust().responsive.recalc();

@@ -55,7 +55,6 @@
                                     <th>NRO. ORDEN</th>
                                     <th>CLIENTE</th>
                                     <th>DESCRIPCION</th>
-                                    <th>CREACION</th>
                                     <th>ESTADO</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
@@ -87,7 +86,7 @@
                 </button>
             </div>
             <form id="formNuevo" autocomplete="off" enctype="multipart/form-data" class="needs-validation" novalidate>
-                <div class="modal-body">
+                <div class="modal-body scroll-modal">
                     <input type="hidden" id="id" value="">
                     <div class="row">
                         <div class="col-md-12">
@@ -114,7 +113,6 @@
                                 </div>
                             </div>
                             <div class="row">
-
                                 <div class="col-md-12">
                                     <div class="input-data mb-4">
                                         <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
@@ -140,16 +138,47 @@
                                         </label>
                                     </div>
                                 </div>
+                                <div class="col-md-12" id="fechas_estados">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="input-data mb-4">
+                                                <input autocomplete="off" id="fecha_cre" class="input-nuevo" type="date">
+                                                <div class="line underline"></div>
+                                                <label class="label"><i class="fa-solid fa-input-text"></i> Fecha de creación</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="input-data mb-4">
+                                                <input autocomplete="off" id="fecha_ini" class="input-nuevo" type="date">
+                                                <div class="line underline"></div>
+                                                <label class="label"><i class="fa-solid fa-input-text"></i> Fecha de inicio</label>
+                                            </div>
+                                        </div>
 
+                                        <div class="col-md-3">
+                                            <div class="input-data mb-4">
+                                                <input autocomplete="off" id="fecha_fin" class="input-nuevo" type="date">
+                                                <div class="line underline"></div>
+                                                <label class="label"><i class="fa-solid fa-input-text"></i> Fecha de fin</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="input-data mb-4">
+                                                <input autocomplete="off" id="fecha_fac" class="input-nuevo" type="date">
+                                                <div class="line underline"></div>
+                                                <label class="label"><i class="fa-solid fa-input-text"></i> Fecha de facturación</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="col-md-12 mb-2">
                                     <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
-
                                     <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
                                     <div class="ten no-margin">*Debe selecionar un archivo .xls o .xlsx</div>
                                 </div>
+                                
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -167,10 +196,17 @@
     var mostrarCol = true;
     var editar = '<?php echo $_SESSION["editar13"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar13"] ?>';
+    OverlayScrollbars(document.querySelector('.scroll-modal'), {
+        autoUpdate: true,
+        scrollbars: {
+            autoHide: 'leave'
+        }
+    });
+
 
     configuracionTable = {
         "responsive": true,
-        "dom": 'pt',
+        "dom": '<"row"<"col-sm-6 select-filter"><"col-sm-6"p>>t',
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
@@ -186,57 +222,34 @@
                 }
             },
             {
-                targets: 5,
+                targets: 4,
                 className: "text-center",
                 render: function(data, type, row, full, meta) {
                     let estado = row.estado_obra;
-
-                    const estadoClases = {
-                        0: 'light',
-                        1: 'warning',
-                        2: 'info',
-                        3: 'success'
-                    };
-
-                    const estadoIcon = {
-                        0: 'clock',
-                        1: 'person-digging',
-                        2: 'check-to-slot',
-                        3: 'money-check-dollar'
-                    };
-
-                    const estadoText = {
-                        0: 'EN ESPERA',
-                        1: 'EN OPERACIÓN',
-                        2: 'FINALIZADO',
-                        3: 'FACTURADO'
-                    };
-
-                    // const tooltipText = {
-                    //     0: 'La obra está en espera de ser iniciada.',
-                    //     1: 'La obra está actualmente en operación.',
-                    //     2: 'La obra ha sido finalizada.',
-                    //     3: 'La obra ha sido facturada.'
-                    // };
-
+                    let fecha_cre = row.fecha;
+                    let fecha_ini = row.fecha_ini;
+                    let fecha_fin = row.fecha_fin;
+                    let fecha_fac = row.fecha_fac;
 
                     const tooltipText = {
-                        0: 'Fecha de creacion.',
-                        1: 'La obra está actualmente en operación.',
-                        2: 'La obra ha sido finalizada.',
-                        3: 'La obra ha sido facturada.'
+                        0: 'Fecha de creacion: ' + fecha_cre,
+                        1: 'Fecha de inicio de operación: ' + fecha_ini,
+                        2: 'Fecha de finalización: ' + fecha_fin,
+                        3: 'Fecha de facturación: ' + fecha_fac,
                     };
+
+                    let concatenatedTooltipText = Object.values(tooltipText).join('<br>');
 
                     let clase = estadoClases[estado] || 'default';
                     let icon = estadoIcon[estado] || 'default';
                     let texto = estadoText[estado] || 'default';
-                    let tooltip = tooltipText[estado] || 'default';
+                    // let tooltip = tooltipText[estado] || 'default';
 
-                    return `<span class='alert alert-default-${clase}' data-toggle='tooltip' title='${tooltip}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
+                    return `<span class='alert alert-default-${clase}' data-html='true' data-toggle='tooltip' title='${concatenatedTooltipText}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
                 }
             },
             {
-                targets: 6,
+                targets: 5,
                 data: "acciones",
                 visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
@@ -297,6 +310,7 @@
                     "dataSrc": '',
                     data: function(data) {
                         data.anio = anio;
+                        data.id_estado = estado_filter;
                     }
                 },
                 ...configuracionTable
@@ -316,6 +330,9 @@
                 localStorage.setItem('orden', JSON.stringify(tablaData));
             });
         }
+
+        $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboOrdenEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"></select> </div>  </div>');
+
         let accion = 0;
 
         const modal = document.getElementById('modal'),
@@ -327,13 +344,19 @@
             btnNuevo = document.getElementById('btnNuevo');
         const radios = document.querySelectorAll('input[name="options"]');
 
+        const fechas_estados = document.getElementById('fechas_estados'),
+            fecha_cre = document.getElementById('fecha_cre'),
+            fecha_ini = document.getElementById('fecha_ini'),
+            fecha_fin = document.getElementById('fecha_fin'),
+            fecha_fac = document.getElementById('fecha_fac');
 
 
         const id = document.getElementById('id'),
             nombre = document.getElementById('nombre'),
             orden_nro = document.getElementById('orden_nro'),
             cboClienteOrden = document.getElementById('cboClientesOrden'),
-            fileInput = document.getElementById('fileOrden');
+            fileInput = document.getElementById('fileOrden'),
+            cboOrdenEstadoFilter = document.getElementById('cboOrdenEstadoFilter');
 
 
         $(modal).on("shown.bs.modal", () => {
@@ -344,7 +367,8 @@
             width: '110%',
             data: datos_anio,
             minimumResultsForSearch: -1,
-        })
+        });
+
         setChange(cboAnio, anio);
 
         $(cboAnio).on("change", function() {
@@ -356,10 +380,28 @@
             tabla.ajax.reload();
         });
 
+        $(cboOrdenEstadoFilter).on("change", function() {
+            // if (this.value !== 'null'){
+            estado_filter = this.value;
+            // console.log(estado_filter)
+            accion = 0;
+            tabla.ajax.reload();
+            // }
+            estado_filter = 'null';
+        });
+
         $(cboClienteOrden).select2({
             width: '100%',
             data: datos_cliente
         })
+
+
+        $(cboOrdenEstadoFilter).select2({
+            width: '100%',
+            minimumResultsForSearch: -1,
+        })
+
+        cargarCombo('OrdenEstadoFilter', estado_filter, 11);
 
         $(cboClienteOrden).change(function() {
             estilosSelect2(this, 'lblCO')
@@ -369,11 +411,11 @@
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
                 radios[0].click();
+                fechas_estados.style.display = 'none';
                 cambiarModal(span, ' Nueva Orden', icon, 'fa-ticket', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
-                    s.classList.add('select2-success');
-                });
+                    s.classList.add('select2-success');});
                 form.reset();
                 form.classList.remove('was-validated');
                 nombre.disabled = false;
@@ -403,21 +445,14 @@
             });
         });
 
-        // document.addEventListener('keydown', function(e) {
-        //     if (e.key === "Escape") {
-        //         const activeModal = document.querySelector('.modal.show');
-        //         if (activeModal) {
-        //             $(activeModal).modal('hide');
-        //         }
-        //     }
-        // });
-
         $('#tblOrden tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             accion = 2;
+            fechas_estados.style.display = '';
             cambiarModal(span, ' Editar Orden', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombre.value = row["descripcion"];
+            fecha_cre.value = convertirFecha(row["fecha"]);
             orden_nro.value = row["nombre"];
             radios[row["estado_obra"]].click();
             fileInput.value = '';
@@ -457,9 +492,7 @@
         form.addEventListener("submit", function(e) {
             e.preventDefault();
 
-
             let datos = obtenerDatosFormulario();
-
             const file = fileInput.files[0];
 
             // Validar que el archivo es .pdf
@@ -547,6 +580,17 @@
                     });
                 }
             });
+        }
+
+        function convertirFecha(fecha) {
+            // Dividir la fecha y la hora
+            let [datePart, timePart] = fecha.split(' ');
+
+            // Dividir los componentes de la fecha
+            let [day, month, year] = datePart.split('/');
+
+            // Formatear la fecha como 'YYYY-MM-DD'
+            return `${year}-${month}-${day}`;
         }
     })
 </script>

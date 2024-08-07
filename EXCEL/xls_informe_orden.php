@@ -33,13 +33,10 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 
 try {
 
-
 $id_orden = $_POST['id_orden'];
-
 
 $datos_detalle = ModeloInforme::mdlInformeDetalleOrden($id_orden);
 $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden);
-
 
 $spreadsheet = new Spreadsheet();
 $spreadsheet->getDefaultStyle()->getFont()->setName('Arial')->setSize(11);
@@ -70,6 +67,7 @@ $sheet->setCellValue('A3', 'CLIENTE:')->getStyle('A3')->getFont()->setBold(true)
 $sheet->getStyle('A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 $sheet->getStyle('A3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 $sheet->getStyle('A3:F3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
 // Set the cell B3
 $sheet->mergeCells('B3:C3');
 $sheet->setCellValue('B3', $datos_detalle[0]['cliente'])->getStyle('B3')->getFont()->setSize(16);
@@ -201,14 +199,13 @@ $sheet->getStyle('F8')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor(
 // Set the cell A11
 $row = 11; // Starting row for data
 
-
 foreach ($data_resumen as $resumen) {
-    $sheet->setCellValue('A' . $row, $resumen['codigo']);
-    $sheet->setCellValue('B' . $row, $resumen['descripcion']);
-    $sheet->setCellValue('C' . $row, $resumen['unidad']);
-    $sheet->setCellValue('D' . $row, $resumen['cantidad_salida']);
-    $sheet->setCellValue('E' . $row, $resumen['retorno']);
-    $sheet->setCellValue('F' . $row, $resumen['utilizado']);
+    $sheet->setCellValue('A' . $row, $res['codigo']);
+    $sheet->setCellValue('B' . $row, $res['descripcion']);
+    $sheet->setCellValue('C' . $row, $res['unidad']);
+    $sheet->setCellValue('D' . $row, $res['cantidad_salida']);
+    $sheet->setCellValue('E' . $row, $res['retorno']);
+    $sheet->setCellValue('F' . $row, $res['utilizado']);
     $sheet->getStyle('C'. $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('D'. $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('E'. $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);

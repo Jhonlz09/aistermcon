@@ -132,4 +132,18 @@ class ModeloCombos
             return "Error en la consulta: " . $e->getMessage();
         }
     }
+
+    static public function mdlListarOrdenEstadoFilter()
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT null AS id, 'TODO' AS nombre
+            UNION ALL
+            SELECT id, estado_obra AS nombre
+            FROM tblestado_obra");
+            $l->execute();
+            return $l->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
 }

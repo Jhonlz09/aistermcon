@@ -105,7 +105,7 @@
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
-        paging: false, // Esto deshabilita la paginación
+        "paging": false, // Esto deshabilita la paginación
         searchPanes: {
             cascadePanes: true,
             columns: [2, 8, 9],

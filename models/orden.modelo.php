@@ -4,20 +4,36 @@ require_once "../utils/database/conexion.php";
 
 class ModeloOrden
 {
-    static public function mdlListarOrden($anio)
+    static public function mdlListarOrden($anio, $estado)
     {
         try {
             $consulta = "SELECT o.id, o.nombre, 
-            c.nombre as cliente, o.descripcion, TO_CHAR(o.fecha, 'DD/MM/YYYY  HH24:MI') as fecha, o.estado_obra,
-            '' as acciones, o.id_cliente, o.ruta
-        FROM tblorden o
-		JOIN tblestado_obra eo ON o.estado_obra = eo.id
-        JOIN tblclientes c ON o.id_cliente = c.id
-        WHERE o.estado = true AND EXTRACT(YEAR FROM o.fecha) = :anio
-        ORDER BY o.id;";
+                        c.nombre AS cliente, 
+                        o.descripcion,  
+                        o.estado_obra,
+                        '' AS acciones, 
+                        o.id_cliente, 
+                        o.ruta, 
+                        TO_CHAR(o.fecha, 'DD/MM/YYYY HH24:MI') AS fecha, 
+                        COALESCE(TO_CHAR(o.fecha_ini, 'DD/MM/YYYY HH24:MI'), '') AS fecha_ini, 
+                        COALESCE(TO_CHAR(o.fecha_fin, 'DD/MM/YYYY HH24:MI'), '') AS fecha_fin, 
+                        COALESCE(TO_CHAR(o.fecha_fac, 'DD/MM/YYYY HH24:MI'), '') AS fecha_fac
+                    FROM tblorden o
+                    JOIN tblestado_obra eo ON o.estado_obra = eo.id
+                    JOIN tblclientes c ON o.id_cliente = c.id
+                    WHERE o.estado = true 
+                    AND EXTRACT(YEAR FROM o.fecha) = :anio ";
+            if ($estado !== 'null') {
+                $consulta .= "AND o.estado_obra = :estado ";
+            }
+            $consulta .= "ORDER BY o.id;";
+
 
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
+            if ($estado !== 'null') {
+                $l->bindParam(":estado", $estado, PDO::PARAM_INT);
+            }
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -36,13 +52,6 @@ class ModeloOrden
             $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
             $a->bindParam(":estado", $estado, PDO::PARAM_INT);
             $a->execute();
-            // if ($a->execute()) {
-            //     $stm = $conexion->prepare("SELECT last_value + 1 AS secuencia_orden FROM secuencia_orden;");
-            //     $stm->execute();
-            //     $sec = $stm->fetch(PDO::FETCH_ASSOC);
-
-            //     $_SESSION["secuencia_orden"] = $sec['secuencia_orden'];
-            // }
 
             return array(
                 'status' => 'success',
@@ -62,11 +71,6 @@ class ModeloOrden
             }
         }
     }
-
-
-
-
-
 
     static public function mdlEditarOrden($id, $nombre, $id_cliente, $orden, $estado, $ruta)
     {
@@ -163,7 +167,8 @@ class ModeloOrden
         }
     }
 
-    public static function mdlIsPdfOrden($id_orden){
+    public static function mdlIsPdfOrden($id_orden)
+    {
         $e = Conexion::ConexionDB()->prepare("SELECT o.ruta FROM tblorden o WHERE o.id = :id_orden");
         $e->bindParam(':id_orden', $id_orden, PDO::PARAM_INT);
 
@@ -171,5 +176,4 @@ class ModeloOrden
         $r = $e->fetch(PDO::FETCH_ASSOC);
         return $r['ruta'];
     }
-
 }

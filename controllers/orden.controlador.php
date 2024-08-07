@@ -7,7 +7,7 @@ class ControladorOrden
 
     public function listarOrden()
     {
-        $data = ModeloOrden::mdlListarOrden($this->anio);
+        $data = ModeloOrden::mdlListarOrden($this->anio, $this->estado);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -140,6 +140,7 @@ class ControladorOrden
 if (!isset($_POST["accion"])) {
     $data = new ControladorOrden();
     $data->anio = $_POST["anio"];
+    $data->estado = $_POST["id_estado"];
     $data->listarOrden();
 } else {
     if ($_POST["accion"] == 1) {
