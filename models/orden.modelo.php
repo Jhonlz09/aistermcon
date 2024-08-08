@@ -121,12 +121,32 @@ class ModeloOrden
         }
     }
 
-    public static function mdlcambiarEstado($id, $estado)
+    public static function mdlCambiarEstado($id, $estado, $fecha)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("UPDATE tblorden SET estado_obra=:estado WHERE id=:id");
+            $hora = date('H:i:s');
+            $fechaHora = $fecha . ' ' . $hora;
+
+            $fechas = array(
+                '0' => '',
+                '1' => 'fecha_ini',
+                '2' => 'fecha_fin',
+                '3' => 'fecha_fac'
+            );
+
+            $consulta = "UPDATE tblorden SET estado_obra=:estado ";
+            if ($estado !== '0') {
+                $consulta .= ",".$fechas[$estado]. " =:fecha ";
+            }
+            $consulta .= "WHERE id=:id";
+
+
+            $e = Conexion::ConexionDB()->prepare($consulta);
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->bindParam(":estado", $estado, PDO::PARAM_INT);
+            if($estado !== '0'){
+                $e->bindParam(":fecha", $fechaHora, PDO::PARAM_STR);
+            }
             $e->execute();
             return array(
                 'status' => 'success',

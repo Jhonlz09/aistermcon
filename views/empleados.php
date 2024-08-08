@@ -382,7 +382,7 @@
 
         $(modal).on("shown.bs.modal", () => {
             nombre.focus();
-        })
+        });
 
         $(modalS).on("shown.bs.modal", function() {
             inputContent.focus();
