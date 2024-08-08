@@ -139,7 +139,7 @@ class ModeloRegistro
     
     static private function insertarOrden($conexion, $orden, $cliente, $responsable, $fecha) {
         if ($orden == '') {
-            $stmtO = $conexion->prepare("INSERT INTO tblorden(id_cliente, id_encargado) VALUES (:id_cliente, :responsable)");
+            $stmtO = $conexion->prepare("INSERT INTO tblorden(id_cliente, id_encargado, fecha_ini) VALUES (:id_cliente, :responsable, now())");
             $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
             if ($responsable === null || $responsable == '') {
                 $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
@@ -159,7 +159,7 @@ class ModeloRegistro
             if ($resultadoVerificar) {
                 return $resultadoVerificar['id'];
             } else {
-                $stmtO = $conexion->prepare("INSERT INTO tblorden(nombre, id_cliente, id_encargado) VALUES (:orden, :id_cliente, :responsable);");
+                $stmtO = $conexion->prepare("INSERT INTO tblorden(nombre, id_cliente, id_encargado, fecha_ini) VALUES (:orden, :id_cliente, :responsable, now());");
                 $stmtO->bindParam(':orden', $orden, PDO::PARAM_STR);
                 $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
                 if ($responsable === null || $responsable === '' ) {
