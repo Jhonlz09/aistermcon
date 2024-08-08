@@ -186,7 +186,7 @@
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label combo" for="codBarras">
                                                                                     <i class="fas fa-barcode"></i> Cod. Barras</label>
-                                                                                <input inputmode='none' style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="codBarras" placeholder="Ingrese el código de barras" onkeypress="return evitarEnvio(event)">
+                                                                                <input inputmode='text' style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="codBarras" placeholder="Ingrese el código de barras" onkeypress="return evitarEnvio(event)">
                                                                             </div>
                                                                         </div>
                                                                     </div>
