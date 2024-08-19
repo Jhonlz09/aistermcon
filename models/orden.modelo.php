@@ -41,16 +41,17 @@ class ModeloOrden
         }
     }
 
-    static public function mdlAgregarOrden($nombre,  $id_cliente, $orden, $estado, $ruta)
+    static public function mdlAgregarOrden($nombre,  $id_cliente, $orden, $ruta, $fecha)
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblorden(descripcion, id_cliente, nombre, estado_obra, ruta) VALUES (:des, :id_cliente, :orden, :estado, :ruta)");
+            $a = $conexion->prepare("INSERT INTO tblorden(descripcion, id_cliente, nombre, ruta, fecha, estado_obra) VALUES (:des, :id_cliente, :orden, :ruta, :fecha, 0)");
             $a->bindParam(":des", $nombre, PDO::PARAM_STR);
             $a->bindParam(":orden", $orden, PDO::PARAM_STR);
             $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
+            $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
             $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
-            $a->bindParam(":estado", $estado, PDO::PARAM_INT);
+            // $a->bindParam(":estado", $estado, PDO::PARAM_INT);
             $a->execute();
 
             return array(
@@ -72,15 +73,15 @@ class ModeloOrden
         }
     }
 
-    static public function mdlEditarOrden($id, $nombre, $id_cliente, $orden, $estado, $ruta)
+    static public function mdlEditarOrden($id, $nombre, $id_cliente, $orden, $ruta)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("UPDATE tblorden SET descripcion=:des,id_cliente=:id_cliente, nombre=:orden, estado_obra=:estado, ruta=:ruta WHERE id=:id");
+            $u = Conexion::ConexionDB()->prepare("UPDATE tblorden SET descripcion=:des,id_cliente=:id_cliente, nombre=:orden, ruta=:ruta WHERE id=:id");
             $u->bindParam(":id", $id, PDO::PARAM_INT);
             $u->bindParam(":des", $nombre, PDO::PARAM_STR);
             $u->bindParam(":orden", $orden, PDO::PARAM_STR);
             $u->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
-            $u->bindParam(":estado", $estado, PDO::PARAM_INT);
+            // $u->bindParam(":estado", $estado, PDO::PARAM_INT);
             $u->bindParam(":ruta", $ruta, PDO::PARAM_STR);
 
             $u->execute();
@@ -128,25 +129,21 @@ class ModeloOrden
             $fechaHora = $fecha . ' ' . $hora;
 
             $fechas = array(
-                '0' => '',
+                '0' => 'fecha',
                 '1' => 'fecha_ini',
                 '2' => 'fecha_fin',
                 '3' => 'fecha_fac'
             );
 
             $consulta = "UPDATE tblorden SET estado_obra=:estado ";
-            if ($estado !== '0') {
-                $consulta .= ",".$fechas[$estado]. " =:fecha ";
-            }
+            $consulta .= ",".$fechas[$estado]. " =:fecha ";
             $consulta .= "WHERE id=:id";
 
 
             $e = Conexion::ConexionDB()->prepare($consulta);
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->bindParam(":estado", $estado, PDO::PARAM_INT);
-            if($estado !== '0'){
-                $e->bindParam(":fecha", $fechaHora, PDO::PARAM_STR);
-            }
+            $e->bindParam(":fecha", $fechaHora, PDO::PARAM_STR);
             $e->execute();
             return array(
                 'status' => 'success',

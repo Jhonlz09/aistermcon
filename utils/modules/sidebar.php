@@ -119,38 +119,38 @@ $_SESSION["conductor"] = $configuracion[0]->conductor;
 
 
         // Verificar si no es un dispositivo móvil
-        if (!window.matchMedia("(max-width: 768px)").matches) {
-            var itemsConSubmenu = $('.nav-item:has(.nav-treeview)');
-            var itemsConSetA = $('.nav-item:has(.nav-treeview) .setA');
-            var hoverTimeout; // Variable para almacenar el timeout
+        // if (!window.matchMedia("(max-width: 768px)").matches) {
+        //     var itemsConSubmenu = $('.nav-item:has(.nav-treeview)');
+        //     var itemsConSetA = $('.nav-item:has(.nav-treeview) .setA');
+        //     var hoverTimeout; // Variable para almacenar el timeout
 
-            itemsConSubmenu.hover(
-                function() {
-                    var self = this;
-                    hoverTimeout = setTimeout(function() {
-                        var subMenu = $(self).find('.nav-treeview');
-                        if (!subMenu.is(':visible')) {
-                            subMenu.slideDown();
-                            $(self).addClass('menu-open');
-                        }
-                    }, 380); // Tiempo en milisegundos que el mouse debe permanecer sobre el elemento (por ejemplo, 500ms)
-                },
-                function() {
-                    clearTimeout(hoverTimeout); // Cancela el timeout si el mouse sale antes de tiempo
-                    var subMenu = $(this).find('.nav-treeview');
-                    if (subMenu.is(':visible')) {
-                        subMenu.slideUp();
-                        $(this).removeClass('menu-open');
-                        $(this).removeClass('menu-is-opening');
-                    }
-                }
-            );
-        }else{
-            const sidebar = document.querySelector('.main-sidebar');
-            sidebar.classList.add('sidebar-no-expand');
-            const nav = document.getElementById('nav');
-            nav.classList.remove('nav-child-indent')
+        //     itemsConSubmenu.hover(
+        //         function() {
+        //             var self = this;
+        //             hoverTimeout = setTimeout(function() {
+        //                 var subMenu = $(self).find('.nav-treeview');
+        //                 if (!subMenu.is(':visible')) {
+        //                     subMenu.slideDown();
+        //                     $(self).addClass('menu-open');
+        //                 }
+        //             }, 380); // Tiempo en milisegundos que el mouse debe permanecer sobre el elemento (por ejemplo, 500ms)
+        //         },
+        //         function() {
+        //             clearTimeout(hoverTimeout); // Cancela el timeout si el mouse sale antes de tiempo
+        //             var subMenu = $(this).find('.nav-treeview');
+        //             if (subMenu.is(':visible')) {
+        //                 subMenu.slideUp();
+        //                 $(this).removeClass('menu-open');
+        //                 $(this).removeClass('menu-is-opening');
+        //             }
+        //         }
+        //     );
+        // }else{
+        //     const sidebar = document.querySelector('.main-sidebar');
+        //     sidebar.classList.add('sidebar-no-expand');
+        //     const nav = document.getElementById('nav');
+        //     nav.classList.remove('nav-child-indent')
 
-        }
+        // }
     });
 </script>

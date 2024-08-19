@@ -31,13 +31,7 @@ if (!isset($_SESSION["crear12"])) {
             </a>
         </li>
     <?php endif; ?>
-    <?php if ($_SESSION["crear12"]) : ?>
-        <li class="nav-item">
-            <a class="nav-link ctrl-side" id="second_control" data-widget="control-sidebar"  data-target=".second-sidebar" data-controlsidebar-slide="true" href="#" role="button">
-            <i class="fas fa-file-invoice-dollar fa-lg"><span style="font-size:1rem"> PPT</span></i>
-            </a>
-        </li>
-    <?php endif; ?>
+    
     </ul>
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">

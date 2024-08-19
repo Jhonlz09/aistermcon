@@ -39,8 +39,6 @@
                                             </label>
                                         </div>
                                     </h3>
-
-
                                     <!-- <label class="switch-2">
                                         <input class="switch__input" type="checkbox" name="1" value="1" onkeydown="toggleWithEnter(event, this)"> -->
                                     <!-- <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
@@ -127,7 +125,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="input-data s1">
-                                        <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)" required>
+                                        <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
                                         <label class="label"><i class="fa-solid fa-boxes-stacked"></i> Cantidad</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>

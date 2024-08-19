@@ -48,7 +48,7 @@ class ControladorOrden
             }
         }
 
-        $data = ModeloOrden::mdlAgregarOrden($this->nombres, $this->id_cliente, $this->orden, $this->estado, $finalPath);
+        $data = ModeloOrden::mdlAgregarOrden($this->nombres, $this->id_cliente, $this->orden, $finalPath, $this->fecha);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -97,7 +97,7 @@ class ControladorOrden
             $finalPath = $existingPdf;
         }
 
-        $data = ModeloOrden::mdlEditarOrden($this->id, $this->nombres, $this->id_cliente, $this->orden, $this->estado, $finalPath);
+        $data = ModeloOrden::mdlEditarOrden($this->id, $this->nombres, $this->id_cliente, $this->orden, $finalPath);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -149,7 +149,8 @@ if (!isset($_POST["accion"])) {
         $data->orden = $_POST["orden"];
         $data->id_cliente = $_POST["id_cliente"];
         $data->cliente = $_POST["cliente"];
-        $data->estado = $_POST["estado"];
+        // $data->estado = $_POST["estado"];
+        $data->fecha = $_POST["fecha"];
         $data->agregarOrden();
     } else if ($_POST["accion"] == 2) {
         $data = new ControladorOrden();
@@ -158,7 +159,7 @@ if (!isset($_POST["accion"])) {
         $data->orden = $_POST["orden"];
         $data->id_cliente = $_POST["id_cliente"];
         $data->cliente = $_POST["cliente"];
-        $data->estado = $_POST["estado"];
+        // $data->estado = $_POST["estado"];
 
         $data->editarOrden();
     } else if ($_POST["accion"] == 3) {

@@ -254,12 +254,24 @@ input[type="radio"] {
 input[type="radio"]:checked+label {
     color: var(--light);
 }
+/* .sorting_disabled.sorting_asc{
+    position: initial;
+    cursor: none;
+}
 
+table.dataTable>thead .sorting_disabled.sorting_asc::after , table.dataTable>thead .sorting_disabled.sorting_asc::before {
+    cursor: none ;
+    display: none;
+} */
 /* #radio-1:checked {
     --label-new: #000000!important;
 } */
 #btnOrden:focus {
     box-shadow: 0 0 0 0.2rem var(--boxshadow);
+}
+
+#btnConfirmar:focus {
+    box-shadow: 0 0 0 0.2rem #82828276;
 }
 
 #btnGuardarGuia:focus {
@@ -817,6 +829,8 @@ input:focus-visible {
     box-shadow: 0 0 0 0.2rem var(--boxshadow);
 }
 
+
+
 .modal-body {
     position: relative;
     flex: 1 1 auto;
@@ -900,9 +914,9 @@ svg {
 }
 
 .btn-group-toggle label.btn.active {
-    background-color: var(--label-new);
+    background-color: #000;
     color: #fff;
-    border-color: var(--label-new);
+    border-color: #000;
 }
 
 .btn-group-toggle label.btn {

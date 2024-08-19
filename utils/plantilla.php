@@ -1579,7 +1579,7 @@
                         audio.onended = function() {
                             if (barras) {
                                 inputBarras.disabled = false;
-                                // inputBarras.focus();
+                                inputBarras.focus();
                             }
                             $(inputBarras).val("");
                         };
@@ -1619,7 +1619,7 @@
                         audio.onended = function() {
                             if (barras) {
                                 inputBarras.disabled = false;
-                                // inputBarras.focus();
+                                inputBarras.focus();
                             }
                             $(inputBarras).val("");
                         };

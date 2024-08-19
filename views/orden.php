@@ -121,30 +121,22 @@
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
-                                <div class="col-md-12 mb-4">
-                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-chart-candlestick"></i></i> Estado</label>
-                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                        <label style="border-left-width: 1px;" class="btn txt-ellipsis">
-                                            <input type="radio" value="0" name="options" id="option_a1" autocomplete="off" checked> <i class="fas fa-clock"></i> En espera
-                                        </label>
-                                        <label for="option_a2" class="btn txt-ellipsis">
-                                            <input type="radio" value="1" name="options" id="option_a2" autocomplete="off"><i class="fas fa-person-digging"></i> En operacion
-                                        </label>
-                                        <label for="option_a3" class="btn txt-ellipsis">
-                                            <input type="radio" value="2" name="options" id="option_a3" autocomplete="off"> <i class="fas fa-check-to-slot"></i> Finalizado
-                                        </label>
-                                        <label for="option_a4" style="border-right-width: 1px;" class="btn txt-ellipsis">
-                                            <input type="radio" value="3" name="options" id="option_a4" autocomplete="off"> <i class="fa-solid fa-money-check-dollar"></i> Facturado
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-2">
+                            </div>
+
+                            <div class="row">
+                                <div class="col mb-2">
                                     <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
                                     <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
                                     <div class="ten no-margin">*Debe selecionar un archivo .xls o .xlsx</div>
                                 </div>
-
+                                <div class="col-md-6 mb-2" id="div_fecha_new">
+                                    <label class="combo" style="line-height:1.2;font-size: 1.15rem;" for="fecha_">
+                                        <i class="fas fa-calendar"></i> Fecha de creación</label>
+                                    <input id="fecha_new" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -161,29 +153,64 @@
 
 <!-- Modal Date-->
 <div class="modal fade" id="modal-date">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-green">
-                <h4 class="modal-title title-nuevo"><i class="fas fa-calendar-check"></i> Confirmar fecha</h4>
+            <div class="modal-header bg-gradient-light">
+                <h4 class="modal-title title-nuevo"><i class="fas fa-calendar-check"></i> Cambiar estado</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <form id="formDate" class="needs-validation" autocomplete="off" novalidate>
                 <div class="modal-body">
-                    <div id="" class="col-sm-4">
+                    <div class="col-md-12 mb-4">
+                        <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-chart-candlestick"></i></i> Estado</label>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label style="border-left-width: 1px;" class="btn txt-ellipsis">
+                                <input type="radio" value="0" name="options" id="option_a1" autocomplete="off"> <i class="fas fa-clock"></i> En espera
+                            </label>
+                            <label for="option_a2" class="btn txt-ellipsis">
+                                <input type="radio" value="1" name="options" id="option_a2" autocomplete="off"><i class="fas fa-person-digging"></i> En operacion
+                            </label>
+                            <label for="option_a3" class="btn txt-ellipsis">
+                                <input type="radio" value="2" name="options" id="option_a3" autocomplete="off"> <i class="fas fa-check-to-slot"></i> Finalizado
+                            </label>
+                            <label for="option_a4" style="border-right-width: 1px;" class="btn txt-ellipsis">
+                                <input type="radio" value="3" name="options" id="option_a4" autocomplete="off"> <i class="fa-solid fa-money-check-dollar"></i> Facturado
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
                         <input type="hidden" id="inp_estado" value="">
                         <input type="hidden" id="id_orden_" value="">
-                        <div class="form-group mb-0">
+                        <div id="div_fecha_cre" class="form-group mb-2">
                             <label class="col-form-label combo" for="fecha">
-                                <i class="fas fa-calendar"></i> Fecha</label>
-                            <input id="fecha_estado" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                                <i class="fas fa-calendar"></i> Fecha de creación</label>
+                            <input id="fecha_cre" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                        </div>
+                        <div id="div_fecha_ini" class="form-group mb-2">
+                            <label class="col-form-label combo" for="fecha">
+                                <i class="fas fa-calendar"></i> Fecha de inicio de operación</label>
+                            <input id="fecha_ini" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                        </div>
+                        <div id="div_fecha_fin" class="form-group mb-2">
+                            <label class="col-form-label combo" for="fecha">
+                                <i class="fas fa-calendar"></i> Fecha de finalización</label>
+                            <input id="fecha_fin" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                        </div>
+                        <div id="div_fecha_fac" class="form-group mb-2">
+                            <label class="col-form-label combo" for="fecha">
+                                <i class="fas fa-calendar"></i> Fecha de facturación</label>
+                            <input id="fecha_fac" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                             <div class="invalid-feedback">*Campo obligatorio.</div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnConfirmar" class="btn bg-gradient-green"><i class="fas fa-circle-check"></i><span class="button-text"> Confirmar</span></button>
+                    <button type="submit" id="btnConfirmar" class="btn bg-gradient-light"><i class="fas fa-circle-check"></i><span class="button-text"> Confirmar</span></button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -208,12 +235,13 @@
         "responsive": true,
         "dom": '<"row"<"col-sm-6 select-filter"><"col-sm-6"p>>t',
         "lengthChange": false,
-        "ordering": false,
+        "ordering": true,
         "autoWidth": false,
         columnDefs: [{
+                // "orderable": false,
                 targets: 0,
-                data: "acciones",
-                className: "text-center",
+                data: null,
+                // className: "text-center",
                 render: function(data, type, row, meta) {
                     if (type === 'display') {
                         return meta.row + 1; // Devuelve el número de fila + 1
@@ -222,8 +250,25 @@
                 }
             },
             {
+                targets: 1,
+                "orderable": true,
+            },
+            {
+                targets: 2,
+                "orderable": false,
+            },
+            {
+                targets: 3,
+                "orderable": false,
+            },
+            {
+                targets: 3,
+                "orderable": false,
+            },
+            {
                 targets: 4,
                 className: "text-center",
+                "orderable": false,
                 render: function(data, type, row, full, meta) {
                     let estado = row.estado_obra;
                     let fecha_cre = row.fecha;
@@ -250,6 +295,7 @@
             },
             {
                 targets: 5,
+                "orderable": false,
                 data: "acciones",
                 visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
@@ -265,13 +311,13 @@
                     let ruta = row.ruta;
                     let clase = estadoClases[estado];
                     // let btnEstado = estado === '0' ? '' : 'btnEstado';
-                    let data_modal = estado == '3' ? '' : "data-target='#modal-date' data-toggle='modal'"
+                    // let data_modal = estado == '3' ? '' : ""
                     return (
                         "<center style='white-space: nowrap;'>" +
                         (editar ?
                             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" : "") +
-                        "</button> <button type='button' class='btn bg-gradient-" + clase + " btnEstado' " + data_modal + "   title='Estado'>" +
+                        "</button> <button type='button' class='btn bg-gradient-" + clase + " btnEstado' data-target='#modal-date' data-toggle='modal'   title='Estado'>" +
                         " <i class='fas fa-shuffle'></i>" +
                         "</button>" +
                         (eliminar ?
@@ -279,10 +325,10 @@
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
                         (ruta !== '' ?
-                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 8px' class='btn btnDescargar' title='Descargar'>" +
+                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 4px' class='btn btnDescargar' title='Descargar'>" +
                             " <i class='fas fa-file-pdf'></i>" +
                             "</a>" :
-                            " <span style='font-size:1.4rem;padding:3px 8px;cursor:not-allowed; color:darkgrey' class='btn' >" +
+                            " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +
                             " <i class='fas fa-file-slash'></i>" +
                             "</span>") +
                         " </center>"
@@ -340,15 +386,20 @@
 
         const inp_estado = document.getElementById('inp_estado'),
             id_orden_ = document.getElementById('id_orden_'),
-            fecha_estado = document.getElementById('fecha_estado'),
+            fecha_new = document.getElementById('fecha_new'),
             btnConfirmar = document.getElementById('btnConfirmar');
 
         // const fechas_estados = document.getElementById('fechas_estados'),
-        // const fecha_cre = document.getElementById('fecha_cre'),
-        //     fecha_ini = document.getElementById('fecha_ini'),
-        //     fecha_fin = document.getElementById('fecha_fin'),
-        //     fecha_fac = document.getElementById('fecha_fac');
+        const fecha_cre = document.getElementById('fecha_cre'),
+            fecha_ini = document.getElementById('fecha_ini'),
+            fecha_fin = document.getElementById('fecha_fin'),
+            fecha_fac = document.getElementById('fecha_fac');
 
+        const div_fecha_new = document.getElementById('div_fecha_new')
+            div_fecha_cre = document.getElementById('div_fecha_cre'),
+            div_fecha_ini = document.getElementById('div_fecha_ini'),
+            div_fecha_fin = document.getElementById('div_fecha_fin'),
+            div_fecha_fac = document.getElementById('div_fecha_fac');
 
         const id = document.getElementById('id'),
             nombre = document.getElementById('nombre'),
@@ -410,15 +461,36 @@
             estilosSelect2(this, 'lblCO')
         });
 
+
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                let estado = {
+                    0: div_fecha_cre,
+                    1: div_fecha_ini,
+                    2: div_fecha_fin,
+                    3: div_fecha_fac
+                };
+
+                estado[this.value].style.display = '';
+
+                Object.values(estado).forEach((e, i) => {
+                    if (i != this.value) {
+                        e.style.display = 'none';
+                    }
+                });
+            });
+        });
+
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                radios[0].click();
-                // fechas_estados.style.display = 'none';
+                div_fecha_new.style.display = '';
                 cambiarModal(span, ' Nueva Orden', icon, 'fa-ticket', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
+
                 });
                 form.reset();
                 form.classList.remove('was-validated');
@@ -453,12 +525,12 @@
             let row = obtenerFila(this, tabla);
             accion = 2;
             // fechas_estados.style.display = '';
+            div_fecha_new.style.display = 'none';
             cambiarModal(span, ' Editar Orden', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombre.value = row["descripcion"];
             // fecha_cre.value = convertirFecha(row["fecha"]);
             orden_nro.value = row["nombre"];
-            radios[row["estado_obra"]].click();
             fileInput.value = '';
 
             setChange(cboClienteOrden, row["id_cliente"]);
@@ -469,46 +541,59 @@
         $('#tblOrden tbody').on('click', '.btnEstado', function() {
             let row = obtenerFila(this, tabla);
             accion = 5;
-            const estados = {
-                0: 1,
-                1: 2,
-                2: 3,
-                3: 0
-            };
-            const estado = estados[row["estado_obra"]];
-            if (estado === 0) {
-                let src = new FormData();
-                src.append('accion', accion);
-                src.append('id', row["id"]);
-                src.append('estado', estado);
-                src.append('fecha', convertirFecha(row["fecha"]));
-                confirmarAccion(src, 'orden', tabla, '', function(r) {
-                    if (r) {
+            // const estados = {
+            //     0: 1,
+            //     1: 2,
+            //     2: 3,
+            //     3: 0
+            // };
 
-                    }
-                }, 800);
-            } else {
-                inp_estado.value = estado;
-                id_orden_.value = row["id"];
-            }
+
+            id_orden_.value = row["id"];
+            radios[row["estado_obra"]].click();
+            fecha_cre.value = convertirFecha(row["fecha"]);
+            fecha_ini.value = convertirFecha(row["fecha_ini"]);
+            fecha_fin.value = convertirFecha(row["fecha_fin"]);
+            fecha_fac.value = convertirFecha(row["fecha_fac"]);
+
+            // const estado = estados[row["estado_obra"]];
+
+            // if (estado === 0) {
+            //     let src = new FormData();
+            //     src.append('accion', accion);
+            //     src.append('id', row["id"]);
+            //     src.append('estado', estado);
+            //     src.append('fecha', convertirFecha(row["fecha"]));
+            //     confirmarAccion(src, 'orden', tabla, '', function(r) {
+            //         if (r) {
+
+            //         }
+            //     }, 800);
+            // } else {
+            //     inp_estado.value = estado;
+            //     id_orden_.value = row["id"];
+            // }
         });
 
-        $(modal).on("shown.bs.modal", () => {
-            nombre.focus();
-        });
+        // $(modal).on("shown.bs.modal", () => {
+        //     nombre.focus();
+        // });
 
         formDate.addEventListener("submit", function(e) {
             e.preventDefault();
+            let estado_obra = radios[0].checked ? 0 : radios[1].checked ? 1 : radios[2].checked ? 2 : 3;
+            const fecha_estado = estado_obra === 0 ? fecha_cre : estado_obra === 1 ? fecha_ini : estado_obra === 2 ? fecha_fin : fecha_fac;
 
-            if (!this.checkValidity()) {
+            if (!fecha_estado.checkValidity()) {
                 this.classList.add('was-validated');
                 return;
             }
+
             // const estado = !(row["obra_estado"]);
             let src = new FormData();
             src.append('accion', accion);
             src.append('id', id_orden_.value);
-            src.append('estado', inp_estado.value);
+            src.append('estado', estado_obra);
             src.append('fecha', fecha_estado.value);
             confirmarAccion(src, 'orden', tabla, modal_date, function(r) {
                 if (r) {
@@ -568,17 +653,18 @@
             const nom = nombre.value.trim().toUpperCase(),
                 ord = orden_nro.value,
                 id_cli = cboClienteOrden.value,
-                cli_name = cboClienteOrden.selectedIndex > 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '';
+                cli_name = cboClienteOrden.selectedIndex > 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '',
+                fecha_act = fecha_new.value;
 
 
             id_e = id.value;
-            let selectedEstado;
+            // let selectedEstado;
 
-            radios.forEach(radio => {
-                if (radio.checked) {
-                    selectedEstado = radio.value;
-                }
-            });
+            // radios.forEach(radio => {
+            //     if (radio.checked) {
+            //         selectedEstado = radio.value;
+            //     }
+            // });
 
             let datos = new FormData();
             datos.append('id', id_e);
@@ -586,7 +672,8 @@
             datos.append('id_cliente', id_cli);
             datos.append('orden', ord);
             datos.append('cliente', cli_name)
-            datos.append('estado', selectedEstado);
+            datos.append('fecha', fecha_act);
+            // datos.append('estado', selectedEstado);
             datos.append('accion', accion);
 
             return datos;

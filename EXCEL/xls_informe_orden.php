@@ -195,11 +195,10 @@ $sheet->getStyle('F8')->getAlignment()->setWrapText(true); // Add this line to a
 $sheet->getStyle('F8:F10')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 $sheet->getStyle('F8')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FEA767');
 
-
 // Set the cell A11
 $row = 11; // Starting row for data
 
-foreach ($data_resumen as $resumen) {
+foreach ($data_resumen as $res) {
     $sheet->setCellValue('A' . $row, $res['codigo']);
     $sheet->setCellValue('B' . $row, $res['descripcion']);
     $sheet->setCellValue('C' . $row, $res['unidad']);

@@ -8,7 +8,7 @@ class ModeloInicio
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT
-            COALESCE((SELECT COUNT(*) FROM tblinventario WHERE estado=true), 0) AS pro,
+            COALESCE((SELECT COUNT(*) FROM tblinventario WHERE estado=true AND fabricado=false), 0) AS pro,
             COALESCE((SELECT COUNT(*) FROM tblfactura f WHERE EXTRACT(YEAR FROM f.fecha) = :anio), 0) AS com,
             COUNT(*) AS mov,
             COALESCE((SELECT COUNT(*) FROM tblorden o WHERE o.estado=true AND EXTRACT(YEAR FROM o.fecha) = :anio AND o.estado_obra=1), 0) AS ope
