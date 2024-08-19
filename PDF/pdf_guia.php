@@ -132,41 +132,41 @@ class PDF extends FPDF
         $this->Cell(0, 6, '', 0, 1, 'R', true);
         $this->SetX(41);
         $this->SetFont('Arial', 'B', 12);
-        $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'GUIA DE REMISIÓN'), 0, 0, 'C');
+        $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'GUIA DE BODEGA'), 0, 0, 'C');
         $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'No.002-001-' . $row["id_boleta"]), 0, 1, 'R');
 
         $this->SetFont('Arial', 'B', 11);
         $this->SetX(100);
         $this->SetFillColor(235, 235, 235); // Por ejemplo, un gris claro con valores R, G y B iguales
 
-        $this->MultiCell(0, 12, iconv('UTF-8', 'windows-1252', "  Número de Autorización:"), 0, 'L', 1);
-        $this->SetXY(100, 25);
-        $this->SetFont('Arial', '', 10);
-        $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  "), 0, 'L', 1);
-        $this->SetFont('Arial', 'B', 11);
-        $this->SetX(100);
-        $this->MultiCell(0, 12, iconv('UTF-8', 'windows-1252', "  Fecha y hora de Autorización: "), 0, 'L', 1);
-        $this->SetXY(100, 38);
-        $this->SetFont('Arial', '', 10);
-        $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  "), 0, 'L', 1);
+        // $this->MultiCell(0, 12, iconv('UTF-8', 'windows-1252', "  Número de Autorización:"), 0, 'L', 1);
+        // $this->SetXY(100, 25);
+        // $this->SetFont('Arial', '', 10);
+        // $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  "), 0, 'L', 1);
+        // $this->SetFont('Arial', 'B', 11);
+        // $this->SetX(100);
+        // $this->MultiCell(0, 12, iconv('UTF-8', 'windows-1252', "  Fecha y hora de Autorización: "), 0, 'L', 1);
+        // $this->SetXY(100, 38);
+        // $this->SetFont('Arial', '', 10);
+        // $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  "), 0, 'L', 1);
 
-        $this->SetFont('Arial', 'B', 11);
-        $this->SetXY(100, 42);
-        $this->Cell(0, 12, iconv('UTF-8', 'windows-1252', '  Ambiente:'), 0, 0, 'L', true);
-        $this->SetFont('Arial', '', 10);
-        $this->SetX(120);
-        $this->Cell(0, 12, iconv('UTF-8', 'windows-1252', '  PRODUCCION'), 0, 1, 'L');
+        // $this->SetFont('Arial', 'B', 11);
+        // $this->SetXY(100, 42);
+        // $this->Cell(0, 12, iconv('UTF-8', 'windows-1252', '  Ambiente:'), 0, 0, 'L', true);
+        // $this->SetFont('Arial', '', 10);
+        // $this->SetX(120);
+        // $this->Cell(0, 12, iconv('UTF-8', 'windows-1252', '  PRODUCCION'), 0, 1, 'L');
 
-        $this->SetFont('Arial', 'B', 11);
-        $this->SetXY(100, 50);
-        $this->Cell(0, 6, iconv('UTF-8', 'windows-1252', '  Emisión:'), 0, 0, 'L', true);
-        $this->SetFont('Arial', '', 10);
-        $this->SetX(120);
-        $this->Cell(0, 6, iconv('UTF-8', 'windows-1252', '  NORMAL'), 0, 1, 'L');
+        // $this->SetFont('Arial', 'B', 11);
+        // $this->SetXY(100, 50);
+        // $this->Cell(0, 6, iconv('UTF-8', 'windows-1252', '  Emisión:'), 0, 0, 'L', true);
+        // $this->SetFont('Arial', '', 10);
+        // $this->SetX(120);
+        // $this->Cell(0, 6, iconv('UTF-8', 'windows-1252', '  NORMAL'), 0, 1, 'L');
 
-        $this->SetFont('Arial', 'B', 11);
-        $this->SetXY(100, 56);
-        $this->Cell(0, 4, iconv('UTF-8', 'windows-1252', '  Clave de Acceso:'), 0, 1, 'L', true);
+        // $this->SetFont('Arial', 'B', 11);
+        // $this->SetXY(100, 56);
+        // $this->Cell(0, 4, iconv('UTF-8', 'windows-1252', '  Clave de Acceso:'), 0, 1, 'L', true);
         $this->SetX(100);
         $this->Cell(0, 3, iconv('UTF-8', 'windows-1252', '  '), 0, 0, 'L', true);
 
@@ -226,18 +226,18 @@ class PDF extends FPDF
         $this->SetX(26);
         $this->Cell(0, 5, iconv('UTF-8', 'windows-1252', $telefono), 0, 1, 'L');
 
-        $this->SetFont('Arial', 'B', 11);
-        $this->SetX(6);
-        $this->Cell(89, 5, iconv('UTF-8', 'windows-1252', "  Obligado a llevar contabilidad:"), 0, 0, 'L', 1);
-        $this->SetFont('Arial', '', 10);
-        $this->SetX(66);
-        $this->Cell(0, 5, iconv('UTF-8', 'windows-1252', "SI"), 0, 1, 'L');
+        // $this->SetFont('Arial', 'B', 11);
+        // $this->SetX(6);
+        // $this->Cell(89, 5, iconv('UTF-8', 'windows-1252', "  Obligado a llevar contabilidad:"), 0, 0, 'L', 1);
+        // $this->SetFont('Arial', '', 10);
+        // $this->SetX(66);
+        // $this->Cell(0, 5, iconv('UTF-8', 'windows-1252', "SI"), 0, 1, 'L');
 
         $this->SetFont('Arial', 'B', 11);
-        $this->SetX(6);
-        $this->Cell(89, 5, iconv('UTF-8', 'windows-1252', "  Agente de Retención"), 0, 1, 'L', 1);
-        $this->SetX(6);
-        $this->Cell(89, 5, iconv('UTF-8', 'windows-1252', "  Resolución Nro. NAC-DNCRASC20-00000001"), 0, 1, 'L', 1);
+        // $this->SetX(6);
+        // $this->Cell(89, 5, iconv('UTF-8', 'windows-1252', "  Agente de Retención"), 0, 1, 'L', 1);
+        // $this->SetX(6);
+        // $this->Cell(89, 5, iconv('UTF-8', 'windows-1252', "  Resolución Nro. NAC-DNCRASC20-00000001"), 0, 1, 'L', 1);
         $this->SetX(6);
         $this->Cell(89, 2.5, '', 0, 0, 'L', 1);
 
@@ -307,20 +307,18 @@ class PDF extends FPDF
         $this->SetX(138);
         $this->Cell(0, 3, iconv('UTF-8', 'windows-1252', "Correo:"), 0, 0, 'L');
         $this->SetFont('Arial', '', 10);
-        $this->SetY(120);
-        $this->Cell(0, 3, '', 0, 0, '', 1);
-        $this->SetXY(153, 117);
+        
+        $this->SetXY(153, 102);
         $this->Cell(0, 3, iconv('UTF-8', 'windows-1252', $correo1), 0, 1, 'L', 1);
-
-
-
+        $this->SetY(105);
+        $this->Cell(0, 3, '', 0, 0, '', 1);
         $this->Ln(9);
         $cliente_des = $row['cliente'];
         $this->SetFont('Arial', 'B', 11);
         $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', "  Destinatario:"), 0, 0, 'L', 1);
         $this->SetFont('Arial', '', 10);
         $firstLineX = 33; // Initial X position for the first line
-        $this->SetXY($firstLineX, 131.1);
+        $this->SetXY($firstLineX, 116.1);
         // $subsequentLineX = 6;
         $leftFillWidth = 2; // Width of the left fill
         $rightFillWidth = 7;
@@ -365,7 +363,7 @@ class PDF extends FPDF
         $this->currentY = $this->GetY();
 
 
-        $this->SetY(129);
+        $this->SetY(114);
         $this->SetFont('Arial', 'B', 11);
         $this->SetX(138);
         $ruc = $row['ruc'];
@@ -374,7 +372,7 @@ class PDF extends FPDF
         $this->SetX(154);
         $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', $ruc), 0, 1, 'L');
 
-        $this->SetXY(138, 137);
+        $this->SetXY(138, 122);
         $this->SetFont('Arial', 'B', 11);
         $cliente_telefono = $row['cliente_telefono'];
         $this->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Teléfono:'), 0, 0, 'L', 1);

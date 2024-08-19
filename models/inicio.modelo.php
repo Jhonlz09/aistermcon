@@ -27,17 +27,27 @@ class ModeloInicio
     static public function mdlGraficoSalidas($mes, $anio)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("SELECT c.nombre AS cliente,
-            COUNT(*) AS salidas
-            FROM public.tblboleta b
-            JOIN tblorden o ON b.id_orden = o.id
-            JOIN tblclientes c ON o.id_cliente = c.id
-            WHERE EXTRACT(MONTH FROM b.fecha) = :mes
-            AND EXTRACT(YEAR FROM b.fecha) = :anio
-                GROUP BY c.nombre;");
+            // Base de la consulta
+            $sql = "SELECT c.nombre AS cliente, COUNT(*) AS salidas 
+                FROM public.tblboleta b
+                    JOIN tblorden o ON b.id_orden = o.id
+                    JOIN tblclientes c ON o.id_cliente = c.id
+                WHERE EXTRACT(YEAR FROM b.fecha) = :anio";
+            // Agregar condición del mes si $mes no es 0
+            if ($mes != 0) {
+                $sql .= " AND EXTRACT(MONTH FROM b.fecha) = :mes";
+            }
 
-            $a->bindParam(":mes", $mes, PDO::PARAM_INT);
+            $sql .= " GROUP BY c.nombre;";
+            // Preparar la consulta
+            $a = Conexion::ConexionDB()->prepare($sql);
+            // Vincular parámetros
             $a->bindParam(":anio", $anio, PDO::PARAM_INT);
+            if ($mes != 0) {
+                $a->bindParam(":mes", $mes, PDO::PARAM_INT);
+            }
+
+            // Ejecutar la consulta
             $a->execute();
             return $a->fetchAll();
         } catch (PDOException $e) {
@@ -70,19 +80,32 @@ class ModeloInicio
     static public function mdlTblTop10($mes, $anio)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("SELECT i.codigo, i.descripcion, 
-            SUM(s.cantidad_salida) AS total_vendido
-                FROM tblsalidas s
-                JOIN tblinventario i ON s.id_producto = i.id
-                JOIN tblboleta b ON s.id_boleta = b.id
-                WHERE EXTRACT(MONTH FROM b.fecha) = :mes AND EXTRACT(YEAR FROM b.fecha) = :anio
-                GROUP BY i.descripcion,i.codigo
-                ORDER BY total_vendido DESC
-                LIMIT 10;");
-            $u->bindParam(":mes", $mes, PDO::PARAM_INT);
+            // Base de la consulta
+            $sql = "SELECT i.codigo, i.descripcion, 
+                    to_char(SUM(s.cantidad_salida), 'FM999,999,999,999.00') AS total_vendido
+                    FROM tblsalidas s
+                    JOIN tblinventario i ON s.id_producto = i.id
+                    JOIN tblboleta b ON s.id_boleta = b.id
+                    WHERE EXTRACT(YEAR FROM b.fecha) = :anio";
+            // Agregar condición del mes si $mes no es 0
+            if ($mes != 0) {
+                $sql .= " AND EXTRACT(MONTH FROM b.fecha) = :mes";
+            }
+            $sql .= " GROUP BY i.descripcion, i.codigo
+                        ORDER BY SUM(s.cantidad_salida) DESC
+                        LIMIT 10;";
+    
+            // Preparar la consulta
+            $u = Conexion::ConexionDB()->prepare($sql);
+    
+            // Vincular parámetros
             $u->bindParam(":anio", $anio, PDO::PARAM_INT);
+            if ($mes != 0) {
+                $u->bindParam(":mes", $mes, PDO::PARAM_INT);
+            }
+    
+            // Ejecutar la consulta
             $u->execute();
-
             return $u->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();

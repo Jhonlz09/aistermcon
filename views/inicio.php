@@ -194,7 +194,6 @@
             cboMeses2 = document.getElementById('cboMeses2'),
             cboCategoria = document.getElementById('cboCategoria');
 
-
         const tblTop = document.getElementById('tblTop'),
             tblPoco = document.getElementById('tblPoco'),
             tblMov = document.getElementById('tblMov');
@@ -250,6 +249,12 @@
         let anio = year;
         let mes = month;
         let mesGrafico = mes;
+        let todo_mes = [{
+            id: 0,
+            text: 'TODO'
+        },
+        ...datos_meses
+    ]
 
         cargarCombo('Categoria', cat);
 
@@ -263,7 +268,7 @@
         $(cboMeses).select2({
             minimumResultsForSearch: -1,
             width: '100%',
-            data: datos_meses,
+            data: todo_mes,
 
         });
         setChange(cboMeses, mes);
@@ -271,7 +276,7 @@
         $(cboMeses2).select2({
             minimumResultsForSearch: -1,
             width: '100%',
-            data: datos_meses,
+            data: todo_mes,
 
         });
         setChange(cboMeses2, mes);

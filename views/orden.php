@@ -490,7 +490,6 @@
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
-
                 });
                 form.reset();
                 form.classList.remove('was-validated');
