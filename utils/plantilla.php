@@ -88,6 +88,8 @@
         const mes = month.toString().padStart(2, '0');
         const dia = now.getDate().toString().padStart(2, '0');
 
+        const fecha_hoy = `${year}-${mes}-${dia}`;
+
         let estado_filter = 'null';
         let datos_cliente = [];
         let datos_orden = [];

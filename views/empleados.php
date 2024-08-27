@@ -259,6 +259,10 @@
                 }
             },
             {
+                targets: 3,
+                responsivePriority: 1,
+            },
+            {
                 targets: 6,
                 className: "text-center",
                 render: function(data, type, full, meta) {
@@ -267,6 +271,7 @@
             },
             {
                 targets: 7,
+                responsivePriority: 2,
                 data: "acciones",
                 visible: mostrarCol,
                 render: function(data, type, row, full, meta) {

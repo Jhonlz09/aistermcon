@@ -97,6 +97,7 @@
     var crear = '<?php echo $_SESSION["crear4"] ?>';
     var editar = '<?php echo $_SESSION["editar4"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar4"] ?>';
+
     var collapsedGroups = {};
 
     configuracionTable = {
@@ -370,6 +371,7 @@
             row = tabla.row($(this).closest('tr').next()).data()
             // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
             id_boleta = row[10];
+            console.log(row)
             // console.log(id_boleta)
             const orden = row[7],
                 id_cliente = row[12],
@@ -391,11 +393,11 @@
             // cboDespachado.disabled = true;
             setChange(cboResponsable, entrega)
             // cboResponsable.disabled = true;
-            fecha_retorno.value = fecha_id;
+            fecha_retorno.value = fecha_hoy;
             // fecha.disabled = true;
             nro_ordenEntrada.value = orden;
             nro_ordenEntrada.disabled = true;
-            nro_guia.value = guia;
+            nro_guiaEntrada.value = guia;
             motivo.value = motivo_text;
             // motivo.disabled = true;
             // retorno.click();

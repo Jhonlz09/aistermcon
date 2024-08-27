@@ -142,7 +142,7 @@ class ModeloInforme
         WHERE 
             o.id=:id_orden
         GROUP BY s.id_producto,i.codigo, i.descripcion, u.nombre,i.id,i.fabricado
-        ORDER BY s.id_producto;");
+        ORDER BY i.fabricado desc;");
 
             $u->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
             $u->execute();

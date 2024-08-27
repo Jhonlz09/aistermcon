@@ -91,7 +91,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="input-data mb-4">
                                         <input autocomplete="off" id="orden_nro" class="input-nuevo" type="text" maxlength="9" oninput="formatInputOrden(this, null, false)" required>
                                         <div class="line underline"></div>
@@ -99,7 +99,7 @@
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-lg col-md-4">
                                     <div class="form-group mb-4">
                                         <label id="lblCO" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
                                         <div class="row">
@@ -110,6 +110,12 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-4 form-group mb-4" id="div_fecha_new">
+                                    <label class="combo" style="line-height:1.2;font-size: 1.15rem;" for="fecha_">
+                                        <i class="fas fa-calendar"></i> Fecha de creación</label>
+                                    <input id="fecha_new" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                                    <div class="invalid-feedback">*Campo obligatorio.</div>
                                 </div>
                             </div>
                             <div class="row">
@@ -124,17 +130,24 @@
                             </div>
 
                             <div class="row">
-                                <div class="col mb-2">
+                                <div class="col-md-6 mb-3">
                                     <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
                                     <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
                                     <div class="ten no-margin">*Debe selecionar un archivo .xls o .xlsx</div>
                                 </div>
-                                <div class="col-md-6 mb-2" id="div_fecha_new">
-                                    <label class="combo" style="line-height:1.2;font-size: 1.15rem;" for="fecha_">
-                                        <i class="fas fa-calendar"></i> Fecha de creación</label>
-                                    <input id="fecha_new" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
-                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                <div class="col-md-6" >
+                                    <div class="form-group mb-3">
+                                        <label id="lblP" class="mb-0 combo"><i class="fas fa-user-helmet-safety"></i> Responsable </label>
+                                        <div class="row">
+                                            <div class="col">
+                                                <select id="cboRes" class="form-control select2 select2-success" multiple="multiple" data-dropdown-css-class="select2-dark" style="width: 100%;">
+                                                </select>
+                                                <!-- <div class="invalid-feedback">*Campo obligatorio</div> -->
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
 
                         </div>
@@ -296,6 +309,7 @@
             {
                 targets: 5,
                 "orderable": false,
+                responsivePriority: 2,
                 data: "acciones",
                 visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
@@ -325,7 +339,7 @@
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
                         (ruta !== '' ?
-                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 4px' class='btn btnDescargar' title='Descargar'>" +
+                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='Descargar'>" +
                             " <i class='fas fa-file-pdf'></i>" +
                             "</a>" :
                             " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +
@@ -395,7 +409,7 @@
             fecha_fin = document.getElementById('fecha_fin'),
             fecha_fac = document.getElementById('fecha_fac');
 
-        const div_fecha_new = document.getElementById('div_fecha_new')
+        const div_fecha_new = document.getElementById('div_fecha_new'),
             div_fecha_cre = document.getElementById('div_fecha_cre'),
             div_fecha_ini = document.getElementById('div_fecha_ini'),
             div_fecha_fin = document.getElementById('div_fecha_fin'),
@@ -423,6 +437,10 @@
             minimumResultsForSearch: -1,
         });
 
+        $('#cboRes').select2({})
+
+        cargarCombo('Res', '', 7)
+
         setChange(cboAnio, anio);
 
         $(cboAnio).on("change", function() {
@@ -441,7 +459,7 @@
             accion = 0;
             tabla.ajax.reload();
             // }
-            estado_filter = 'null';
+            // estado_filter = 'null';
         });
 
         $(cboClienteOrden).select2({
