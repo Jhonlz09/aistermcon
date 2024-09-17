@@ -304,6 +304,9 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback, time=5500) {
       if (isSuccess && tabla !== null) {
         accion_inv = 0;
         tabla.ajax.reload(null, false);
+        $(modal).modal("hide");
+      }else if(isSuccess){
+        $(modal).modal("hide");
       }
       mostrarToast(
         r.status,
@@ -315,7 +318,6 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback, time=5500) {
       if (typeof callback === "function") {
         callback(isSuccess ? r : false);
       }
-      $(modal).modal("hide");
     },
   });
 }
