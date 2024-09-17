@@ -8,7 +8,7 @@ class ModeloInventario
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo, i.descripcion, c.nombre as categoria, u.nombre as unidad, p.nombre as percha, i.stock_mal, i.stock, '' as acciones, 
-            i.stock_min,c.id as categoria_id,u.id as unidad_id,p.id as percha_id  
+            i.stock_min,c.id as categoria_id,u.id as unidad_id,p.id as percha_id, i.img
                 FROM tblinventario i 
                 JOIN tblcategoria c on c.id= i.id_categoria
                 JOIN tblunidad u on u.id= i.id_unidad
@@ -45,7 +45,7 @@ class ModeloInventario
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo, i.descripcion, 
             c.nombre AS categoria, u.nombre AS unidad, p.nombre AS percha, i.stock_mal, 
-            i.stock, '' AS acciones, i.stock_min, c.id AS categoria_id, u.id AS unidad_id, p.id AS percha_id  
+            i.stock, '' AS acciones, i.stock_min, c.id AS categoria_id, u.id AS unidad_id, p.id AS percha_id, img
         FROM tblinventario i 
         JOIN tblcategoria c ON c.id = i.id_categoria
         JOIN tblunidad u ON u.id = i.id_unidad
@@ -74,10 +74,10 @@ class ModeloInventario
         }
     }
 
-    public static function mdlAgregarInventario($cod, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi)
+    public static function mdlAgregarInventario($cod, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi, $img)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,stock_min,stock_mal,id_categoria,id_unidad,id_percha) VALUES (:cod,:des,:sto,:st_min,:st_mal,:cat,:uni,:ubi)");
+            $a = Conexion::ConexionDB()->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,stock_min,stock_mal,id_categoria,id_unidad,id_percha,img) VALUES (:cod,:des,:sto,:st_min,:st_mal,:cat,:uni,:ubi,:img)");
             $a->bindParam(":cod", $cod, PDO::PARAM_STR);
             $a->bindParam(":des", $des, PDO::PARAM_STR);
             $a->bindParam(":sto", $sto, PDO::PARAM_INT);
@@ -86,7 +86,9 @@ class ModeloInventario
             $a->bindParam(":cat", $cat, PDO::PARAM_INT);
             $a->bindParam(":uni", $uni, PDO::PARAM_INT);
             $a->bindParam(":ubi", $ubi, PDO::PARAM_INT);
+            $a->bindParam(":img", $img, PDO::PARAM_STR);
             $a->execute();
+
             return array(
                 'status' => 'success',
                 'm' => 'El producto se agregó correctamente'
@@ -125,7 +127,7 @@ class ModeloInventario
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo agregar el producto debido a que ya existe un producto con el mismo codigo'.$e->getMessage()
+                    'm' => 'No se pudo agregar el producto debido a que ya existe un producto con el mismo codigo' . $e->getMessage()
                 );
             } else {
                 return array(
@@ -166,10 +168,10 @@ class ModeloInventario
         }
     }
 
-    public static function mdlEditarInventario($id, $codigo, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi)
+    public static function mdlEditarInventario($id, $codigo, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi, $img)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("UPDATE tblinventario SET codigo=:codigo, descripcion=:des, stock=:sto, stock_min=:st_min, stock_mal=:st_mal, id_categoria=:cat, id_unidad=:uni, id_percha=:ubi WHERE id=:id");
+            $e = Conexion::ConexionDB()->prepare("UPDATE tblinventario SET codigo=:codigo, descripcion=:des, stock=:sto, stock_min=:st_min, stock_mal=:st_mal, id_categoria=:cat, id_unidad=:uni, id_percha=:ubi, img=:img WHERE id=:id");
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->bindParam(":codigo", $codigo, PDO::PARAM_STR);
             $e->bindParam(":des", $des, PDO::PARAM_STR);
@@ -179,6 +181,7 @@ class ModeloInventario
             $e->bindParam(":cat", $cat, PDO::PARAM_INT);
             $e->bindParam(":uni", $uni, PDO::PARAM_INT);
             $e->bindParam(":ubi", $ubi, PDO::PARAM_INT);
+            $e->bindParam(":img", $img, PDO::PARAM_STR);
             $e->execute();
             return array(
                 'status' => 'success',
@@ -237,6 +240,39 @@ class ModeloInventario
                 'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
             );
         }
+    }
+
+    public static function mdlIsCodigoExits($codigo)
+    {
+        try {
+            $stmt = Conexion::ConexionDB()->prepare("SELECT COUNT(*) FROM tblinventario WHERE codigo = :codigo");
+            $stmt->bindParam(":codigo", $codigo, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo validar el codigo: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlIsCodigoExitsEnOtroProducto($codigo, $id)
+    {
+        try{
+            // Preparar la consulta para verificar si el código ya existe en otro producto
+            $stmt = Conexion::ConexionDB()->prepare("SELECT COUNT(*) FROM tblinventario WHERE codigo = :codigo AND id != :id");
+            $stmt->bindParam(":codigo", $codigo, PDO::PARAM_STR);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchColumn() > 0;
+        }catch(PDOException $e){
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo validar el codigo: ' . $e->getMessage()
+            );
+        }
+        
     }
 
     public static function mdlBuscarId($id)

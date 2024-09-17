@@ -216,6 +216,10 @@
                 visible: false,
             },
             {
+                "targets": 4,
+                responsivePriority: 1,
+            },
+            {
                 "targets": 5,
                 visible: false,
             },
@@ -225,6 +229,7 @@
             },
             {
                 "targets": 8,
+                visible: false,
                 render: function(data, type, row, meta) {
                     // Dividir los correos por comas
                     var emails = data.split(',');
@@ -241,6 +246,7 @@
             {
                 targets: 9,
                 data: "acciones",
+                responsivePriority: 2,
                 visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
                     return (

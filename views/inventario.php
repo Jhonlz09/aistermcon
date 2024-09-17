@@ -76,6 +76,7 @@
                                     <th>DAÑADO</th>
                                     <th class="text-center">CANTIDAD</th>
                                     <th class="text-center">CANT. DISP.</th>
+                                    <th class="text-center">IMAGEN</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -105,7 +106,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
+            <form id="formNuevo" autocomplete="off" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div class="modal-body scroll-modal" style="padding-block:1rem .5rem;">
                     <input type="hidden" id="id" value="">
                     <div class="row" style="align-items:flex-start">
@@ -208,6 +209,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <!-- <div class="input-data"> -->
+                            <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-image"></i> Imagen</label>
+                            <input type="file" name="fileImg" id="fileImg" class="form-control" accept=".png, .jpg, .jpeg, .webp">
+                            <!-- </div> -->
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
@@ -252,7 +261,22 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<!-- Select2 -->
+
+<!-- Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <!-- <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Imagen completa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div> -->
+            <div class="modal-body p-0" style="display:contents;">
+                <img id="modalImage" src="" alt="Imagen completa" class="img-fluid" style="max-width:100%;height:auto;max-height:85vh;object-fit:cover;">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     cargarCombo('Categoria');
     cargarCombo('Unidad');
@@ -288,6 +312,10 @@
                 }
             },
             {
+                targets:2,
+                responsivePriority: 1,
+            },
+            {
                 targets: 6,
                 className: 'text-center',
                 visible: false
@@ -311,7 +339,27 @@
             },
             {
                 targets: 9,
+                data: "img",
+                responsivePriority: 3,
+                className: "text-center",
+                render: function(data, type, row) {
+                    if (data) {
+                        return `<img
+                        onclick="openModalImage(this)"
+                        data-toggle="modal" 
+                        data-target="#imageModal"
+                        src="assets/img/products/${data}" 
+                        class="img-thumbnail" 
+                        loading="lazy" style="cursor:pointer;width: 50px; height: 50px;">`;
+                    } else {
+                        return `<span style="height:50px;width:50px" class="d-inline-flex justify-content-center align-items-center img-thumbnail"><i style="color:#555" class="fas fa-xl fa-image-slash"></i></span>`;
+                    }
+                }
+            },
+            {
+                targets: 10,
                 data: "acciones",
+                responsivePriority: 2,
                 visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
                     return (
@@ -432,10 +480,20 @@
             {
                 extend: "colvis",
                 className: "btn btn-light font-weight-bold",
-                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8,9],
             }
         ]
     }
+
+    function openModalImage(element) {
+        // Obtener la URL de la imagen desde el atributo data-img-src
+        const imgSrc = element.src;
+
+        // Asignar la URL al src de la imagen dentro del modal
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = imgSrc;
+    }
+
 
     $(document).ready(function() {
 
@@ -500,9 +558,9 @@
             tabla.on('draw.dt', function() {
                 if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
                     const b = document.body;
-                    const s = b.scrollHeight +20;
+                    const s = b.scrollHeight + 20;
                     const w = window.innerHeight;
-                    console.log(b + ' ' + s + ' hanfle '+ w)
+                    console.log(b + ' ' + s + ' hanfle ' + w)
                     handleScroll(b, s, w);
                 }
 
@@ -511,7 +569,9 @@
             });
         }
         let name;
-        let opcion= 0;
+        let opcion = 0;
+        let imgActual;
+        let oldCod;
         const id = document.getElementById('id'),
             codigo = document.getElementById('codigo'),
             descripcion = document.getElementById('nombre'),
@@ -520,6 +580,7 @@
             stock_mal = document.getElementById('stock_mal'),
             cboCategoria = document.getElementById('cboCategoria'),
             cboUnidad = document.getElementById('cboUnidad'),
+            fileImg = document.getElementById('fileImg'),
             cboUbicacion = document.getElementById('cboUbicacion');
 
         const btnNuevo = document.getElementById('btnNuevo'),
@@ -605,7 +666,7 @@
                 $(body).css('padding-right', '6px');
                 // $(navbar).css('margin-right', '6px');
             }
-            
+
         });
 
         if (btnNuevo) {
@@ -622,7 +683,8 @@
                     s.classList.add('select2-success');
                 });
                 form.reset();
-                stock_mal.value = '0'
+                fileImg.value = '';
+                stock_mal.value = '0';
                 $(".modal-body .select2").val(0).trigger("change");
                 form.classList.remove('was-validated');
             });
@@ -642,12 +704,14 @@
                 s.classList.add('select2-warning');
             });
             id.value = row["id"];
-            console.log(id.value)
+            fileImg.value = '';
             codigo.value = row["codigo"];
             descripcion.value = row["descripcion"];
             stock.value = row["stock"];
             stock_min.value = row["stock_min"];
             stock_mal.value = row["stock_mal"];
+            imgActual = row["img"];
+            oldCod = row["codigo"];
             setChange(cboCategoria, row["categoria_id"]);
             setChange(cboUnidad, row["unidad_id"]);
             setChange(cboUbicacion, row["percha_id"]);
@@ -677,7 +741,23 @@
                 this.classList.add('was-validated');
                 return;
             }
+
             const data = new FormData();
+            const file = fileImg.files[0]; // Obtener el archivo
+
+            // Validar si el archivo es una imagen PNG, JPG o WebP
+            if (file && (file.type !== "image/png" && file.type !== "image/jpeg" && file.type !== "image/webp")) {
+                mostrarToast(
+                    'warning',
+                    'Advertencia',
+                    'fa-triangle-exclamation',
+                    'Por favor inserta una imagen con la extención .png, .jpg o .webp', 3000
+                );
+                return;
+            } else if (file) {
+                data.append('fileImg', file); // Si es válido, añadir el archivo al FormData
+            }
+
             data.append('id', id.value);
             data.append('cod', codigo.value.trim().toUpperCase());
             data.append('des', descripcion.value.trim().toUpperCase());
@@ -687,6 +767,8 @@
             data.append('cat', cboCategoria.value);
             data.append('uni', cboUnidad.value);
             data.append('ubi', cboUbicacion.value);
+            data.append('img', imgActual);
+            data.append('oldCod', oldCod);
             data.append('accion', accion_inv);
 
             confirmarAccion(data, 'inventario', tabla, modalE, function(res) {

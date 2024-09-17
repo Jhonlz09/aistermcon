@@ -301,11 +301,11 @@
 
             // Verificar el estado de la sesión cada 5 minutos (300000 milisegundos)
             checkSessionInterval = setInterval(checkSession, 300000);
-            btnSide.addEventListener("click", () => {
-                setTimeout(() => {
-                    tabla.columns.adjust().responsive.recalc();
-                }, 250);
-            });
+            // btnSide.addEventListener("click", () => {
+            //     setTimeout(() => {
+            //         tabla.columns.adjust().responsive.recalc();
+            //     }, 250);
+            // });
 
             setA.forEach((e) => {
                 e.addEventListener('click', function() {
