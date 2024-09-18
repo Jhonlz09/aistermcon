@@ -77,7 +77,27 @@ class ModeloInventario
     public static function mdlAgregarInventario($cod, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi, $img)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,stock_min,stock_mal,id_categoria,id_unidad,id_percha,img) VALUES (:cod,:des,:sto,:st_min,:st_mal,:cat,:uni,:ubi,:img)");
+            // Construir la consulta base
+            $sql = "INSERT INTO tblinventario(codigo, descripcion, stock, stock_min, stock_mal, id_categoria, id_unidad, id_percha";
+
+            // Agregar el campo 'img' solo si no es null
+            if ($img !== null) {
+                $sql .= ", img";
+            }
+
+            $sql .= ") VALUES (:cod, :des, :sto, :st_min, :st_mal, :cat, :uni, :ubi";
+
+            // Agregar el valor de la imagen solo si no es null
+            if ($img !== null) {
+                $sql .= ", :img";
+            }
+
+            $sql .= ")";
+
+            // Preparar la consulta
+            $a = Conexion::ConexionDB()->prepare($sql);
+
+            // Asignar los valores a los parámetros
             $a->bindParam(":cod", $cod, PDO::PARAM_STR);
             $a->bindParam(":des", $des, PDO::PARAM_STR);
             $a->bindParam(":sto", $sto, PDO::PARAM_INT);
@@ -86,7 +106,13 @@ class ModeloInventario
             $a->bindParam(":cat", $cat, PDO::PARAM_INT);
             $a->bindParam(":uni", $uni, PDO::PARAM_INT);
             $a->bindParam(":ubi", $ubi, PDO::PARAM_INT);
-            $a->bindParam(":img", $img, PDO::PARAM_STR);
+
+            // Si la imagen no es null, también enlazamos su parámetro
+            if ($img !== null) {
+                $a->bindParam(":img", $img, PDO::PARAM_STR);
+            }
+
+            // Ejecutar la consulta
             $a->execute();
 
             return array(
@@ -97,7 +123,7 @@ class ModeloInventario
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo agregar el producto debido a que ya existe un producto con el mismo codigo'
+                    'm' => 'No se pudo agregar el producto debido a que ya existe un producto con el mismo código'
                 );
             } else {
                 return array(
@@ -107,6 +133,7 @@ class ModeloInventario
             }
         }
     }
+
 
     public static function mdlAgregarInventarioFab($des, $uni, $sto)
     {
@@ -171,7 +198,18 @@ class ModeloInventario
     public static function mdlEditarInventario($id, $codigo, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi, $img)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("UPDATE tblinventario SET codigo=:codigo, descripcion=:des, stock=:sto, stock_min=:st_min, stock_mal=:st_mal, id_categoria=:cat, id_unidad=:uni, id_percha=:ubi, img=:img WHERE id=:id");
+            // Construir la consulta base
+            $sql = "UPDATE tblinventario SET codigo=:codigo, descripcion=:des, stock=:sto, stock_min=:st_min, stock_mal=:st_mal, id_categoria=:cat, id_unidad=:uni, id_percha=:ubi";
+
+            // Agregar el campo 'img' solo si no es null
+            if ($img !== 'null') {
+                $sql .= ", img=:img";
+            }
+
+            $sql .= " WHERE id=:id";
+
+            $e = Conexion::ConexionDB()->prepare($sql);
+            // Asignar los valores a los parámetros
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->bindParam(":codigo", $codigo, PDO::PARAM_STR);
             $e->bindParam(":des", $des, PDO::PARAM_STR);
@@ -181,8 +219,14 @@ class ModeloInventario
             $e->bindParam(":cat", $cat, PDO::PARAM_INT);
             $e->bindParam(":uni", $uni, PDO::PARAM_INT);
             $e->bindParam(":ubi", $ubi, PDO::PARAM_INT);
-            $e->bindParam(":img", $img, PDO::PARAM_STR);
+            // Si la imagen no es null, también enlazamos su parámetro
+            if ($img !== 'null') {
+                $e->bindParam(":img", $img, PDO::PARAM_STR);
+            }
+
+            // Ejecutar la consulta
             $e->execute();
+
             return array(
                 'status' => 'success',
                 'm' => 'El producto se editó correctamente'
@@ -191,7 +235,7 @@ class ModeloInventario
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo editar el producto debido a que ya existe un producto con el mismo codigo'
+                    'm' => 'No se pudo editar el producto debido a que ya existe un producto con el mismo código'
                 );
             } else {
                 return array(
@@ -201,6 +245,7 @@ class ModeloInventario
             }
         }
     }
+
 
     public static function mdlEliminarInventario($id)
     {
@@ -259,20 +304,19 @@ class ModeloInventario
 
     public static function mdlIsCodigoExitsEnOtroProducto($codigo, $id)
     {
-        try{
+        try {
             // Preparar la consulta para verificar si el código ya existe en otro producto
             $stmt = Conexion::ConexionDB()->prepare("SELECT COUNT(*) FROM tblinventario WHERE codigo = :codigo AND id != :id");
             $stmt->bindParam(":codigo", $codigo, PDO::PARAM_STR);
             $stmt->bindParam(":id", $id, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchColumn() > 0;
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
                 'm' => 'No se pudo validar el codigo: ' . $e->getMessage()
             );
         }
-        
     }
 
     public static function mdlBuscarId($id)

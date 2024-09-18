@@ -94,7 +94,7 @@ class ControladorInventario
         $uploadDir = '../assets/img/products/';
 
         // Si se subió una nueva imagen, validarla y guardarla
-        if (isset($_FILES['fileImg'])) {
+        if (isset($_FILES['fileImg']) && $_FILES['fileImg']['size'] > 0) {
             $allowedMimeTypes = ['image/png', 'image/jpeg', 'image/webp'];
             $fileMimeType = $_FILES['fileImg']['type'];
 
