@@ -135,7 +135,7 @@
                                     <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
                                     <div class="ten no-margin">*Debe selecionar un archivo .xls o .xlsx</div>
                                 </div>
-                                <div class="col-md-6" >
+                                <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label id="lblP" class="mb-0 combo"><i class="fas fa-user-helmet-safety"></i> Responsable </label>
                                         <div class="row">
@@ -188,12 +188,17 @@
                             <label for="option_a3" class="btn txt-ellipsis">
                                 <input type="radio" value="2" name="options" id="option_a3" autocomplete="off"> <i class="fas fa-check-to-slot"></i> Finalizado
                             </label>
-                            <label for="option_a4" style="border-right-width: 1px;" class="btn txt-ellipsis">
-                                <input type="radio" value="3" name="options" id="option_a4" autocomplete="off"> <i class="fa-solid fa-money-check-dollar"></i> Facturado
+                            <label for="option_a4" class="btn txt-ellipsis">
+                                <input type="radio" value="3" name="options" id="option_a4" autocomplete="off"> <i class="fas fa-money-check-dollar"></i> Facturado
+                            </label>
+                            <label for="option_a5" style="border-right-width: 1px;" class="btn txt-ellipsis">
+                                <input type="radio" value="4" name="options" id="option_a5" autocomplete="off"> <i class="fas fa-award"></i> Garantía
                             </label>
                         </div>
                     </div>
-                    <div class="col-md-12">
+
+
+                    <div class="col-md-12 form-group">
                         <input type="hidden" id="inp_estado" value="">
                         <input type="hidden" id="id_orden_" value="">
                         <div id="div_fecha_cre" class="form-group mb-2">
@@ -204,7 +209,7 @@
                         </div>
                         <div id="div_fecha_ini" class="form-group mb-2">
                             <label class="col-form-label combo" for="fecha">
-                                <i class="fas fa-calendar"></i> Fecha de inicio de operación</label>
+                                <i class="fas fa-calendar"></i> Fecha de operación</label>
                             <input id="fecha_ini" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                             <div class="invalid-feedback">*Campo obligatorio.</div>
                         </div>
@@ -220,6 +225,21 @@
                             <input id="fecha_fac" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                             <div class="invalid-feedback">*Campo obligatorio.</div>
                         </div>
+                        <div id="div_fecha_gar" class="form-group mb-2">
+                            <label class="col-form-label combo" for="fecha">
+                                <i class="fas fa-calendar"></i> Fecha de garantía</label>
+                            <input id="fecha_gar" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mb-2">
+                        <div>
+                            <label class="col-form-label combo" for="nota">
+                                <i class="fas fa-note"></i> Nota</label>
+                            <textarea style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);background-color:#d1d1d1" type="text" class="form-control" id="nota" placeholder="Observaciones..." spellcheck="false" data-ms-editor="true"></textarea>
+                        </div>
+
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -285,15 +305,20 @@
                 render: function(data, type, row, full, meta) {
                     let estado = row.estado_obra;
                     let fecha_cre = row.fecha;
-                    let fecha_ini = row.fecha_ini;
-                    let fecha_fin = row.fecha_fin;
-                    let fecha_fac = row.fecha_fac;
+                    let fecha_ini = row.fecha_ini  === '' ? ' -' : row.fecha_ini;
+                    let fecha_fin = row.fecha_fin  === '' ? ' -' : row.fecha_fin;
+                    let fecha_fac = row.fecha_fac === '' ? ' -' : row.fecha_fac;
+                    let fecha_gar = row.fecha_gar === '' ? ' -' : row.fecha_gar;
+                    let nota = row.nota ?? ' -';  // Asigna '-' si la nota está vacía
+
 
                     const tooltipText = {
                         0: 'Fecha de creacion: ' + fecha_cre,
-                        1: 'Fecha de inicio de operación: ' + fecha_ini,
+                        1: 'Fecha de operación: ' + fecha_ini,
                         2: 'Fecha de finalización: ' + fecha_fin,
                         3: 'Fecha de facturación: ' + fecha_fac,
+                        4: 'Fecha de garantía: ' + fecha_gar,
+                        5: `<strong>NOTA:</strong> ${nota}`  // Agrega "NOTA:" en negrita seguido del contenido de `nota`
                     };
 
                     let concatenatedTooltipText = Object.values(tooltipText).join('<br>');
@@ -313,12 +338,12 @@
                 data: "acciones",
                 visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
-
                     const estadoClases = {
                         0: 'light',
                         1: 'yellow',
                         2: 'info',
-                        3: 'success'
+                        3: 'success',
+                        4: 'gray-dark'
                     };
 
                     let estado = row.estado_obra;
@@ -354,6 +379,7 @@
 
     $(document).ready(function() {
         let anio = year;
+
         if (!$.fn.DataTable.isDataTable('#tblOrden')) {
             tabla = $("#tblOrden").DataTable({
                 "ajax": {
@@ -396,24 +422,27 @@
             icon = document.querySelector('.modal-title i'),
             select = document.querySelectorAll('.modal-body select.select2'),
             btnNuevo = document.getElementById('btnNuevo');
-        const radios = document.querySelectorAll('input[name="options"]');
 
+        const radios = document.querySelectorAll('input[name="options"]');
         const inp_estado = document.getElementById('inp_estado'),
             id_orden_ = document.getElementById('id_orden_'),
             fecha_new = document.getElementById('fecha_new'),
+            nota = document.getElementById('nota'),
             btnConfirmar = document.getElementById('btnConfirmar');
 
         // const fechas_estados = document.getElementById('fechas_estados'),
         const fecha_cre = document.getElementById('fecha_cre'),
             fecha_ini = document.getElementById('fecha_ini'),
             fecha_fin = document.getElementById('fecha_fin'),
-            fecha_fac = document.getElementById('fecha_fac');
+            fecha_fac = document.getElementById('fecha_fac'),
+            fecha_gar = document.getElementById('fecha_gar');
 
         const div_fecha_new = document.getElementById('div_fecha_new'),
             div_fecha_cre = document.getElementById('div_fecha_cre'),
             div_fecha_ini = document.getElementById('div_fecha_ini'),
             div_fecha_fin = document.getElementById('div_fecha_fin'),
-            div_fecha_fac = document.getElementById('div_fecha_fac');
+            div_fecha_fac = document.getElementById('div_fecha_fac'),
+            div_fehca_gar = document.getElementById('div_fecha_gar')
 
         const id = document.getElementById('id'),
             nombre = document.getElementById('nombre'),
@@ -487,7 +516,8 @@
                     0: div_fecha_cre,
                     1: div_fecha_ini,
                     2: div_fecha_fin,
-                    3: div_fecha_fac
+                    3: div_fecha_fac,
+                    4: div_fecha_gar
                 };
 
                 estado[this.value].style.display = '';
@@ -565,13 +595,14 @@
             //     3: 0
             // };
 
-
+            nota.value = row["nota"];
             id_orden_.value = row["id"];
             radios[row["estado_obra"]].click();
             fecha_cre.value = convertirFecha(row["fecha"]);
             fecha_ini.value = convertirFecha(row["fecha_ini"]);
             fecha_fin.value = convertirFecha(row["fecha_fin"]);
             fecha_fac.value = convertirFecha(row["fecha_fac"]);
+            fecha_gar.value = convertirFecha(row["fecha_gar"]);
 
             // const estado = estados[row["estado_obra"]];
 
@@ -598,8 +629,8 @@
 
         formDate.addEventListener("submit", function(e) {
             e.preventDefault();
-            let estado_obra = radios[0].checked ? 0 : radios[1].checked ? 1 : radios[2].checked ? 2 : 3;
-            const fecha_estado = estado_obra === 0 ? fecha_cre : estado_obra === 1 ? fecha_ini : estado_obra === 2 ? fecha_fin : fecha_fac;
+            let estado_obra = radios[0].checked ? 0 : radios[1].checked ? 1 : radios[2].checked ? 2 :  radios[3].checked ? 3 : 4;
+            const fecha_estado = estado_obra === 0 ? fecha_cre : estado_obra === 1 ? fecha_ini : estado_obra === 2 ? fecha_fin : estado_obra === 3 ? fecha_fac : fecha_gar;
 
             if (!fecha_estado.checkValidity()) {
                 this.classList.add('was-validated');
@@ -611,6 +642,7 @@
             src.append('accion', accion);
             src.append('id', id_orden_.value);
             src.append('estado', estado_obra);
+            src.append('nota', nota.value)
             src.append('fecha', fecha_estado.value);
             confirmarAccion(src, 'orden', tabla, modal_date, function(r) {
                 if (r) {

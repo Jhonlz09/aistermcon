@@ -3,7 +3,7 @@ require_once "../models/orden.modelo.php";
 
 class ControladorOrden
 {
-    public $id, $nombres, $id_cliente, $estado, $orden, $anio, $fileOrden, $cliente, $fecha;
+    public $id, $nombres, $id_cliente, $estado, $orden, $anio, $fileOrden, $cliente, $fecha, $nota;
 
     public function listarOrden()
     {
@@ -126,7 +126,7 @@ class ControladorOrden
 
     public function cambiarEstadoOrden()
     {
-        $data = ModeloOrden::mdlCambiarEstado($this->id, $this->estado, $this->fecha);
+        $data = ModeloOrden::mdlCambiarEstado($this->id, $this->estado, $this->fecha, $this->nota );
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -175,6 +175,7 @@ if (!isset($_POST["accion"])) {
         $data->id = $_POST["id"];
         $data->estado = $_POST["estado"];
         $data->fecha = $_POST["fecha"];
+        $data->nota = $_POST["nota"];
         $data->cambiarEstadoOrden();
     }
 }

@@ -180,21 +180,24 @@
                 0: 'light',
                 1: 'warning',
                 2: 'info',
-                3: 'success'
+                3: 'success',
+                4: 'dark'
             };
 
             const estadoIcon = {
                 0: 'clock',
                 1: 'person-digging',
                 2: 'check-to-slot',
-                3: 'money-check-dollar'
+                3: 'money-check-dollar',
+                4: 'award'
             };
-
+            
             const estadoText = {
                 0: 'EN ESPERA',
                 1: 'EN OPERACIÓN',
                 2: 'FINALIZADO',
-                3: 'FACTURADO'
+                3: 'FACTURADO',
+                4: 'GARANTÍA'
             };
 
             const body = document.querySelector('body'),

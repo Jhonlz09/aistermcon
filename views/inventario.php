@@ -271,7 +271,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div> -->
             <div class="modal-body p-0" style="display:contents;">
-                <img id="modalImage" src="" alt="Imagen completa" class="img-fluid" style="max-width:100%;height:auto;max-height:85vh;object-fit:cover;">
+                <img id="modalImage" src="" alt="Imagen completa" class="img-fluid" style="max-width:100%;height:auto;max-height:85vh;object-fit:contain;">
             </div>
         </div>
     </div>
@@ -296,7 +296,7 @@
     configuracionTable = {
         "dom": mostrarCol ? '<"row"<"col-md-6"B><"col-md-6"p>>t' : 'pt',
         "responsive": true,
-        "pageLength": 12, // Cambia este valor según tus necesidades
+        "pageLength": 20, // Cambia este valor según tus necesidades
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
@@ -348,7 +348,7 @@
                         onclick="openModalImage(this)"
                         data-toggle="modal" 
                         data-target="#imageModal"
-                        src="assets/img/products/${data}" 
+                        src="../products/${data}" 
                         class="img-thumbnail" 
                         loading="lazy" style="cursor:pointer;width: 50px; height: 50px;">`;
                     } else {

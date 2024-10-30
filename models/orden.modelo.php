@@ -14,10 +14,12 @@ class ModeloOrden
                         '' AS acciones, 
                         o.id_cliente, 
                         o.ruta, 
-                        TO_CHAR(o.fecha, 'DD/MM/YYYY HH24:MI') AS fecha, 
-                        COALESCE(TO_CHAR(o.fecha_ini, 'DD/MM/YYYY HH24:MI'), '') AS fecha_ini, 
-                        COALESCE(TO_CHAR(o.fecha_fin, 'DD/MM/YYYY HH24:MI'), '') AS fecha_fin, 
-                        COALESCE(TO_CHAR(o.fecha_fac, 'DD/MM/YYYY HH24:MI'), '') AS fecha_fac
+                        TO_CHAR(o.fecha, 'DD/MM/YYYY') AS fecha, 
+                        COALESCE(TO_CHAR(o.fecha_ini, 'DD/MM/YYYY'), '') AS fecha_ini, 
+                        COALESCE(TO_CHAR(o.fecha_fin, 'DD/MM/YYYY'), '') AS fecha_fin, 
+                        COALESCE(TO_CHAR(o.fecha_fac, 'DD/MM/YYYY'), '') AS fecha_fac,
+                        COALESCE(TO_CHAR(o.fecha_gar, 'DD/MM/YYYY'), '') AS fecha_gar,
+                        o.nota
                     FROM tblorden o
                     JOIN tblestado_obra eo ON o.estado_obra = eo.id
                     JOIN tblclientes c ON o.id_cliente = c.id
@@ -122,7 +124,7 @@ class ModeloOrden
         }
     }
 
-    public static function mdlCambiarEstado($id, $estado, $fecha)
+    public static function mdlCambiarEstado($id, $estado, $fecha, $nota)
     {
         try {
             $hora = date('H:i:s');
@@ -132,16 +134,22 @@ class ModeloOrden
                 '0' => 'fecha',
                 '1' => 'fecha_ini',
                 '2' => 'fecha_fin',
-                '3' => 'fecha_fac'
+                '3' => 'fecha_fac',
+                '4' => 'fecha_gar'
             );
 
-            $consulta = "UPDATE tblorden SET estado_obra=:estado ";
+            $consulta = "UPDATE tblorden SET estado_obra=:estado, nota=:nota ";
             $consulta .= ",".$fechas[$estado]. " =:fecha ";
             $consulta .= "WHERE id=:id";
 
 
             $e = Conexion::ConexionDB()->prepare($consulta);
             $e->bindParam(":id", $id, PDO::PARAM_INT);
+            if ($nota === '') {
+                $e->bindValue(":nota", null, PDO::PARAM_NULL);
+            } else {
+                $e->bindParam(":nota", $nota, PDO::PARAM_STR);
+            }
             $e->bindParam(":estado", $estado, PDO::PARAM_INT);
             $e->bindParam(":fecha", $fechaHora, PDO::PARAM_STR);
             $e->execute();

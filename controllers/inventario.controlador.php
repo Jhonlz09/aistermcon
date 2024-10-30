@@ -51,7 +51,7 @@ class ControladorInventario
                 // Nombre final del archivo basado en el código
                 $fullNameFinal = $this->codigo . '.' . $extension;
                 // Ruta de subida
-                $uploadDir = '../assets/img/products/';
+                $uploadDir = '../../products/';
                 $uploadFile = $uploadDir . $fullNameFinal;
 
                 // Mover el archivo subido a la carpeta de destino
@@ -91,7 +91,7 @@ class ControladorInventario
             return;
         }
 
-        $uploadDir = '../assets/img/products/';
+        $uploadDir = '../../products/';
 
         // Si se subió una nueva imagen, validarla y guardarla
         if (isset($_FILES['fileImg']) && $_FILES['fileImg']['size'] > 0) {
