@@ -7,8 +7,14 @@ class ModeloInventario
     public static function mdlListarInventario()
     {
         try {
-            // Consulta a la vista en lugar de las tablas con JOINs
-            $l = Conexion::ConexionDB()->prepare("SELECT * FROM vista_inventario_completa ORDER BY id ASC");
+            $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo, i.descripcion, c.nombre as categoria, u.nombre as unidad, p.nombre as percha, i.stock_mal, i.stock, '' as acciones, 
+            i.stock_min,c.id as categoria_id,u.id as unidad_id,p.id as percha_id, i.img
+                FROM tblinventario i 
+                JOIN tblcategoria c on c.id= i.id_categoria
+                JOIN tblunidad u on u.id= i.id_unidad
+                JOIN tblubicacion p on p.id= i.id_percha
+                WHERE i.estado=true
+                ORDER BY id ASC");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
