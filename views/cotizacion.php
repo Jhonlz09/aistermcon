@@ -866,7 +866,7 @@
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                const nro_cotizacion = tabla.cell(0, 1).data() || '0001';// '00013'
+                const nro_cotizacion = tabla.cell(0, 1).data() || '0000';// '00013'
                 const nro_cotizacion_formateado = (parseInt(nro_cotizacion, 10) + 1).toString().padStart(nro_cotizacion.length, '0');
                 $('#nroSolicitud').text(nro_cotizacion_formateado);
                 $('#text_accion').text(' Nueva solicitud de compra');
