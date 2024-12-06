@@ -4,15 +4,6 @@ require_once "../models/registro.modelo.php";
 
 class ajaxRegistro
 {
-
-    // public function ajaxObtenerNroBoleta()
-    // {
-
-    //     $nroBoleta = ModeloRegistro::mdlObtenerNroBoleta();
-
-    //     echo json_encode($nroBoleta, JSON_UNESCAPED_UNICODE);
-    // }
-
     public function registrarCompra($datos, $nro_factura, $proveedor, $fecha)
     {
 
@@ -101,37 +92,3 @@ if (isset($_POST["accion"])) {
         $registro->registrarOrdenCompra($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"], $_POST["subtotal"],$_POST["iva"],$_POST["impuesto"],$_POST["total"]);
     }
 }
-
-// if(isset($_POST["accion"]) && $_POST["accion"] == 0){
-//     echo json_encode([], JSON_UNESCAPED_UNICODE);
-// }else if(isset($_POST["accion"]) && $_POST["accion"] == 1) {
-//     $entrada = new ajaxRegistro();
-//     $entrada->registrarCompra($_POST["arr"], $_POST["nro_factura"],$_POST["proveedor"], $_POST["fecha"]);
-// } else if (isset($_POST["accion"]) && $_POST["accion"] == 2) { // LISTADO DE VENTAS POR RANGO DE FECHAS
-//     $salida = new ajaxRegistro();
-//     $salida->registrarSalida($_POST["arr"], $_POST["orden"], $_POST["cliente"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"],$_POST["motivo"]);
-// } else if (isset($_POST["accion"]) && $_POST["accion"] == 3) {
-//     $salida = new ajaxRegistro();
-//     $salida->registrarRetorno($_POST["arr"], $_POST["boleta"], $_POST["fecha_retorno"], $_POST["nro_guia"]);
-// } else if (isset($_POST["accion"]) && $_POST["accion"] == 4) { // LISTADO DE VENTAS POR RANGO DE FECHAS
-//     $salida = new ajaxRegistro();
-//     $salida->editarRegistroSalida($_POST["id_boleta"], $_POST["orden"],$_POST["cliente"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"],$_POST["motivo"]);
-// }else if (isset($_POST["accion"]) && $_POST["accion"] == 5) {
-//     $entrada = new ajaxRegistro();
-//     $entrada->editarRegistroCompra($_POST["id_factura"],$_POST["nro_factura"],$_POST["proveedor"], $_POST["fecha"]);
-// }else if (isset($_POST["accion"]) && $_POST["accion"] == 6) {
-//     $entrada = new ajaxRegistro();
-//     $entrada->registrarPlantilla($_POST["arr"], $_POST["nombre_pla"]);
-// }else if (isset($_POST["accion"]) && $_POST["accion"] == 7) {
-//     $entrada = new ajaxRegistro();
-//     $entrada->registrarProductosFab($_POST["arr"],$_POST["id_producto_fab"]);
-// }else if (isset($_POST["accion"]) && $_POST["accion"] == 8) {
-//     $entrada = new ajaxRegistro();
-//     $entrada->registrarEntrada($_POST["arr"], $_POST["orden"], $_POST["cliente"],$_POST["fecha"],$_POST["fecha_retorno"],$_POST["motivo"],$_POST["conductor"],$_POST["responsable"],$_POST["despachado"] );
-// }else if (isset($_POST["accion"]) && $_POST["accion"] == 9) {
-//     $entrada = new ajaxRegistro();
-//     $entrada->registrarSolicitudCotizacion($_POST["arr"], $_POST["proveedor"], $_POST["comprador"],$_POST["fecha"]);
-// }//else if (isset($_POST["accion"]) && $_POST["accion"] == 10) {
-    //$entrada = new ajaxRegistro();
-  //  $entrada->registrarOrdenCompra($_POST["arr"], $_POST["orden"], $_POST["cliente"],$_POST["fecha"],$_POST["fecha_retorno"],$_POST["motivo"],$_POST["conductor"],$_POST["responsable"],$_POST["despachado"] );
-//}
