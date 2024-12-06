@@ -184,6 +184,7 @@
 
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar14"] || $_SESSION["eliminar14"] ?>';
+    var showColumns = '<?php echo $_SESSION["editar14"] || $_SESSION["eliminar14"] || $_SESSION["crear14"]  ?>';
     var editar = '<?php echo $_SESSION["editar14"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar14"] ?>';
 
@@ -454,7 +455,7 @@
                     confirmarAccion(src, 'clientes', tabla, '', function(r) {
                         if (r) {
                             cargarCombo('Clientes', '', 1)
-                            cargarCombo('ClienteEntrada',  '', 1)
+                            cargarCombo('ClienteEntrada', '', 1)
                         }
                     })
                 }
@@ -474,7 +475,7 @@
             let row = obtenerFila(this, tabla);
             accion = 2;
             cambiarModal(span, ' Editar Cliente', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
-            ci.disabled=false;
+            ci.disabled = false;
             id.value = row["id"];
             nombre.value = row["nombre"];
             ruc.value = row["ruc"];
@@ -500,7 +501,6 @@
                 dir = direccion.value.trim().toUpperCase(),
                 cor = correo.value.trim();
 
-
             if (ruc_ === '' && ced === '') {
                 // No hacer nada y continuar la ejecución fuera del if
             }
@@ -512,13 +512,10 @@
             else if (ced === '') {
                 ci.disabled = true;
             }
-
             if (!this.checkValidity()) {
-                    this.classList.add('was-validated');
-                    return;
-                }
-
-           
+                this.classList.add('was-validated');
+                return;
+            }
 
             let datos = new FormData();
             const id_e = id.value;
@@ -534,11 +531,10 @@
             datos.append('accion', accion);
             confirmarAccion(datos, 'clientes', tabla, modal, function(r) {
                 if (r) {
-                    // cargarCombo('Clientes', '', 1, true).then(datos_ => {
-                    //     datos_cliente = datos_;
-                    // });
-                    cargarCombo('Clientes', '', 1)
-                    cargarCombo('ClienteEntrada',  '', 1)
+                    cargarCombo('Clientes', '', 1, true).then(datos_ => {
+                        datos_cliente = datos_;
+                    });
+                    cargarCombo('ClienteEntrada', '', 1)
                 }
             })
 

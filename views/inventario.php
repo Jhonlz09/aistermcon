@@ -563,7 +563,6 @@
                     console.log(b + ' ' + s + ' hanfle ' + w)
                     handleScroll(b, s, w);
                 }
-
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('i', JSON.stringify(tablaData));
             });
@@ -666,7 +665,6 @@
                 $(body).css('padding-right', '6px');
                 // $(navbar).css('margin-right', '6px');
             }
-
         });
 
         if (btnNuevo) {
@@ -693,7 +691,6 @@
         $('#tblInventario tbody').on('click', '.btnEditar', function() {
             if (scroll) {
                 const navbar = document.getElementById('navbar-fix');
-                // console.log('adas quiestoy en bav')
                 $(navbar).css('margin-right', '6px');
             }
             let row = obtenerFila(this, tabla);

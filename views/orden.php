@@ -133,7 +133,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
                                     <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
-                                    <div class="ten no-margin">*Debe selecionar un archivo .xls o .xlsx</div>
+                                    <div class="ten no-margin">*Debe selecionar un archivo .pdf</div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
@@ -310,8 +310,7 @@
                     let fecha_fac = row.fecha_fac === '' ? ' -' : row.fecha_fac;
                     let fecha_gar = row.fecha_gar === '' ? ' -' : row.fecha_gar;
                     let nota = row.nota ?? ' -';  // Asigna '-' si la nota está vacía
-
-
+                    
                     const tooltipText = {
                         0: 'Fecha de creacion: ' + fecha_cre,
                         1: 'Fecha de operación: ' + fecha_ini,
@@ -322,7 +321,6 @@
                     };
 
                     let concatenatedTooltipText = Object.values(tooltipText).join('<br>');
-
                     let clase = estadoClases[estado] || 'default';
                     let icon = estadoIcon[estado] || 'default';
                     let texto = estadoText[estado] || 'default';
@@ -364,7 +362,7 @@
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
                         (ruta !== '' ?
-                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='Descargar'>" +
+                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta)  + "&route=uploads" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='Descargar'>" +
                             " <i class='fas fa-file-pdf'></i>" +
                             "</a>" :
                             " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +
@@ -487,8 +485,6 @@
             // console.log(estado_filter)
             accion = 0;
             tabla.ajax.reload();
-            // }
-            // estado_filter = 'null';
         });
 
         $(cboClienteOrden).select2({
@@ -588,13 +584,6 @@
         $('#tblOrden tbody').on('click', '.btnEstado', function() {
             let row = obtenerFila(this, tabla);
             accion = 5;
-            // const estados = {
-            //     0: 1,
-            //     1: 2,
-            //     2: 3,
-            //     3: 0
-            // };
-
             nota.value = row["nota"];
             id_orden_.value = row["id"];
             radios[row["estado_obra"]].click();
@@ -603,29 +592,7 @@
             fecha_fin.value = convertirFecha(row["fecha_fin"]);
             fecha_fac.value = convertirFecha(row["fecha_fac"]);
             fecha_gar.value = convertirFecha(row["fecha_gar"]);
-
-            // const estado = estados[row["estado_obra"]];
-
-            // if (estado === 0) {
-            //     let src = new FormData();
-            //     src.append('accion', accion);
-            //     src.append('id', row["id"]);
-            //     src.append('estado', estado);
-            //     src.append('fecha', convertirFecha(row["fecha"]));
-            //     confirmarAccion(src, 'orden', tabla, '', function(r) {
-            //         if (r) {
-
-            //         }
-            //     }, 800);
-            // } else {
-            //     inp_estado.value = estado;
-            //     id_orden_.value = row["id"];
-            // }
         });
-
-        // $(modal).on("shown.bs.modal", () => {
-        //     nombre.focus();
-        // });
 
         formDate.addEventListener("submit", function(e) {
             e.preventDefault();
@@ -682,14 +649,12 @@
 
             if (accion == 2) {
                 confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                    // Callback para acciones después de confirmarAccion si es necesario
                 });
             } else {
                 fetchOrderId(datos.get('orden'), function(response) {
                     console.log(response);
                     if (response[0] != null) {
                         confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                            // Callback para acciones después de confirmarAccion si es necesario
                         });
                     } else {
                         mostrarConfirmacionExistente(datos);
@@ -707,13 +672,6 @@
 
 
             id_e = id.value;
-            // let selectedEstado;
-
-            // radios.forEach(radio => {
-            //     if (radio.checked) {
-            //         selectedEstado = radio.value;
-            //     }
-            // });
 
             let datos = new FormData();
             datos.append('id', id_e);

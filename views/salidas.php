@@ -102,11 +102,12 @@
 
     configuracionTable = {
         "responsive": true,
-        "dom": 'Pt',
+        "dom": 'Ptp',
         "lengthChange": false,
+        "pageLength": 30,
         "ordering": false,
         "autoWidth": false,
-        "paging": false, // Esto deshabilita la paginación
+        "paging": true, // Esto deshabilita la paginación
         searchPanes: {
             cascadePanes: true,
             columns: [2, 8, 9],

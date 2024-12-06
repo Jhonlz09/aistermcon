@@ -49,6 +49,7 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">Nº</th>
+                                    <th>RUC/CI</th>
                                     <th>PROVEEDOR</th>
                                     <th>TELÉFONO</th>
                                     <th>DIRECCIÓN</th>
@@ -98,26 +99,37 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="input-data">
-                                        <input autocomplete="off" inputmode="numeric" id="telefono" class="input-nuevo" type="text" required>
+                                        <input autocomplete="off" inputmode="numeric" id="ruc" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
-                                        <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
+                                        <label for="ruc" class="label"><i class="fas fa-building-user"></i> RUC/CI</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" inputmode="numeric" id="telefono" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="correo" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="correo" class="label"><i class="fa-solid fa-envelope"></i> Correo</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                            <div class="col-md-12">
                                     <div class="input-data" style="margin-bottom:1rem;">
                                         <input autocomplete="off" id="direccion" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label for="direccion" class="label"><i class="fas fa-map-location-dot"></i> Dirección</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-data" style="margin-bottom:1rem;">
-                                        <input autocomplete="off" id="correo" class="input-nuevo" type="text" required>
-                                        <div class="line underline"></div>
-                                        <label for="correo" class="label"><i class="fa-solid fa-envelope"></i> Correo</label>
                                     </div>
                                 </div>
                             </div>
@@ -158,7 +170,7 @@
                 }
             },
             {
-                targets: 5,
+                targets: 6,
                 data: "acciones",
                 visible: true,
                 render: function(data, type, row, full, meta) {
@@ -210,6 +222,7 @@
             btnNuevo = document.getElementById('btnNuevo');
 
         const id = document.getElementById('id'),
+            ruc = document.getElementById('ruc'),
             nombre = document.getElementById('nombre'),
             correo = document.getElementById('correo'),
             direccion = document.getElementById('direccion'),
@@ -262,23 +275,27 @@
             accion = 2;
             cambiarModal(span, ' Editar Proveedor', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
+            ruc.value = row["ruc"];
             nombre.value = row["nombre"];
             direccion.value = row["direccion"];
             telefono.value = row["telefono"];
             correo.value = row["correo"];
             correo.disabled = false;
             telefono.disabled = false;
+
         });
 
         form.addEventListener("submit", function(e) {
             e.preventDefault();
             const nom = nombre.value.trim().toUpperCase(),
+                ruc_ = ruc.value.trim(),
                 tel = telefono.value.trim(),
                 dir = direccion.value.trim().toUpperCase(),
                 cor = correo.value.trim();
             if (tel === '') {
                 telefono.disabled = true;
             }
+
             if (cor === '') {
                 correo.disabled = true;
             }
@@ -291,6 +308,7 @@
             let datos = new FormData();
             datos.append('id', id_e);
             datos.append('nombre', nom);
+            datos.append('ruc', ruc_);
             datos.append('tel', tel);
             datos.append('dir', dir);
             datos.append('correo', cor);

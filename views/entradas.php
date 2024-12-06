@@ -121,8 +121,17 @@
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
 
+                // rows.nodes().each(function(r) {
+                //     r.style.visibility = collapsed ? '' : 'collapse';
+                // });
                 rows.nodes().each(function(r) {
-                    r.style.visibility = collapsed ? '' : 'collapse';
+                    r.style.visibility = collapsed ? '' : 'hidden';
+                    r.style.lineHeight = collapsed ? '1.5' : '0';
+                    $(r).find('td').each(function() {
+                        this.style.paddingBlock = collapsed ? '' : '0';
+                        this.style.borderTop = collapsed ? '' : '0';
+                        this.style.borderBottom = collapsed ? '' : '0';
+                    });
                 });
 
                 var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer"><strong style="padding-block:.4rem" class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' +

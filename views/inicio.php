@@ -24,7 +24,7 @@
     <div class="container-fluid">
         <!-- row Tarjetas Informativas -->
         <div class="row">
-            <div class="col-lg-3">
+            <div class="col-lg">
                 <!-- small box -->
                 <div class="small-box bg-1">
                     <div class="inner">
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <!-- TARJETA TOTAL PENDIENTES -->
-            <div class="col-lg-3">
+            <div class="col-lg">
                 <!-- small box -->
                 <div class="small-box bg-2">
                     <div class="inner">
@@ -51,9 +51,8 @@
                     <a onclick="masInfo('Movimientos')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
-
             <!-- TARJETA ENTRADAS-->
-            <div class="col-lg-3">
+            <div class="col-lg">
                 <!-- small box -->
                 <div class="small-box bg-3">
                     <div class="inner">
@@ -66,7 +65,7 @@
                     <a onclick="masInfo('Listado de compras')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg">
                 <!-- small box -->
                 <div class="small-box bg-4">
                     <div class="inner">

@@ -210,7 +210,7 @@
                                     </td>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" id="crearE" name="4" onkeydown="toggleWithEnter(event, this)">
+                                            <input class="switch__input" type="checkbox" id="crearE" name="4" onkeydown="toggleWithEnter(event,this)">
                                             <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                 <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                             </svg>
