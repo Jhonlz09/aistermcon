@@ -14,7 +14,7 @@
     <!-- Estilo css -->
     <link href='assets/css/estilos.css' rel='stylesheet' type='text/css' />
     <!-- Jquery CSS -->
-    <link rel='stylesheet' href='assets/plugins/jquery-ui/jquery-ui.css'>
+    <link rel='stylesheet' href='assets/plugins/jquery-ui/jquery-ui.min.css'>
     <!-- DataTables -->
     <link href='assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' rel='stylesheet' type='text/css' />
     <link href='assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' rel='stylesheet' type='text/css' />
@@ -92,7 +92,9 @@
 
         let estado_filter = 'null';
         let datos_cliente = [];
+        let datos_uni= [];
         let datos_orden = [];
+        let datos_prove = [];
         let datos_anio = [];
         let selectedTab = '2';
         // let datos_und = [];
@@ -853,8 +855,12 @@
                     placeholder: 'SELECCIONE',
                 });
 
-                cargarCombo('Proveedores');
-                cargarCombo('Unidad');
+                cargarCombo('Proveedores', '', 1, true).then(datos_ =>{
+                    datos_prove = datos_;
+                });
+                cargarCombo('Unidad', '', 1, true).then(datos_ =>{
+                    datos_uni = datos_;
+                });
                 cargarCombo('Clientes', '', 1, true).then(datos_ => {
                     datos_cliente = datos_;
                     $(cboClienteEntrada).select2({
@@ -1418,7 +1424,6 @@
                             processData: false,
                             success: function(r) {
                                 let isSuccess = r.status === "success";
-
                                 mostrarToast(r.status,
                                     isSuccess ? "Completado" : "Error",
                                     isSuccess ? "fa-check" : "fa-xmark",
@@ -1560,8 +1565,6 @@
                 });
 
                 function CargarProductos(p = "", barras = false) {
-
-
                     function manejarRespuesta(r, tblDetalle, tabla) {
                         tblDetalle.ajax.reload(null, false);
                         tabla.ajax.reload(null, false);
@@ -1600,7 +1603,6 @@
                             oninput="validarNumber(this,/[^0-9.]/g)" value="${respuesta['cantidad']}">`,
                             respuesta['nombre']
                         ];
-
                         if (tabla === tblCompra) {
                             nuevaFila.push('$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,5)" value="0">');
                             nuevaFila.push('<span class="total">$0.00</span>', '<span class="iva">$0.00</span>', '<span class="precio_final">$0.00</span>');
@@ -1760,7 +1762,7 @@
                                 let id = data[producto];
 
                                 let valores = clases.map(clase => {
-                                    let inputElement = row.node().querySelector('input.' + clase);
+                                    let inputElement = row.node().querySelector('.' + clase);
                                     // Si inputElement es null, retornar data[5]
                                     return inputElement ? inputElement.value : data[5];
                                 });
