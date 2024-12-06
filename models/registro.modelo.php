@@ -152,13 +152,7 @@ class ModeloRegistro
             $conexion->rollBack();
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo registrar la guía: ' . $e->getMessage()
-            );
-        } catch (Exception $e) {
-            $conexion->rollBack();
-            return array(
-                'status' => 'danger',
-                'm' => '' . $e->getMessage()
+                'm' => 'No se pudo registrar la solicitud de cotización: ' . $e->getMessage()
             );
         }
     }
@@ -217,12 +211,6 @@ class ModeloRegistro
             return array(
                 'status' => 'danger',
                 'm' => 'No se pudo registrar la guía: ' . $e->getMessage()
-            );
-        } catch (Exception $e) {
-            $conexion->rollBack();
-            return array(
-                'status' => 'danger',
-                'm' => '' . $e->getMessage()
             );
         }
     }
