@@ -17,7 +17,6 @@ $_SESSION["telefono"] = $configuracion[0]->telefonos;
 $_SESSION["entrada_mul"] = $configuracion[0]->entrada;
 $_SESSION["bodeguero"] = $configuracion[0]->bodeguero;
 $_SESSION["conductor"] = $configuracion[0]->conductor;
-// $_SESSION["secuencia_orden"] = $configuracion[0]->secuencia_orden;
 
 
 ?>
@@ -39,15 +38,12 @@ $_SESSION["conductor"] = $configuracion[0]->conductor;
                     <li class="nav-item sub">
                         <a id="<?php echo $menu->modulo ?>" class="nav-link setA <?php if ($first) : ?>
                                                                             <?php echo 'active'; ?>
-                                                                        <?php endif; ?>" <?php if (!empty($menu->vista)) : ?> onclick="if (!$(this).hasClass('active')) cargarContenido('content-wrapper', 'views/<?php echo $menu->vista; ?>','<?php echo $menu->modulo ?>')" <?php endif; ?>>
+                        <?php endif; ?>" <?php if (!empty($menu->vista)) : ?> onclick="if (!$(this).hasClass('active')) cargarContenido('content-wrapper', 'views/<?php echo $menu->vista; ?>','<?php echo $menu->modulo ?>')" <?php endif; ?>>
                             <i class="nav-icon fas <?php echo $menu->icon; ?>"></i>
                             <p><?php echo $menu->modulo ?> <?php if (empty($menu->vista)) : ?> <i class="right fas fa-angle-left"></i> <?php endif; ?></p>
                         </a>
-
                         <?php if (empty($menu->vista)) : ?>
-                            <?php
-                            $subMenuUsuario = PermisosControlador::ctrObtenerPermisoSubmenu($_SESSION["s_usuario"]->id, $menu->id);
-                            ?>
+                            <?php $subMenuUsuario = PermisosControlador::ctrObtenerPermisoSubmenu($_SESSION["s_usuario"]->id, $menu->id);?>
                             <ul class="nav nav-treeview ">
                                 <?php foreach ($subMenuUsuario as $subMenu) :
                                     $_SESSION["crear" . $subMenu->id] = $subMenu->crear;
@@ -58,6 +54,7 @@ $_SESSION["conductor"] = $configuracion[0]->conductor;
                                         <a id="<?php echo $subMenu->modulo ?>" style="cursor: pointer;" class="nav-link setB" onclick="if (!$(this).hasClass('active')) cargarContenido('content-wrapper','views/<?php echo $subMenu->vista ?>', '<?php echo $subMenu->modulo ?>' )">
                                             <i class="fas <?php echo $subMenu->icon; ?> nav-icon"></i>
                                             <p><?php echo $subMenu->modulo; ?></p>
+                                            <!-- <i class="right fa-regular fa-circle-plus" style="font-size: 1.25rem;"></i> -->
                                         </a>
                                     </li>
                                 <?php endforeach; ?>
@@ -68,17 +65,6 @@ $_SESSION["conductor"] = $configuracion[0]->conductor;
                     $first = false;
                 endforeach; ?>
             </ul>
-            <!-- <li class="mode">
-                <div class="moon-sun">
-                    <i class="fas fa-sun sun icon"></i>
-                    <i class="fas fa-moon moon icon"></i>
-                </div>
-                <span class="mode-text text">Modo oscuro</span>
-                <div class="toggle-switch">
-                    <span class="switch"></span>
-                </div>
-            </li> -->
-
         </nav>
         <!-- /.sidebar-menu -->
     </div>
