@@ -10,12 +10,11 @@
                 <div class="col-xl-9">
                     <div class="card">
                         <div class="card-body" style="padding:1.25em">
-
                             <div class="tabs-container">
                                 <div class="row" style="align-items:normal">
                                     <div class="col-md-4 d-flex">
                                         <div class="tabs" style="margin-block: 0.5rem 1.8rem ">
-                                            <?php if ($_SESSION["crear4"] && !$_SESSION["crear7"]) : ?>
+                                            <?php if ($_SESSION["crear4"] && !$_SESSION["crear9"]) : ?>
                                                 <input type="radio" id="radio-2" name="tabs" value="2" checked />
                                                 <label class="tab" for="radio-2">Salida</label>
                                                 <input type="radio" id="radio-3" name="tabs" value="3" />
@@ -23,7 +22,7 @@
                                                 <span style="width:50%;" class="glider"></span>
 
                                             <?php endif; ?>
-                                            <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
+                                            <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                 <script>
                                                     selectedTab = '1';
                                                 </script>
@@ -32,7 +31,7 @@
                                                 <span style="width: 100%;transform:translate(0)" class="glider"></span>
                                             <?php endif; ?>
 
-                                            <?php if ($_SESSION["crear7"] && $_SESSION["crear4"]) : ?>
+                                            <?php if ($_SESSION["crear9"] && $_SESSION["crear4"]) : ?>
                                                 <input type="radio" id="radio-2" name="tabs" value="2" checked />
                                                 <label class="tab" for="radio-2">Salida</label>
                                                 <input type="radio" id="radio-3" name="tabs" value="3" />
@@ -46,7 +45,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-8">
-                                        <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
+                                        <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
 
                                             <div id="div_orden" style="display:none;line-height:1">
                                             <?php else : ?>
@@ -66,7 +65,7 @@
                                                     </div>
                                                 </div>
                                                 </div>
-                                                <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
+                                                <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                     <div class="form-group" id="div_proveedor" style="display:block;line-height:1">
                                                     <?php else : ?>
                                                         <div class="form-group" id="div_proveedor" style="display:none;line-height:1">
@@ -122,7 +121,7 @@
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
-                                                <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
+                                                <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                     <div class="col" id="div_nrofac" style="display:block;margin-bottom:1.8rem">
                                                     <?php else : ?>
                                                         <div class="col" id="div_nrofac" style="display:none;margin-bottom:1.8rem">
@@ -135,7 +134,7 @@
                                                         </div>
                                                         </div>
                                                         <!-- <form action="" id="form_salida"> -->
-                                                        <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
+                                                        <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                             <div class="col-sm-4" id="div_nroguia" style="display:none;margin-bottom:1.8rem">
                                                             <?php else : ?>
                                                                 <div class="col-sm-4" id="div_nroguia" style="display:block;margin-bottom:1.8rem">
@@ -153,7 +152,7 @@
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 </div>
-                                                                <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
+                                                                <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                                     <div class="col-sm-4" id="div_conductor" style="display:none;margin-bottom:1.8rem">
                                                                     <?php else : ?>
                                                                         <div class="col-sm-4" id="div_conductor" style="display:block;margin-bottom:1.8rem">
@@ -176,7 +175,7 @@
                                                                     </div>
                                                                     <div class="row" style="line-height:1;" id="div_productos">
                                                                         <div class="col-lg-8">
-                                                                            <div class="form-group">
+                                                                            <div class="form-group ui-front">
                                                                                 <label class="col-form-label combo" for="codProducto">
                                                                                     <i class="fas fa-arrow-up-a-z"></i> Productos</label>
                                                                                 <input style="border-bottom: 2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="codProducto" placeholder="Ingrese el nombre del producto">
@@ -191,7 +190,7 @@
                                                                         </div>
                                                                     </div>
                                                             </div>
-                                                            <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
+                                                            <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                                 <div id="form-1" style="display: block" class="card-body form-container">
                                                                 <?php else : ?>
                                                                     <div id="form-1" class="card-body form-container">
@@ -218,7 +217,7 @@
                                                                     </div>
                                                                     </div>
 
-                                                                    <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
+                                                                    <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                                         <div id="form-2" class="form-container">
                                                                         <?php else : ?>
                                                                             <div id="form-2" style="display:block;" class="form-container">
@@ -314,7 +313,7 @@
                                                     </div>
                                                     <!-- /.card -->
                                                     <div class="col-xl-3">
-                                                        <?php if ($_SESSION["crear7"] && !$_SESSION["crear4"]) : ?>
+                                                        <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                             <div class="card" id="card_person" style="display: none;">
                                                             <?php else : ?>
                                                                 <div class="card" id="card_person" style="display: block;">
@@ -728,17 +727,5 @@
         formData.append('id_producto_fab', cboFab.value);
         formData.append('accion', 7);
         realizarRegistro(tblFab, formData, clases);
-        // datos.append('id_e', id_e);
-        // datos.append('nombre', nom);
-        // datos.append('unidad', und);
-        // datos.append('cantidad', cant);
-        // datos.append('id_orden', id_orden);
-        // datos.append('accion', accion_fab);
-        // confirmarAccion(datos, 'inventario', null, modal_fab, function(r) {
-        //     cargarAutocompletado();
-        //     cargarComboFabricado(id_e);
-        // })
-
-
     })
 </script>
