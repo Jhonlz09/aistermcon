@@ -866,12 +866,7 @@
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                // cambiarModal(span, ' Nuevo solic. compra', icon, 'fa-hand-holding-box', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
-                // form.reset();
-                // form.classList.remove('was-validated');
-                // correo.disabled = false;
-                // telefono.disabled = false;
-                const nro_cotizacion = tabla.cell(0, 1).data(); // '00013'
+                const nro_cotizacion = tabla.cell(0, 1).data() || '0001';// '00013'
                 const nro_cotizacion_formateado = (parseInt(nro_cotizacion, 10) + 1).toString().padStart(nro_cotizacion.length, '0');
                 $('#nroSolicitud').text(nro_cotizacion_formateado);
                 $('#text_accion').text(' Nueva solicitud de compra');
