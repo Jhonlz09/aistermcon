@@ -290,7 +290,7 @@ function formatNumberInput(input) {
 }
 
 
-function confirmarAccion(datos, ruta, tabla, modal = "", callback, time=5500) {
+function confirmarAccion(datos, ruta, tabla, modal = "", callback, time=5500, showToast=true) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
     method: "POST",
@@ -308,13 +308,14 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback, time=5500) {
       }else if(isSuccess){
         $(modal).modal("hide");
       }
-      mostrarToast(
-        r.status,
-        isSuccess ? "Completado" : "Error",
-        isSuccess ? "fa-check" : "fa-xmark",
-        r.m, time
-      );
-
+      if(showToast){
+        mostrarToast(
+          r.status,
+          isSuccess ? "Completado" : "Error",
+          isSuccess ? "fa-check" : "fa-xmark",
+          r.m, time
+        );
+      }
       if (typeof callback === "function") {
         callback(isSuccess ? r : false);
       }
@@ -418,6 +419,10 @@ function handleScroll(b, s, w) {
   }
 }
 
+function selecTexto(input) {
+  input.select();
+}
+
 function masInfo(modulo) {
   let button = document.getElementById(modulo);
   button.click();
@@ -490,7 +495,7 @@ function validarTecla(e, input) {
     const valorActual = parseInt(input.value, 10) || 0; // Si el valor no es un número, se establece como 0
     let nuevoValor = valorActual + (e.key === "ArrowUp" ? 1 : -1);
 
-    nuevoValor = Math.max(nuevoValor, 0);
+    nuevoValor = Math.max(nuevoValor, 1);
     input.value = nuevoValor.toString();
   }
 }

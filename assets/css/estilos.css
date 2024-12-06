@@ -151,6 +151,10 @@ input[type=file]::file-selector-button {
     height: 100%;
 }
 
+.bg-gradient-green:focus {
+    box-shadow: 0 0 0 0.2rem #00bc8d52;
+}
+
 input[type=file] {
     border: 1px solid var(--text-color) !important;
     border-radius: 5px;
@@ -251,7 +255,7 @@ input[type="radio"] {
     margin: 0;
 }
 
-input[type="radio"]:checked+label {
+input[type="radio"]:checked+label:not(.custom-control-label) {
     color: var(--light);
 }
 /* .sorting_disabled.sorting_asc{
@@ -266,6 +270,8 @@ table.dataTable>thead .sorting_disabled.sorting_asc::after , table.dataTable>the
 /* #radio-1:checked {
     --label-new: #000000!important;
 } */
+
+
 #btnOrden:focus {
     box-shadow: 0 0 0 0.2rem var(--boxshadow);
 }
@@ -275,7 +281,6 @@ table.dataTable>thead .sorting_disabled.sorting_asc::after , table.dataTable>the
 }
 
 #btnGuardarGuia:focus {
-
     box-shadow: 0 0 0 0.2rem var(--boxshadow);
 }
 
@@ -295,11 +300,29 @@ table.dataTable>thead .sorting_disabled.sorting_asc::after , table.dataTable>the
     --boxshadow: #960d0d6b;
 }
 
+td:has(span.select2-selection.select2-selection--single) {
+    --select-border-bottom: #ced4da;
+    --label-new: #375c9b;
+}
+
+/* .unidad .select2-container--default.select2-selection--single.select2-selection__rendered{
+font-size: 1rem;
+} */
+
+.unidad+.select2-container.select2-container--default .selection .select2-selection--single .select2-selection__rendered{
+    font-size: 1rem;
+}
+
+
 .control-sidebar:has(#radio-3:checked):not(.modal-body *) {
     --label-star: #2c6cb1;
     --label-new: #294371;
     --boxshadow: #175aad62;
 
+}
+
+.right.fa-regular.fa-circle-plus:hover{
+    color: #007904;
 }
 
 /* .dark-mode.control-sidebar-slide-open:has(#radio-1:checked){
@@ -815,21 +838,25 @@ input:focus-visible {
 
 .custom-control-input:checked~.custom-control-label::before {
     color: var(--sidebar-color);
-    border-color: var(--label-new);
-    background-color: var(--label-new);
-    box-shadow: inset 0 0 0 transparent, 0 0 0 1px #fff, 0 0 0 0.2rem var(--boxshadow)
+    border-color: #001f3f;
+    background-color: #3f6791;
+    box-shadow: inset 0 0 0 transparent, 0 0 0 1px #fff, 0 0 0 0.2rem #0d305761
 }
+
+.partir-texto {
+    word-wrap: break-word; /* Permite que las palabras largas se rompan */
+    overflow-wrap: break-word; /* Compatibilidad adicional */
+    white-space: normal; /* Habilitar varias líneas */
+    max-width: 16rem; /* Opcional: limita el ancho */
+  }
 
 .custom-control-input:focus~.custom-control-label::before {
     box-shadow: 0 0 0 0.2rem var(--boxshadow)
 }
 
-
-.modal-footer button:focus {
+.modal-footer button:focus:not(.btn.bg-gradient-light) {
     box-shadow: 0 0 0 0.2rem var(--boxshadow);
 }
-
-
 
 .modal-body {
     position: relative;
