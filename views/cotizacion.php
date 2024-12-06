@@ -11,7 +11,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Solicitud de compra</h1>
             </div>
-            <?php if (isset($_SESSION["crear4"]) && $_SESSION["crear4"] === true) : ?>
+            <?php if (isset($_SESSION["crear11"]) && $_SESSION["crear11"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -266,9 +266,9 @@
 </div>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar6"] || $_SESSION["eliminar6"] ?>';
-    var editar = '<?php echo $_SESSION["editar6"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar6"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar11"] || $_SESSION["eliminar11"] ?>';
+    var editar = '<?php echo $_SESSION["editar11"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar11"] ?>';
 
     configuracionTable = {
         "responsive": true,

@@ -1,12 +1,12 @@
 <?php require_once "../utils/database/config.php";?>
 
 <head>
-    <title>Perfil</title>
+    <title>Cuenta</title>
 </head>
 <!-- Contenido Header -->
 <section class="content-header">
     <div class="container-fluid">
-        <h1 class="col-p">Perfil</h1>
+        <h1 class="col-p">Cuenta</h1>
     </div><!-- /.container-fluid -->
 </section>
 <!-- /.content-header -->

@@ -10,7 +10,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Ordenes</h1>
             </div>
-            <?php if (isset($_SESSION["crear13"]) && $_SESSION["crear13"] === true) : ?>
+            <?php if (isset($_SESSION["crear17"]) && $_SESSION["crear17"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -254,8 +254,8 @@
 </div>
 <script>
     var mostrarCol = true;
-    var editar = '<?php echo $_SESSION["editar13"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar13"] ?>';
+    var editar = '<?php echo $_SESSION["editar17"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar17"] ?>';
     OverlayScrollbars(document.querySelector('.scroll-modal'), {
         autoUpdate: true,
         scrollbars: {

@@ -10,7 +10,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Presupuestos</h1>
             </div>
-            <?php if (isset($_SESSION["crear12"]) && $_SESSION["crear12"] === true) : ?>
+            <?php if (isset($_SESSION["crear16"]) && $_SESSION["crear16"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>

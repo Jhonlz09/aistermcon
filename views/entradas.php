@@ -13,7 +13,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Compras</h1>
             </div>
-            <?php if (isset($_SESSION["crear7"]) && $_SESSION["crear7"] === true) : ?>
+            <?php if (isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -93,9 +93,9 @@
 <script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
 <script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar7"] || $_SESSION["eliminar7"] ?>';
-    var editar = '<?php echo $_SESSION["editar7"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar7"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar9"] || $_SESSION["eliminar9"] ?>';
+    var editar = '<?php echo $_SESSION["editar9"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar9"] ?>';
     var collapsedGroups = {};
 
     configuracionTable = {

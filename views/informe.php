@@ -11,7 +11,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Informe</h1>
             </div>
-            <?php if (isset($_SESSION["crear5"]) && $_SESSION["crear5"] === true) : ?>
+            <?php if (isset($_SESSION["crear7"]) && $_SESSION["crear7"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal-date">
                         <i class="fa fa-file-lines"></i> Generar informe</button>
@@ -172,9 +172,9 @@
 
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar5"] || $_SESSION["eliminar5"] ?>';
-    var editar = '<?php echo $_SESSION["editar5"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar5"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar7"] || $_SESSION["eliminar7"] ?>';
+    var editar = '<?php echo $_SESSION["editar7"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar7"] ?>';
     var collapsedGroups = {};
 
     configuracionTable = {
