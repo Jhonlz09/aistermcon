@@ -104,7 +104,7 @@ class ControladorOrden
     private function generateUniqueFilePath($filePath, $full)
     {
         $pathInfo = pathinfo($filePath);
-        $baseName = $pathInfo['filename'];
+        // $baseName = $pathInfo['filename'];
         $extension = $pathInfo['extension'];
         $directory = $pathInfo['dirname'];
         $counter = 1;
@@ -160,7 +160,6 @@ if (!isset($_POST["accion"])) {
         $data->id_cliente = $_POST["id_cliente"];
         $data->cliente = $_POST["cliente"];
         // $data->estado = $_POST["estado"];
-
         $data->editarOrden();
     } else if ($_POST["accion"] == 3) {
         $data = new ControladorOrden();
