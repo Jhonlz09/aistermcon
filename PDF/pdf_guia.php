@@ -394,7 +394,7 @@ class PDF extends FPDF
         // $this->SetY($this->GetY() + 14);
 
         
-}
+    }
 
     // // Pie de página
     function __construct($id_boleta)
