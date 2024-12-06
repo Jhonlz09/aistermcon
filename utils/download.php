@@ -15,8 +15,10 @@ if (!(isset($_SESSION['s_usuario']))) {
 
 // Obtener el nombre del archivo desde la URL
 $route = $_GET['file'];
+$dir = $_GET['route'];
+
 $file = basename($_GET['file']);
-$file_path = '/var/www/uploads/' . $route;
+$file_path = '/var/www/'.$dir.'/' . $route;
 
 // Verificar si el archivo existe
 if (file_exists($file_path)) {
@@ -51,5 +53,5 @@ if (file_exists($file_path)) {
     $pdf->Output('I', htmlspecialchars($file), true);
     exit;
 } else {
-    die("El archivo no existe: " . $file);
+    die("El archivo no existe: " .htmlspecialchars($file));
 }
