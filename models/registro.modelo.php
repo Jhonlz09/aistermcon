@@ -530,11 +530,11 @@ class ModeloRegistro
                 $row = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
                 if ($row) {
-                    $codigo = $row['descripcion'];
-                    $salidas = $row['cantidad_salida'];
-                    if ($cantidad !== NULL && $cantidad > $salidas) {
-                        throw new Exception("La cantidad ingresada para el producto '$codigo' excede la cantidad permitida.");
-                    }
+                    // $codigo = $row['descripcion'];
+                    // $salidas = $row['cantidad_salida'];
+                    // if ($cantidad !== NULL && $cantidad > $salidas) {
+                    //     throw new Exception("La cantidad ingresada para el producto '$codigo' excede la cantidad permitida.");
+                    // }
 
                     // Realizar la actualización del campo 'retorno' y 'isentrada'
                     $stmtE = $db->prepare("UPDATE tblsalidas SET retorno = :nuevaEntrada, isentrada = :isEntrada WHERE id = :id");
