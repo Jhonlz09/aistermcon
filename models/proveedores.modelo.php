@@ -7,19 +7,20 @@ class ModeloProveedores
     static public function mdlListarProveedores()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT id, nombre, telefono, direccion, correo, '' as acciones FROM tblproveedores WHERE estado=true ORDER BY id");
+            $l = Conexion::ConexionDB()->prepare("SELECT id, ruc,nombre, telefono, direccion, correo, '' as acciones FROM tblproveedores WHERE estado=true ORDER BY id");
             $l->execute();
-            return $l->fetchAll();
+            return $l->fetchAll(); 
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
         }
     }
 
-    static public function mdlAgregarProveedores($nombre,$dir, $correo, $tel)
+    static public function mdlAgregarProveedores($ruc,$nombre,$dir, $correo, $tel)
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblproveedores(nombre,direccion, correo, telefono) VALUES (:nombre,:dir, :correo, :tel)");
+            $a = $conexion->prepare("INSERT INTO tblproveedores(ruc,nombre,direccion, correo, telefono) VALUES (:ruc,:nombre,:dir, :correo, :tel)");
+            $a->bindParam(":ruc", $ruc, PDO::PARAM_STR);
             $a->bindParam(":nombre", $nombre, PDO::PARAM_STR);
             $a->bindParam(":dir", $dir, PDO::PARAM_STR);
             $a->bindParam(":correo", $correo, PDO::PARAM_STR);
@@ -39,11 +40,12 @@ class ModeloProveedores
     }
 
 
-    static public function mdlEditarProveedor($id, $nombre,$dir, $correo, $tel)
+    static public function mdlEditarProveedor($id, $ruc, $nombre,$dir, $correo, $tel)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("UPDATE tblproveedores SET nombre=:nombre, direccion = :dir, correo = :correo, telefono = :tel WHERE id=:id");
+            $u = Conexion::ConexionDB()->prepare("UPDATE tblproveedores SET ruc=:ruc, nombre=:nombre, direccion = :dir, correo = :correo, telefono = :tel WHERE id=:id");
             $u->bindParam(":id", $id, PDO::PARAM_INT);
+            $u->bindParam(":ruc", $ruc, PDO::PARAM_STR);
             $u->bindParam(":nombre", $nombre, PDO::PARAM_STR);
             $u->bindParam(":dir", $dir, PDO::PARAM_STR);
             $u->bindParam(":correo", $correo, PDO::PARAM_STR);

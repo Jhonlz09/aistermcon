@@ -103,6 +103,130 @@ class ModeloRegistro
         }
     }
 
+    static public function mdlSolicitudCotizacion($arrJSON, $proveedor, $comprador, $fecha)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+
+            $motivo = ''; // Inicializar el string motivo
+            $contador = 0;
+            $arr = json_decode($arrJSON, true);
+
+            // Validar el stock disponible para cada producto
+            foreach ($arr as $data) {
+                // list($cantidad, $unidad, $descripcion) = explode(',', $data);
+                $cantidad = isset($data['cantidad']) ? (int)$data['cantidad'] : 0;
+                // $unidad = $data['unidad'];
+                $descripcion = isset($data['descripcion']) ? trim($data['descripcion']) : '';
+
+                if ($cantidad == 0) {
+                    throw new Exception("La cantidad de los productos no puede ser 0");
+                }
+
+                if ($contador < 5) {
+                    $primeraPalabra = explode(' ', trim($descripcion))[0]; // Obtiene la primera palabra
+                    $motivo .= ($contador > 0 ? ', ' : '') . $primeraPalabra; // Concatena al string motivo
+                }
+                $contador++; // Incrementa el contador
+            }
+
+            if ($contador > 5) {
+                $motivo .= '...';
+            }
+
+            $motivo = mb_strtoupper($motivo, 'UTF-8');
+
+            $id_cotizacion = self::insertarNroCotizacion($conexion, $proveedor, $comprador, $motivo, false, $fecha);
+
+            // Insertar salidas
+            self::insertarCotizacion($conexion, $id_cotizacion, $arr);
+
+            $conexion->commit();
+
+            return array(
+                'status' => 'success',
+                'm' => 'La solicitud de cotización fue registrada correctamente'
+            );
+        } catch (PDOException $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo registrar la guía: ' . $e->getMessage()
+            );
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => '' . $e->getMessage()
+            );
+        }
+    }
+
+    static public function mdlOrdenCompra($arrJSON, $proveedor, $comprador, $fecha, $subtotal, $iva, $impuesto, $total)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+
+            $motivo = ''; // Inicializar el string motivo
+            $contador = 0;
+            $arr = json_decode($arrJSON, true);
+
+            // Validar el stock disponible para cada producto
+            foreach ($arr as $data) {
+                // list($cantidad, $unidad, $descripcion, $precio) = explode(',', $data);
+                $cantidad = isset($data['cantidad']) ? (float)$data['cantidad'] : 0;
+                $descripcion = isset($data['descripcion']) ? trim($data['descripcion']) : '';
+                $precio = isset($data['precio_final']) ? (float)$data['precio_final'] : 0;
+
+                if ($cantidad == 0) {
+                    throw new Exception("La cantidad de los productos no puede ser 0");
+                }
+
+                if ($precio == 0) {
+                    throw new Exception("El precio no puede ser 0 o vacio");
+                }
+
+                if ($contador < 5) {
+                    $primeraPalabra = explode(' ', trim($descripcion))[0]; // Obtiene la primera palabra
+                    $motivo .= ($contador > 0 ? ', ' : '') . $primeraPalabra; // Concatena al string motivo
+                }
+                $contador++; // Incrementa el contador
+            }
+
+            if ($contador > 5) {
+                $motivo .= '...';
+            }
+
+            $motivo = strtoupper($motivo);
+            // Insertar nro cotizacion
+            $id_orden_compra = self::insertarNroCompra($conexion, $proveedor, $comprador, $motivo, true, $fecha, $subtotal, $iva, $impuesto, $total);
+
+            // Insertar salidas
+            self::insertarOrdenCompra($conexion, $id_orden_compra, $arr);
+
+            $conexion->commit();
+
+            return array(
+                'status' => 'success',
+                'm' => 'La orden de compra fue registrada correctamente'
+            );
+        } catch (PDOException $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo registrar la guía: ' . $e->getMessage()
+            );
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => '' . $e->getMessage()
+            );
+        }
+    }
+
     static public function mdlRegistrarEntrada($arr, $orden, $cliente, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado)
     {
         try {
@@ -209,6 +333,38 @@ class ModeloRegistro
         return $conexion->lastInsertId();
     }
 
+    static private function insertarNroCotizacion($conexion, $proveedor, $comprador, $motivo, $estado_sol, $fecha)
+    {
+        $hora = date('H:i:s');
+        $fechaHora = $fecha . ' ' . $hora;
+        $stm = $conexion->prepare("INSERT INTO tblcotizacion(id_proveedor, comprador, motivo, estado_orden, fecha) VALUES(:proveedor, :comprador, :motivo, :estado_sol, :fecha)");
+        $stm->bindParam(':proveedor', $proveedor, PDO::PARAM_INT);
+        $stm->bindParam(':comprador', $comprador, PDO::PARAM_STR);
+        $stm->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+        $stm->bindParam(':estado_sol', $estado_sol, PDO::PARAM_BOOL);
+        $stm->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
+        $stm->execute();
+        return $conexion->lastInsertId();
+    }
+
+    static private function insertarNroCompra($conexion, $proveedor, $comprador, $motivo, $estado_sol, $fecha, $subtotal, $iva, $impuesto, $total)
+    {
+        $hora = date('H:i:s');
+        $fechaHora = $fecha . ' ' . $hora;
+        $stm = $conexion->prepare("INSERT INTO tblcotizacion(id_proveedor, comprador, motivo, estado_orden, fecha, subtotal, iva, impuesto, total) VALUES(:proveedor, :comprador, :motivo, :estado_sol, :fecha, :subtotal, :iva, :impuesto, :total)");
+        $stm->bindParam(':proveedor', $proveedor, PDO::PARAM_INT);
+        $stm->bindParam(':comprador', $comprador, PDO::PARAM_STR);
+        $stm->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+        $stm->bindParam(':estado_sol', $estado_sol, PDO::PARAM_BOOL);
+        $stm->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
+        $stm->bindParam(':subtotal', $subtotal, PDO::PARAM_INT);
+        $stm->bindParam(':iva', $iva, PDO::PARAM_INT);
+        $stm->bindParam(':impuesto', $impuesto, PDO::PARAM_INT);
+        $stm->bindParam(':total', $total, PDO::PARAM_INT);
+        $stm->execute();
+        return $conexion->lastInsertId();
+    }
+
     static private function insertarBoletaEntrada($conexion, $id_orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado)
     {
         $hora = date('H:i:s');
@@ -248,6 +404,44 @@ class ModeloRegistro
             $stmtE->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
             $stmtE->bindParam(':id', $id, PDO::PARAM_INT);
             $stmtE->execute();
+        }
+    }
+
+    static private function insertarCotizacion($conexion, $id_cotizacion, $arr)
+    {
+        foreach ($arr as $data) {
+            $cantidad = (float)$data['cantidad'];
+            $unidad = $data['id_unidad'];
+            $descripcion = mb_strtoupper(trim($data['descripcion']), 'UTF-8');
+
+            $stm = $conexion->prepare("INSERT INTO tbldetalle_cotizacion(id_cotizacion, cantidad, id_unidad, descripcion) 
+                VALUES(:id_cotizacion, :cantidad, :unidad, :descripcion)
+            ");
+
+            $stm->bindParam(':id_cotizacion', $id_cotizacion, PDO::PARAM_INT);
+            $stm->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
+            $stm->bindParam(':unidad', $unidad, PDO::PARAM_INT);
+            $stm->bindParam(':descripcion', $descripcion, PDO::PARAM_STR);
+            $stm->execute();
+        }
+    }
+
+    static private function insertarOrdenCompra($conexion, $id_cotizacion, $arr)
+    {
+        foreach ($arr as $data) {
+            // list($cantidad, $unidad, $descripcion, $precio) = explode(',', $data);
+            $cantidad = (float)$data['cantidad'];
+            $unidad = $data['id_unidad'];
+            $descripcion = mb_strtoupper(trim($data['descripcion']), 'UTF-8');
+            $precio = (float)$data['precio_final'];
+
+            $stm = $conexion->prepare("INSERT INTO tbldetalle_cotizacion(id_cotizacion, cantidad, id_unidad, descripcion, precio_final) VALUES(:id_cotizacion, :cantidad, :unidad, :descripcion, :precio)");
+            $stm->bindParam(':id_cotizacion', $id_cotizacion, PDO::PARAM_INT);
+            $stm->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
+            $stm->bindParam(':unidad', $unidad, PDO::PARAM_INT);
+            $stm->bindParam(':descripcion', $descripcion, PDO::PARAM_STR);
+            $stm->bindParam(':precio', $precio, PDO::PARAM_INT);
+            $stm->execute();
         }
     }
 
