@@ -10,7 +10,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Proveedores</h1>
             </div>
-            <?php if (isset($_SESSION["crear8"]) && $_SESSION["crear8"] === true) : ?>
+            <?php if (isset($_SESSION["crear10"]) && $_SESSION["crear10"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -148,9 +148,9 @@
 </div>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar6"] || $_SESSION["eliminar6"] ?>';
-    var editar = '<?php echo $_SESSION["editar6"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar6"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar10"] || $_SESSION["eliminar10"] ?>';
+    var editar = '<?php echo $_SESSION["editar10"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar10"] ?>';
 
     configuracionTable = {
         "responsive": true,
