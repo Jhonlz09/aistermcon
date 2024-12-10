@@ -1,24 +1,4 @@
-<?php $permisosUsuario = PermisosControlador::ctrObtenerPermisos($_SESSION["s_usuario"]->id);
-foreach ($permisosUsuario as $permiso) {
-    $_SESSION["crear" . $permiso->id] = $permiso->crear;
-    $_SESSION["editar" . $permiso->id] = $permiso->editar;
-    $_SESSION["eliminar" . $permiso->id] = $permiso->eliminar;
-}
-
-$configuracion = PermisosControlador::ctrObtenerConfiguracion();
-$_SESSION["empresa"] = $configuracion[0]->empresa;
-$_SESSION["iva"] = $configuracion[0]->iva;
-$_SESSION["emisor"] = $configuracion[0]->emisor;
-$_SESSION["ruc"] = $configuracion[0]->ruc;
-$_SESSION["matriz"] = $configuracion[0]->matriz;
-$_SESSION["correo1"] = $configuracion[0]->correo1;
-$_SESSION["correo2"] = $configuracion[0]->correo2;
-$_SESSION["telefono"] = $configuracion[0]->telefonos;
-$_SESSION["entrada_mul"] = $configuracion[0]->entrada;
-$_SESSION["bodeguero"] = $configuracion[0]->bodeguero;
-$_SESSION["conductor"] = $configuracion[0]->conductor;
-
-
+<?php 
 ?>
 <!-- Main Sidebar Container -->
 <aside style="backdrop-filter:blur(85px);-webkit-backdrop-filter:blur(85px);;white-space:nowrap;overflow-x:hidden" class="main-sidebar  sidebar-light-lightblue elevation-4">
@@ -34,7 +14,7 @@ $_SESSION["conductor"] = $configuracion[0]->conductor;
             <ul id="nav" class=" nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="true">
                 <?php
                 $first = true;
-                foreach ($permisosUsuario as $menu) : ?>
+                foreach ($_SESSION["permisosUsuario"] as $menu) : ?>
                     <li class="nav-item sub">
                         <a id="<?php echo $menu->modulo ?>" class="nav-link setA <?php if ($first) : ?>
                                                                             <?php echo 'active'; ?>
@@ -74,31 +54,6 @@ $_SESSION["conductor"] = $configuracion[0]->conductor;
 
 <script>
     $(document).ready(function() {
-
-        // if (!window.matchMedia("(max-width: 768px)").matches) {
-        //     var itemsConSubmenu = $('.nav-item:has(.nav-treeview)');
-        //     var itemsConSetA = $('.nav-item:has(.nav-treeview) .setA');
-
-        //     itemsConSubmenu.hover(
-        //         function() {
-        //             var subMenu = $(this).find('.nav-treeview');
-        //             if (!subMenu.is(':visible')) {
-        //                 subMenu.stop(true, true).slideDown();
-        //                 $(this).addClass('menu-open');
-        //             }
-        //         },
-        //         function() {
-        //             // Mouse sale
-        //             var subMenu = $(this).find('.nav-treeview');
-        //             if (subMenu.is(':visible')) {
-        //                 subMenu.stop(true, true).slideUp();
-        //                 $(this).removeClass('menu-open');
-        //                 $(this).removeClass('menu-is-opening');
-        //             }
-        //         }
-        //     );
-        // }
-
 
 
         // Verificar si no es un dispositivo móvil
