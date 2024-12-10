@@ -20,14 +20,7 @@ class ControladorOrden
             $uploadDir = '/var/www/uploads/';
             $fileName = basename($_FILES['fileOrden']['name']);
             $filePath = $uploadDir . $year . '/' . $fileName;
-
-            // $pathInfo = pathinfo($filePath);
-            // $baseName = $pathInfo['filename'];
-            // $extension = $pathInfo['extension'];
-            // $directory = $pathInfo['dirname'];
-
-            // echo json_encode(['status' => 'error', 'm' => $directory], JSON_UNESCAPED_UNICODE);
-            //     return;
+           
             $fullNameFinal = $this->orden . '   ' . $this->cliente;
             // Generar un nombre único si el archivo ya existe
             $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
