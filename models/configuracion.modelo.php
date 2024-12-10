@@ -50,26 +50,49 @@ class ModeloConfiguracion
     }
 
 
-    static public function mdlEditarConfigCompra($iva)
+    static public function mdlEditarConfigCompra($iva, $sc)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("UPDATE tblconfiguracion SET iva=:iva WHERE id=1");
+            // Conexión a la base de datos
+            $db = Conexion::ConexionDB();
+
+            // Iniciar transacción
+            $db->beginTransaction();
+
+            // Actualizar el IVA
+            $u = $db->prepare("UPDATE tblconfiguracion SET iva = :iva WHERE id = 1");
             $u->bindParam(":iva", $iva, PDO::PARAM_INT);
             $u->execute();
 
+            // Actualizar la secuencia con ALTER SEQUENCE (construcción dinámica)
+            $query = "ALTER SEQUENCE secuencia_cotizacion RESTART WITH $sc";
+            $db->exec($query);
+
+            // Confirmar transacción
+            $db->commit();
+
+            // Almacenar valores en variables de sesión
             $_SESSION["iva"] = $iva;
+            $_SESSION["sc_cot"] = $sc;
 
             return array(
                 'status' => 'success',
-                'm' => 'La configuración de compra se editó correctamente'
+                'm' => 'La configuración de compra y la secuencia se editaron correctamente'
             );
         } catch (PDOException $e) {
+            // Revertir transacción en caso de error
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo editar la configuracion: ' . $e->getMessage()
+                'm' => 'No se pudo editar la configuración: ' . $e->getMessage()
             );
         }
     }
+
+
 
     public static function mdlEditarConfigGuia($ruc, $emisor, $dir, $tel, $correo1)
     {

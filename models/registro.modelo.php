@@ -1,7 +1,9 @@
 <?php
 
 require_once "../utils/database/conexion.php";
-
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 class ModeloRegistro
 {
 
@@ -146,7 +148,8 @@ class ModeloRegistro
 
             return array(
                 'status' => 'success',
-                'm' => 'La solicitud de cotización fue registrada correctamente'
+                'm' => 'La solicitud de cotización fue registrada correctamente',
+                'sc' => $_SESSION["sc_cot"]
             );
         } catch (PDOException $e) {
             $conexion->rollBack();
@@ -264,6 +267,8 @@ class ModeloRegistro
             $stmtO->execute();
             return $conexion->lastInsertId();
         } else {
+            $hora = date('H:i:s');
+            $fechaHora = $fecha . ' ' . $hora;
             $anioActual = date('Y', strtotime($fecha));
             $stmtVerificar = $conexion->prepare("SELECT id FROM tblorden WHERE nombre = :orden AND id_cliente = :cliente AND (EXTRACT(YEAR FROM fecha) = :anioActual OR estado_obra IN (0, 1))");
             $stmtVerificar->bindParam(':orden', $orden, PDO::PARAM_STR);
@@ -272,8 +277,9 @@ class ModeloRegistro
             $stmtVerificar->execute();
             $resultadoVerificar = $stmtVerificar->fetch(PDO::FETCH_ASSOC);
             if ($resultadoVerificar) {
-                $state = $conexion->prepare("UPDATE tblorden SET estado_obra=1 WHERE id = :id");
+                $state = $conexion->prepare("UPDATE tblorden SET estado_obra=1, fecha_ini=:fecha  WHERE id = :id");
                 $state->bindParam(':id', $resultadoVerificar['id'], PDO::PARAM_INT);
+                $state->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
                 $state->execute();
                 return $resultadoVerificar['id'];
             } else {
@@ -332,7 +338,10 @@ class ModeloRegistro
         $stm->bindParam(':estado_sol', $estado_sol, PDO::PARAM_BOOL);
         $stm->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
         $stm->execute();
-        return $conexion->lastInsertId();
+
+        $_SESSION["sc_cot"] = $conexion->lastInsertId();
+        
+        return $conexion->lastInsertId('tblcotizacion_id_seq');
     }
 
     static private function insertarNroCompra($conexion, $proveedor, $comprador, $motivo, $estado_sol, $fecha, $subtotal, $iva, $impuesto, $total)
@@ -403,8 +412,7 @@ class ModeloRegistro
             $descripcion = mb_strtoupper(trim($data['descripcion']), 'UTF-8');
 
             $stm = $conexion->prepare("INSERT INTO tbldetalle_cotizacion(id_cotizacion, cantidad, id_unidad, descripcion) 
-                VALUES(:id_cotizacion, :cantidad, :unidad, :descripcion)
-            ");
+                VALUES(:id_cotizacion, :cantidad, :unidad, :descripcion)");
 
             $stm->bindParam(':id_cotizacion', $id_cotizacion, PDO::PARAM_INT);
             $stm->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
