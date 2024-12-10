@@ -124,7 +124,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                            <div class="col-md-12">
+                                <div class="col-md-12">
                                     <div class="input-data" style="margin-bottom:1rem;">
                                         <input autocomplete="off" id="direccion" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
@@ -282,7 +282,7 @@
             correo.value = row["correo"];
             correo.disabled = false;
             telefono.disabled = false;
-
+            form.classList.remove('was-validated');
         });
 
         form.addEventListener("submit", function(e) {

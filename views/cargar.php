@@ -298,7 +298,7 @@
                                 </a>
                             </h4>
                         </div>
-                        <div id="collapseTwo" class="collapse" data-parent="#accordion" style="">
+                        <div id="collapseTwo" class="collapse" data-parent="#accordion">
                             <div class="card-body">
                                 <dl class="row" style="font-size: 1.2em">
                                     <dt class="pt-0 col-10">Filas con campos vacios:</dt>

@@ -17,7 +17,6 @@
     </div><!-- /.container-fluid -->
 </section>
 <!-- /.content-header -->
-
 <section class="content scroll">
     <div class="container-fluid">
         <div class="row">
@@ -139,9 +138,47 @@
                                             <form id="formConfigC" autocomplete="off" class="form-horizontal needs-validation" style="align-items:flex-start" novalidate>
 
                                                 <div class="form-group row mb-3">
-                                                    <label style="padding-block:.5rem;max-width:max-content" for="inputIVA" class="col-sm-3 col-form-label"><i class="fa-solid fa-percent"></i> IVA </label>
-                                                    <div class="col">
-                                                        <input style="max-width:10rem;text-align:center;" type="text" oninput="validarNumber(this,/[^0-9]/g)" autocomplete="off" maxlength="2" value="<?php echo isset($_SESSION["iva"]) ? $_SESSION["iva"] : ''; ?>" class="form-control border-2" id="inputIVA" placeholder="IVA" spellcheck="false" data-ms-editor="true" required>
+                                                    <!-- El label ocupa 6 columnas -->
+                                                    <label for="inputIVA" class="col-sm-6 col-form-label d-flex align-items-center">
+                                                        <i class="fas fa-percent mr-2"> </i> IVA
+                                                    </label>
+                                                    <!-- El input está contenido en un div que ocupa el resto del espacio -->
+                                                    <div class="col-sm-6 d-flex justify-content-end">
+                                                        <input
+                                                            type="text"
+                                                            style="max-width: 10rem; text-align: center;"
+                                                            oninput="validarNumber(this, /[^0-9]/g)"
+                                                            autocomplete="off"
+                                                            maxlength="2"
+                                                            value="<?php echo isset($_SESSION['iva']) ? $_SESSION['iva'] : ''; ?>"
+                                                            class="form-control border-2"
+                                                            id="inputIVA"
+                                                            placeholder="IVA"
+                                                            spellcheck="false"
+                                                            required>
+                                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row mb-3">
+                                                    <!-- El label ocupa 6 columnas -->
+                                                    <label for="inputNroCompra" class="col-sm-6 col-form-label d-flex align-items-center">
+                                                        <i class="fas fa-arrow-up-9-1 mr-1"></i> Nº de orden de compra
+                                                    </label>
+                                                    <!-- El input está contenido en un div que ocupa el resto del espacio -->
+                                                    <div class="col-sm-6 d-flex justify-content-end">
+                                                        <input
+                                                            type="text"
+                                                            style="max-width:10rem;text-align:center;"
+                                                            oninput="validarNumber(this, /[^0-9]/g)"
+                                                            autocomplete="off"
+                                                            maxlength="5"
+                                                            value="<?php echo isset($_SESSION["sc_cot"]) ? $_SESSION["sc_cot"] : ''; ?>"
+                                                            class="form-control border-2"
+                                                            id="inputNroCompra"
+                                                            placeholder="Nº de orden de compra"
+                                                            spellcheck="false"
+                                                            required>
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
@@ -298,7 +335,6 @@
     // })
 
     $(document).ready(function() {
-
         const formConfigD = document.getElementById('formConfigD'),
             formConfigM = document.getElementById('formConfigM'),
             formConfigC = document.getElementById('formConfigC'),
@@ -313,10 +349,12 @@
 
         $(cboBodeguero).select2({
             placeholder: 'SELECCIONE',
+            minimumResultsForSearch: -1,
         })
 
         $(cboTransportista).select2({
             placeholder: 'SELECCIONE',
+            minimumResultsForSearch: -1,
         })
 
         const forms = [{
@@ -337,6 +375,11 @@
                 fields: [{
                         id: 'inputIVA',
                         key: 'iva',
+                        transform: (element) => element.value.trim()
+                    },
+                    {
+                        id: 'inputNroCompra',
+                        key: 'nro_cot',
                         transform: (element) => element.value.trim()
                     },
                     {
@@ -440,11 +483,11 @@
                     datos.append(key, fieldValue);
                 });
                 confirmarAccion(datos, 'configuracion', null);
-                if (form == formConfigC) {
-                    setTimeout(function() {
-                        location.reload();
-                    }, 700);
-                }
+                // if (form == formConfigC) {
+                //     setTimeout(function() {
+                //         location.reload();
+                //     }, 700);
+                // }
             });
         });
 

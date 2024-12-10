@@ -1,7 +1,7 @@
 <?php require_once "../utils/database/config.php"; ?>
 
 <head>
-    <title>Solicitud de compra</title>
+    <title>Solicitud de cotización/compra</title>
 </head>
 
 <!-- Contenido Header -->
@@ -9,7 +9,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
-                <h1 class="col-p">Solicitud de compra</h1>
+                <h1 class="col-p">Solicitud de cotización/compra</h1>
             </div>
             <?php if (isset($_SESSION["crear11"]) && $_SESSION["crear11"] === true) : ?>
                 <div class="col">
@@ -52,13 +52,13 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">Nº</th>
-                                    <th>Nº DE COTIZACIÓN</th>
+                                    <th>Nº DE COTI.</th>
                                     <th>PROVEEDOR</th>
                                     <th>MOTIVO</th>
                                     <th>FECHA</th>
-                                    <th title="Solicitud de cotización PDF" class="text-center"><i class="fas fa-file-signature fa-lg"></i></th>
-                                    <th title="Orden de compra PDF" class="text-center"><i class="fas fa-file-invoice-dollar fa-lg"></i></th>
-                                    <th title="Subir PDF personalizado" class="text-center"><i class="fa-solid fa-file-arrow-up fa-lg"></i></th>
+                                    <th title="Solicitud de cotización PDF" class="text-center"> SOLIC. COTI. <i class="fas fa-file-signature fa-lg"></i></th>
+                                    <th title="Orden de compra PDF" class="text-center">ORD. COMP. <i class="fas fa-file-invoice-dollar fa-lg"></i></th>
+                                    <th title="Subir PDF personalizado" class="text-center">PPTO <i class="fa-solid fa-file-arrow-up fa-lg"></i></th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -94,16 +94,33 @@
                             <div class="card-body">
                                 <form id="formCotizacion">
                                     <div class="row">
+
                                         <div class="col-md-4 mb-3">
-                                            <label id="lblP" class="col-form-label combo"><i class="fas fa-hand-holding-box"></i> Proveedor</label>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <select id="cboProve" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                                    </select>
-                                                    <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                </div>
+                                            <label id="lblP" class="col-form-label combo">
+                                                <i class="fas fa-hand-holding-box"></i> Proveedor
+                                            </label>
+                                            <div class="d-flex align-items-center" style="gap: 0.5rem;">
+                                                <!-- Select -->
+                                                <select id="cboProve" class="cbo form-control select2 select2-success" style="flex: 1;" data-dropdown-css-class="select2-dark" required>
+                                                    <option value="">SELECCIONE</option>
+                                                </select>
+                                                <div class="invalid-feedback">*Campo obligatorio.</div>
+
+                                                <!-- Botón -->
+                                                <?php if ($_SESSION["crear10"]) : ?>
+                                                    <span class="new-span badge bg-gradient-dark"
+                                                        style="flex-shrink: 0; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 4px; cursor: pointer;"
+                                                        data-target="#modalP"
+                                                        data-toggle="modal"
+                                                        title="Nuevo Proveedor">
+                                                        <i class="fa-solid fa-plus"></i>
+                                                    </span>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
+
+
+
                                         <div class="col-md-4 mb-3">
                                             <label class="col-form-label combo" for="comprador"><i class="fas fa-hand-holding-dollar"></i> Comprador</label>
                                             <input type="text" value="MERCY BELTRAN" id="comprador" style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" class="form-control form-control-sm">
@@ -118,9 +135,7 @@
                                             <input id="fecha_sol" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
                                             <!-- <div class="invalid-feedback">*Campo obligatorio.</div> -->
                                         </div>
-
                                     </div>
-
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label class="col-form-label combo" for="ruc">
@@ -171,7 +186,7 @@
                                         </table>
                                     </div>
                                     <div style="margin-top:1.4rem; display: flex; align-items: center; gap: 12px;">
-                                        <input type="text" id="rowCount" style="width:4rem;border-bottom: 2px solid var(--select-border-bottom)" class="form-control text-center" oninput="validarNumber(this,/[^0-9]/g)" maxlength="2" inputmode="numeric" autocomplete="off" oninput="validarCantidad(this)" value="1">
+                                        <input type="text" id="rowCount" style="width:4rem;border-bottom: 2px solid var(--select-border-bottom)" class="form-control text-center" oninput="validarNumber(this,/[^0-9]/g)" maxlength="2" inputmode="numeric" autocomplete="off" maxlength="6" oninput="validarCantidad(this)" value="1">
                                         <button type="button" id="addRow" class="btn bg-gradient-green">
                                             <i class="fas fa-table-rows"></i> Agregar filas
                                         </button>
@@ -201,6 +216,10 @@
                                         </div>
                                     </div>
                                     <hr>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Descuento:</span>
+                                        <span><input type="text" id="otros" class="form-control p-0 d-inline" placeholder="$0.00" oninput="validarNumber(this, /[^0-9.]/g)" style="border:none;width:100%;height:auto;max-width:4.8em;text-align:right"></span>
+                                    </div>
                                     <div class="d-flex justify-content-between">
                                         <span>Subtotal:</span>
                                         <span id="subtotal">$0.00</span>
@@ -209,10 +228,7 @@
                                         <span>(IVA <span id="tax"><?php echo $_SESSION["iva"] ?></span>%):</span>
                                         <span id="can_tax">$0.00</span>
                                     </div>
-                                    <div class="d-flex justify-content-between">
-                                        <span>Otros:</span>
-                                        <span>$0.00</span>
-                                    </div>
+
                                     <hr>
                                     <div class="d-flex justify-content-between font-weight-bold">
                                         <span>Total:</span>
@@ -233,6 +249,79 @@
         </div>
     </div>
 </section>
+<!-- Modal -->
+<div class="modal fade" id="modalP">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-green">
+                <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Proveedor</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formProveedor" autocomplete="off" class="needs-validation" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="id" value="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="nombre_prove" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label class="label"><i class="fa-solid fa-signature"></i> Proveedor</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" inputmode="numeric" id="ruc_prove" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="ruc" class="label"><i class="fas fa-building-user"></i> RUC/CI</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" inputmode="numeric" id="telefono_prove" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="correo_prove" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="correo" class="label"><i class="fa-solid fa-envelope"></i> Correo</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="input-data" style="margin-bottom:1rem;">
+                                        <input autocomplete="off" id="direccion_prove" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label for="direccion" class="label"><i class="fas fa-map-location-dot"></i> Dirección</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 <div class="modal fade" id="modal">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -269,6 +358,7 @@
     var mostrarCol = '<?php echo $_SESSION["editar11"] || $_SESSION["eliminar11"] ?>';
     var editar = '<?php echo $_SESSION["editar11"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar11"] ?>';
+    var sc = '<?php echo  $_SESSION["sc_cot"] ?>';
 
     configuracionTable = {
         "responsive": true,
@@ -346,7 +436,7 @@
                     );
                 },
             },
-        ],
+        ]
     }
 
     $(document).ready(function() {
@@ -468,12 +558,6 @@
                 className: "btn btn-light text-danger",
                 action: function(e, dt, node, config) {
                     if (accion == 2) {
-                        // var ids = [];
-                        // dt.rows().every(function() {
-                        //     var data = this.data();
-                        //     ids.push(data.id); // Asumiendo que 'id' es la columna con el ID único de cada fila
-                        // });
-
                         let data = new FormData();
                         data.append('id', id_cotiz);
 
@@ -513,14 +597,17 @@
         let id_cotiz;
         let subtotalOriginal;
         let ivaOriginal;
+        let proveOriginal;
         let iva = <?php echo $_SESSION["iva"]; ?>;
 
         const modal = document.getElementById('modal'),
+            modalP = document.getElementById('modalP'),
             span = document.querySelector('.modal-title span'),
             elements = document.querySelectorAll('.modal .bg-gradient-green'),
             formPdf = document.getElementById('formPdf'),
             filePdf = document.getElementById('filePdf'),
             form_cotizacion = document.getElementById('formCotizacion'),
+            formProve = document.getElementById('formProveedor'),
             icon = document.querySelector('.modal-title i'),
             btnAddRow = document.getElementById('addRow'),
             btnReturn = document.getElementById('btnReturn'),
@@ -531,6 +618,12 @@
             radio = document.getElementById('customRadio3');
 
 
+        const nom_prove = document.getElementById('nombre_prove'),
+            ruc_prove = document.getElementById('ruc_prove'),
+            tel_prove = document.getElementById('telefono_prove'),
+            dir_prove = document.getElementById('direccion_prove'),
+            cor_prove = document.getElementById('correo_prove');
+
         const direccion = document.getElementById('dir'),
             ruc = document.getElementById('ruc'),
             cboProve = document.getElementById('cboProve'),
@@ -538,10 +631,6 @@
             comprador = document.getElementById('comprador'),
             fecha_sol = document.getElementById('fecha_sol'),
             telefono = document.getElementById('telefono');
-
-        // $(modal).on("shown.bs.modal", () => {
-        //     nombre.focus();
-        // });
 
         $(cboAnio).select2({
             width: '110%',
@@ -560,10 +649,9 @@
             tabla.ajax.reload();
         });
 
-
         $(cboProve).select2({
             placeholder: 'SELECCIONE',
-            width: 'auto',
+            width: 'calc(100% - 48px)',
             data: datos_prove
         });
 
@@ -602,7 +690,6 @@
             });
         });
 
-
         function ocultarFormulario() {
 
             document.getElementById("div_cot").style.display = "none";
@@ -628,16 +715,16 @@
             if (accion == 2) {
                 let data = new FormData()
                 data.append('id_cotizacion', id_cotiz);
-                data.append('filasCantidad',rowCount)
+                data.append('filasCantidad', rowCount)
                 data.append('accion', 10);
                 confirmarAccion(data, 'cotizacion', tblSolicitud, '', function(r) {
-                            if (r) {
-                                // tblSolicitud.ajax.reload(function(r) {
-                                //     actualizarSubtotal(true);
-                                // }, false);
-                            }
-                        });
-                
+                    if (r) {
+                        // tblSolicitud.ajax.reload(function(r) {
+                        //     actualizarSubtotal(true);
+                        // }, false);
+                    }
+                });
+
             } else {
                 for (let i = 0; i < rowCount; i++) {
                     agregarFila(); // Llama a tu función de agregar fila
@@ -708,6 +795,10 @@
             actualizarSubtotal();
         });
 
+        $('#otros').on('input keydown paste', function() {
+        actualizarSubtotal();
+    });
+
         function actualizarSubtotal(database = false) {
             let precio_total = 0;
             // Itera sobre todas las filas y suma los precios finales
@@ -717,6 +808,9 @@
                 precio_total += precio; // Sumar el precio total de cada fila
             });
             console.log('precio de esto es ', precio_total);
+            let descuento = parseFloat($('#otros').val()) || 0;
+            precio_total -= descuento; // Restar el descuento al total
+
             subtotal = precio_total;
             let subFormateado = precio_total.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
@@ -866,8 +960,10 @@
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                const nro_cotizacion = tabla.cell(0, 1).data() || '0000';// '00013'
+                console.log('valor sc', sc)
+                const nro_cotizacion = (sc || 0).toString().padStart(4, '0');
                 const nro_cotizacion_formateado = (parseInt(nro_cotizacion, 10) + 1).toString().padStart(nro_cotizacion.length, '0');
+
                 $('#nroSolicitud').text(nro_cotizacion_formateado);
                 $('#text_accion').text(' Nueva solicitud de compra');
                 fecha_sol.value = fecha_hoy;
@@ -881,13 +977,11 @@
                 ruc.value = '';
                 direccion.value = '';
                 telefono.value = '';
-                subtotal= 0;
+                subtotal = 0;
 
                 document.getElementById("div_cot").style.display = "block";
                 document.getElementById("div_content").style.display = "table-column";
                 document.getElementById("div_header").style.display = "none";
-
-                // document.getElementById("tblCotizacion").style.display = "none";
             });
         }
 
@@ -934,6 +1028,8 @@
                 proveedor = row[9],
                 fecha_solicitud = row[4];
 
+            proveOriginal = proveedor;
+
 
             $('#subtotal').text(subtotal);
             $('#can_tax').text(impuestos);
@@ -968,6 +1064,11 @@
                 // console.log('Datos de la fila:', data); // Verificar qué datos se están asignando
                 $(this.node()).data('original', JSON.stringify(data)); // Guardar en el atributo `data-original`
             });
+        });
+
+        $(".new-span").on("click", function() {
+            formProve.reset();
+            formProve.classList.remove('was-validated');
         });
 
         btnGuardarSoli.addEventListener("click", function(e) {
@@ -1010,6 +1111,7 @@
 
             } else if (accion == 2) {
                 let filasActualizadas = [];
+                const id_prove = cboProve.value;
 
                 tblSolicitud.rows().every(function(index) {
                     let row = tblSolicitud.row(index);
@@ -1060,7 +1162,9 @@
                         data.append('total', total);
                         data.append('isPrecio', true);
                     }
-                    data.append('isPrecio', false);
+
+                    if (id_prove !== id_proveOriginal)
+                        data.append('isPrecio', false);
                     data.append('id_cotizacion', id_cotiz)
                     data.append('filas', JSON.stringify(filasActualizadas));
                     data.append('accion', 6);
@@ -1161,6 +1265,7 @@
 
                                 if (isSuccess) {
                                     ocultarFormulario();
+                                    sc = response.sc;
                                 }
                                 if (tabla) {
                                     tabla.ajax.reload(null, false); // Recargar tabla si es necesario
@@ -1170,6 +1275,53 @@
                     }
                 });
             }
+        });
+
+        formProve.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const nom = nom_prove.value.trim().toUpperCase(),
+                ruc_ = ruc_prove.value.trim(),
+                tel = tel_prove.value.trim(),
+                dir = dir_prove.value.trim().toUpperCase(),
+                cor = cor_prove.value.trim();
+            if (tel === '') {
+                tel_prove.disabled = true;
+            }
+
+            if (cor === '') {
+                cor_prove.disabled = true;
+            }
+
+            if (ruc === '') {
+                ruc_prove.disabled = true;
+            }
+
+            if (!this.checkValidity()) {
+                this.classList.add('was-validated');
+                return;
+            }
+            // const id_e = id.value;
+            let datos = new FormData();
+            datos.append('id', id_e);
+            datos.append('nombre', nom);
+            datos.append('ruc', ruc_);
+            datos.append('tel', tel);
+            datos.append('dir', dir);
+            datos.append('correo', cor);
+            datos.append('accion', 1);
+            confirmarAccion(datos, 'proveedores', null, modalP, function(r) {
+                if (r) {
+                    cargarCombo('Proveedores', '', 1, true).then(datos_ => {
+                        datos_prove = datos_;
+                        $(cboProve).empty(); // Limpia las opciones existentes
+                        $(cboProve).select2({
+                            placeholder: 'SELECCIONE',
+                            width: '100%',
+                            data: datos_prove // Nuevos datos
+                        });
+                    });
+                }
+            })
         });
 
         formPdf.addEventListener("submit", function(e) {
