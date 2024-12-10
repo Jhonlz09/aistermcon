@@ -266,7 +266,7 @@
             const iva_config = <?php echo $_SESSION["iva"]; ?>;
             const isEntrada = <?php echo ($_SESSION["entrada_mul"]) ? 1 : 0; ?>;
             const isSuperAdmin = <?php echo ($_SESSION["s_usuario"]->id_perfil == 1) ? 1 : 0; ?>;
-
+            const nro_sec_cotiz = <?php echo ($_SESSION["sc_cot"] == null) ? 0 : $_SESSION["sc_cot"]; ?>;
             const bodegueroPorDefecto = <?php echo ($_SESSION["bodeguero"] == null) ? 0 : $_SESSION["bodeguero"]; ?>;
             const conductorPorDefecto = <?php echo ($_SESSION["conductor"] == null) ? 0 : $_SESSION["conductor"]; ?>;
 
