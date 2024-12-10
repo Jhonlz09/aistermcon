@@ -400,7 +400,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id']) && isset($_GET['c
     $fecha = $row['fecha'];
     $comprador = $row['comprador'];
     $direccion = $row['direccion'];
-    $ruc = $row['ruc'];
+    $ruc = (!empty($row['ruc']) ? $row['ruc'] : '-');
     $telefono = $row['telefono'];
     $subtotal = $tipo ? '-' : $row["subtotal"];
     $impuesto = $tipo ? '-' : $row['impuesto'];
@@ -487,8 +487,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id']) && isset($_GET['c
     $pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', "Proveedor:"), 0, 0, '', 0);
     $firstLineX = 44;
     $pdf->SetXY($firstLineX, 77);
-    // $leftFillWidth = 10; // Width of the left fill
-    // $rightFillWidth = 10;
     $subsequentLineX = 23.5;
     $firstLineWidth = 95.6; // Width for the first line
     $subsequentLineWidth = 95.6 + ($firstLineX - $subsequentLineX);
