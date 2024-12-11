@@ -181,9 +181,11 @@
         "responsive": true,
         "dom": 'tp',
         "lengthChange": false,
+        "pageLength": 100,
         "ordering": false,
         "autoWidth": false,
-        "paging": false, // Esto deshabilita la paginación
+        "paging": true, // Esto deshabilita la paginación
+        "deferRender": true,
         rowGroup: {
             dataSrc: [9],
             startRender: function(rows, group) {
@@ -248,27 +250,27 @@
                 visible: false,
             },
         ],
-        "preDrawCallback": function(settings) {
-            scrollPosition = $(window).scrollTop();
-        },
-        "drawCallback": function(settings) {
-            // Restaurar la posición del scroll después de redibujar
-            setTimeout(function() {
-                console.log("Restaurando posición del scroll:", scrollPosition);
-                $(window).scrollTop(scrollPosition);
-            }, 3);
-        }
+        // "preDrawCallback": function(settings) {
+        //     scrollPosition = $(window).scrollTop();
+        // },
+        // "drawCallback": function(settings) {
+        //     // Restaurar la posición del scroll después de redibujar
+        //     setTimeout(function() {
+        //         console.log("Restaurando posición del scroll:", scrollPosition);
+        //         $(window).scrollTop(scrollPosition);
+        //     }, 3);
+        // }
     }
 
     $('#tblInforme tbody').on('click', 'tr.dtrg-start', function() {
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
-            var windowScrollTop = $(window).scrollTop();
-            var tableScrollTop = $('#tblInforme_wrapper').scrollTop();
+            // var windowScrollTop = $(window).scrollTop();
+            // var tableScrollTop = $('#tblInforme_wrapper').scrollTop();
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
             tabla.draw(false);
-            $(window).scrollTop(windowScrollTop);
-            $('#tblInforme_wrapper').scrollTop(tableScrollTop);
+            // $(window).scrollTop(windowScrollTop);
+            // $('#tblInforme_wrapper').scrollTop(tableScrollTop);
         }
     });
 

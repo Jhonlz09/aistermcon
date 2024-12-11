@@ -300,6 +300,7 @@
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
+        "deferRender": true,
         columnDefs: [{
                 targets: 0,
                 data: "acciones",

@@ -104,7 +104,7 @@
     // var alturaDisponible = window.innerHeight - 300; // Ejemplo de cálculo
 
     configuracionTable = {
-        // "responsive": true,
+        "responsive": true,
         "dom": 'tp',
         "lengthChange": false,
         "pageLength": 100,
