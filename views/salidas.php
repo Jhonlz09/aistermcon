@@ -2,7 +2,7 @@
 
 <head>
     <title>Movimientos</title>
-    <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css">
+    <!-- <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css"> -->
     <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 </head>
@@ -93,7 +93,7 @@
 <script src="assets/plugins/datatables-searchpanes/js/searchPanes.bootstrap4.min.js" type="text/javascript"></script>
 <script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
 <script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script>
+<!-- <script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script> -->
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar4"] || $_SESSION["eliminar4"] ?>';
     var crear = '<?php echo $_SESSION["crear4"] ?>';
@@ -101,34 +101,34 @@
     var eliminar = '<?php echo $_SESSION["eliminar4"] ?>';
 
     var collapsedGroups = {};
-    var alturaDisponible = window.innerHeight - 300; // Ejemplo de cálculo
+    // var alturaDisponible = window.innerHeight - 300; // Ejemplo de cálculo
 
     configuracionTable = {
         // "responsive": true,
         "dom": 'tp',
         "lengthChange": false,
-        "pageLength": 30,
+        "pageLength": 100,
         "ordering": false,
-        // "autoWidth": false,
+        "autoWidth": false,
         "paging": true, // Esto deshabilita la paginación
         "deferRender": true,
-        "scroller": {
-            rowHeight: 30, // Ajusta el alto dinámico de las filas
-            displayBuffer: 10 // Aumenta el buffer de filas visibles para incluir filas colapsadas
-        },
-        "scrollColapse": false,
-        "scrollY": alturaDisponible,
-        // searchPanes: {
-        //     cascadePanes: true,
-        //     columns: [2, 8, 9],
-        //     initCollapsed: true,
-        //     threshold: 0.8, // Ajusta este valor según tus necesidades
-        //     dtOpts: {
-        //         select: {
-        //             style: 'multiple'
-        //         }
-        //     },
+        // "scroller": {
+        //     rowHeight: 5, // Ajusta el alto dinámico de las filas
+        //     displayBuffer: 20 // Aumenta el buffer de filas visibles para incluir filas colapsadas
         // },
+        // "scrollColapse": true,
+        // "scrollY": alturaDisponible,
+        searchPanes: {
+            cascadePanes: true,
+            columns: [2, 8, 9],
+            initCollapsed: true,
+            threshold: 0.8, // Ajusta este valor según tus necesidades
+            dtOpts: {
+                select: {
+                    style: 'multiple'
+                }
+            },
+        },
 
         rowGroup: {
             dataSrc: [4],

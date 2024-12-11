@@ -193,13 +193,7 @@
                 //     r.style.visibility = collapsed ? '' : 'collapse';
                 // });
                 rows.nodes().each(function(r) {
-                    r.style.visibility = collapsed ? '' : 'hidden';
-                    r.style.lineHeight = collapsed ? '1.5' : '0';
-                    $(r).find('td').each(function() {
-                        this.style.paddingBlock = collapsed ? '' : '0';
-                        this.style.borderTop = collapsed ? '' : '0';
-                        this.style.borderBottom = collapsed ? '' : '0';
-                    });
+                    $(r).toggleClass('collapsedrow', !collapsed);
                 });
 
                 var groupText = '<div class="d-flex justify-content-between align-items-center " style="cursor:pointer"><strong  class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_informe_orden.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_orden" class="input_boleta" value=""><button style="font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf btn-row"><i class="fas fa-file-pdf"></i></button></form>' +
