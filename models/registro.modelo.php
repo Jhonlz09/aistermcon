@@ -207,7 +207,8 @@ class ModeloRegistro
 
             return array(
                 'status' => 'success',
-                'm' => 'La orden de compra fue registrada correctamente'
+                'm' => 'La orden de compra fue registrada correctamente',
+                'sc' => $_SESSION["sc_cot"]
             );
         } catch (PDOException $e) {
             $conexion->rollBack();
@@ -339,7 +340,7 @@ class ModeloRegistro
         $stm->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
         $stm->execute();
 
-        $_SESSION["sc_cot"] = $conexion->lastInsertId();
+        $_SESSION["sc_cot"] = $conexion->lastInsertId('secuencia_cotizacion');
         
         return $conexion->lastInsertId('tblcotizacion_id_seq');
     }
@@ -359,7 +360,10 @@ class ModeloRegistro
         $stm->bindParam(':impuesto', $impuesto, PDO::PARAM_INT);
         $stm->bindParam(':total', $total, PDO::PARAM_INT);
         $stm->execute();
-        return $conexion->lastInsertId();
+
+        $_SESSION["sc_cot"] = $conexion->lastInsertId('secuencia_cotizacion');
+
+        return $conexion->lastInsertId('tblcotizacion_id_seq');
     }
 
     static private function insertarBoletaEntrada($conexion, $id_orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado)

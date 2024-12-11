@@ -91,7 +91,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="input-data mb-4">
                                         <input autocomplete="off" id="orden_nro" class="input-nuevo" type="text" maxlength="9" oninput="formatInputOrden(this, null, false)" required>
                                         <div class="line underline"></div>
@@ -99,7 +99,7 @@
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
-                                <div class="col-lg col-md-4">
+                                <div class="col-md-9">
                                     <div class="form-group mb-4">
                                         <label id="lblCO" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
                                         <div class="row">
@@ -111,15 +111,15 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 form-group mb-4" id="div_fecha_new">
+                            </div>
+                            <div class="row">
+                            <div class="col-md-3 form-group mb-4" id="div_fecha_new">
                                     <label class="combo" style="line-height:1.2;font-size: 1.15rem;" for="fecha_">
                                         <i class="fas fa-calendar"></i> Fecha de creación</label>
                                     <input id="fecha_new" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-lg col-md-9">
                                     <div class="input-data mb-4">
                                         <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
@@ -128,7 +128,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
@@ -149,7 +148,6 @@
                                 </div>
 
                             </div>
-
                         </div>
                     </div>
                 </div>

@@ -65,7 +65,7 @@ class ModeloConfiguracion
             $u->execute();
 
             // Actualizar la secuencia con ALTER SEQUENCE (construcción dinámica)
-            $query = "ALTER SEQUENCE secuencia_cotizacion RESTART WITH $sc";
+            $query = "SELECT setval('secuencia_cotizacion', $sc, true);";
             $db->exec($query);
 
             // Confirmar transacción
@@ -77,7 +77,9 @@ class ModeloConfiguracion
 
             return array(
                 'status' => 'success',
-                'm' => 'La configuración de compra y la secuencia se editaron correctamente'
+                'm' => 'La configuración de compra y la secuencia se editaron correctamente',
+                'iva' => $_SESSION["iva"],
+                'sc' => $_SESSION["sc_cot"]
             );
         } catch (PDOException $e) {
             // Revertir transacción en caso de error

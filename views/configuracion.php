@@ -482,12 +482,12 @@
                     }
                     datos.append(key, fieldValue);
                 });
-                confirmarAccion(datos, 'configuracion', null);
-                // if (form == formConfigC) {
-                //     setTimeout(function() {
-                //         location.reload();
-                //     }, 700);
-                // }
+                confirmarAccion(datos, 'configuracion', null, '', function(r) {
+                    if (r && form == formConfigC) {
+                        iva_config = r.iva;
+                        nro_sec_cotiz = r.sc; 
+                    }
+                });
             });
         });
 

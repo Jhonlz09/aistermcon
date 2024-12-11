@@ -962,7 +962,7 @@
                 accion = 1;
                 console.log('valor sc', sc)
                 const nro_cotizacion = (sc || 0).toString().padStart(4, '0');
-                const nro_cotizacion_formateado = (parseInt(nro_cotizacion, 10) + 1).toString().padStart(nro_cotizacion.length, '0');
+                const nro_cotizacion_formateado = (parseInt(nro_cotizacion, 10)+1).toString().padStart(nro_cotizacion.length, '0');
 
                 $('#nroSolicitud').text(nro_cotizacion_formateado);
                 $('#text_accion').text(' Nueva solicitud de compra');
