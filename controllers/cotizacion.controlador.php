@@ -3,7 +3,7 @@ require_once "../models/cotizacion.modelo.php";
 
 class ControladorCotizacion
 {
-    public $id,$num_co,$anio, $pdf, $filas, $subtotal, $total, $impuestos, $iva, $isPrecio;
+    public $id, $num_co, $anio, $pdf, $filas, $subtotal, $total, $impuestos, $iva, $desc, $isPrecio;
 
     public function listarCotizacion()
     {
@@ -33,12 +33,12 @@ class ControladorCotizacion
 
             // echo json_encode(['status' => 'error', 'm' => $directory], JSON_UNESCAPED_UNICODE);
             //     return;
-            $fullNameFinal = $this->id.'.pdf';
+            $fullNameFinal = $this->id . '.pdf';
             // Generar un nombre único si el archivo ya existe
             // $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
 
-            $savePath = $uploadDir . $year .'/'. $fullNameFinal;
-            $finalPath = $year .'/'. $fullNameFinal;
+            $savePath = $uploadDir . $year . '/' . $fullNameFinal;
+            $finalPath = $year . '/' . $fullNameFinal;
 
             if (move_uploaded_file($_FILES['filePdf']['tmp_name'], $savePath)) {
                 // Archivo subido exitosamente
@@ -79,7 +79,7 @@ class ControladorCotizacion
         $data = ModeloCotizacion::mdlActualizarTotalesCotizacion(null, $this->id, $this->subtotal, $this->total, $this->iva, $this->impuestos);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    
+
     public function eliminarCotizacion()
     {
         $data = ModeloCotizacion::mdlEliminarCotizacion($this->id);
@@ -110,53 +110,46 @@ if (!isset($_POST["accion"])) {
     $data->anio = $_POST["anio"];
     $data->listarCotizacion();
 } else {
-    if ($_POST["accion"]== 0) {
+    $data = new ControladorCotizacion();
+    if ($_POST["accion"] == 0) {
         echo json_encode([], JSON_UNESCAPED_UNICODE);
     } else if ($_POST["accion"] == 1) {
-        $data = new ControladorCotizacion();
         $data->num_co = $_POST["nro_cotiz"];
         $data->editarCotizacion();
     } else if ($_POST["accion"] == 3) {
-        $data = new ControladorCotizacion();
         $data->id = $_POST["id"];
         $data->eliminarCotizacion();
-    }else if ($_POST["accion"] == 4) {
-        $data = new ControladorCotizacion();
+    } else if ($_POST["accion"] == 4) {
         $data->id = $_POST["id_prove"];
         $data->datosProveedor();
-    }else if ($_POST["accion"] == 5) {
-        $data = new ControladorCotizacion();
+    } else if ($_POST["accion"] == 5) {
         $data->id = $_POST["id_pdf"];
         $data->subirPDF();
     } else if ($_POST["accion"] == 6) {
-        $data = new ControladorCotizacion();
         $data->filas = $_POST["filas"];
         $data->id = $_POST["id_cotizacion"];
         $data->subtotal = $_POST["subtotal"];
         $data->total = $_POST["total"];
         $data->iva = $_POST["iva"];
         $data->impuestos = $_POST["impuesto"];
+        $data->desc = $_POST["descuento"];
         $data->isPrecio = $_POST["isPrecio"];
         $data->actualizarFilasCotizacion();
-    }else if ($_POST["accion"] == 7) {
-        $data = new ControladorCotizacion();
+    } else if ($_POST["accion"] == 7) {
         $data->id = $_POST["id"];
         $data->eliminarFilasIds();
-    }else if ($_POST["accion"] == 8) {
-        $data = new ControladorCotizacion();
+    } else if ($_POST["accion"] == 8) {
         $data->id = $_POST["id"];
         $data->num_co = $_POST["id_cotizacion"];
         $data->eliminarFila();
-    }else if ($_POST["accion"] == 9) {
-        $data = new ControladorCotizacion();
+    } else if ($_POST["accion"] == 9) {
         $data->id = $_POST["id_cotizacion"];
         $data->subtotal = $_POST["subtotal"];
         $data->total = $_POST["total"];
         $data->iva = $_POST["iva"];
         $data->impuestos = $_POST["impuesto"];
         $data->actualizarTotalCotizacion();
-    }else if ($_POST["accion"] == 10) {
-        $data = new ControladorCotizacion();
+    } else if ($_POST["accion"] == 10) {
         $data->id = $_POST["id_cotizacion"];
         $data->filas = $_POST["filasCantidad"];
         $data->agregarFilasCotizacion();

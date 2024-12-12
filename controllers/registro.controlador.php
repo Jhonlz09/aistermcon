@@ -60,9 +60,9 @@ class ajaxRegistro
         $data = ModeloRegistro::mdlSolicitudCotizacion($datos, $proveedor, $comprador, $fecha);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    public function registrarOrdenCompra($datos, $proveedor, $comprador, $fecha, $subtotal, $iva, $impuesto, $total)
+    public function registrarOrdenCompra($datos, $proveedor, $comprador, $fecha, $subtotal, $iva, $impuesto, $total, $desc)
     {
-        $data = ModeloRegistro::mdlOrdenCompra($datos, $proveedor, $comprador, $fecha, $subtotal, $iva, $impuesto, $total);
+        $data = ModeloRegistro::mdlOrdenCompra($datos, $proveedor, $comprador, $fecha, $subtotal, $iva, $impuesto, $total, $desc);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
@@ -89,6 +89,6 @@ if (isset($_POST["accion"])) {
     } else if ($accion == 9) {
         $registro->registrarSolicitudCotizacion($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"]);
     }else if ($accion == 10) {
-        $registro->registrarOrdenCompra($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"], $_POST["subtotal"],$_POST["iva"],$_POST["impuesto"],$_POST["total"]);
+        $registro->registrarOrdenCompra($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"], $_POST["subtotal"],$_POST["iva"],$_POST["impuesto"],$_POST["total"],$_POST["descuento"]);
     }
 }

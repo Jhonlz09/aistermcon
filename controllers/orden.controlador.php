@@ -41,7 +41,7 @@ class ControladorOrden
             }
         }
 
-        $data = ModeloOrden::mdlAgregarOrden($this->nombres, $this->id_cliente, $this->orden, $finalPath, $this->fecha);
+        $data = ModeloOrden::mdlAgregarOrden($this->nombres, $this->id_cliente, $this->cliente, $this->orden, $finalPath, $this->fecha);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
