@@ -497,7 +497,6 @@
 
 
     $(document).ready(function() {
-
         // Obtener el input y el icono
         const checkbox = document.getElementById('check_stock');
         const icona = document.getElementById('stock_icon');

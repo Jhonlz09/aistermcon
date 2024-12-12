@@ -111,7 +111,6 @@
         "ordering": false,
         "autoWidth": false,
         "paging": true, // Esto deshabilita la paginación
-        "deferRender": true,
         // "scroller": {
         //     rowHeight: 5, // Ajusta el alto dinámico de las filas
         //     displayBuffer: 20 // Aumenta el buffer de filas visibles para incluir filas colapsadas

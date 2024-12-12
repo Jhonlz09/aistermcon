@@ -118,17 +118,10 @@
                                                 <?php endif; ?>
                                             </div>
                                         </div>
-
-
-
                                         <div class="col-md-4 mb-3">
                                             <label class="col-form-label combo" for="comprador"><i class="fas fa-hand-holding-dollar"></i> Comprador</label>
-                                            <input type="text" value="MERCY BELTRAN" id="comprador" style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" class="form-control form-control-sm">
+                                            <input type="text" autocomplete="off" spellcheck="false" value="MERCY BELTRAN" id="comprador" style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" class="form-control form-control-sm">
                                         </div>
-                                        <!-- <div class="col-md-4 mb-3">
-                                            <label class="col-form-label combo" for="aprobado"><i class="fas fa-handshake"></i> Aprobado por</label>
-                                            <input type="text" value="ABELARDO MUÑOZ" id="aprobado" style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);border-radius:0.25rem;" class="form-control form-control-sm">
-                                        </div> -->
                                         <div class="col-md-4 mb-3">
                                             <label class="col-form-label combo" for="fecha_sol">
                                                 <i class="fas fa-calendar"></i> Fecha</label>
@@ -218,7 +211,7 @@
                                     <hr>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span>Descuento:</span>
-                                        <span><input type="text" id="otros" class="form-control p-0 d-inline" placeholder="$0.00" oninput="validarNumber(this, /[^0-9.]/g)" style="border:none;width:100%;height:auto;max-width:4.8em;text-align:right"></span>
+                                        <span><input type="text" id="otros" readonly maxlength="6" class="form-control p-0 d-inline" autocomplete="off" spellcheck="false" placeholder="$0.00" oninput="validarNumber(this, /[^0-9.]/g)" style="background-color:#fff;border:none;width:100%;height:auto;max-width:4.8em;text-align:right"></span>
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <span>Subtotal:</span>
@@ -278,7 +271,6 @@
                                         <input autocomplete="off" inputmode="numeric" id="ruc_prove" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label for="ruc" class="label"><i class="fas fa-building-user"></i> RUC/CI</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                             </div>
@@ -288,7 +280,6 @@
                                         <input autocomplete="off" inputmode="numeric" id="telefono_prove" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -339,7 +330,6 @@
                             <input type="file" name="filePdf" id="filePdf" class="form-control" accept=".pdf" required>
                             <div class="mt-0 invalid-feedback">*Debe selecionar un archivo .pdf</div>
                         </div>
-
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -347,7 +337,6 @@
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
-
         </div>
         <!-- /.modal-content -->
     </div>
@@ -366,8 +355,6 @@
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
-        fixedColumns: true,
-
         columnDefs: [{
                 targets: 0, // Enumeración automática
                 data: null,
@@ -384,7 +371,12 @@
                 targets: 5,
                 className: "text-center",
                 render: function(data, type, row, full, meta) {
-                    const getUrl = `PDF/pdf_cotizacion.php?id=${row.id}&cotizacion=1`; // Construye la URL con ambos parámetros
+                    const getUrl = `PDF/pdf_cotizacion.php?id=${row.id}&cotizacion=1`;
+                    // Verificar si está anulado
+                    if (row.estado_anu) {
+                        return '<span class="btn" style="font-size:1.2rem;padding:3px 4px;cursor:not-allowed;color:#721c24;"><i class="fas fa-ban"></i></span>';
+                    }
+                    // Normal si no está anulado
                     return data === false ?
                         '<span style="padding:.375rem .75rem;border-radius:.25rem;font-size:1.4rem;cursor:no-drop;color:#721c24;"><i class="fa-solid fa-file-xmark"></i></span>' :
                         `<span style="padding:.375rem .75rem;font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" onclick="window.open('${getUrl}', '_blank');"><i class="fas fa-file-check"></i></span>`;
@@ -394,7 +386,12 @@
                 targets: 6,
                 className: "text-center",
                 render: function(data, type, row, full, meta) {
-                    const getUrl = `PDF/pdf_cotizacion.php?id=${row.id}&cotizacion=0`; // Construye la URL con ambos parámetros
+                    const getUrl = `PDF/pdf_cotizacion.php?id=${row.id}&cotizacion=0`;
+                    // Verificar si está anulado
+                    if (row.estado_anu) {
+                        return '<span class="btn" style="font-size:1.2rem;padding:3px 4px;cursor:not-allowed;color:#721c24;"><i class="fas fa-ban"></i></span>';
+                    }
+                    // Normal si no está anulado
                     return data === false ?
                         '<span style="padding:.375rem .75rem;border-radius:.25rem;font-size:1.4rem;cursor:no-drop;color:darkgrey"><i class="fas fa-file-xmark"></i></span>' :
                         `<span style="padding:.375rem .75rem;font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" onclick="window.open('${getUrl}', '_blank');"><i class="fas fa-file-check"></i></span>`;
@@ -403,44 +400,59 @@
             {
                 targets: 7,
                 className: "text-center",
-                render: function(data) {
+                render: function(data, type, row, full, meta) {
+                    // Verificar si está anulado
+                    if (row.estado_anu) {
+                        return '<span class="btn" style="font-size:1.2rem;padding:3px 4px;cursor:not-allowed;color:#721c24;"><i class="fas fa-ban"></i></span>';
+                    }
+                    // Normal si no está anulado
                     return data ?
-                        `<a style="font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" href="/aistermcon/utils/download.php?file=${encodeURIComponent(data)}&route=presupuesto_proveedor" target="_blank" class="btn btnDescargar" title="PDF de proveedor" style="font-size:1.4rem;padding:3px 6.8px">
-                            <i class="fas fa-file-check"></i>
-                        </a>` :
-                        `<span class="btn" style="font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey">
-                        <i class="fas fa-file-xmark"></i>
-                        </span>`;
+                        `<a style="font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" href="/aistermcon/utils/download.php?file=${encodeURIComponent(data)}&route=presupuesto_proveedor" target="_blank" class="btn btnDescargar" title="PDF de proveedor">
+                <i class="fas fa-file-check"></i>
+            </a>` :
+                        `<span class="btn" style="font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey"><i class="fas fa-file-xmark"></i></span>`;
                 }
             },
             {
-                targets: 8,
+                targets: 8, // Índice de la columna con los botones de acciones
                 data: "acciones",
                 visible: true,
                 render: function(data, type, row, full, meta) {
-                    return (
-                        "<center style='white-space: nowrap;'>" +
-                        (editar ?
-                            " <button type='button' class='btn bg-gradient-warning btnEditar'  title='Editar'>" +
-                            " <i class='fas fa-pencil'></i>" +
-                            "</button>" +
-                            " <button type='button' class='btn bg-gradient-light btnUpload' data-target='#modal' data-toggle='modal'  title='Subir PDF'>" +
-                            " <i class='fas fa-upload'></i>" +
-                            "</button>" :
-                            "") +
-                        (eliminar ?
-                            " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
-                            " <i class='fa fa-trash'></i>" +
-                            "</button>" : "") +
-                        " </center>"
-                    );
-                },
-            },
-        ]
+                    // Si la fila está anulada (estado_anu es true)
+                    if (row.estado_anu) {
+                        return `
+                            <center style='white-space: nowrap;'>
+                                <span  title='Anulado' style='cursor:not-allowed;font-style: italic;' disabled>
+                                    ANULADO <i class='fas fa-ban'></i>
+                                </span>
+                            </center>`;
+                    }
+                    // Caso contrario, botones normales
+                    return `
+            <center style='white-space: nowrap;'>
+                ${editar ?
+                    `<button type='button' class='btn bg-gradient-warning btnEditar' title='Editar'>
+                        <i class='fas fa-pencil'></i>
+                    </button>
+                    <button type='button' class='btn bg-gradient-light btnUpload' data-target='#modal' data-toggle='modal' title='Subir PDF'>
+                        <i class='fas fa-upload'></i>
+                    </button>` : ''}
+                ${eliminar ?
+                    `<button type='button' class='btn bg-gradient-danger btnEliminar' title='Eliminar'>
+                        <i class='fa fa-trash'></i>
+                    </button>` : ''}
+            </center>`;
+                }
+            }
+        ],
+        "rowCallback": function(row, data, index) {
+            if (data.estado_anu) {
+                $(row).addClass('fila-anulada');
+            }
+        }
     }
 
     $(document).ready(function() {
-
         let tblSolicitud;
         let anio = year;
         let accion_cotiz = 0;
@@ -562,7 +574,7 @@
                         data.append('id', id_cotiz);
 
                         data.append('accion', 7);
-                        confirmarEliminar('este listado de', 'solic. de compra', function(r) {
+                        confirmarEliminar('este listado de', 'solic. de cotización / compra', function(r) {
                             if (r) {
                                 confirmarAccion(data, 'cotizacion', tblSolicitud, '', function(r) {
                                     if (r) {
@@ -576,7 +588,7 @@
                             }
                         });
                     } else {
-                        confirmarEliminar('este listado de', 'solic. de compra', function(r) {
+                        confirmarEliminar('este listado de', 'solic. de cotización / compra', function(r) {
                             if (r) {
                                 dt.clear().draw();
                                 agregarFila();
@@ -598,6 +610,7 @@
         let subtotalOriginal;
         let ivaOriginal;
         let proveOriginal;
+        let descuento;
         let iva = <?php echo $_SESSION["iva"]; ?>;
 
         const modal = document.getElementById('modal'),
@@ -629,6 +642,7 @@
             cboProve = document.getElementById('cboProve'),
             tax = document.getElementById('tax'),
             comprador = document.getElementById('comprador'),
+            otros = document.getElementById('otros'),
             fecha_sol = document.getElementById('fecha_sol'),
             telefono = document.getElementById('telefono');
 
@@ -796,8 +810,8 @@
         });
 
         $('#otros').on('input keydown paste', function() {
-        actualizarSubtotal();
-    });
+            actualizarSubtotal();
+        });
 
         function actualizarSubtotal(database = false) {
             let precio_total = 0;
@@ -807,8 +821,14 @@
                 // let cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
                 precio_total += precio; // Sumar el precio total de cada fila
             });
+
+            if (precio_total > 0) {
+                otros.readOnly = false;
+            } else {
+                otros.readOnly = true
+            }
             console.log('precio de esto es ', precio_total);
-            let descuento = parseFloat($('#otros').val()) || 0;
+            descuento = parseFloat(otros.value) || 0;
             precio_total -= descuento; // Restar el descuento al total
 
             subtotal = precio_total;
@@ -816,7 +836,6 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
-
             // Actualizar el subtotal en el card
             $('#subtotal').text('$' + subFormateado);
 
@@ -962,7 +981,7 @@
                 accion = 1;
                 console.log('valor sc', sc)
                 const nro_cotizacion = (sc || 0).toString().padStart(4, '0');
-                const nro_cotizacion_formateado = (parseInt(nro_cotizacion, 10)+1).toString().padStart(nro_cotizacion.length, '0');
+                const nro_cotizacion_formateado = parseInt(nro_cotizacion, 10).toString().padStart(nro_cotizacion.length, '0');
 
                 $('#nroSolicitud').text(nro_cotizacion_formateado);
                 $('#text_accion').text(' Nueva solicitud de compra');
@@ -973,6 +992,8 @@
                 $('#subtotal').text('$0.00');
                 $('#can_tax').text('$0.00');
                 $('#total').text('$0.00');
+                otros.value = '';
+                otros.readOnly = true;
                 form_cotizacion.classList.remove('was-validated');
                 ruc.value = '';
                 direccion.value = '';
@@ -992,11 +1013,11 @@
             let src = new FormData();
             src.append('accion', accion);
             src.append('id', id_);
-            confirmarEliminar('este', 'solic. compra', function(r) {
+            confirmarEliminar('esta', 'solic. cotización / compra', function(r) {
                 if (r) {
                     confirmarAccion(src, 'cotizacion', tabla, '', function(r) {});
                 }
-            });
+            }, 'anular');
         });
 
         document.addEventListener('keydown', function(e) {
@@ -1018,21 +1039,21 @@
             ivaOriginal = iva; // subtotal = parseFloat((subtotal || '0').toString().replace(/[$,]/g, '')) || 0;
             subtotalOriginal = parseFloat((row[11] || '0').toString().replace(/[$,]/g, '')) || 0;
             // subtotalOriginal = ;
+            descuento = row[15] || '';
             subtotal = row[11] || '$0.00';
             impuestos = row[12];
             total = row[14] || '$0.00';
-            $('#total').text(total);
 
             id_cotiz = row[0];
             const num_co = row[1],
                 proveedor = row[9],
                 fecha_solicitud = row[4];
-
             proveOriginal = proveedor;
 
-
+            $('#otros').val(descuento);
             $('#subtotal').text(subtotal);
             $('#can_tax').text(impuestos);
+            $('#total').text(total);
             if (isNaN(parseInt(iva, 10))) {
                 radio.click();
             } else {
@@ -1042,7 +1063,6 @@
             $('#nroSolicitud').text(num_co);
             setChange(cboProve, proveedor);
             const [dia, mes, anio] = fecha_solicitud.split('/');
-
             // Formatear a 'YYYY-MM-DD'
             const fecha_formateada = `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
 
@@ -1051,7 +1071,6 @@
             accion_cotiz = 1;
             nro_cotiz = id_cotiz;
             tblSolicitud.ajax.reload(null, false);
-
 
             document.getElementById("div_cot").style.display = "block";
             document.getElementById("div_content").style.display = "table-column";
@@ -1086,7 +1105,6 @@
             if (!isValid) {
                 return;
             }
-
             if (accion == 1) {
                 let clases = ['cantidad', 'id_unidad', 'descripcion'];
                 let accion_cot = 9;
@@ -1099,6 +1117,7 @@
                     formData.append('iva', iva);
                     formData.append('impuesto', impuestos);
                     formData.append('total', total);
+                    formData.append('descuento', descuento);
                     accion_cot = 10;
                 }
 
@@ -1163,8 +1182,8 @@
                         data.append('isPrecio', true);
                     }
 
-                    if (id_prove !== id_proveOriginal)
-                        data.append('isPrecio', false);
+                    // if (id_prove !== id_proveOriginal)
+                    data.append('isPrecio', false);
                     data.append('id_cotizacion', id_cotiz)
                     data.append('filas', JSON.stringify(filasActualizadas));
                     data.append('accion', 6);
@@ -1298,6 +1317,9 @@
 
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
+                ruc_prove.disabled = false;
+                cor_prove.disabled = false;
+                tel_prove.disabled = false;
                 return;
             }
             // const id_e = id.value;

@@ -8,7 +8,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
-                <h1 class="col-p">Ordenes</h1>
+                <h1 class="col-p">Orden de trabajo</h1>
             </div>
             <?php if (isset($_SESSION["crear17"]) && $_SESSION["crear17"] === true) : ?>
                 <div class="col">
@@ -96,7 +96,7 @@
                                         <input autocomplete="off" id="orden_nro" class="input-nuevo" type="text" maxlength="9" oninput="formatInputOrden(this, null, false)" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fas fa-ticket"></i> Nro. orden</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                        <div class="invalid-feedback mt-0">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                                 <div class="col-md-9">
@@ -106,7 +106,7 @@
                                             <div class="col">
                                                 <select id="cboClientesOrden" class="cbo modalB form-control select2 select2-success" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE" required>
                                                 </select>
-                                                <div id="Empresa" class="invalid-feedback">*Campo obligatorio.</div>
+                                                <div class="invalid-feedback mt-0">*Campo obligatorio.</div>
                                             </div>
                                         </div>
                                     </div>
@@ -124,7 +124,7 @@
                                         <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                        <!-- <div class="invalid-feedback">*Campo obligatorio.</div> -->
                                     </div>
                                 </div>
                             </div>
@@ -268,6 +268,7 @@
         "lengthChange": false,
         "ordering": true,
         "autoWidth": false,
+        "deferRender": true,
         columnDefs: [{
                 // "orderable": false,
                 targets: 0,
@@ -535,7 +536,7 @@
                 });
                 form.reset();
                 form.classList.remove('was-validated');
-                nombre.disabled = false;
+                // nombre.disabled = false;
                 setChange(cboClienteOrden, 0);
             });
         }
@@ -575,7 +576,7 @@
             fileInput.value = '';
 
             setChange(cboClienteOrden, row["id_cliente"]);
-            nombre.disabled = false;
+            // nombre.disabled = false;
             form.classList.remove('was-validated');
         });
 
@@ -636,12 +637,11 @@
                 datos.append('fileOrden', file);
             }
 
-            if (nombre.value === '') {
-                nombre.disabled = true;
-            }
+                nombre.disabled = nombre.value === '';
 
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
+                nombre.disabled = false;
                 return;
             }
 

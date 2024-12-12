@@ -102,7 +102,6 @@
                                         <input autocomplete="off" inputmode="numeric" id="ruc" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label for="ruc" class="label"><i class="fas fa-building-user"></i> RUC/CI</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                             </div>
@@ -112,7 +111,6 @@
                                         <input autocomplete="off" inputmode="numeric" id="telefono" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label for="telefono" class="label"><i class="fas fa-phone"></i> Teléfono</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -238,8 +236,7 @@
                 cambiarModal(span, ' Nuevo Proveedor', icon, 'fa-hand-holding-box', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 form.reset();
                 form.classList.remove('was-validated');
-                correo.disabled = false;
-                telefono.disabled = false;
+                
             });
         }
 
@@ -280,8 +277,8 @@
             direccion.value = row["direccion"];
             telefono.value = row["telefono"];
             correo.value = row["correo"];
-            correo.disabled = false;
-            telefono.disabled = false;
+            // correo.disabled = false;
+            // telefono.disabled = false;
             form.classList.remove('was-validated');
         });
 
@@ -292,16 +289,16 @@
                 tel = telefono.value.trim(),
                 dir = direccion.value.trim().toUpperCase(),
                 cor = correo.value.trim();
-            if (tel === '') {
-                telefono.disabled = true;
-            }
 
-            if (cor === '') {
-                correo.disabled = true;
-            }
+                telefono.disabled = tel === '';
+                ruc.disabled = ruc_ === ''
+                correo.disabled = cor === '';
 
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
+                correo.disabled = false;
+                telefono.disabled = false;
+                ruc.disabled = false;
                 return;
             }
             const id_e = id.value;

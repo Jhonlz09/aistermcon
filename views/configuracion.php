@@ -30,6 +30,8 @@
                                     <a class="nav-link active w-100 txt-ellipsis" id="vert-tabs-home-tab" data-toggle="pill" href="#vert-tabs-home" role="tab" aria-controls="vert-tabs-home" aria-selected="true"> <i class="tab-icon fas fa-circle-info"></i> Datos generales</a>
                                     <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-movimiento-tab" data-toggle="pill" href="#vert-tabs-movimiento" role="tab" aria-controls="vert-tabs-movimiento" aria-selected="false"> <i class="tab-icon fas fa-person-dolly"></i> Movimientos</a>
                                     <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-compras-tab" data-toggle="pill" href="#vert-tabs-compras" role="tab" aria-controls="vert-tabs-compras" aria-selected="false"> <i class="tab-icon fas fa-cart-shopping"></i> Compras</a>
+                                    <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-ope-tab" data-toggle="pill" href="#vert-tabs-ope" role="tab" aria-controls="vert-tabs-ope" aria-selected="false"> <i class="tab-icon fas fa-screwdriver-wrench"></i> Operaciones</a>
+
                                     <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-profile-tab" data-toggle="pill" href="#vert-tabs-profile" role="tab" aria-controls="vert-tabs-profile" aria-selected="false"> <i class="tab-icon fas fa-clipboard"></i> Guía</a>
                                     <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-messages-tab" data-toggle="pill" href="#vert-tabs-messages" role="tab" aria-controls="vert-tabs-messages" aria-selected="false"><i class="tab-icon fas fa-sliders-up"></i> Preferencias</a>
                                 </div>
@@ -193,6 +195,39 @@
                                         </div>
 
                                     </div>
+                                    <div class="tab-pane fade" id="vert-tabs-ope" role="tabpanel" aria-labelledby="vert-tabs-ope-tab">
+                                        <div class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
+                                            <form id="formConfigOpe" autocomplete="off" class="form-horizontal needs-validation" style="align-items:flex-start" novalidate>
+                                                <!-- Título principal -->
+                                                <h5 style="font-weight:bold;"> <i class="fas fa-tickets nav-icon"></i> Orden de Trabajo</h5>
+
+                                                <hr>
+                                                <!-- Grupo de Inputs -->
+                                                <!-- <div class="form-group">
+                                                    <label for="email" style="font-weight: bold;"><i class="fas fa-envelope"></i> Correo Electrónico
+                                                
+                                                </label>
+                                                    <input type="email" id="email" name="email" class="form-control" placeholder="Ingrese el correo" required>
+                                                </div> -->
+
+                                                <!-- Contenedor para correos dinámicos -->
+                                                <div id="emailContainer">
+                                                    <div class="mb-3">
+                                                        <label for="email-1" style="font-weight:bold;text-wrap:wrap"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                                                        <input spellcheck="false" autocomplete="off" type="email" id="email-1" name="email[]" class="border-2 form-control" placeholder="example@aistermcon.com" required>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Botones para agregar o eliminar correos -->
+                                                <div class="form-group">
+                                                    <button type="button" id="addEmailButton" class="btn btn-success">
+                                                        <i class="fas fa-plus-circle"></i> Agregar correo
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                    </div>
                                     <div class="tab-pane fade" id="vert-tabs-profile" role="tabpanel" aria-labelledby="vert-tabs-profile-tab">
                                         <div class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
                                             <!-- <div class="card-header p-0">
@@ -335,6 +370,36 @@
     // })
 
     $(document).ready(function() {
+
+        let emailCounter = 1; // Contador para generar IDs únicos
+
+    document.getElementById('addEmailButton').addEventListener('click', function () {
+        emailCounter++; // Incrementa el contador
+
+        // Crea un nuevo campo dinámico usando filas y columnas de Bootstrap
+        const emailRow = document.createElement('div');
+        emailRow.className = 'row mb-3';
+        emailRow.id = `email-row-${emailCounter}`;
+        emailRow.innerHTML = `
+            <div class="col">
+                <input spellcheck="false" autocomplete="off" type="email" id="email-${emailCounter}" name="email[]" class="form-control border-2" placeholder="example@aistermcon.com" required>
+            </div>
+            <div class="col-auto text-right">
+                <button type="button" class="btn bg-gradient-danger removeEmailButton">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+
+        // Agregar el nuevo grupo al contenedor
+        document.getElementById('emailContainer').appendChild(emailRow);
+
+        // Agregar evento para eliminar este campo dinámico
+        emailRow.querySelector('.removeEmailButton').addEventListener('click', function () {
+            emailRow.remove();
+            emailCounter--; // Decrementa el contador
+        });
+    });
         const formConfigD = document.getElementById('formConfigD'),
             formConfigM = document.getElementById('formConfigM'),
             formConfigC = document.getElementById('formConfigC'),
@@ -485,7 +550,7 @@
                 confirmarAccion(datos, 'configuracion', null, '', function(r) {
                     if (r && form == formConfigC) {
                         iva_config = r.iva;
-                        nro_sec_cotiz = r.sc; 
+                        nro_sec_cotiz = r.sc;
                     }
                 });
             });
