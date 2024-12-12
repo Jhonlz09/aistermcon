@@ -160,7 +160,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlOrdenCompra($arrJSON, $proveedor, $comprador, $fecha, $subtotal, $iva, $impuesto, $total)
+    static public function mdlOrdenCompra($arrJSON, $proveedor, $comprador, $fecha, $subtotal, $iva, $impuesto, $total, $desc)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -198,7 +198,7 @@ class ModeloRegistro
 
             $motivo = strtoupper($motivo);
             // Insertar nro cotizacion
-            $id_orden_compra = self::insertarNroCompra($conexion, $proveedor, $comprador, $motivo, true, $fecha, $subtotal, $iva, $impuesto, $total);
+            $id_orden_compra = self::insertarNroCompra($conexion, $proveedor, $comprador, $motivo, true, $fecha, $subtotal, $iva, $impuesto, $total, $desc);
 
             // Insertar salidas
             self::insertarOrdenCompra($conexion, $id_orden_compra, $arr);
@@ -345,11 +345,11 @@ class ModeloRegistro
         return $conexion->lastInsertId('tblcotizacion_id_seq');
     }
 
-    static private function insertarNroCompra($conexion, $proveedor, $comprador, $motivo, $estado_sol, $fecha, $subtotal, $iva, $impuesto, $total)
+    static private function insertarNroCompra($conexion, $proveedor, $comprador, $motivo, $estado_sol, $fecha, $subtotal, $iva, $impuesto, $total, $desc)
     {
         $hora = date('H:i:s');
         $fechaHora = $fecha . ' ' . $hora;
-        $stm = $conexion->prepare("INSERT INTO tblcotizacion(id_proveedor, comprador, motivo, estado_orden, fecha, subtotal, iva, impuesto, total) VALUES(:proveedor, :comprador, :motivo, :estado_sol, :fecha, :subtotal, :iva, :impuesto, :total)");
+        $stm = $conexion->prepare("INSERT INTO tblcotizacion(id_proveedor, comprador, motivo, estado_orden, fecha, subtotal, iva, impuesto, total, otros) VALUES(:proveedor, :comprador, :motivo, :estado_sol, :fecha, :subtotal, :iva, :impuesto, :total, :des)");
         $stm->bindParam(':proveedor', $proveedor, PDO::PARAM_INT);
         $stm->bindParam(':comprador', $comprador, PDO::PARAM_STR);
         $stm->bindParam(':motivo', $motivo, PDO::PARAM_STR);
@@ -358,6 +358,7 @@ class ModeloRegistro
         $stm->bindParam(':subtotal', $subtotal, PDO::PARAM_INT);
         $stm->bindParam(':iva', $iva, PDO::PARAM_INT);
         $stm->bindParam(':impuesto', $impuesto, PDO::PARAM_INT);
+        $stm->bindParam(':des', $desc, PDO::PARAM_INT);
         $stm->bindParam(':total', $total, PDO::PARAM_INT);
         $stm->execute();
 

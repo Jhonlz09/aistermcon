@@ -8,11 +8,10 @@ class ModeloCotizacion
     {
         try {
             $consulta = "SELECT c.id, c.num_co, p.nombre, c.motivo, TO_CHAR(c.fecha, 'DD/MM/YYYY') AS fecha, c.estado_solicitud, c.estado_orden, c.ruta_pdf, '' as acciones, 
-            c.id_proveedor, c.id, c.subtotal, c.impuesto, c.iva, c.total
+            c.id_proveedor, c.id, c.subtotal, c.impuesto, c.iva, c.total, c.otros, c.estado_anu
                 FROM tblcotizacion c
                 JOIN tblproveedores p ON p.id = c.id_proveedor 
-                WHERE EXTRACT(YEAR FROM c.fecha) = :anio ORDER BY c.id DESC";
-
+                WHERE EXTRACT(YEAR FROM c.fecha) = :anio ORDER BY c.num_co DESC";
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             $l->execute();
@@ -454,17 +453,18 @@ class ModeloCotizacion
     public static function mdlEliminarCotizacion($id)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("DELETE FROM tblcotizacion WHERE id = :id");
+            $e = Conexion::ConexionDB()->prepare("UPDATE tblcotizacion  SET 
+            estado_anu = true WHERE id = :id");
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->execute();
             return array(
                 'status' => 'success',
-                'm' => 'Se eliminó la solic. de compra con éxito.'
+                'm' => 'Se anuló la solic. de cotización / compra con correctamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo eliminar la solic. de compra: ' . $e->getMessage()
+                'm' => 'No se pudo anular la solic. de cotización / compra: ' . $e->getMessage()
             );
         }
     }

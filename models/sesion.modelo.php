@@ -9,9 +9,8 @@ class SesionModelo
 {
     public static function mdlIniciarSesion($usuario, $password)
     {
-        $stmt = Conexion::ConexionDB()->prepare("SELECT u.id, u.nombres,u.nombre_usuario, 
-                            u.clave_usuario,p.nombre as perfil, u.id_perfil, m.vista 
-                            FROM tblusuario u 
+        $stmt = Conexion::ConexionDB()->prepare("SELECT u.id, u.nombres, u.nombre_usuario, 
+                            u.clave_usuario,p.nombre as perfil, u.id_perfil, m.vista FROM tblusuario u 
 		                        JOIN tblperfil p ON p.id = u.id_perfil
                                 JOIN tblperfil_modulo pm ON pm.id_perfil = u.id_perfil
                                 JOIN tblmodulo m ON m.id = pm.id_modulo  
@@ -23,8 +22,7 @@ class SesionModelo
         if ($user) {
             if (password_verify($password, $user[0]->clave_usuario)) {
                 $_SESSION["s_usuario"] = $user[0];
-                $_SESSION['last_activity'] = time(); // Inicializa la marca de tiempo de la última actividad
-
+                $_SESSION['last_activity'] = time();
                 $permisosUsuario = self::mdlObtenerPermisos($user[0]->id);
                 $_SESSION["permisosUsuario"] = $permisosUsuario;
                 foreach ($permisosUsuario as $permiso) {
@@ -71,8 +69,21 @@ class SesionModelo
 
     static public function mdlObtenerConfiguracion()
     {
-        $stmt = Conexion::ConexionDB()->prepare("SELECT empresa, iva, emisor, ruc, matriz, correo1, 
-        correo2, telefonos, entradamultiple AS entrada, bodeguero, conductor, (SELECT last_value FROM secuencia_cotizacion) as sc_cot FROM tblconfiguracion");
+        $stmt = Conexion::ConexionDB()->prepare("SELECT 
+                        empresa, 
+                        iva, 
+                        emisor, 
+                        ruc, 
+                        matriz, 
+                        correo1,  
+                        correo2, 
+                        telefonos, 
+                        entradamultiple AS entrada, 
+                        bodeguero, 
+                        conductor, 
+                (SELECT last_value + increment_by FROM pg_sequences 
+                    WHERE schemaname = 'public' AND sequencename = 'secuencia_cotizacion') AS sc_cot 
+                    FROM tblconfiguracion;");
         // $stmt->bindParam(":id", $id, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS);

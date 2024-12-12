@@ -65,7 +65,7 @@ class ModeloConfiguracion
             $u->execute();
 
             // Actualizar la secuencia con ALTER SEQUENCE (construcción dinámica)
-            $query = "SELECT setval('secuencia_cotizacion', $sc, true);";
+            $query = "SELECT setval('secuencia_cotizacion', $sc, false);";
             $db->exec($query);
 
             // Confirmar transacción

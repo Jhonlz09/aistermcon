@@ -220,7 +220,7 @@ class ModeloOrden
     // }
 
 
-    static public function mdlAgregarOrden($nombre, $id_cliente, $orden, $ruta, $fecha)
+    static public function mdlAgregarOrden($nombre, $id_cliente, $cliente, $orden, $ruta, $fecha)
     {
         try {
             // Conexión a la base de datos e inserción
@@ -233,7 +233,7 @@ class ModeloOrden
             $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
             $a->execute();
             // Ejecutar el envío de correo en segundo plano
-            // self::enviarCorreoEnSegundoPlano($nombre, $orden, $fecha);
+            self::enviarCorreoEnSegundoPlano($nombre, $orden, $fecha, $cliente);
             // Respuesta al usuario
             return array(
                 'status' => 'success',
@@ -243,7 +243,7 @@ class ModeloOrden
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'La orden de trabajo ya existe para el cliente seleccionado.'
+                    'm' => 'La orden de trabajo ya existe para el cliente seleccionado. Se esta procesando el envio de correo electronico'
                 );
             } else {
                 return array(
@@ -255,18 +255,18 @@ class ModeloOrden
     }
 
 
-    static private function enviarCorreoEnSegundoPlano($nombre, $orden, $fecha)
+    static private function enviarCorreoEnSegundoPlano($descrip, $orden, $fecha, $cliente)
     {
         $scriptPath = escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'send_email.php');
-
+        $usuario = $_SESSION['s_usuario']->nombres;
         // $id_cliente = escapeshellarg($id_cliente);
-        $nombre = escapeshellarg($nombre);
+        $descrip = escapeshellarg($descrip);
         $orden = escapeshellarg($orden);
-        // $ruta = escapeshellarg($ruta);
+        $cliente = escapeshellarg($cliente);
         $fecha = escapeshellarg($fecha);
 
         // Comando para ejecutar en segundo plano
-        $command = "php $scriptPath $nombre $orden $fecha";
+        $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario";
 
         // Ejecutar en segundo plano usando popen
         pclose(popen("start /B " . $command, "r"));
