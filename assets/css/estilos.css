@@ -774,12 +774,23 @@ input:focus-visible {
     bottom: 0;
 }
 
+tr.fila-anulada + tr.child {
+    background-color: #f8d7da; /* Fondo rojo claro */
+    color: #721c24; /* Texto rojo oscuro */
+}
+
 .input-data .label {
     position: absolute;
     bottom: 1px;
     font-size: 22px;
     pointer-events: none;
     transition: all 0.3s ease;
+}
+
+.fila-anulada {
+    background: #f8d7da!important; /* Color de fondo para las filas anuladas */
+    color: #721c24;           /* Color del texto para las filas anuladas */
+    font-style: italic;       /* Opcional: estilo del texto */
 }
 
 .input-data input:focus:not(#fecha_ppt) {
@@ -853,7 +864,7 @@ input:focus-visible {
     padding-block: 0;
     border-top: 0 ;
     border-bottom: 0 ;
-    } 
+} 
     /* .collapsedrow td * {
         visibility: hidden;
     } */
