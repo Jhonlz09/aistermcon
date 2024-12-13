@@ -212,10 +212,11 @@ class ModeloOrden
         $fecha = escapeshellarg($fecha);
 
         // Comando para ejecutar en segundo plano
-        $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario";
-
+        $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario > /dev/null 2>&1 &";
+        exec($command);
+        
         // Ejecutar en segundo plano usando popen
-        pclose(popen("start /B " . $command, "r"));
+        // pclose(popen("start /B " . $command, "r"));
     }
 
 
