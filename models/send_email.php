@@ -6,7 +6,6 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-use Dotenv\Dotenv;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -35,20 +34,16 @@ if (isset($argv)) {
         $mail->Port = 587;
 
         $correos = ModeloConfiguracion::mdlObtenerCorreos(); // Llama al modelo que obtiene los correos
-
-
         // Configuración de importancia
         $mail->Priority = 1; // Alta prioridad (1 = Alta, 3 = Normal, 5 = Baja)
         $mail->addCustomHeader('X-Priority', '1'); // Alta prioridad en algunos clientes
         $mail->addCustomHeader('Importance', 'high'); // 
         $mail->setFrom('bodegaaistermcon@gmail.com');
-        // $mail->addAddress('jhonleon2001@gmail.com'); // Cambia por el correo del cliente o destinatario
-        // $mail->addAddress('operaciones@aistermcon.com'); // Cambia por el correo del cliente o destinatario
-        // $mail->addAddress('imunoz@aistermcon.com'); // Cambia por el correo del cliente o destinatario
+     
         foreach ($correos as $correo) {
             $mail->addAddress($correo); // Agrega cada correo como destinatario
         }
-        // $mail->addAddress('@gmail.com');
+   
 
         // Contenido del correo
         $mail->isHTML(true);

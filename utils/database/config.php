@@ -1,6 +1,4 @@
 <?php
-// config/session.php
-// Iniciar la sesión si no ha sido iniciada
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
