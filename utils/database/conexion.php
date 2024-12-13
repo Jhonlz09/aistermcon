@@ -6,7 +6,7 @@ class Conexion
 {
     static public function ConexionDB()
     {
-        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../'); // Esto sube dos niveles para llegar a la raíz del proyecto
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../../../'); // Esto sube dos niveles para llegar a la raíz del proyecto
         $dotenv->load();
 
         // Acceder directamente a las variables de entorno
