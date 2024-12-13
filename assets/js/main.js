@@ -16,10 +16,10 @@
 // };
 
 
-function confirmarEliminar(art, name, callback, opcion='eliminar') {
+function confirmarEliminar(art, name, callback, opcion='eliminar', subtitle= 'Una vez eliminado no podrá recuperarlo') {
   Swal.fire({
     title: "¿Está seguro de "+ opcion+ " " + art + " " + name + "?",
-    text: "Una vez eliminado no podrá recuperarlo",
+    text: subtitle,
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "Sí, Eliminar",

@@ -49,7 +49,6 @@ class ModeloConfiguracion
         }
     }
 
-
     static public function mdlEditarConfigCompra($iva, $sc)
     {
         try {
@@ -93,8 +92,6 @@ class ModeloConfiguracion
             );
         }
     }
-
-
 
     public static function mdlEditarConfigGuia($ruc, $emisor, $dir, $tel, $correo1)
     {
@@ -150,6 +147,72 @@ class ModeloConfiguracion
             return array(
                 'status' => 'danger',
                 'm' => 'No se pudo editar la configuracion: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlEditarConfigOpe($correosJson)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+
+            $correos = json_decode($correosJson);
+
+            if (!is_array($correos)) {
+                throw new Exception('Los correos deben ser un array');
+            }
+            $correosEscapados = array_map(function ($correo) {
+                return "'" . addslashes($correo) . "'"; // Escapa las comillas en los correos
+            }, $correos);
+
+            // Crear el formato adecuado para PostgreSQL (un array de texto)
+            $correos = '{' . implode(',', $correosEscapados) . '}';
+
+            $sql = "UPDATE tblconfiguracion SET correo_destinatario = :correo";
+            $e = $conexion->prepare($sql);
+            $e->bindParam(':correo', $correos);
+            $e->execute();
+
+            return array(
+                'status' => 'success',
+                'm' => 'La configuración de operaciones se editó correctamente'
+            );
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo editar la configuracion: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlObtenerCorreos()
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $sql = "SELECT correo_destinatario FROM tblconfiguracion LIMIT 1"; // Ajusta según tu consulta
+            $stmt = $conexion->prepare($sql);
+            $stmt->execute();
+    
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result) {
+                // Extrae el valor de la cadena y elimina las llaves
+                $correos = $result['correo_destinatario'];
+                $correos = trim($correos, '{}'); // Elimina las llaves al principio y al final
+                $correos = explode(',', $correos); // Convierte la cadena a un array usando la coma como delimitador
+    
+                // Limpia los espacios y las comillas alrededor de cada correo
+                $correos = array_map(function($correo) {
+                    return trim($correo, " '");
+                }, $correos);
+    
+                return $correos; // Devuelve el array de correos
+            }
+    
+            return [];
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'Error al obtener correos: ' . $e->getMessage()
             );
         }
     }

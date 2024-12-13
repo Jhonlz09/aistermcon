@@ -166,60 +166,6 @@ class ModeloOrden
     //     }
     // }
 
-    // static private function enviarCorreoEnSegundoPlano($id_cliente, $nombre, $orden, $ruta, $fecha)
-    // {
-    //     // Asegúrate de que el correo no bloquee el flujo principal
-    //     ignore_user_abort(true);  // Permite que el script siga ejecutándose aunque el usuario se desconecte
-
-    //     // Enviar el correo
-    //     self::enviarCorreo($id_cliente, $nombre, $orden, $ruta, $fecha);
-
-    //     // Si usas FastCGI, puedes terminar la solicitud inmediatamente
-    //     if (function_exists('fastcgi_finish_request')) {
-    //         fastcgi_finish_request();
-    //     }
-    // }
-
-    // static private function enviarCorreo($id_cliente, $nombre, $orden, $ruta, $fecha)
-    // {
-    //     $mail = new PHPMailer(true);
-
-    //     try {
-    //         // Configuración del servidor SMTP
-    //         $mail->isSMTP();
-    //         $mail->Host = 'smtp.gmail.com'; // Servidor SMTP
-    //         $mail->SMTPAuth = true;
-    //         $mail->Username = 'jdleon5@tes.edu.ec'; // Tu correo Gmail
-    //         $mail->Password = 'meteoro123'; // Contraseña de Gmail (o contraseña de aplicación)
-    //         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    //         $mail->Port = 587;
-
-    //         // Configuración del remitente y destinatario
-    //         $mail->setFrom('jdleon5@tes.edu.ec', 'Jhon Leon');
-    //         $mail->addAddress('jhonleon2001@gmail.com', 'Jhon Leon'); // Cambia por el correo del cliente o destinatario
-
-    //         // Contenido del correo
-    //         $mail->isHTML(true);
-    //         $mail->Subject = 'Nueva orden de trabajo abierta';
-    //         $mail->Body = "
-    //     <h2>Detalles de la nueva orden:</h2>
-    //     <p><strong>Cliente ID:</strong> {$id_cliente}</p>
-    //     <p><strong>Nombre:</strong> {$nombre}</p>
-    //     <p><strong>Orden:</strong> {$orden}</p>
-    //     <p><strong>Ruta:</strong> {$ruta}</p>
-    //     <p><strong>Fecha:</strong> {$fecha}</p>";
-
-    //         // Enviar el correo
-    //         $mail->send();
-    //         return true;
-    //     } catch (Exception $e) {
-    //         // Manejo de errores al enviar el correo
-    //         error_log("Error al enviar el correo: {$mail->ErrorInfo}");
-    //         return false;
-    //     }
-    // }
-
-
     static public function mdlAgregarOrden($nombre, $id_cliente, $cliente, $orden, $ruta, $fecha)
     {
         try {
@@ -237,13 +183,13 @@ class ModeloOrden
             // Respuesta al usuario
             return array(
                 'status' => 'success',
-                'm' => 'La orden de trabajo se agregó correctamente.'
+                'm' => 'La orden de trabajo se agregó correctamente. Se esta procesando el envío del correo electrónico'
             );
         } catch (PDOException $e) {
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'La orden de trabajo ya existe para el cliente seleccionado. Se esta procesando el envio de correo electronico'
+                    'm' => 'La orden de trabajo ya existe para el cliente seleccionado.'
                 );
             } else {
                 return array(

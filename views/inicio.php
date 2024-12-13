@@ -75,7 +75,7 @@
                     <div class="icon">
                         <i class="fas fa-person-digging"></i>
                     </div>
-                    <a onclick="masInfo('Ordenes de trabajo'); estado_filter= '1'" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a onclick="masInfo('Orden de trabajo'); estado_filter= '1'" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
         </div> <!-- ./row Tarjetas Informativas -->

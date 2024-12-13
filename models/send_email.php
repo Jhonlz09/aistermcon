@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once 'configuracion.modelo.php';
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -33,7 +34,8 @@ if (isset($argv)) {
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
-        
+        $correos = ModeloConfiguracion::mdlObtenerCorreos(); // Llama al modelo que obtiene los correos
+
 
         // Configuración de importancia
         $mail->Priority = 1; // Alta prioridad (1 = Alta, 3 = Normal, 5 = Baja)
@@ -42,8 +44,10 @@ if (isset($argv)) {
         $mail->setFrom('bodegaaistermcon@gmail.com');
         // $mail->addAddress('jhonleon2001@gmail.com'); // Cambia por el correo del cliente o destinatario
         // $mail->addAddress('operaciones@aistermcon.com'); // Cambia por el correo del cliente o destinatario
-        $mail->addAddress('imunoz@aistermcon.com'); // Cambia por el correo del cliente o destinatario
-        
+        // $mail->addAddress('imunoz@aistermcon.com'); // Cambia por el correo del cliente o destinatario
+        foreach ($correos as $correo) {
+            $mail->addAddress($correo); // Agrega cada correo como destinatario
+        }
         // $mail->addAddress('@gmail.com');
 
         // Contenido del correo

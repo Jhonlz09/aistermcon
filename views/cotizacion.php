@@ -1017,7 +1017,7 @@
                 if (r) {
                     confirmarAccion(src, 'cotizacion', tabla, '', function(r) {});
                 }
-            }, 'anular');
+            }, 'anular', '');
         });
 
         document.addEventListener('keydown', function(e) {

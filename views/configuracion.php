@@ -197,36 +197,30 @@
                                     </div>
                                     <div class="tab-pane fade" id="vert-tabs-ope" role="tabpanel" aria-labelledby="vert-tabs-ope-tab">
                                         <div class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
+                                            <!-- Título principal -->
+                                            <h5 style="font-weight:bold;"> <i class="fas fa-tickets nav-icon"></i> Orden de Trabajo</h5>
+                                            <hr>
                                             <form id="formConfigOpe" autocomplete="off" class="form-horizontal needs-validation" style="align-items:flex-start" novalidate>
-                                                <!-- Título principal -->
-                                                <h5 style="font-weight:bold;"> <i class="fas fa-tickets nav-icon"></i> Orden de Trabajo</h5>
-
-                                                <hr>
-                                                <!-- Grupo de Inputs -->
-                                                <!-- <div class="form-group">
-                                                    <label for="email" style="font-weight: bold;"><i class="fas fa-envelope"></i> Correo Electrónico
-                                                
-                                                </label>
-                                                    <input type="email" id="email" name="email" class="form-control" placeholder="Ingrese el correo" required>
-                                                </div> -->
-
-                                                <!-- Contenedor para correos dinámicos -->
                                                 <div id="emailContainer">
                                                     <div class="mb-3">
                                                         <label for="email-1" style="font-weight:bold;text-wrap:wrap"><i class="fas fa-envelope"></i> Correo Electrónico</label>
                                                         <input spellcheck="false" autocomplete="off" type="email" id="email-1" name="email[]" class="border-2 form-control" placeholder="example@aistermcon.com" required>
                                                     </div>
                                                 </div>
-
                                                 <!-- Botones para agregar o eliminar correos -->
                                                 <div class="form-group">
                                                     <button type="button" id="addEmailButton" class="btn btn-success">
                                                         <i class="fas fa-plus-circle"></i> Agregar correo
                                                     </button>
                                                 </div>
+                                                <br>
+                                                <div class="col-sm-12 p-0">
+                                                    <button class="btn btn-primary btn-small w-100 text-center" id="btnGuardarOpe">
+                                                        <i class="fa-solid fa-floppy-disk"></i> Guardar
+                                                    </button>
+                                                </div>
                                             </form>
                                         </div>
-
                                     </div>
                                     <div class="tab-pane fade" id="vert-tabs-profile" role="tabpanel" aria-labelledby="vert-tabs-profile-tab">
                                         <div class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
@@ -339,7 +333,6 @@
                         </div>
                     </div>
                     <!-- /.card-body -->
-
                 </div>
                 <!-- /.card -->
             </div>
@@ -369,18 +362,98 @@
     //     })
     // })
 
+    // document.addEventListener('DOMContentLoaded', function() {
+    //         // Usar fetch para obtener los correos desde el backend
+
+    //     });
+
     $(document).ready(function() {
+
+
+        // fetch('controllers/configuracion.controlador.php')
+        //     .then(response => response.json())
+        //     .then(correos => {
+        //         console.log(correos); // Deberías ver un array aquí
+        //         if (Array.isArray(correos)) {
+        //             correos.forEach((correo, index) => {
+        //                 // Llenar los inputs con los correos
+        //                 const emailRow = document.createElement('div');
+        //                 emailRow.className = 'row mb-3';
+        //                 emailRow.innerHTML = `
+        //             <div class="col">
+        //                 <input type="email" value="${correo}" name="email[]" class="form-control border-2" required>
+        //             </div>
+        //             <div class="col-auto text-right">
+        //                 <button type="button" class="btn bg-gradient-danger removeEmailButton">
+        //                     <i class="fas fa-trash"></i>
+        //                 </button>
+        //             </div>
+        //         `;
+        //                 document.getElementById('emailContainer').appendChild(emailRow);
+        //             });
+        //         }
+        //     })
+        //     .catch(error => console.error('Error al cargar los correos:', error));
+
+        fetch('controllers/configuracion.controlador.php')
+            .then(response => response.json())
+            .then(correos => {
+                console.log(correos); // Verifica qué datos recibes
+
+                // Verificar que 'correos' es un array antes de usar .forEach
+                if (Array.isArray(correos)) {
+                    const emailContainer = document.getElementById('emailContainer');
+                    let emailCounter = 1;
+
+                    // Iteramos sobre los correos y los agregamos al formulario
+                    correos.forEach((correo, index) => {
+                        if (index === 0) {
+                            // Si es el primer correo, lo agregamos al primer input
+                            const emailInput = emailContainer.querySelector('input[name="email[]"]');
+                            emailInput.value = correo; // Asignamos el correo recuperado
+                        } else {
+                            // Si es un correo adicional, agregamos un nuevo campo dinámico
+                            emailCounter++;
+                            const emailRow = document.createElement('div');
+                            emailRow.className = 'row mb-3';
+                            emailRow.id = `email-row-${emailCounter}`;
+                            emailRow.innerHTML = `
+                        <div class="col">
+                            <input spellcheck="false" autocomplete="off" type="email" id="email-${emailCounter}" name="email[]" class="form-control border-2" placeholder="example@aistermcon.com" required value="${correo}">
+                        </div>
+                        <div class="col-auto text-right">
+                            <button type="button" class="btn bg-gradient-danger removeEmailButton">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                            emailContainer.appendChild(emailRow);
+
+                            // Agregar evento para eliminar este campo dinámico
+                            emailRow.querySelector('.removeEmailButton').addEventListener('click', function() {
+                                emailRow.remove();
+                                emailCounter--; // Decrementa el contador
+                            });
+                        }
+                    });
+                } else {
+                    console.error('Los correos no son un array:', correos);
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar los correos:', error);
+            });
 
         let emailCounter = 1; // Contador para generar IDs únicos
 
-    document.getElementById('addEmailButton').addEventListener('click', function () {
-        emailCounter++; // Incrementa el contador
+        document.getElementById('addEmailButton').addEventListener('click', function() {
+            emailCounter++; // Incrementa el contador
 
-        // Crea un nuevo campo dinámico usando filas y columnas de Bootstrap
-        const emailRow = document.createElement('div');
-        emailRow.className = 'row mb-3';
-        emailRow.id = `email-row-${emailCounter}`;
-        emailRow.innerHTML = `
+            // Crea un nuevo campo dinámico usando filas y columnas de Bootstrap
+            const emailRow = document.createElement('div');
+            emailRow.className = 'row mb-3';
+            emailRow.id = `email-row-${emailCounter}`;
+            emailRow.innerHTML = `
             <div class="col">
                 <input spellcheck="false" autocomplete="off" type="email" id="email-${emailCounter}" name="email[]" class="form-control border-2" placeholder="example@aistermcon.com" required>
             </div>
@@ -391,21 +464,26 @@
             </div>
         `;
 
-        // Agregar el nuevo grupo al contenedor
-        document.getElementById('emailContainer').appendChild(emailRow);
+            // Agregar el nuevo grupo al contenedor
+            document.getElementById('emailContainer').appendChild(emailRow);
 
-        // Agregar evento para eliminar este campo dinámico
-        emailRow.querySelector('.removeEmailButton').addEventListener('click', function () {
-            emailRow.remove();
-            emailCounter--; // Decrementa el contador
+            // Agregar evento para eliminar este campo dinámico
+            emailRow.querySelector('.removeEmailButton').addEventListener('click', function() {
+                emailRow.remove();
+                emailCounter--; // Decrementa el contador
+            });
         });
-    });
+
+
+
         const formConfigD = document.getElementById('formConfigD'),
             formConfigM = document.getElementById('formConfigM'),
             formConfigC = document.getElementById('formConfigC'),
             formConfigG = document.getElementById('formConfigG'),
+            formConfigOpe = document.getElementById('formConfigOpe'),
             formConfigP = document.getElementById('formConfigP');
 
+        const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const cboBodeguero = document.getElementById('cboBodeguero'),
             cboTransportista = document.getElementById('cboTransportista');
 
@@ -555,6 +633,86 @@
                 });
             });
         });
+
+
+        // formConfigOpe.addEventListener("submit", function(e) {
+        //     e.preventDefault(); // Evitar envío por defecto del formulario
+
+        //     // Obtén los inputs de email una sola vez
+        //     const emailInputs = formConfigOpe.querySelectorAll('input[name="email[]"]');
+
+        //     // Valida los correos
+        //     const {
+        //         correos,
+        //         correosInvalidos
+        //     } = validarCorreos(emailInputs, regexCorreo);
+
+        //     if (correosInvalidos.length > 0) {
+        //         // alert(`Correos inválidos: ${correosInvalidos.join(', ')}`);
+        //         const mensaje = correosInvalidos.length === 1 ?
+        //             `El correo '${correosInvalidos[0]}' no es válido.` :
+        //             `Los correos '${correosInvalidos.join(', ')}' no son válidos.`;
+
+        //         mostrarToast('danger', 'Error', 'fa-xmark', mensaje, 8000)
+        //         return;
+        //     }
+
+        //     // Aquí puedes continuar con el flujo si todos los correos son válidos
+
+        // });
+
+        formConfigOpe.addEventListener("submit", function(e) {
+            e.preventDefault();
+            // Obtén los inputs de email una sola vez
+            const emailInputs = formConfigOpe.querySelectorAll('input[name="email[]"]');
+
+            // Valida los correos
+            const {
+                correos,
+                correosInvalidos
+            } = validarCorreos(emailInputs, regexCorreo);
+
+            if (correosInvalidos.length > 0) {
+                // Si hay correos inválidos, muestra el mensaje de error
+                const mensaje = correosInvalidos.length === 1 ?
+                    `El correo '${correosInvalidos[0]}' no es válido.` :
+                    `Los correos '${correosInvalidos.join(', ')}' no son válidos.`;
+
+                mostrarToast('danger', 'Error', 'fa-xmark', mensaje, 8000);
+                return;
+            }
+
+            // Si los correos son válidos, crear el FormData y agregar los correos
+            let datos = new FormData(formConfigOpe); // Agrega todos los datos del formulario
+            datos.append('accion', 6); // Usa índices para diferenciarlos
+            datos.append('correos', JSON.stringify(correos));
+
+            // Llamar a la función confirmarAccion para enviar los datos al backend
+            confirmarAccion(datos, 'configuracion', null, '', function(r) {
+                if (r) {
+
+                }
+            });
+        });
+
+
+        function validarCorreos(emailInputs, regex) {
+            const correos = [];
+            const correosInvalidos = [];
+
+            for (const input of emailInputs) {
+                const correo = input.value.trim();
+                correos.push(correo);
+
+                if (!regex.test(correo)) {
+                    correosInvalidos.push(correo);
+                }
+            }
+            return {
+                correos,
+                correosInvalidos
+            };
+        }
 
         // formConfigD.addEventListener("submit", function(e) {
         //     e.preventDefault();
