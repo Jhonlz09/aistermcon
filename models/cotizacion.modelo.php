@@ -8,7 +8,7 @@ class ModeloCotizacion
     {
         try {
             $consulta = "SELECT c.id, c.num_co, p.nombre, c.motivo, TO_CHAR(c.fecha, 'DD/MM/YYYY') AS fecha, c.estado_solicitud, c.estado_orden, c.ruta_pdf, '' as acciones, 
-            c.id_proveedor, c.id, c.subtotal, c.impuesto, c.iva, c.total, c.otros, c.estado_anu
+            c.id_proveedor, c.id, c.subtotal, c.impuesto, c.iva, c.total, c.otros, c.estado_anu, c.comprador
                 FROM tblcotizacion c
                 JOIN tblproveedores p ON p.id = c.id_proveedor 
                 WHERE EXTRACT(YEAR FROM c.fecha) = :anio ORDER BY c.num_co DESC";

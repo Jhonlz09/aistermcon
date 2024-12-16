@@ -610,6 +610,9 @@
         let subtotalOriginal;
         let ivaOriginal;
         let proveOriginal;
+        let descOriginal;
+        let compOriginal;
+        let fechaOriginal;
         let descuento;
         let iva = <?php echo $_SESSION["iva"]; ?>;
 
@@ -1039,11 +1042,13 @@
             ivaOriginal = iva; // subtotal = parseFloat((subtotal || '0').toString().replace(/[$,]/g, '')) || 0;
             subtotalOriginal = parseFloat((row[11] || '0').toString().replace(/[$,]/g, '')) || 0;
             // subtotalOriginal = ;
-            descuento = parseFloat((row[11] || '0').toString().replace(/[$,]/g, '')) || '';
+            descuento = parseFloat((row[15] || '0').toString().replace(/[$,]/g, '')) || '';
+            descOriginal = descuento;
             subtotal = row[11] || '$0.00';
             impuestos = row[12];
             total = row[14] || '$0.00';
-
+            comprador.value = row[16];
+            comOriginal = row[16];
             id_cotiz = row[0];
             const num_co = row[1],
                 proveedor = row[9],
@@ -1062,12 +1067,15 @@
             $('#text_accion').text(' Editar solicitud de compra');
             $('#nroSolicitud').text(num_co);
             setChange(cboProve, proveedor);
+
             const [dia, mes, anio] = fecha_solicitud.split('/');
             // Formatear a 'YYYY-MM-DD'
             const fecha_formateada = `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
 
             // Asignar al value de un input de tipo fecha
             fecha_sol.value = fecha_formateada;
+            fechaOriginal = fecha_formateada;
+
             accion_cotiz = 1;
             nro_cotiz = id_cotiz;
             tblSolicitud.ajax.reload(null, false);
@@ -1129,82 +1137,188 @@
                 realizarRegistroCotizacion(tblSolicitud, formData, clases);
 
             } else if (accion == 2) {
-                let filasActualizadas = [];
-                const id_prove = cboProve.value;
+                // let filasActualizadas = [];
+                // const id_prove = cboProve.value;
+                // const  com_ = comprador.value;
+                // const fecha = fecha_sol.value;
+                // const descuento = otros.value;
 
-                tblSolicitud.rows().every(function(index) {
-                    let row = tblSolicitud.row(index);
-                    let originalData = JSON.parse($(row.node()).data('original')); // Datos originales
-                    let nuevaData = {}; // Objeto para almacenar los datos actuales
+                // tblSolicitud.rows().every(function(index) {
+                //     let row = tblSolicitud.row(index);
+                //     let originalData = JSON.parse($(row.node()).data('original')); // Datos originales
+                //     let nuevaData = {}; // Objeto para almacenar los datos actuales
+
+                //     // Obtén los valores actuales de las clases editables
+                //     ['cantidad', 'id_unidad', 'descripcion', 'precio_final'].forEach(clase => {
+                //         let input = row.node().querySelector('.' + clase);
+                //         nuevaData[clase] = input ? input.value.trim() : ''; // Aseguramos que no haya espacios innecesarios
+                //     });
+
+                //     // Comparación robusta de datos
+                //     let haCambiado = Object.keys(nuevaData).some(key => {
+                //         let valorOriginal = originalData[key] ? originalData[key].toString().trim() : '';
+                //         let valorNuevo = nuevaData[key] ? nuevaData[key].toString().trim() : '';
+
+                //         // Asegurar que los valores sean iguales sin importar si son números o cadenas
+                //         if (key === 'precio_final' || key === 'cantidad') {
+                //             valorOriginal = parseFloat(valorOriginal) || 0; // Convertir a número
+                //             valorNuevo = parseFloat(valorNuevo) || 0; // Convertir a número
+                //         }
+
+                //         // console.log('valor original', valorOriginal)
+                //         // console.log('valor nuevo', valorNuevo)
+
+                //         return valorOriginal !== valorNuevo;
+                //     });
+
+                //     if (haCambiado) {
+                //         nuevaData.id = originalData.id; // Agrega el identificador único de la fila
+                //         filasActualizadas.push(nuevaData); // Agregar solo las filas modificadas
+                //     }
+                // });
+
+                // if (filasActualizadas.length === 0 && (iva === ivaOriginal)) {
+                //     mostrarToast('info', 'Sin cambios', 'fa-info', 'No hay cambios para guardar.');
+                //     console.log('No hay cambios:', filasActualizadas);
+                //     return;
+                // } else if (filasActualizadas.length > 0) {
+                //     let data = new FormData();
+                //     console.log('comparacion entre subtotal', subtotal);
+                //     console.log('subtotal original', subtotalOriginal);
+                //     if (subtotal !== subtotalOriginal) {
+                //         data.append('subtotal', subtotal);
+                //         data.append('iva', iva);
+                //         data.append('impuesto', impuestos);
+                //         data.append('total', total);
+                //         data.append('isPrecio', true);
+                //     }
+
+                //     // if (id_prove !== id_proveOriginal)
+                //     data.append('isPrecio', false);
+                //     data.append('id_cotizacion', id_cotiz)
+                //     data.append('filas', JSON.stringify(filasActualizadas));
+                //     data.append('accion', 6);
+                //     confirmarAccion(data, 'cotizacion', tabla, '', function(r) {
+                //         ocultarFormulario();
+                //     });
+                // } else if (iva !== ivaOriginal) {
+                //     let dato = new FormData();
+                //     console.log('comparacion entre iva', iva);
+                //     console.log('iva original', ivaOriginal);
+                //     dato.append('subtotal', subtotal);
+                //     dato.append('iva', iva);
+                //     dato.append('impuesto', impuestos);
+                //     dato.append('total', total);
+                //     dato.append('id_cotizacion', id_cotiz)
+                //     dato.append('accion', 9);
+                //     confirmarAccion(dato, 'cotizacion', tabla, '', function(r) {
+                //         ocultarFormulario();
+                //     });
+                // }
+
+                let cambiosEnInputs = {
+                    id_prove: compararValores(proveOriginal, cboProve.value),
+                    comprador: compararValores(comOriginal, comprador.value),
+                    fecha: compararValores(fechaOriginal, fecha_sol.value),
+                    descuento: compararValores(descOriginal, otros.value, true)
+                };
+
+                let hayCambiosEnInputs = Object.values(cambiosEnInputs).some(cambio => cambio);
+
+                // Verificar cambios en las filas de la tabla
+                let {
+                    filasActualizadas,
+                    filasNuevas
+                } = verificarCambiosEnFilas(tblSolicitud);
+                let cambiosEnFilas = filasActualizadas.length > 0 || filasNuevas.length > 0;
+
+                if (!hayCambiosEnInputs && !cambiosEnFilas) {
+                    mostrarToast('info', 'Sin cambios', 'fa-info', 'No hay cambios para guardar.');
+                    console.log('No hay cambios:', {
+                        filasActualizadas,
+                        filasNuevas
+                    });
+                    return;
+                }
+
+                // Crear los datos a enviar
+                let data = new FormData();
+
+                // Agregar cambios en los inputs
+                if (hayCambiosEnInputs) {
+                    data.append('id_prove', cboProve.value);
+                    data.append('comprador', comprador.value);
+                    data.append('fecha', fecha_sol.value);
+                    data.append('descuento', otros.value);
+                }
+
+                // Agregar cambios en las filas
+                if (cambiosEnFilas) {
+                    if (filasActualizadas.length > 0) {
+                        data.append('filasActualizadas', JSON.stringify(filasActualizadas));
+                    }
+                    if (filasNuevas.length > 0) {
+                        data.append('filasNuevas', JSON.stringify(filasNuevas));
+                    }
+                }
+
+                data.append('id_cotizacion', id_cotiz);
+                data.append('accion', cambiosEnFilas && hayCambiosEnInputs ? 6 : cambiosEnFilas ? 7 : 8);
+
+                confirmarAccion(data, 'cotizacion', tabla, '', function(r) {
+                    ocultarFormulario();
+                });
+
+
+
+            }
+
+            function compararValores(original, nuevo, esNumerico = false) {
+                if (esNumerico) {
+                    return parseFloat(original) !== parseFloat(nuevo);
+                }
+                return (original || '').toString().trim() !== (nuevo || '').toString().trim();
+            }
+
+            function verificarCambiosEnFilas(tbl) {
+                let filasActualizadas = [];
+                let filasNuevas = [];
+
+                tbl.rows().every(function(index) {
+                    let row = tbl.row(index);
+                    let originalData = $(row.node()).data('original') ? JSON.parse($(row.node()).data('original')) : null;
+                    let nuevaData = {};
 
                     // Obtén los valores actuales de las clases editables
                     ['cantidad', 'id_unidad', 'descripcion', 'precio_final'].forEach(clase => {
                         let input = row.node().querySelector('.' + clase);
-                        nuevaData[clase] = input ? input.value.trim() : ''; // Aseguramos que no haya espacios innecesarios
+                        nuevaData[clase] = input ? input.value.trim() : '';
                     });
 
-                    // Comparación robusta de datos
-                    let haCambiado = Object.keys(nuevaData).some(key => {
-                        let valorOriginal = originalData[key] ? originalData[key].toString().trim() : '';
-                        let valorNuevo = nuevaData[key] ? nuevaData[key].toString().trim() : '';
+                    if (!originalData) {
+                        // Si no hay datos originales, es una fila nueva
+                        nuevaData.id = null; // ID nulo para filas nuevas
+                        filasNuevas.push(nuevaData);
+                    } else {
+                        // Comparar datos
+                        let haCambiado = Object.keys(nuevaData).some(key => {
+                            return compararValores(originalData[key], nuevaData[key], key === 'precio_final' || key === 'cantidad');
+                        });
 
-                        // Asegurar que los valores sean iguales sin importar si son números o cadenas
-                        if (key === 'precio_final' || key === 'cantidad') {
-                            valorOriginal = parseFloat(valorOriginal) || 0; // Convertir a número
-                            valorNuevo = parseFloat(valorNuevo) || 0; // Convertir a número
+                        if (haCambiado) {
+                            nuevaData.id = originalData.id; // Incluye el ID único de la fila
+                            filasActualizadas.push(nuevaData);
                         }
-
-                        // console.log('valor original', valorOriginal)
-                        // console.log('valor nuevo', valorNuevo)
-
-                        return valorOriginal !== valorNuevo;
-                    });
-
-                    if (haCambiado) {
-                        nuevaData.id = originalData.id; // Agrega el identificador único de la fila
-                        filasActualizadas.push(nuevaData); // Agregar solo las filas modificadas
                     }
                 });
 
-                if (filasActualizadas.length === 0 && (iva === ivaOriginal)) {
-                    mostrarToast('info', 'Sin cambios', 'fa-info', 'No hay cambios para guardar.');
-                    console.log('No hay cambios:', filasActualizadas);
-                    return;
-                } else if (filasActualizadas.length > 0) {
-                    let data = new FormData();
-                    console.log('comparacion entre subtotal', subtotal);
-                    console.log('subtotal original', subtotalOriginal);
-                    if (subtotal !== subtotalOriginal) {
-                        data.append('subtotal', subtotal);
-                        data.append('iva', iva);
-                        data.append('impuesto', impuestos);
-                        data.append('total', total);
-                        data.append('isPrecio', true);
-                    }
-
-                    // if (id_prove !== id_proveOriginal)
-                    data.append('isPrecio', false);
-                    data.append('id_cotizacion', id_cotiz)
-                    data.append('filas', JSON.stringify(filasActualizadas));
-                    data.append('accion', 6);
-                    confirmarAccion(data, 'cotizacion', tabla, '', function(r) {
-                        ocultarFormulario();
-                    });
-                } else if (iva !== ivaOriginal) {
-                    let dato = new FormData();
-                    console.log('comparacion entre iva', iva);
-                    console.log('iva original', ivaOriginal);
-                    dato.append('subtotal', subtotal);
-                    dato.append('iva', iva);
-                    dato.append('impuesto', impuestos);
-                    dato.append('total', total);
-                    dato.append('id_cotizacion', id_cotiz)
-                    dato.append('accion', 9);
-                    confirmarAccion(dato, 'cotizacion', tabla, '', function(r) {
-                        ocultarFormulario();
-                    });
-                }
+                return {
+                    filasActualizadas,
+                    filasNuevas
+                };
             }
+
+
 
             function realizarRegistroCotizacion(table, formData, clases, header = 'productos') {
                 let count = table.rows().count(); // Obtener el número total de filas
