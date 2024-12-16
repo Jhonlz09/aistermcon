@@ -1,6 +1,8 @@
 <?php if (session_status() == PHP_SESSION_NONE) {
     session_start();
 } ?>
+<link rel='stylesheet' href="assets/plugins/dropzone/dropzone.min.css">
+<script src='assets/plugins/dropzone/dropzone.min.js'></script>
 
 <!-- Control Sidebar -->
 <aside class="control-sidebar first-sidebar control-sidebar-light" style="overflow:hidden auto;">
@@ -349,10 +351,18 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="form-group" style="margin-bottom:0.8rem;">
-                                                                        <label class="col-form-label combo" for="codBarras">
-                                                                            <i class="fa-solid fa-clipboard-question"></i> Motivo</label>
+                                                                    <div class="form-group" >
+                                                                        <label class="col-form-label combo" for="inpMotivo">
+                                                                            <i class="fas fa-clipboard-question"></i> Motivo</label>
                                                                         <input style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas">
+                                                                    </div>
+                                                                    <div class="form-group" style="margin-bottom:0.8rem;">
+                                                                        <label class="col-form-label combo mb-2" for="inp">
+                                                                            <i class="fa-solid fa-images"></i> Evidencia fotográfica</label>
+                                                                        <div class="dropzone">
+
+                                                                        </div>
+
                                                                     </div>
                                                                 </div>
                                                                 </div>
@@ -582,6 +592,46 @@
 
     $(modal_fab).on("shown.bs.modal", () => {
         nombre_fab.focus();
+    });
+
+    // if (Dropzone.forElement("div.dropzone")) {
+    //     Dropzone.forElement("div.dropzone").destroy();
+    // }
+    Dropzone.autoDiscover = false;
+
+    // Inicializar Dropzone manualmente
+    var dropzone = new Dropzone(".dropzone", {
+        url: "/ruta/para/subir/archivo", // Esta URL será usada manualmente cuando lo decidas
+        autoProcessQueue: false,
+        previewsContainer: null,
+        acceptedFiles: ".jpg,.png,.jpeg", // Tipos de archivos permitidos
+        addRemoveLinks: true,
+        dictDefaultMessage: "Arrastra tus imagenes aquí o haz clic para subir",
+        init: function() {
+            const dzInstance = this;
+            // Evento para manejar errores
+            dzInstance.on("error", function(file, errorMessage) {
+                console.error("Error al subir el archivo:", errorMessage);
+            });
+
+            // Evento para éxito
+            dzInstance.on("success", function(file, response) {
+                console.log("Archivo subido exitosamente:", response);
+            });
+
+            // dzInstance.on("addedfile", function(file) {
+            //     // Crear un botón para eliminar el archivo
+            //     const removeButton = Dropzone.createElement("<button class='remove-file'>Eliminar</button>");
+
+            //     // Agregar evento de clic para eliminar el archivo
+            //     removeButton.addEventListener("click", function() {
+            //         dzInstance.removeFile(file); // Elimina el archivo de la cola
+            //     });
+
+            //     // Agregar el botón de eliminación al archivo
+            //     file.previewElement.appendChild(removeButton);
+            // });
+        },
     });
 
 

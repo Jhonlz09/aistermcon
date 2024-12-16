@@ -31,11 +31,6 @@
 
     <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
     <script src='assets/js/main.js'></script>
-
-    <!-- <link href="assets/plugins/autoComplete/autocomplete.min.css" rel="stylesheet" type="text/css">
-    <script src="assets/plugins/autoComplete/autocomplete.min.js"></script> -->
-
-
     <!-- jQuery -->
     <script src='assets/plugins/jquery/jquery.min.js'></script>
     <!-- jquery UI -->

@@ -340,7 +340,7 @@ class ModeloRegistro
         $stm->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
         $stm->execute();
 
-        $_SESSION["sc_cot"] = $conexion->lastInsertId('secuencia_cotizacion');
+        $_SESSION["sc_cot"] = $conexion->lastInsertId('secuencia_cotizacion') + 1;
         
         return $conexion->lastInsertId('tblcotizacion_id_seq');
     }
@@ -362,7 +362,7 @@ class ModeloRegistro
         $stm->bindParam(':total', $total, PDO::PARAM_INT);
         $stm->execute();
 
-        $_SESSION["sc_cot"] = $conexion->lastInsertId('secuencia_cotizacion');
+        $_SESSION["sc_cot"] = $conexion->lastInsertId('secuencia_cotizacion') + 1;
 
         return $conexion->lastInsertId('tblcotizacion_id_seq');
     }

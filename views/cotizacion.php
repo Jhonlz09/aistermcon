@@ -1039,7 +1039,7 @@
             ivaOriginal = iva; // subtotal = parseFloat((subtotal || '0').toString().replace(/[$,]/g, '')) || 0;
             subtotalOriginal = parseFloat((row[11] || '0').toString().replace(/[$,]/g, '')) || 0;
             // subtotalOriginal = ;
-            descuento = row[15] || '';
+            descuento = parseFloat((row[11] || '0').toString().replace(/[$,]/g, '')) || '';
             subtotal = row[11] || '$0.00';
             impuestos = row[12];
             total = row[14] || '$0.00';
@@ -1303,17 +1303,10 @@
                 tel = tel_prove.value.trim(),
                 dir = dir_prove.value.trim().toUpperCase(),
                 cor = cor_prove.value.trim();
-            if (tel === '') {
-                tel_prove.disabled = true;
-            }
 
-            if (cor === '') {
-                cor_prove.disabled = true;
-            }
-
-            if (ruc === '') {
-                ruc_prove.disabled = true;
-            }
+            tel_prove.disabled = tel === '';
+            ruc_prove.disabled = ruc_ === ''
+            cor_prove.disabled = cor === '';
 
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');

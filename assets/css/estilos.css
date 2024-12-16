@@ -774,6 +774,11 @@ input:focus-visible {
     bottom: 0;
 }
 
+#btnlogout:active{
+    background-color: #721c24;
+    color: #fff;
+}
+
 tr.fila-anulada + tr.child {
     background-color: #f8d7da; /* Fondo rojo claro */
     color: #721c24; /* Texto rojo oscuro */
