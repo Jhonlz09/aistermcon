@@ -32,6 +32,37 @@ class ControladorSalidas
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
+    // public function obtenerImgBoleta()
+    // {
+    //     $data = ModeloSalidas::mdlObtenerImgBoleta($this->id);
+    //     echo $data; 
+    // }
+
+    public function obtenerImgBoleta()
+    {
+        $data = ModeloSalidas::mdlObtenerImgBoleta($this->id);
+
+        if (empty($data)) {
+            // Si no hay imágenes, retorna un arreglo vacío
+            echo json_encode([
+                'imagenes' => [],
+            ]);
+            return;
+        }
+
+        // Si hay imágenes, retornarlas en el JSON
+        echo json_encode([
+            'imagenes' => $data,
+        ]);
+    }
+
+
+    public function eliminarImgBoleta()
+    {
+        $data = ModeloSalidas::mdlEliminarImgBoleta($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
     public function detalleBoleta()
     {
         $data = ModeloSalidas::mdlDetalleBoleta($this->id);
@@ -76,13 +107,21 @@ if (!isset($_POST["accion"])) {
         $data->id = $_POST["orden"];
         $data->fecha = $_POST["fecha"];
         $data->buscarOrdenFecha();
-        }else if ($_POST["accion"] == 6){
-            $data = new ControladorSalidas();
-            $data->id = $_POST["id"];
-            $data->buscarBoletaPDF();
+    } else if ($_POST["accion"] == 6) {
+        $data = new ControladorSalidas();
+        $data->id = $_POST["id"];
+        $data->buscarBoletaPDF();
     } else if ($_POST["accion"] == 7) {
         $data = new ControladorSalidas();
         $data->id = $_POST["boleta"];
         $data->detalleBoleta();
+    } else if ($_POST["accion"] == 8) {
+        $data = new ControladorSalidas();
+        $data->id = $_POST["boleta"];
+        $data->obtenerImgBoleta();
+    } else if ($_POST["accion"] == 9) {
+        $data = new ControladorSalidas();
+        $data->id = $_POST["nombre_imagen"];
+        $data->eliminarImgBoleta();
     }
 }

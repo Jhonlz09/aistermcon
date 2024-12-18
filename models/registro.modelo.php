@@ -51,7 +51,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlRegistrarSalida($arr, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo)
+    static public function mdlRegistrarSalida($arr, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -84,11 +84,14 @@ class ModeloRegistro
             // Insertar salidas
             self::insertarSalidas($conexion, $id_boleta, $arr);
 
+            // Manejar las imágenes
+            self::guardarImagenesSalida($conexion, $id_boleta, $img);
+
             $conexion->commit();
 
             return array(
                 'status' => 'success',
-                'm' => 'La guía fue registrada correctamente'
+                'm' => 'La guía fue registrada correctamente con imágenes incluidas.'
             );
         } catch (PDOException $e) {
             $conexion->rollBack();
@@ -102,6 +105,42 @@ class ModeloRegistro
                 'status' => 'danger',
                 'm' => '' . $e->getMessage()
             );
+        }
+    }
+
+
+    static private function guardarImagenesSalida($conexion, $id_boleta, $imagenes)
+    {
+        // Directorio para almacenar las imágenes
+        $uploadDir = __DIR__ . "/../../guia_img/";
+
+        // Asegurar que $nro_guia tenga un valor válido
+        // $nro_guia = !empty($id_boleta) ? $id_boleta : '0000';
+
+        foreach ($imagenes["name"] as $index => $name) {
+            $tmpName = $imagenes["tmp_name"][$index];
+            // Obtener la extensión del archivo
+            $extension = pathinfo($name, PATHINFO_EXTENSION);
+
+            // Crear un nombre único para el archivo
+            $uniqueName = $id_boleta . "_" . uniqid() . "." . $extension;
+
+            // Ruta completa del archivo destino
+            $targetFile = $uploadDir . $uniqueName;
+
+            // Mover el archivo al directorio de destino
+            if (move_uploaded_file($tmpName, $targetFile)) {
+                // Guardar la información en la base de datos
+                $stmt = $conexion->prepare("
+                    INSERT INTO tblimg_salida (id_boleta, nombre_imagen) 
+                    VALUES (:id_boleta, :ruta_imagen)
+                ");
+                $stmt->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+                $stmt->bindParam(':ruta_imagen', $uniqueName, PDO::PARAM_STR);
+                $stmt->execute();
+            } else {
+                throw new Exception("Error al mover la imagen: $name");
+            }
         }
     }
 
@@ -224,16 +263,12 @@ class ModeloRegistro
         try {
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
-
             // Insertar orden si es necesario
             $id_orden = self::insertarOrden($conexion, $orden, $cliente, $responsable, $fecha);
-            // var_dump($id_orden);
             // Insertar boleta
             $id_boleta = self::insertarBoletaEntrada($conexion, $id_orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado);
-
             // Insertar salidas
             self::insertarEntradas($conexion, $id_boleta, $arr);
-
             $conexion->commit();
 
             return array(
@@ -341,7 +376,7 @@ class ModeloRegistro
         $stm->execute();
 
         $_SESSION["sc_cot"] = $conexion->lastInsertId('secuencia_cotizacion') + 1;
-        
+
         return $conexion->lastInsertId('tblcotizacion_id_seq');
     }
 
@@ -459,7 +494,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlEditarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo)
+    static public function mdlEditarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -482,7 +517,11 @@ class ModeloRegistro
             } else {
                 $stmtB->bindParam(':responsable', $responsable, PDO::PARAM_INT);
             }
-            $stmtB->execute();
+            if($stmtB->execute()){
+                if (!empty($img)) {
+                self::guardarImagenesSalida($conexion, $id_boleta, $img);
+                }
+            };
 
             return array(
                 'status' => 'success',

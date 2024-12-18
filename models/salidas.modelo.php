@@ -107,26 +107,66 @@ class ModeloSalidas
         }
     }
 
+    // public static function mdlEliminarSalida($id)
+    // {
+    //     try {
+    //         $pdo = Conexion::ConexionDB();
+
+    //         // Preparar la consulta para eliminar de tblboleta (esto eliminará también las entradas relacionadas en tblsalidas)
+    //         $e = $pdo->prepare("DELETE FROM tblboleta WHERE id = :id");
+    //         $e->bindParam(":id", $id, PDO::PARAM_INT);
+    //         $e->execute();
+    //         return array(
+    //             'status' => 'success',
+    //             'm' => 'Se eliminó la guía de remision correctamente.'
+    //         );
+    //     } catch (PDOException $e) {
+    //         return array(
+    //             'status' => 'danger',
+    //             'm' => 'No se pudo eliminar la guia: ' . $e->getMessage()
+    //         );
+    //     }
+    // }
+
     public static function mdlEliminarSalida($id)
     {
         try {
             $pdo = Conexion::ConexionDB();
 
-            // Preparar la consulta para eliminar de tblboleta (esto eliminará también las entradas relacionadas en tblsalidas)
+            // 1. Consultar los nombres de las imágenes asociadas a la boleta
+            $e = $pdo->prepare("SELECT nombre_imagen FROM tblimg_salida WHERE id_boleta = :id");
+            $e->bindParam(":id", $id, PDO::PARAM_INT);
+            $e->execute();
+            $imagenes = $e->fetchAll(PDO::FETCH_ASSOC);
+
+            // 2. Eliminar las imágenes físicas del servidor
+            $Dir = __DIR__ . "/../../guia_img/"; // Directorio donde están las imágenes
+            foreach ($imagenes as $imagen) {
+                // Suponiendo que 'nombre_imagen' contiene el nombre completo del archivo
+                $nombreImagen = $imagen['nombre_imagen'];
+                if (file_exists($Dir . $nombreImagen)) {
+                    unlink($Dir . $nombreImagen); // Elimina el archivo físico
+                }
+            }
+
+            // 3. Eliminar las entradas de la base de datos
             $e = $pdo->prepare("DELETE FROM tblboleta WHERE id = :id");
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->execute();
+
             return array(
                 'status' => 'success',
-                'm' => 'Se eliminó la guía de remision correctamente.'
+                'm' => 'Se eliminó la boleta y las imágenes asociadas correctamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo eliminar la guia: ' . $e->getMessage()
+                'm' => 'No se pudo eliminar la boleta: ' . $e->getMessage()
             );
         }
     }
+
+
 
     static public function mdlBuscarBoletaPDF($id_boleta)
     {
@@ -151,6 +191,68 @@ class ModeloSalidas
             $l->execute();
 
             return $l->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+
+    // static public function mdlObtenerImgBoleta($id_boleta)
+    // {
+    //     try {
+    //         $l = Conexion::ConexionDB()->prepare("SELECT nombre_imagen
+    //         FROM tblimg_salida 
+    //         WHERE id_boleta = :id");
+
+    //         $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
+    //         $l->execute();
+    //         $imagenes = $l->fetchAll(PDO::FETCH_ASSOC);
+
+    //         if ($imagenes) {
+    //             return json_encode(['imagenes' => $imagenes]);
+    //         } else {
+    //             return json_encode(['imagenes' => []]); // Retorna un arreglo vacío si no hay imágenes
+    //         }
+    //     } catch (PDOException $e) {
+    //         return "Error en la consulta: " . $e->getMessage();
+    //     }
+    // }
+
+    static public function mdlObtenerImgBoleta($id_boleta)
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT nombre_imagen
+            FROM tblimg_salida 
+            WHERE id_boleta = :id");
+
+            $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
+            $l->execute();
+            $imagenes = $l->fetchAll(PDO::FETCH_ASSOC);
+
+            return $imagenes ?: []; // Retorna un arreglo vacío si no hay resultados
+        } catch (PDOException $e) {
+            // Retornar un mensaje de error descriptivo
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+
+
+    static public function mdlEliminarImgBoleta($ruta)
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("DELETE FROM tblimg_salida
+            WHERE nombre_imagen = :id");
+
+            $l->bindParam(":id", $ruta, PDO::PARAM_INT);
+            if ($l->execute()) {
+                $uploadDir = __DIR__ . "/../../guia_img/"; // Directorio donde están las imágenes
+                $filePath = $uploadDir . $ruta;
+
+                if (file_exists($filePath)) {
+                    unlink($filePath); // Eliminar archivo
+                }
+            };
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
         }

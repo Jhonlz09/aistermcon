@@ -351,7 +351,7 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="form-group" >
+                                                                    <div class="form-group">
                                                                         <label class="col-form-label combo" for="inpMotivo">
                                                                             <i class="fas fa-clipboard-question"></i> Motivo</label>
                                                                         <input style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas">
@@ -584,7 +584,7 @@
         elements_fab = document.querySelectorAll('#modal-new-fab .bg-gradient-green');
 
     const select_fab = formFabNew.querySelectorAll('.modal-body select.select2');
-
+    const drop_element = document.querySelector(".dropzone");
 
     let id_e = 0;
     let accion_fab = 0;
@@ -600,15 +600,57 @@
     Dropzone.autoDiscover = false;
 
     // Inicializar Dropzone manualmente
+    // var dropzone = new Dropzone(".dropzone", {
+    //     url: "/ruta/para/subir/archivo", // Esta URL será usada manualmente cuando lo decidas
+    //     autoProcessQueue: false,
+    //     previewsContainer: null,
+    //     acceptedFiles: ".jpg,.png,.jpeg,.webp", // Tipos de archivos permitidos
+    //     addRemoveLinks: true,
+    //     dictDefaultMessage: "Arrastra tus imagenes aquí o haz clic para subir",
+    //     init: function() {
+    //         const dzInstance = this;
+    //         // Evento para manejar errores
+    //         dzInstance.on("error", function(file, errorMessage) {
+    //             console.error("Error al subir el archivo:", errorMessage);
+    //         });
+
+    //         // Evento para éxito
+    //         dzInstance.on("success", function(file, response) {
+    //             console.log("Archivo subido exitosamente:", response);
+    //         });
+
+    //         dzInstance.on("removedfile", function(file) {
+    //             // Verificar si la imagen existe en el servidor antes de eliminarla
+    //             if (file.isExisting) {
+    //                 $.ajax({
+    //                     url: 'controllers/salidas.controlador.php', // Ruta de tu controlador
+    //                     type: 'POST',
+    //                     data: {
+    //                         accion: 9,
+    //                         nombre_imagen: file.name // Verificar por nombre de la imagen
+    //                     },
+    //                     success: function(response) {
+
+    //                     }
+    //                 });
+    //             } else {
+    //                 console.log("Imagen no existente en el servidor, eliminada solo en el cliente.");
+    //             }
+    //         });
+    //     },
+    // });
+
     var dropzone = new Dropzone(".dropzone", {
-        url: "/ruta/para/subir/archivo", // Esta URL será usada manualmente cuando lo decidas
+        url: "/ruta/para/subir/archivo",
         autoProcessQueue: false,
         previewsContainer: null,
-        acceptedFiles: ".jpg,.png,.jpeg", // Tipos de archivos permitidos
+        acceptedFiles: ".jpg,.png,.jpeg,.webp", // Tipos de archivos permitidos
         addRemoveLinks: true,
         dictDefaultMessage: "Arrastra tus imagenes aquí o haz clic para subir",
         init: function() {
             const dzInstance = this;
+            let removeAllFilesCalled = false; // Bandera para saber si se llamó a removeAllFiles
+
             // Evento para manejar errores
             dzInstance.on("error", function(file, errorMessage) {
                 console.error("Error al subir el archivo:", errorMessage);
@@ -619,20 +661,49 @@
                 console.log("Archivo subido exitosamente:", response);
             });
 
-            // dzInstance.on("addedfile", function(file) {
-            //     // Crear un botón para eliminar el archivo
-            //     const removeButton = Dropzone.createElement("<button class='remove-file'>Eliminar</button>");
+            dzInstance.on("removedfile", function(file) {
+                // Verificar si se llamó a removeAllFiles, en ese caso no hacer nada en el servidor
+                if (removeAllFilesCalled) {
+                    // console.log("Archivo eliminado solo del contenedor, no del servidor.");
+                    return; // No realizar ninguna acción con el servidor
+                }
 
-            //     // Agregar evento de clic para eliminar el archivo
-            //     removeButton.addEventListener("click", function() {
-            //         dzInstance.removeFile(file); // Elimina el archivo de la cola
-            //     });
+                // Si el archivo es existente en el servidor, eliminarlo del servidor
+                if (file.isExisting) {
+                    $.ajax({
+                        url: 'controllers/salidas.controlador.php', // Ruta de tu controlador
+                        type: 'POST',
+                        data: {
+                            accion: 9,
+                            nombre_imagen: file.name // Nombre de la imagen a eliminar
+                        },
+                        success: function(response) {
+                            // console.log("Imagen eliminada del servidor:", response);
+                        }
+                    });
+                } else {
+                    console.log("Imagen no existente en el servidor, eliminada solo del cliente.");
+                }
+            });
 
-            //     // Agregar el botón de eliminación al archivo
-            //     file.previewElement.appendChild(removeButton);
-            // });
-        },
+            // Función para limpiar los archivos del contenedor sin afectar al servidor
+            dzInstance.removeAllFilesWithoutServer = function() {
+                removeAllFilesCalled = true; // Indicamos que se ha llamado a removeAllFiles
+                dzInstance.removeAllFiles(true); // Limpiar archivos del contenedor
+                removeAllFilesCalled = false; // Resetear la bandera después de la limpieza
+            };
+        }
     });
+
+    // Para limpiar los archivos del contenedor sin eliminarlos del servidor
+
+
+    dropzone.on("sending", function(file, xhr, formData) {
+        if (file.isExisting) {
+            xhr.abort(); // Cancelar el envío de imágenes precargadas
+        }
+    });
+
 
 
     let tblFabCon = $('#tblFabCon').DataTable({

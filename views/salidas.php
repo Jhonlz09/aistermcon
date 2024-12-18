@@ -110,53 +110,57 @@
         "pageLength": 100,
         "ordering": false,
         "autoWidth": false,
-        "paging": true, // Esto deshabilita la paginación
-        // "scroller": {
-        //     rowHeight: 5, // Ajusta el alto dinámico de las filas
-        //     displayBuffer: 20 // Aumenta el buffer de filas visibles para incluir filas colapsadas
+        "paging": true,
+        // searchPanes: {
+        //     cascadePanes: true,
+        //     columns: [2, 8, 9],
+        //     initCollapsed: true,
+        //     threshold: 0.8, // Ajusta este valor según tus necesidades
+        //     dtOpts: {
+        //         select: {
+        //             style: 'multiple'
+        //         }
+        //     },
         // },
-        // "scrollColapse": true,
-        // "scrollY": alturaDisponible,
-        searchPanes: {
-            cascadePanes: true,
-            columns: [2, 8, 9],
-            initCollapsed: true,
-            threshold: 0.8, // Ajusta este valor según tus necesidades
-            dtOpts: {
-                select: {
-                    style: 'multiple'
-                }
-            },
-        },
 
         rowGroup: {
             dataSrc: [4],
+            // startRender: function(rows, group) {
+            //     var collapsed = !!collapsedGroups[group];
+
+            //     rows.nodes().each(function(r) {
+            //         $(r).toggleClass('collapsedrow', !collapsed);
+
+            //     });
+
+            //     var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer" ><strong class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_guia.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_boleta" class="input_boleta" value=""><button type="submit" class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' +
+            //         (editar ? '<button id="editS" class="btn btn-row pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button>' : '') +
+            //         (crear ? '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') +
+            //         (eliminar ? '<button id="eliS" class="btn btn-row pt-0 pb-0"><i class="fas fa-trash-can" ></i></button>' : '') + '</div></div>';
+
+            //     return $('<tr/>')
+            //         .append('<td colspan="8"> ' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
+            //         .attr('data-name', group)
+            //         .toggleClass('collapsed', collapsed);
+            // }
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
 
                 rows.nodes().each(function(r) {
                     $(r).toggleClass('collapsedrow', !collapsed);
-                    // $(r).find('td').each(function() {
-                    //     this.toggleClass('collapsedtd', !collapsed);
-                    // });
                 });
-                // rows.nodes().each(function(r) {
-                //     r.style.visibility = collapsed ? '' : 'hidden';
-                //     r.style.lineHeight = collapsed ? '1.5' : '0';
-                //     $(r).find('td').each(function() {
-                //         this.style.paddingBlock = collapsed ? '' : '0';
-                //         this.style.borderTop = collapsed ? '' : '0';
-                //         this.style.borderBottom = collapsed ? '' : '0';
-                //     });
-                // });
 
-                var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer" ><strong class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_guia.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_boleta" class="input_boleta" value=""><button type="submit" class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' +
+                var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer">' +
+                    '<strong class="pl-2">' + group + ' (' + rows.count() + ')</strong>' +
+                    '<div class="txt-wrap-sm">' +
+                    '<button class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button>' +
+                    '<button class="btn btn-row pt-0 pb-0 btn_pdf_img"><i class="fas fa-file-image"></i></button>' +
                     (editar ? '<button id="editS" class="btn btn-row pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button>' : '') +
                     (crear ? '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') +
-                    (eliminar ? '<button id="eliS" class="btn btn-row pt-0 pb-0"><i class="fas fa-trash-can" ></i></button>' : '') + '</div></div>';
-
+                    (eliminar ? '<button id="eliS" class="btn btn-row pt-0 pb-0"><i class="fas fa-trash-can"></i></button>' : '') +
+                    '</div></div>';
                 return $('<tr/>')
-                    .append('<td colspan="8"> ' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
+                    .append('<td colspan="8">' + groupText + '</td>') // Ajustar el colspan según el número de columnas
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -230,10 +234,7 @@
 
     $('#tblSalidas tbody').on('click', 'tr.dtrg-start', function() {
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
-            // event.preventDefault();
-            // event.stopImmediatePropagation();
-            // var windowScrollTop = $(window).scrollTop();
-            // var tableScrollTop = $('#tblSalidas_wrapper').scrollTop();
+
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
             // tabla.draw(false);
@@ -330,18 +331,114 @@
             tabla.ajax.reload();
         });
 
+        // $('#tblSalidas').on('submit', '.btn_pdf', function(event) {
+        //     event.preventDefault(); // Evita el envío predeterminado del formulario
+        //     // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
+        //     var boleta = tabla.row($(this).closest('tr').next()).data()[10];
+        //     // var input_pdf = $(this).find('.input_boleta');
+        //     // input_pdf.val(boleta);
+        //     $(this).find('.input_boleta').val(boleta);
 
-        $('#tblSalidas').on('submit', '.form_pdf', function(event) {
-            event.preventDefault(); // Evita el envío predeterminado del formulario
-            // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
-            var boleta = tabla.row($(this).closest('tr').next()).data()[10];
-            // console.log(id_boleta)
-            var input_pdf = $(this).find('.input_boleta');
-            input_pdf.val(boleta);
-            // console.log(boleta)
+        //     // console.log(boleta)
 
-            this.submit(); // Envía el formulario actual
+        //     this.submit(); // Envía el formulario actual
+        // });
+
+
+        // $('#tblSalidas').on('click', '.btn_pdf', function(event) {
+        //     event.preventDefault(); // Evita la acción predeterminada
+        //     // Obtener la fila correspondiente
+        //     var rowData = tabla.row($(this).closest('tr').next()).data();
+        //     var boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+        //     // console.log(boleta)
+        //     // Crear el formulario dinámicamente
+        //     var form = document.createElement('form');
+        //     form.action = 'PDF/pdf_guia.php';
+        //     form.method = 'POST';
+        //     form.autocomplete = 'off';
+        //     form.target = '_blank';
+        //     // Crear el input oculto para la boleta
+        //     var inputBoleta = document.createElement('input');
+        //     inputBoleta.type = 'hidden';
+        //     inputBoleta.name = 'id_boleta';
+        //     inputBoleta.value = boleta;
+        //     inputBoleta.classList.add('input_boleta');
+        //     // Añadir el input al formulario
+        //     form.appendChild(inputBoleta);
+
+        //     // Añadir el formulario al DOM (se añade al body)
+        //     document.body.appendChild(form);
+        //     // Enviar el formulario
+        //     form.submit();
+        //     // Eliminar el formulario del DOM después de enviarlo
+        //     document.body.removeChild(form);
+        // });
+
+        // $('#tblSalidas').on('click', '.btn_pdf_img', function(event) {
+        //     event.preventDefault(); // Evita la acción predeterminada
+        //     var rowData = tabla.row($(this).closest('tr').next()).data();
+        //     var boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+        //     // console.log(boleta)
+        //     // Crear el formulario dinámicamente
+        //     var form = document.createElement('form');
+        //     form.action = 'PDF/pdf_guia_img.php';
+        //     form.method = 'POST';
+        //     form.autocomplete = 'off';
+        //     form.target = '_blank';
+        //     // Crear el input oculto para la boleta
+        //     var inputBoleta = document.createElement('input');
+        //     inputBoleta.type = 'hidden';
+        //     inputBoleta.name = 'id_boleta';
+        //     inputBoleta.value = boleta;
+        //     inputBoleta.classList.add('input_boleta');
+        //     // Añadir el input al formulario
+        //     form.appendChild(inputBoleta);
+
+        //     // Añadir el formulario al DOM (se añade al body)
+        //     document.body.appendChild(form);
+        //     // Enviar el formulario
+        //     form.submit();
+        //     // Eliminar el formulario del DOM después de enviarlo
+        //     document.body.removeChild(form);
+        // });
+        $('#tblSalidas').on('click', '.btn_pdf', function(event) {
+            event.preventDefault(); // Evita la acción predeterminada
+            let rowData = tabla.row($(this).closest('tr').next()).data();
+            let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+            enviarFormularioPDF('PDF/pdf_guia.php', boleta);
         });
+
+        $('#tblSalidas').on('click', '.btn_pdf_img', function(event) {
+            event.preventDefault(); // Evita la acción predeterminada
+            let rowData = tabla.row($(this).closest('tr').next()).data();
+            let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+            enviarFormularioPDF('PDF/pdf_guia_img.php', boleta);
+        });
+
+        function enviarFormularioPDF(action, boleta) {
+            // Crear el formulario dinámicamente
+            var form = document.createElement('form');
+            form.action = action;
+            form.method = 'POST';
+            form.autocomplete = 'off';
+            form.target = '_blank';
+
+            // Crear el input oculto para la boleta
+            var inputBoleta = document.createElement('input');
+            inputBoleta.type = 'hidden';
+            inputBoleta.name = 'id_boleta';
+            inputBoleta.value = boleta;
+
+            // Añadir el input al formulario
+            form.appendChild(inputBoleta);
+
+            // Añadir el formulario al DOM (se añade al body)
+            document.body.appendChild(form);
+            // Enviar el formulario
+            form.submit();
+            // Eliminar el formulario del DOM después de enviarlo
+            document.body.removeChild(form);
+        }
 
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
@@ -349,6 +446,10 @@
                 const salida = document.getElementById('radio-2');
                 first_control.click();
                 salida.click();
+                dropzone.removeAllFilesWithoutServer();
+                dropzone.enable();
+                drop_element.classList.remove("dropzone-disabled");
+
             });
         }
 
@@ -382,11 +483,49 @@
             cancelar.style.display = 'block'
             tblDetalleSalida.ajax.reload(null, false);
             // salida_radio.value = '2';
+
+            cargarImagenesDropzone(id_boleta);
+            dropzone.enable();
+            if (eliminar) {
+                drop_element.classList.remove("dropzone-disabled");
+            } else {
+                drop_element.classList.add("dropzone-disabled");
+            }
         });
+
+        function cargarImagenesDropzone(id_boleta) {
+            $.ajax({
+                url: 'controllers/salidas.controlador.php', // Ajusta esta URL a tu controlador PHP
+                type: 'POST',
+                "dataSrc": '',
+                data: {
+                    'boleta': id_boleta,
+                    'accion': 8
+                },
+                success: function(response) {
+                    dropzone.removeAllFilesWithoutServer();
+                    // Limpia los archivos existentes
+                    response = JSON.parse(response);
+                    response.imagenes.forEach(imagen => {
+                        const mockFile = {
+                            name: imagen.nombre_imagen || "Imagen", // Puedes asignar un nombre genérico si no guardas el nombre original
+                            size: 123456, // Valor genérico; Dropzone no valida este campo para imágenes precargadas
+                            ruta: imagen.nombre_imagen, // Ruta de la imagen en el servidor
+                            isExisting: true
+                        };
+
+                        // Añade la imagen simulando que ya está cargada
+                        dropzone.emit('addedfile', mockFile);
+                        dropzone.emit('thumbnail', mockFile, '/guia_img/' + imagen.nombre_imagen);
+                        dropzone.emit('complete', mockFile);
+                        dropzone.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
+                    });
+                },
+            });
+        }
 
         $('#tblSalidas').on('click', '#editR', function() {
             row = tabla.row($(this).closest('tr').next()).data()
-            // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
             id_boleta = row[10];
             console.log(row)
             // console.log(id_boleta)
@@ -400,8 +539,6 @@
                 retorno = document.getElementById('radio-3');
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
 
-            // setChange(cboOrdenActivas, orden_id)
-            // setChange(cboClientesActivos, cliente)
             setChange(cboClienteEntrada, id_cliente)
             cboClienteEntrada.disabled = true;
             setChange(cboConductor, conductor)
@@ -423,6 +560,10 @@
             retorno.dispatchEvent(new Event('change'));
             first_control.click();
             tblReturn.ajax.reload(null, false);
+            cargarImagenesDropzone(id_boleta)
+            // dropzone.disable();
+            document.querySelector(".dropzone").classList.add("dropzone-disabled");
+
         });
 
         $('#tblSalidas').on('click', '#eliS', function() {

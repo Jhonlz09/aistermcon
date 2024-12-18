@@ -11,12 +11,50 @@ class ajaxRegistro
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function registrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo)
+    public function registrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
     {
 
-        $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo);
+        $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    // public function registrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes)
+    // {
+    //     // Guardar la salida en la base de datos
+    //     $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo);
+
+    //     if ($data["status"] === "success") {
+    //         $idSalida = $data["id_salida"]; // Supongamos que esta función retorna el ID de la salida creada
+
+    //         // Directorio de almacenamiento para imágenes
+    //         $uploadDir = __DIR__ . "/uploads/salidas/";
+    //         if (!is_dir($uploadDir)) {
+    //             mkdir($uploadDir, 0777, true);
+    //         }
+
+    //         // Guardar cada imagen
+    //         if (!empty($imagenes["name"][0])) {
+    //             foreach ($imagenes["name"] as $index => $name) {
+    //                 $tmpName = $imagenes["tmp_name"][$index];
+    //                 $uniqueName = uniqid() . "_" . basename($name);
+    //                 $targetFile = $uploadDir . $uniqueName;
+
+    //                 if (move_uploaded_file($tmpName, $targetFile)) {
+    //                     // Guardar la relación en la base de datos
+    //                     ModeloRegistro::mdlGuardarImagenSalida($idSalida, $uniqueName);
+    //                 } else {
+    //                     echo json_encode([
+    //                         "status" => "error",
+    //                         "m" => "Error al subir la imagen $name"
+    //                     ]);
+    //                     return;
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    // }
 
     public function registrarEntrada($datos, $orden, $cliente, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado)
     {
@@ -25,9 +63,14 @@ class ajaxRegistro
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function editarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo)
+    public function editarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes)
     {
-        $data = ModeloRegistro::mdlEditarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo);
+
+        if ($imagenes === null) {
+            $imagenes = []; // Define un array vacío si no se enviaron imágenes
+        }
+
+        $data = ModeloRegistro::mdlEditarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -73,11 +116,12 @@ if (isset($_POST["accion"])) {
     if ($accion == 1) {
         $registro->registrarCompra($_POST["arr"], $_POST["nro_factura"], $_POST["proveedor"], $_POST["fecha"]);
     } else if ($accion == 2) {
-        $registro->registrarSalida($_POST["arr"], $_POST["orden"], $_POST["cliente"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"]);
+        $registro->registrarSalida($_POST["arr"], $_POST["orden"], $_POST["cliente"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"], $_FILES["imagenes"]);
     } else if ($accion == 3) {
         $registro->registrarRetorno($_POST["arr"], $_POST["boleta"], $_POST["fecha_retorno"], $_POST["nro_guia"]);
     } else if ($accion == 4) {
-        $registro->editarRegistroSalida($_POST["id_boleta"], $_POST["orden"], $_POST["cliente"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"]);
+        $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : null;
+        $registro->editarRegistroSalida($_POST["id_boleta"], $_POST["orden"], $_POST["cliente"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"],  $imagenes);
     } else if ($accion == 5) {
         $registro->editarRegistroCompra($_POST["id_factura"], $_POST["nro_factura"], $_POST["proveedor"], $_POST["fecha"]);
     } else if ($accion == 6) {
@@ -88,7 +132,7 @@ if (isset($_POST["accion"])) {
         $registro->registrarEntrada($_POST["arr"], $_POST["orden"], $_POST["cliente"], $_POST["fecha"], $_POST["fecha_retorno"], $_POST["motivo"], $_POST["conductor"], $_POST["responsable"], $_POST["despachado"]);
     } else if ($accion == 9) {
         $registro->registrarSolicitudCotizacion($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"]);
-    }else if ($accion == 10) {
-        $registro->registrarOrdenCompra($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"], $_POST["subtotal"],$_POST["iva"],$_POST["impuesto"],$_POST["total"],$_POST["descuento"]);
+    } else if ($accion == 10) {
+        $registro->registrarOrdenCompra($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"], $_POST["subtotal"], $_POST["iva"], $_POST["impuesto"], $_POST["total"], $_POST["descuento"]);
     }
 }

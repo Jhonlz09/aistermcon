@@ -774,7 +774,7 @@ input:focus-visible {
     bottom: 0;
 }
 
-#btnlogout:active{
+#btnlogout:hover{
     background-color: #721c24;
     color: #fff;
 }

@@ -87,7 +87,7 @@
 
         let estado_filter = 'null';
         let datos_cliente = [];
-        let datos_uni= [];
+        let datos_uni = [];
         let datos_orden = [];
         let datos_prove = [];
         let datos_anio = [];
@@ -188,7 +188,7 @@
                 3: 'money-check-dollar',
                 4: 'award'
             };
-            
+
             const estadoText = {
                 0: 'EN ESPERA',
                 1: 'EN OPERACIÓN',
@@ -850,10 +850,10 @@
                     placeholder: 'SELECCIONE',
                 });
 
-                cargarCombo('Proveedores', '', 1, true).then(datos_ =>{
+                cargarCombo('Proveedores', '', 1, true).then(datos_ => {
                     datos_prove = datos_;
                 });
-                cargarCombo('Unidad', '', 1, true).then(datos_ =>{
+                cargarCombo('Unidad', '', 1, true).then(datos_ => {
                     datos_uni = datos_;
                 });
                 cargarCombo('Clientes', '', 1, true).then(datos_ => {
@@ -1318,7 +1318,17 @@
                         formData.append('motivo', motivo.value);
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 2);
-                        realizarRegistro(tblOut, formData, clases);
+
+                        dropzone.getAcceptedFiles().forEach((file, index) => {
+                            if (!file.isExisting) {
+                                formData.append(`imagenes[${index}]`, file, file.name);
+                            }
+                        });
+                        realizarRegistro(tblOut, formData, clases, 1, 'productos', function(r) {
+                            if (r) {
+                                dropzone.removeAllFiles(false);
+                            }
+                        });
                     } else if (selectedTab === '3') {
                         let elementosAValidar = [fecha_retorno, nro_ordenEntrada, cboClienteEntrada];
                         let isValid = true;
@@ -1343,7 +1353,11 @@
                         formData.append('fecha', fecha.value);
 
                         formData.append('accion', 8);
-                        realizarRegistro(tblIn, formData, clases);
+                        realizarRegistro(tblIn, formData, clases, 1, 'productos', function(r) {
+                            if (r) {
+                                dropzone.removeAllFiles(false);
+                            }
+                        });
                     } else if (selectedTab === '4') {
                         let elementosAValidar = [fecha, nro_orden, cboClientes, nro_guia, cboDespachado, cboResponsable, cboConductor];
                         let isValid = true;
@@ -1367,6 +1381,11 @@
                         formData.append('fecha', fecha.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('accion', 4);
+                        dropzone.getAcceptedFiles().forEach((file, index) => {
+                            if (!file.isExisting) {
+                                formData.append(`imagenes[${index}]`, file, file.name);
+                            }
+                        });
                         $.ajax({
                             url: "controllers/registro.controlador.php",
                             method: "POST",
