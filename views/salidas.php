@@ -561,7 +561,7 @@
             first_control.click();
             tblReturn.ajax.reload(null, false);
             cargarImagenesDropzone(id_boleta)
-            // dropzone.disable();
+            dropzone.disable();
             document.querySelector(".dropzone").classList.add("dropzone-disabled");
 
         });
