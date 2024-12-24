@@ -1,16 +1,16 @@
 <?php require_once "../utils/database/config.php"; ?>
 
 <head>
-    <title>Empleados/Clientes</title>
+    <title>Ingreso personal</title>
 </head>
 <!-- Contenido Header -->
 <section class="content-header">
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
-                <h1 class="col-p">Empleados / Clientes</h1>
+                <h1 class="col-p">Horario personal</h1>
             </div>
-            <?php if (isset($_SESSION["crear13"]) && $_SESSION["crear13"] === true) : ?>
+            <?php if (isset($_SESSION["crear20"]) && $_SESSION["crear20"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -143,10 +143,10 @@
                                             </div>
                                             <div class="span-btn cat" style="padding-right:.5rem;">
                                                 <span class="new-span badge bg-gradient-dark" data-icon="fa-buildings" data-title='Nueva' data-value="Empresa" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                                <?php if ($_SESSION["editar13"]) : ?>
+                                                <?php if ($_SESSION["editar20"]) : ?>
                                                     <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-buildings" data-value="Empresa" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
                                                 <?php endif; ?>
-                                                <?php if ($_SESSION["eliminar13"]) : ?>
+                                                <?php if ($_SESSION["eliminar20"]) : ?>
                                                     <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Empresa" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
                                                 <?php endif; ?>
 
@@ -167,7 +167,7 @@
                                                 <div class="invalid-feedback">*Campo obligatorio</div>
                                             </div>
                                             <div class="span-btn r" style="padding-right:.5rem;">
-                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-id-badge" data-title='Nuevo' data-value="Rol" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
+                                            <span class="new-span badge bg-gradient-dark" data-icon="fa-id-badge" data-title='Nuevo' data-value="Rol" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
                                                 <span style="display:none" class="dis e-span badge bg-gradient-dark" data-target='#modalS' data-icon="fa-id-badge" data-value="Rol" data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
                                             </div>
 
@@ -237,9 +237,9 @@
 </div>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar13"] || $_SESSION["eliminar13"] ?>';
-    var editar = '<?php echo $_SESSION["editar13"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar13"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
+    var editar = '<?php echo $_SESSION["editar20"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar20"] ?>';
 
     configuracionTable = {
         "responsive": true,
@@ -304,7 +304,7 @@
                     "type": "POST",
                     "dataSrc": '',
                     data: function(data) {
-                        data.accion = 0;
+                        data.accion = accion;
                         data.id_empresa = empresa_filter;
                     }
                 },
@@ -448,15 +448,6 @@
             }
         });
 
-        // conductor.addEventListener('change', function() {
-        //     if (this.checked) {
-        //         div_placa.style.display = 'block'
-        //     } else {
-        //         div_placa.style.display = 'none'
-        //     }
-        // });
-
-
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
@@ -476,19 +467,10 @@
         }
 
         $(cboEmpresaFilter).on("change", function() {
-            // if (this.value === '') {
-            //     cboPlaca.disabled = false;
-            //     cboPlaca.required = true;
-            //     console.log("entre al evenot rol")
-            // } else {
-            //     cboPlaca.disabled = true;
-            //     $(cboPlaca).val([]).trigger('change');
-            // }
-            // estilosSelect2(this, 'lblR')
             empresa_filter = this.value;
             console.log(empresa_filter);
-            // accion = 0;
-            tabla.ajax.reload();
+            accion = 0;
+            tabla.ajax.reload(null, false);
         });
 
         $(cboEmpresa).change(function() {
@@ -512,7 +494,7 @@
             let src = new FormData();
             src.append('accion', accion);
             src.append('id', id_e);
-            // accion = 0;
+            accion = 0;
             confirmarEliminar('este', 'empleado', function(r) {
                 if (r) {
                     confirmarAccion(src, 'empleados', tabla, '', function(r) {
@@ -542,7 +524,6 @@
             setChange(cboRol, row["id_rol"])
             let arr = convertirArray(row["id_placa"])
             $(cboPlaca).val(arr).trigger('change');
-            $('.ten').hide();
         });
 
         form.addEventListener("submit", function(e) {
@@ -556,12 +537,7 @@
                 rol = cboRol.value,
                 pla = $(cboPlaca).val();
 
-            // if (rol === '2') {
-            //     cboPlaca.required = true
-            // } else {
-            //     cboPlaca.required = false
-            // }
-
+                
             if (!this.checkValidity() || ced.length < 10 || tel.length < 10) {
                 this.classList.add('was-validated');
                 if (ced.length > 0 && ced.length < 10) {
@@ -583,18 +559,13 @@
             datos.append('id_rol', rol);
             datos.append('id_placa', pla);
             datos.append('accion', accion);
-
+            accion = 0;
             empresa_filter = cboEmpresaFilter.value;
-            // accion = 0;
             confirmarAccion(datos, 'empleados', tabla, modal, function(r) {
-                if (r) {
-                    
-                    cargarCombo('Conductor', '', 2);
-                    cargarCombo('Despachado', '', 6);
-                    cargarCombo('Responsable', '', 7);
-                }
-
-            })
+                cargarCombo('Conductor', '', 2);
+                cargarCombo('Despachado', '', 6);
+                cargarCombo('Responsable', '', 7);
+            });
         });
     })
 </script>

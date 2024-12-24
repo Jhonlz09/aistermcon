@@ -576,7 +576,6 @@
             fileInput.value = '';
 
             setChange(cboClienteOrden, row["id_cliente"]);
-            // nombre.disabled = false;
             form.classList.remove('was-validated');
         });
 
@@ -668,9 +667,7 @@
                 cli_name = cboClienteOrden.selectedIndex > 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '',
                 fecha_act = fecha_new.value;
 
-
             id_e = id.value;
-
             let datos = new FormData();
             datos.append('id', id_e);
             datos.append('nombre', nom);

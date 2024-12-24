@@ -563,7 +563,6 @@
             cargarImagenesDropzone(id_boleta)
             dropzone.disable();
             document.querySelector(".dropzone").classList.add("dropzone-disabled");
-
         });
 
         $('#tblSalidas').on('click', '#eliS', function() {

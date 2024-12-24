@@ -199,7 +199,7 @@
 
         const colors = ['#003049', '#0a9396', '#94d2bd', '#ffb703', '#f77100', '#BE0E25', '#D46C8B', '#E6E1DC',
             '#A8A3BD', '#335490', '#463F64', '#64A8D1', '#7ED321', '#F7CAC9', '#9B1B30', '#A7C5EB',
-            '#F6AE2D', '#D9E1E2', '#4CB5F5', '#FFC0CB', '#EEDC82', '#7FFF00', '#8A2BE2', '#F08080',
+            '#F6AE2D', '#D9E1E2', '#3a91c7', '#d69ca6', '#EEDC82', '#7FFF00', '#8A2BE2', '#F08080',
             '#00CED1', '#FFA07A', '#6495ED', '#8B008B', '#20B2AA', '#FFD700', '#DC143C', '#00FF00',
             '#BA55D3', '#FA8072', '#6A5ACD'
         ]
@@ -319,7 +319,7 @@
                 barChartData = {
                     labels: clientes,
                     datasets: [{
-                        label: 's',
+                        label: 'Movimientos',
                         backgroundColor: coloresConTransparencia,
                         borderColor: colors, // Color del borde
                         borderWidth: 1, // Ancho del borde
@@ -328,7 +328,7 @@
                 }
                 let ms = 6
                 let maximo = Math.max(...salidas) + 1;
-                console.log(maximo)
+                // console.log(maximo)
                 barChartOptions = {
                     maintainAspectRatio: false,
                     responsive: true,
@@ -344,7 +344,7 @@
                             display: false
                         },
                         tooltip: {
-                            enabled: false
+                            enabled: true
                         }
                     },
                     scales: {

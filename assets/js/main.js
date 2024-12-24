@@ -124,11 +124,7 @@ function cargarCombo(id, s, a = 1, isDataCbo = false) {
 
 function cargarComboFabricado(s = 0) {
   const cbo1 = document.getElementById("cboFabricado");
-  // const cbo2 = document.getElementById("cboFabricadoCon");
-
   $(cbo1).empty();
-  // $(cbo2).empty();
-  // let tabla = "tbl" + id.toLowerCase();
   $.ajax({
     url: "controllers/combo.controlador.php",
     method: "POST",

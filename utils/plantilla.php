@@ -641,7 +641,7 @@
             });
 
             $('#tblDetalleSalida').on('draw.dt', function() {
-                console.log("ID BOLETA EN EL DRA ES: " + id_boleta)
+                // console.log("ID BOLETA EN EL DRA ES: " + id_boleta)
                 if (id_boleta != 0) {
                     $('#tblDetalleSalida').Tabledit({
                         url: 'controllers/Tabledit/acciones_salidas.php',
