@@ -85,7 +85,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
+            <form id="formNuevo" autocomplete="off" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div class="modal-body scroll-modal" style="padding-block:1rem .5rem">
                     <input type="hidden" id="id" value="">
                     <div class="row">
@@ -151,12 +151,23 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo cédula</label>
-                                    <input type="file" name="fileOrden" id="fileCedula" class="form-control" accept=".pdf">
-                                    <div class="ten no-margin">*Debe selecionar un archivo .pdf</div>
+                                    <label id="lblR" class="combo" style="font-size:1.15rem"><i class="fas fa-id-badge"></i> Rol</label>
+                                    <div class="row">
+                                        <div class="col">
+                                            <select id="cboRol" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE" required>
+                                            </select>
+                                            <div class="invalid-feedback">*Campo obligatorio</div>
+                                        </div>
+                                        <div class="span-btn r" style="padding-right:.5rem;">
+                                            <span class="new-span badge bg-gradient-dark" data-icon="fa-id-badge" data-title='Nuevo' data-value="Rol" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
+                                            <span style="display:none" class="dis e-span badge bg-gradient-dark" data-target='#modalS' data-icon="fa-id-badge" data-value="Rol" data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    
+                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Pdf cédula</label>
+                                    <input type="file" name="fileCedula" id="fileCedula" class="form-control" accept=".pdf">
+                                    <div class="ten no-margin">*Debe selecionar un archivo .pdf</div>
                                 </div>
                             </div>
                         </div>
@@ -236,13 +247,24 @@
                 className: "text-center",
             },
             {
+                targets: 7,
+                className: "text-center",
+                render: function(data, type, full, meta) {
+                    return "<span class='alert alert-default-primary'>" + data + "</span>";
+                }
+            },
+            {
                 targets: 8,
                 responsivePriority: 2,
                 data: null,
                 visible: mostrarCol,
                 render: function(data, type, row, full, meta) {
+
+                    // let ruta = true;
+                    let ruta = row.ruta;
                     return (
                         "<center style='white-space: nowrap;'>" +
+
                         (editar ?
                             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
@@ -251,6 +273,13 @@
                             " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
+                        (ruta !== '' ?
+                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=cedula_personal" + "'target='_blank' style='font-size:1.56rem;padding:3px 8px' class='btn btnDescargar' title='PDF Cédula'>" +
+                            " <i class='fas fa-file-user'></i>" +
+                            "</a>" :
+                            " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +
+                            " <i class='fas fa-file-slash'></i>" +
+                            "</span>") +
                         " </center>"
                     );
                 },
@@ -284,7 +313,7 @@
                 localStorage.setItem('personal', JSON.stringify(tablaData));
             });
         }
-        
+
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
             elements = document.querySelectorAll('.modal .bg-gradient-green'),
@@ -298,8 +327,8 @@
             iconElement = document.querySelector('#span-title i'),
             inputContent = document.getElementById('nombreS'),
             inputId = document.getElementById('idS'),
-            btnNuevo = document.getElementById('btnNuevo');
-
+            btnNuevo = document.getElementById('btnNuevo'),
+            inputFile = document.getElementById('fileCedula');
 
         const id = document.getElementById('id'),
             cedula = document.getElementById('cedula'),
@@ -307,8 +336,15 @@
             apellido = document.getElementById('apellido'),
             fecha_ini = document.getElementById('fecha_ini'),
             fecha_cor = document.getElementById('fecha_cor'),
-            sueldo = document.getElementById('sueldo');
-        // cboRol = document.getElementById('cboRol'),
+            sueldo = document.getElementById('sueldo'),
+            cboRol = document.getElementById('cboRol');
+
+
+        cargarCombo('Rol');
+
+        $('#cboRol').select2({
+            minimumResultsForSearch: -1,
+        })
 
         OverlayScrollbars(document.querySelector('.scroll-modal'), {
             autoUpdate: true,
@@ -345,6 +381,7 @@
                 });
                 form.reset();
                 form.classList.remove('was-validated');
+                setChange(cboRol, 0);
                 $('.ten').hide();
             });
         }
@@ -380,6 +417,7 @@
             nombre.value = row["nombre"];
             cedula.value = row["cedula"];
             apellido.value = row["apellido"];
+            setChange(cboRol, row["id_rol"])
             fecha_ini.value = convertirFecha(row["fecha_ini"]);
             fecha_cor.value = convertirFecha(row["fecha_cor"]);
             sueldo.value = parseFloat(row["sueldo"].replace(/[$,]/g, ''));
@@ -389,6 +427,21 @@
         form.addEventListener("submit", function(e) {
             e.preventDefault();
             $('.ten').hide();
+
+            const file = inputFile.files[0];
+
+            // Validar que el archivo es .pdf
+            if (file && file.type !== "application/pdf") {
+                mostrarToast(
+                    'warning',
+                    'Advertencia',
+                    'fa-triangle-exclamation',
+                    'El archivo insertado no es valido, por favor inserta un archivo .pdf', 3000
+                )
+                return;
+            } else if (file && file.type == "application/pdf") {
+                datos.append('fileCedula', file);
+            }
             const ced = cedula.value.trim(),
                 nom = nombre.value.trim().toUpperCase(),
                 ape = apellido.value.trim().toUpperCase(),
@@ -412,12 +465,9 @@
             datos.append('fecha_ini', f_i);
             datos.append('fecha_cor', f_c);
             datos.append('sueldo', sue);
-            // datos.append('id_placa', pla);
             datos.append('accion', accion);
-            // empresa_filter = cboEmpresaFilter.value;
             confirmarAccion(datos, 'personal', tabla, modal, function(r) {})
         });
-
 
         function convertirFecha(fecha) {
             let [day, month, year] = fecha.split('/');

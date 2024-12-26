@@ -3,7 +3,7 @@ require_once "../models/personal.modelo.php";
 
 class ControladorPersonal
 {
-    public $id, $cedula, $nombre, $apellido, $fecha_ini, $fecha_cor, $sueldo;
+    public $id, $cedula, $nombre, $apellido, $fecha_ini, $fecha_cor, $sueldo, $ruta;
 
     public function listarPersonal()
     {
@@ -13,7 +13,25 @@ class ControladorPersonal
 
     public function agregarPersonal()
     {
-        $data = ModeloPersonal::mdlAgregarPersonal($this->cedula, $this->nombre, $this->apellido, $this->fecha_ini, $this->fecha_cor, $this->sueldo);
+
+        if (isset($_FILES['filePdf']) && $_FILES['filePdf']['type'] === 'application/pdf') {
+            $uploadDir = '/var/www/cedula_personal/';
+            $fullNameFinal = $this->nombre .' '. $this->apellido.'.pdf';
+            $savePath = $uploadDir . $fullNameFinal;
+
+            if (move_uploaded_file($_FILES['filePdf']['tmp_name'], $savePath)) {
+                // Archivo subido exitosamente
+            } else {
+                $error = error_get_last();
+                $errorMessage = 'Error al subir el archivo.';
+                if ($error !== null) {
+                    $errorMessage .= ' Detalles: ' . $error['message'] . ' en ' . $error['file'] . ' línea ' . $error['line'];
+                }
+                echo json_encode(['status' => 'danger', 'm' => $errorMessage]);
+                return;
+            }
+        }
+        $data = ModeloPersonal::mdlAgregarPersonal($this->cedula, $this->nombre, $this->apellido, $this->fecha_ini, $this->fecha_cor, $this->sueldo, $this->ruta);
         // $this->notifyWebSocket($data);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }

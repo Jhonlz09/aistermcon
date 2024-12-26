@@ -40,16 +40,7 @@ if (file_exists($file_path)) {
 
     // Modificar los metadatos
     $pdf->SetTitle(iconv('UTF-8', 'windows-1252', $file));
-    // Enviar encabezados apropiados para mostrar el PDF
-    // header('Content-Type: application/pdf');
-    // header('Content-Disposition: inline; filename="' . htmlspecialchars($file) . '"');
-    // header('Content-Transfer-Encoding: binary');
-    // header('Content-Length: ' . filesize($file_path));
 
-    // // Limpiar el búfer de salida
-    // flush();
-
-    // Enviar el PDF al navegador
     $pdf->Output('I', htmlspecialchars($file), true);
     exit;
 } else {

@@ -326,7 +326,6 @@
         }
 
         $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-buildings"></i> Empresa:</label></div> <div class="col-sm"><select id="cboEmpresaFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"></select> </div>  </div>');
-        // $('.select-filter').html('<div class="row"><div class="col-sm-2"><label>Empresa: </label></div><div class="col-sm-10"><select id="cboEmpresaFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE"></select></div></div>');
 
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
@@ -476,15 +475,6 @@
         }
 
         $(cboEmpresaFilter).on("change", function() {
-            // if (this.value === '') {
-            //     cboPlaca.disabled = false;
-            //     cboPlaca.required = true;
-            //     console.log("entre al evenot rol")
-            // } else {
-            //     cboPlaca.disabled = true;
-            //     $(cboPlaca).val([]).trigger('change');
-            // }
-            // estilosSelect2(this, 'lblR')
             empresa_filter = this.value;
             console.log(empresa_filter);
             // accion = 0;

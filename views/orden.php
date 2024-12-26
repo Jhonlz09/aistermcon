@@ -630,7 +630,7 @@
                     'Advertencia',
                     'fa-triangle-exclamation',
                     'El archivo insertado no es valido, por favor inserta un archivo .pdf', 3000
-                )
+                )  
                 return;
             } else if (file && file.type == "application/pdf") {
                 datos.append('fileOrden', file);

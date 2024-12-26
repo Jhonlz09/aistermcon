@@ -7,8 +7,10 @@ class ModeloCotizacion
     static public function mdlListarCotizacion($anio)
     {
         try {
-            $consulta = "SELECT c.id, c.num_co, p.nombre, c.motivo, TO_CHAR(c.fecha, 'DD/MM/YYYY') AS fecha, c.estado_solicitud, c.estado_orden, c.ruta_pdf, '' as acciones, 
-            c.id_proveedor, c.id, c.subtotal, c.impuesto, c.iva, c.total, c.otros, c.estado_anu, c.comprador
+            $consulta = "SELECT c.id, c.num_co, p.nombre, c.motivo, TO_CHAR(c.fecha, 'DD/MM/YYYY') AS fecha,
+            c.estado_solicitud, c.estado_orden, c.ruta_pdf, '' as acciones, 
+            c.id_proveedor, c.subtotal, c.impuesto, c.iva, c.total, c.otros, c.estado_anu, 
+            c.comprador
                 FROM tblcotizacion c
                 JOIN tblproveedores p ON p.id = c.id_proveedor 
                 WHERE EXTRACT(YEAR FROM c.fecha) = :anio ORDER BY c.num_co DESC";
@@ -52,29 +54,6 @@ class ModeloCotizacion
             $a->execute();
 
             return $a->fetchAll();
-        } catch (PDOException $e) {
-            return array(
-                'status' => 'danger',
-                'm' => 'No se pudo agregar el proveedor: ' . $e->getMessage()
-            );
-        }
-    }
-
-    static public function mdlAgregarCotizacion($nombre, $dir, $correo, $tel)
-    {
-        try {
-            $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblproveedores(nombre,direccion,correo,telefono) VALUES (:nombre,:dir, :correo, :tel)");
-            $a->bindParam(":nombre", $nombre, PDO::PARAM_STR);
-            $a->bindParam(":dir", $dir, PDO::PARAM_STR);
-            $a->bindParam(":correo", $correo, PDO::PARAM_STR);
-            $a->bindParam(":tel", $tel, PDO::PARAM_STR);
-            $a->execute();
-
-            return array(
-                'status' => 'success',
-                'm' => 'La solic se agregó correctamente'
-            );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
@@ -200,7 +179,7 @@ class ModeloCotizacion
     // }
 
 
-    // static public function mdlActualizarFilasCotizacion($filas, $id_cotizacion, $subtotal, $total, $iva, $impuestos, $isPrecio = false)
+    // static public function mdlActualizarFilasCotizacion($filas, $id_cotizacion, $subtotal, $total, $iva, $impuestos, $isIva = false)
     // {
     //     try {
     //         $conexion = Conexion::ConexionDB();
@@ -257,7 +236,7 @@ class ModeloCotizacion
     //         // $conexion->commit();
 
     //         // Calcular y actualizar subtotal, impuestos, iva y total
-    //         if ($isPrecio) {
+    //         if ($isIva) {
     //             $consultaCalculo = "UPDATE tblcotizacion SET 
     //                 subtotal = :subtotal,
     //                 impuesto = :impuestos, -- IVA al 16%
@@ -291,11 +270,99 @@ class ModeloCotizacion
     //     }
     // }
 
-    static public function mdlActualizarFilasCotizacion($filas, $id_cotizacion, $subtotal, $total, $iva, $impuestos, $isPrecio = false)
+
+
+    // static public function mdlActualizarCotizacion($params)
+    // {
+    //     try {
+    //         $conexion = Conexion::ConexionDB();
+    //         $conexion->beginTransaction();
+    //         // Actualizar las filas si es necesario
+    //         if ($isFilas) {
+    //             $resultado = self::mdlActualizarFilasCotizacion($conexion, $filas, $id_cotizacion);
+    //             if ($resultado['status'] !== 'success') {
+    //                 throw new Exception($resultado['m']);
+    //             }
+    //         }
+    //         // Calcular y actualizar subtotal, impuestos, IVA y total si es necesario
+    //         if ($isIva) {
+    //             $resultado = self::mdlActualizarTotalesCotizacion($conexion, $id_cotizacion, $subtotal, $total, $iva, $impuestos);
+    //             if ($resultado['status'] !== 'success') {
+    //                 throw new Exception($resultado['m']);
+    //             }
+    //         }
+    //         if ($cambiosInput) {
+    //             $resultado = self::mdlActualizarCamposInput($conexion, $id_cotizacion, $comprador, $fecha, $id_prove, $descuento);
+    //             if ($resultado['status'] !== 'success') {
+    //                 throw new Exception($resultado['m']);
+    //             }
+    //         }
+    //         $conexion->commit();
+    //         return array(
+    //             'status' => 'success',
+    //             'm' => 'La solicitud de compra se editó correctamente.'
+    //         );
+    //     } catch (Exception $e) {
+    //         $conexion->rollBack();
+    //         return array(
+    //             'status' => 'danger',
+    //             'm' => 'No se pudo editar la solicitud de compra: ' . $e->getMessage()
+    //         );
+    //     }
+    // }
+
+
+
+    static public function mdlActualizarCotizacion($params)
+{
+    try {
+        $conexion = Conexion::ConexionDB();
+        $conexion->beginTransaction();
+
+        // Actualizar las filas si es necesario
+        if ($params['isFilas']) {
+            $resultado = self::mdlActualizarFilasCotizacion($conexion, $params['filas'], $params['id']);
+            if ($resultado['status'] !== 'success') {
+                throw new Exception($resultado['m']);
+            }
+        }
+
+        // Calcular y actualizar subtotal, impuestos, IVA y total si es necesario
+        if ($params['isIva']) {
+            $resultado = self::mdlActualizarTotalesCotizacion($conexion, $params['id'], $params['subtotal'], $params['total'], $params['iva'], $params['impuestos']);
+            if ($resultado['status'] !== 'success') {
+                throw new Exception($resultado['m']);
+            }
+        }
+
+        if ($params['isInputs']) {
+            $resultado = self::mdlActualizarCamposInput($conexion, $params['id'], $params['comprador'], $params['fecha'], $params['id_prove'], $params['desc']);
+            if ($resultado['status'] !== 'success') {
+                throw new Exception($resultado['m']);
+            }
+        }
+
+        $conexion->commit();
+        return array(
+            'status' => 'success',
+            'm' => 'La solicitud de compra se editó correctamente.'
+        );
+    } catch (Exception $e) {
+        $conexion->rollBack();
+        return array(
+            'status' => 'danger',
+            'm' => 'No se pudo editar la solicitud de compra: ' . $e->getMessage()
+        );
+    }
+}
+
+
+    static public function mdlActualizarFilasCotizacion($conexion,$filas, $id_cotizacion)
     {
         try {
-            $conexion = Conexion::ConexionDB();
-            $conexion->beginTransaction();
+            if ($conexion === null) {
+                $conexion = Conexion::ConexionDB();
+            }
             $filas = json_decode($filas, true); // Decodifica JSON a un array asociativo
             $consulta = "UPDATE tbldetalle_cotizacion
             SET cantidad = :cantidad,
@@ -313,10 +380,8 @@ class ModeloCotizacion
                 $a->bindParam(":precio_final", $fila['precio_final'], PDO::PARAM_STR);
                 $a->execute();
             }
-
-            // Actualizar el campo 'motivo' de la cotización específica
-            $consultaMotivo = "UPDATE tblcotizacion
-        SET motivo = CONCAT(
+                $consultaMotivo = "UPDATE tblcotizacion
+                SET motivo = CONCAT(
             (
                 SELECT STRING_AGG(descripcion, ', ' ORDER BY id)
                 FROM (
@@ -333,36 +398,56 @@ class ModeloCotizacion
                 ELSE ''
             END
         )
-        WHERE id = :id_cotizacion;";
+            WHERE id = :id_cotizacion;";
 
             $aMotivo = $conexion->prepare($consultaMotivo);
             $aMotivo->bindParam(":id_cotizacion", $id_cotizacion, PDO::PARAM_INT);
             $aMotivo->execute();
 
-            // Calcular y actualizar subtotal, impuestos, IVA y total si es necesario
-            if ($isPrecio) {
-                $resultado = self::mdlActualizarTotalesCotizacion($conexion, $id_cotizacion, $subtotal, $total, $iva, $impuestos);
-                if ($resultado['status'] !== 'success') {
-                    throw new Exception($resultado['m']);
-                }
-            }
-
-            $conexion->commit();
-
             return array(
                 'status' => 'success',
-                'm' => 'La solicitud de compra se editó correctamente.'
+                'm' => 'Valores actualizados correctamente.'
             );
-        } catch (Exception $e) {
-            $conexion->rollBack();
+        } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo editar la solicitud de compra: ' . $e->getMessage()
+                'm' => 'No se pudieron actualizar los valores: ' . $e->getMessage()
             );
         }
     }
 
 
+    static public function mdlActualizarCamposInput($conexion, $id_cotizacion,  $comprador, $fecha, $id_prove, $descuento)
+    {
+        try {
+            if ($conexion === null) {
+                $conexion = Conexion::ConexionDB();
+            }
+            $consulta = "UPDATE tblcotizacion SET 
+            id_proveedor = :id_proveedor,
+            comprador = :comprador,
+            fecha =:fecha,
+            otros = :descuento
+        WHERE id = :id_cotizacion";
+            $aC = $conexion->prepare($consulta);
+            $aC->bindParam(":id_cotizacion", $id_cotizacion, PDO::PARAM_INT);
+            $aC->bindParam(":id_proveedor", $id_prove, PDO::PARAM_INT);
+            $aC->bindParam(":comprador", $comprador, PDO::PARAM_STR);
+            $aC->bindParam(":fecha", $fecha, PDO::PARAM_STR);
+            $aC->bindParam(":descuento", $descuento, PDO::PARAM_STR);
+            $aC->execute();
+
+            return array(
+                'status' => 'success',
+                'm' => 'Valores actualizados correctamente.'
+            );
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudieron actualizar los valores: ' . $e->getMessage()
+            );
+        }
+    }
 
 
     static public function mdlActualizarTotalesCotizacion($conexion, $id_cotizacion, $subtotal, $total, $iva, $impuestos)

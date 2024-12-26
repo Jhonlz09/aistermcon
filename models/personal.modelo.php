@@ -9,14 +9,13 @@ class ModeloPersonal
         try {
             $consulta = "SELECT e.id,e.cedula,e.nombre,e.apellido,TO_CHAR(p.fecha_ini, 'DD/MM/YYYY') AS fecha_ini,
                         TO_CHAR(p.fecha_cor, 'DD/MM/YYYY') AS fecha_cor,
-                        p.sueldo,r.nombre as rol, e.id_rol
+                        p.sueldo,r.nombre as rol, e.id_rol, p.ruta
                         FROM tblempleado e
                         JOIN tblrol r ON e.id_rol = r.id
                         LEFT JOIN tblpersonal p ON e.id = p.id_empleado
                         WHERE e.estado = true AND
-	                    e.id_empresa =1
+	                        e.id_empresa =1
                         ORDER BY e.id;";
-
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->execute();
             return $l->fetchAll();

@@ -3,7 +3,7 @@ require_once "../models/cotizacion.modelo.php";
 
 class ControladorCotizacion
 {
-    public $id, $num_co, $anio, $pdf, $filas, $subtotal, $total, $impuestos, $iva, $desc, $isPrecio;
+    public $id, $num_co, $anio, $pdf, $filas, $params, $subtotal, $total, $impuestos, $iva, $desc, $isIva, $isInputs, $isFilas, $comprador, $fecha, $id_prove;
 
     public function listarCotizacion()
     {
@@ -19,20 +19,13 @@ class ControladorCotizacion
 
     public function subirPDF()
     {
-
         if (isset($_FILES['filePdf']) && $_FILES['filePdf']['type'] === 'application/pdf') {
             $year = date("Y");
             $uploadDir = '/var/www/presupuesto_proveedor/';
-            $fileName = basename($_FILES['filePdf']['name']);
-            $filePath = $uploadDir . $year . '/' . $fileName;
+            // $fileName = basename($_FILES['filePdf']['name']);
+            // $filePath = $uploadDir . $year . '/' . $fileName;
 
-            // $pathInfo = pathinfo($filePath);
-            // $baseName = $pathInfo['filename'];
-            // $extension = $pathInfo['extension'];
-            // $directory = $pathInfo['dirname'];
 
-            // echo json_encode(['status' => 'error', 'm' => $directory], JSON_UNESCAPED_UNICODE);
-            //     return;
             $fullNameFinal = $this->id . '.pdf';
             // Generar un nombre único si el archivo ya existe
             // $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
@@ -68,9 +61,16 @@ class ControladorCotizacion
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function actualizarFilasCotizacion()
+    // public function actualizarCotizacion()
+    // {
+    //     $data = ModeloCotizacion::mdlActualizarFilasCotizacion($this->filas, $this->id, $this->subtotal, $this->total, $this->iva, $this->impuestos, $this->isIva, $this->isInputs, $this->isFilas, $this->comprador, $this->fecha, $this->id_prove, $this->desc);
+    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    // }
+
+    public function actualizarCotizacion($params)
     {
-        $data = ModeloCotizacion::mdlActualizarFilasCotizacion($this->filas, $this->id, $this->subtotal, $this->total, $this->iva, $this->impuestos, $this->isPrecio);
+       
+        $data = ModeloCotizacion::mdlActualizarCotizacion($params);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -126,15 +126,22 @@ if (!isset($_POST["accion"])) {
         $data->id = $_POST["id_pdf"];
         $data->subirPDF();
     } else if ($_POST["accion"] == 6) {
-        $data->filas = $_POST["filas"];
-        $data->id = $_POST["id_cotizacion"];
-        $data->subtotal = $_POST["subtotal"];
-        $data->total = $_POST["total"];
-        $data->iva = $_POST["iva"];
-        $data->impuestos = $_POST["impuesto"];
-        $data->desc = $_POST["descuento"];
-        $data->isPrecio = $_POST["isPrecio"];
-        $data->actualizarFilasCotizacion();
+        $params = [
+            'filas' => isset($_POST["filas"]) ? $_POST["filas"] : null,
+            'id' => isset($_POST["id_cotizacion"]) ? $_POST["id_cotizacion"] : null,
+            'subtotal' => isset($_POST["subtotal"]) ? $_POST["subtotal"] : null,
+            'total' => isset($_POST["total"]) ? $_POST["total"] : null,
+            'iva' => isset($_POST["iva"]) ? $_POST["iva"] : null,
+            'impuestos' => isset($_POST["impuesto"]) ? $_POST["impuesto"] : null,
+            'desc' => isset($_POST["descuento"]) ? $_POST["descuento"] : null,
+            'comprador' => isset($_POST["comprador"]) ? $_POST["comprador"] : null,
+            'fecha' => isset($_POST["fecha"]) ? $_POST["fecha"] : null,
+            'id_prove' => isset($_POST["id_prove"]) ? $_POST["id_prove"] : null,
+            'isIva' => isset($_POST["isIva"]) ? $_POST["isIva"] : null,
+            'isInputs' => isset($_POST["isInputs"]) ? $_POST["isInputs"] : null,
+            'isFilas' => isset($_POST["isFilas"]) ? $_POST["isFilas"] : null
+        ];
+        $data->actualizarCotizacion($params);
     } else if ($_POST["accion"] == 7) {
         $data->id = $_POST["id"];
         $data->eliminarFilasIds();
