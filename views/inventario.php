@@ -110,17 +110,31 @@
                 <div class="modal-body scroll-modal" style="padding-block:1rem .5rem;">
                     <input type="hidden" id="id" value="">
                     <div class="row" style="align-items:flex-start">
-                        <div class="col-md-6">
-                            <div class="input-data">
-                                <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
-                                <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
-                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                            </div>
+                        <div class="col-sm-12">
                             <div class="row">
-                                <div class="col-sm-6">
+                                <div class="col-sm-3">
                                     <div class="input-data">
                                         <input autocomplete="off" id="codigo" name="codigo" class="input-nuevo" type="text" required>
                                         <label class="label"><i class="fa-solid fa-barcode"></i> Código</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
+                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="input-data">
+                                        <input autocomplete="off" id="stock_ini" name="stock_ini" class="input-nuevo" type="text" required>
+                                        <label class="label"><i class="fa-solid fa-barcode"></i> Cantidad Inicial</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
@@ -188,32 +202,41 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group mb-4">
-                                <label id="lblP" class="mb-0 combo"><i class="fa-solid fa-route"></i> Ubicación</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select name="cboUbicacion" id="cboUbicacion" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                        </select>
-                                        <div id="Ubicacion" class="invalid-feedback">*Campo obligatorio</div>
-                                    </div>
-                                    <div class="span-btn p" style="padding-right:.5rem;">
-                                        <span class="new-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal'><i class="fa-solid fa-plus"></i></span>
-                                        <?php if ($_SESSION["editar3"]) : ?>
-                                            <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
-                                        <?php endif; ?>
-                                        <?php if ($_SESSION["eliminar3"]) : ?>
-                                            <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Ubicacion" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
+
+
                         </div>
+
                     </div>
                     <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <!-- <div class="input-data"> -->
-                            <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-image"></i> Imagen</label>
-                            <input type="file" name="fileImg" id="fileImg" class="form-control" accept=".png, .jpg, .jpeg, .webp">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-image"></i> Imagen</label>
+                                    <input type="file" name="fileImg" id="fileImg" class="form-control" accept=".png, .jpg, .jpeg, .webp">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label id="lblP" class="mb-0 combo"><i class="fa-solid fa-route"></i> Ubicación</label>
+                                        <div class="row">
+                                            <div class="col">
+                                                <select name="cboUbicacion" id="cboUbicacion" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                </select>
+                                                <div id="Ubicacion" class="invalid-feedback">*Campo obligatorio</div>
+                                            </div>
+                                            <div class="span-btn p" style="padding-right:.5rem;">
+                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal'><i class="fa-solid fa-plus"></i></span>
+                                                <?php if ($_SESSION["editar3"]) : ?>
+                                                    <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
+                                                <?php endif; ?>
+                                                <?php if ($_SESSION["eliminar3"]) : ?>
+                                                    <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Ubicacion" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                             <!-- </div> -->
                         </div>
                     </div>
@@ -313,7 +336,7 @@
                 }
             },
             {
-                targets:2,
+                targets: 2,
                 responsivePriority: 1,
             },
             {
@@ -481,7 +504,7 @@
             {
                 extend: "colvis",
                 className: "btn btn-light font-weight-bold",
-                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8,9],
+                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             }
         ]
     }

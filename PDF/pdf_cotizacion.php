@@ -416,8 +416,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id']) && isset($_GET['c
 
     $pdf->AddPage();
 
-    
-
     $pdf->SetFont('ArialBlack', '', 17);
     $pdf->SetTextColor(48, 84, 150);
     $pdf->Cell(0, 10, iconv('UTF-8', 'windows-1252', $titulo), 0, 1, 'R');
