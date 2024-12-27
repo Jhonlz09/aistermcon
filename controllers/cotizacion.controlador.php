@@ -80,6 +80,12 @@ class ControladorCotizacion
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
+    public function actualizarInputs()
+    {
+        $data = ModeloCotizacion::mdlActualizarInput(null, $this->id, $this->comprador, $this->fecha, $this->id_prove);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
     public function eliminarCotizacion()
     {
         $data = ModeloCotizacion::mdlEliminarCotizacion($this->id);
@@ -133,10 +139,11 @@ if (!isset($_POST["accion"])) {
             'total' => isset($_POST["total"]) ? $_POST["total"] : null,
             'iva' => isset($_POST["iva"]) ? $_POST["iva"] : null,
             'impuestos' => isset($_POST["impuesto"]) ? $_POST["impuesto"] : null,
-            'desc' => isset($_POST["descuento"]) ? $_POST["descuento"] : null,
+            'desc' => isset($_POST["desc"]) ? $_POST["desc"] : null,
             'comprador' => isset($_POST["comprador"]) ? $_POST["comprador"] : null,
             'fecha' => isset($_POST["fecha"]) ? $_POST["fecha"] : null,
             'id_prove' => isset($_POST["id_prove"]) ? $_POST["id_prove"] : null,
+            'estado_orden' => isset($_POST["estado_orden"]) ? $_POST["estado_orden"] : false,
             'isIva' => isset($_POST["isIva"]) ? $_POST["isIva"] : null,
             'isInputs' => isset($_POST["isInputs"]) ? $_POST["isInputs"] : null,
             'isFilas' => isset($_POST["isFilas"]) ? $_POST["isFilas"] : null
@@ -160,5 +167,11 @@ if (!isset($_POST["accion"])) {
         $data->id = $_POST["id_cotizacion"];
         $data->filas = $_POST["filasCantidad"];
         $data->agregarFilasCotizacion();
+    }else if ($_POST["accion"] == 11) {
+        $data->id = $_POST["id_cotizacion"];
+        $data->fecha = $_POST["fecha"];
+        $data->id_prove = $_POST["id_prove"];
+        $data->comprador = $_POST["comprador"];
+        $data->actualizarInputs();
     }
 }

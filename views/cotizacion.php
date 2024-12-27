@@ -1039,6 +1039,7 @@
             radios.forEach(function(r) {
                 r.checked = false; // Esto desmarca el botón de radio
             });
+            otros.readOnly = false;
             iva = row[12];
             ivaOriginal = iva; // subtotal = parseFloat((subtotal || '0').toString().replace(/[$,]/g, '')) || 0;
            console.log('iva en editar', {iva, ivaOriginal})
@@ -1051,11 +1052,11 @@
             comprador.value = row[16];
             comOriginal = row[16];
             id_cotiz = row[0];
-            const 
-                num_co = row[1],
+            const num_co = row[1],
                 proveedor = row[9],
                 fecha_solicitud = row[4];
-                proveOriginal = proveedor;
+
+            proveOriginal = proveedor;
 
             $('#otros').val(descuento);
             $('#subtotal').text(subtotal);
@@ -1120,6 +1121,11 @@
                 let accion_cot = 9;
                 let formData = new FormData();
 
+                if(subtotal < 0){
+                    mostrarToast('danger', 'Error', 'fa-xmark', 'El subtotal no puede ser menor a 0');
+                    return;
+                }
+
                 if (subtotal !== 0) {
                     console.log('subtotal en solic compra', subtotal)
                     clases.push('precio_final');
@@ -1139,11 +1145,11 @@
                 realizarRegistroCotizacion(tblSolicitud, formData, clases);
 
             } else if (accion == 2) {
+                
                 let cambiosEnInputs = {
                     id_prove: compararValores(proveOriginal, cboProve.value),
                     comprador: compararValores(comOriginal, comprador.value),
                     fecha: compararValores(fechaOriginal, fecha_sol.value),
-                    descuento: compararValores(descOriginal, otros.value)
                 };
 
                 let hayCambiosEnInputs = Object.values(cambiosEnInputs).some(cambio => cambio);
@@ -1151,15 +1157,16 @@
                 // Verificar cambios en las filas de la tabla
                 let filasActualizadas = verificarCambiosEnFilas(tblSolicitud);
                 let cambiosEnFilas = filasActualizadas.length > 0;
-                console.log('Cambios en las filas:', {iva, ivaOriginal});
+                // console.log('Cambios en las filas:', {iva, ivaOriginal});
                 let cambioIva = compararValores(iva, ivaOriginal);
-                console.log('No hay cambios:', {
-                    filasActualizadas,
-                    cambiosEnFilas,
-                    hayCambiosEnInputs, 
-                    cambioIva,
-                });
-                if (!hayCambiosEnInputs && !cambiosEnFilas && !cambioIva) {
+                let cambioDescuento = compararValores(descOriginal, otros.value);
+                // console.log('No hay cambios:', {
+                //     filasActualizadas,
+                //     cambiosEnFilas,
+                //     hayCambiosEnInputs, 
+                //     cambioIva,
+                // });
+                if (!hayCambiosEnInputs && !cambiosEnFilas && !cambioIva && !cambioDescuento) {
                     mostrarToast('info', 'Sin cambios', 'fa-info', 'No hay cambios para guardar.');
                     console.log('cambios:', {
                         filasActualizadas
@@ -1175,7 +1182,6 @@
                     data.append('id_prove', cboProve.value);
                     data.append('comprador', comprador.value);
                     data.append('fecha', fecha_sol.value);
-                    data.append('desc', otros.value);
                 }
 
                 // Agregar cambios en las filas
@@ -1184,18 +1190,27 @@
                         data.append('filas', JSON.stringify(filasActualizadas));
                     }
                 }
-                if (hayCambiosEnInputs || cambiosEnFilas || cambioIva) {
+                if(subtotal< 0){
+                    mostrarToast('danger', 'Error', 'fa-xmark', 'El subtotal no puede ser menor a 0');
+                    return;
+                }else if(subtotal > 0){
+                    data.append('estado_orden', true);
+                }
+
+                if (cambioDescuento || cambiosEnFilas || cambioIva) {
+                    data.append('desc', otros.value);
                     data.append('subtotal', subtotal);
                     data.append('iva', iva);
                     data.append('impuesto', impuestos);
                     data.append('total', total);
                 }
+                console.log('data de cambio de descuento:', cambioDescuento);
 
                 data.append('id_cotizacion', id_cotiz);
                 data.append('isFilas', cambiosEnFilas);
                 data.append('isInputs', hayCambiosEnInputs);
                 data.append('isIva', cambioIva);
-                data.append('accion', 6);
+                data.append('accion', !cambioDescuento && !cambiosEnFilas && !cambioIva ? 11 : 6);
                 confirmarAccion(data, 'cotizacion', tabla, '', function(r) {
                     ocultarFormulario();
                 });

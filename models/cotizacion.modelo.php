@@ -314,50 +314,69 @@ class ModeloCotizacion
 
 
     static public function mdlActualizarCotizacion($params)
-{
-    try {
-        $conexion = Conexion::ConexionDB();
-        $conexion->beginTransaction();
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
 
-        // Actualizar las filas si es necesario
-        if ($params['isFilas']) {
-            $resultado = self::mdlActualizarFilasCotizacion($conexion, $params['filas'], $params['id']);
-            if ($resultado['status'] !== 'success') {
-                throw new Exception($resultado['m']);
+            // Actualizar las filas si es necesario
+            if ($params['isFilas'] == 'true') {
+                $resultado = self::mdlActualizarFilasCotizacion($conexion, $params['filas'], $params['id']);
+                if ($resultado['status'] !== 'success') {
+                    throw new Exception($resultado['m']);
+                }
             }
-        }
 
-        // Calcular y actualizar subtotal, impuestos, IVA y total si es necesario
-        if ($params['isIva']) {
-            $resultado = self::mdlActualizarTotalesCotizacion($conexion, $params['id'], $params['subtotal'], $params['total'], $params['iva'], $params['impuestos']);
-            if ($resultado['status'] !== 'success') {
-                throw new Exception($resultado['m']);
+            // Calcular y actualizar subtotal, impuestos, IVA y total si es necesario
+            // if ($params['isIva']) {
+            //     $resultado = self::mdlActualizarTotalesCotizacion($conexion, $params['id'], $params['subtotal'], $params['total'], $params['iva'], $params['impuestos']);
+            //     if ($resultado['status'] !== 'success') {
+            //         throw new Exception($resultado['m']);
+            //     }
+            // }
+
+
+            $consulta = "UPDATE tblcotizacion SET 
+                            subtotal = :subtotal,
+                            impuesto = :impuestos,
+                            iva = :iva,
+                            total = :total,
+                            otros = :descuento,
+                            estado_orden = :estado_orden
+                        WHERE id = :id_cotizacion";
+            $aC = $conexion->prepare($consulta);
+            $aC->bindParam(":id_cotizacion", $params['id'], PDO::PARAM_INT);
+            $aC->bindParam(":subtotal", $params['subtotal'], PDO::PARAM_STR);
+            $aC->bindParam(":total", $params['total'], PDO::PARAM_STR);
+            $aC->bindParam(":iva", $params['iva'], PDO::PARAM_STR);
+            $aC->bindParam(":impuestos", $params['impuestos'], PDO::PARAM_STR);
+            $aC->bindParam(":descuento", $params['desc'], PDO::PARAM_STR);
+            $aC->bindParam(":estado_orden", $params['estado_orden'], PDO::PARAM_BOOL);
+            $aC->execute();
+
+            if ($params['isInputs'] == 'true') {
+                $resultado = self::mdlActualizarInput($conexion, $params['id'], $params['comprador'], $params['fecha'], $params['id_prove']);
+                if ($resultado['status'] !== 'success') {
+                    throw new Exception($resultado['m']);
+                }
             }
-        }
 
-        if ($params['isInputs']) {
-            $resultado = self::mdlActualizarCamposInput($conexion, $params['id'], $params['comprador'], $params['fecha'], $params['id_prove'], $params['desc']);
-            if ($resultado['status'] !== 'success') {
-                throw new Exception($resultado['m']);
-            }
+            $conexion->commit();
+            return array(
+                'status' => 'success',
+                'm' => 'La solicitud de cotizacion/compra se editó correctamente.'
+            );
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo editar la solicitud de compra: ' . $e->getMessage()
+            );
         }
-
-        $conexion->commit();
-        return array(
-            'status' => 'success',
-            'm' => 'La solicitud de compra se editó correctamente.'
-        );
-    } catch (Exception $e) {
-        $conexion->rollBack();
-        return array(
-            'status' => 'danger',
-            'm' => 'No se pudo editar la solicitud de compra: ' . $e->getMessage()
-        );
     }
-}
 
 
-    static public function mdlActualizarFilasCotizacion($conexion,$filas, $id_cotizacion)
+    static public function mdlActualizarFilasCotizacion($conexion, $filas, $id_cotizacion)
     {
         try {
             if ($conexion === null) {
@@ -380,7 +399,7 @@ class ModeloCotizacion
                 $a->bindParam(":precio_final", $fila['precio_final'], PDO::PARAM_STR);
                 $a->execute();
             }
-                $consultaMotivo = "UPDATE tblcotizacion
+            $consultaMotivo = "UPDATE tblcotizacion
                 SET motivo = CONCAT(
             (
                 SELECT STRING_AGG(descripcion, ', ' ORDER BY id)
@@ -406,18 +425,18 @@ class ModeloCotizacion
 
             return array(
                 'status' => 'success',
-                'm' => 'Valores actualizados correctamente.'
+                'm' => 'La solicitud de cotizacion/compra se editó correctamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudieron actualizar los valores: ' . $e->getMessage()
+                'm' => 'No se pudo actualizar la solicitud de cotizacion/compra: ' . $e->getMessage()
             );
         }
     }
 
 
-    static public function mdlActualizarCamposInput($conexion, $id_cotizacion,  $comprador, $fecha, $id_prove, $descuento)
+    static public function mdlActualizarInput($conexion, $id_cotizacion,  $comprador, $fecha, $id_prove)
     {
         try {
             if ($conexion === null) {
@@ -426,20 +445,18 @@ class ModeloCotizacion
             $consulta = "UPDATE tblcotizacion SET 
             id_proveedor = :id_proveedor,
             comprador = :comprador,
-            fecha =:fecha,
-            otros = :descuento
+            fecha =:fecha
         WHERE id = :id_cotizacion";
             $aC = $conexion->prepare($consulta);
             $aC->bindParam(":id_cotizacion", $id_cotizacion, PDO::PARAM_INT);
             $aC->bindParam(":id_proveedor", $id_prove, PDO::PARAM_INT);
             $aC->bindParam(":comprador", $comprador, PDO::PARAM_STR);
             $aC->bindParam(":fecha", $fecha, PDO::PARAM_STR);
-            $aC->bindParam(":descuento", $descuento, PDO::PARAM_STR);
             $aC->execute();
 
             return array(
                 'status' => 'success',
-                'm' => 'Valores actualizados correctamente.'
+                'm' => 'La solicitud de cotizacion/compra se editó correctamente. '
             );
         } catch (PDOException $e) {
             return array(
