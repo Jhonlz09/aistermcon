@@ -205,6 +205,10 @@ class ModeloRegistro
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
 
+            if ($desc == '') {
+                 $desc = null;
+            }
+
             $motivo = ''; // Inicializar el string motivo
             $contador = 0;
             $arr = json_decode($arrJSON, true);
