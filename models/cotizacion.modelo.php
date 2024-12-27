@@ -334,7 +334,9 @@ class ModeloCotizacion
             //         throw new Exception($resultado['m']);
             //     }
             // }
-
+            if ($params['desc'] == '') {
+                $params['desc'] = null;
+            }
 
             $consulta = "UPDATE tblcotizacion SET 
                             subtotal = :subtotal,
@@ -350,7 +352,7 @@ class ModeloCotizacion
             $aC->bindParam(":total", $params['total'], PDO::PARAM_STR);
             $aC->bindParam(":iva", $params['iva'], PDO::PARAM_STR);
             $aC->bindParam(":impuestos", $params['impuestos'], PDO::PARAM_STR);
-            $aC->bindParam(":descuento", $params['desc'], PDO::PARAM_STR);
+            $aC->bindParam(":descuento", $params['desc'], PDO::PARAM_INT);
             $aC->bindParam(":estado_orden", $params['estado_orden'], PDO::PARAM_BOOL);
             $aC->execute();
 
