@@ -205,8 +205,8 @@ class ModeloRegistro
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
 
-            if ($desc == '') {
-                 $desc = null;
+            if ($desc == '0') {
+                $desc = null;
             }
 
             $motivo = ''; // Inicializar el string motivo
@@ -521,9 +521,9 @@ class ModeloRegistro
             } else {
                 $stmtB->bindParam(':responsable', $responsable, PDO::PARAM_INT);
             }
-            if($stmtB->execute()){
+            if ($stmtB->execute()) {
                 if (!empty($img)) {
-                self::guardarImagenesSalida($conexion, $id_boleta, $img);
+                    self::guardarImagenesSalida($conexion, $id_boleta, $img);
                 }
             };
 
