@@ -46,7 +46,7 @@ class ModeloCotizacion
         try {
             $conexion = Conexion::ConexionDB();
             $a = $conexion->prepare("SELECT c.num_co, p.nombre as proveedor, p.direccion, c.motivo, TO_CHAR(c.fecha, 'DD/MM/YYYY') AS fecha, c.estado_solicitud, estado_orden, '' as acciones, 
-            c.id_proveedor, c.id, c.comprador, p.ruc, p.telefono, c.subtotal::MONEY, c.impuesto::MONEY, c.iva, c.total::MONEY
+            c.id_proveedor, c.id, c.comprador, p.ruc, p.telefono, c.subtotal, c.impuesto, c.iva, c.total, c.otros
                 FROM tblcotizacion c
                 JOIN tblproveedores p ON p.id = c.id_proveedor 
 				WHERE c.id=:id");

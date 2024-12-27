@@ -406,6 +406,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id']) && isset($_GET['c
     $impuesto = $tipo ? '-' : $row['impuesto'];
     $iva = $tipo ? '' : intval($row['iva']).'%';
     $total = $tipo ? '-' : $row['total'];
+    $desc = $tipo ? '' :  '- '.$row['otros'];
+
 
     $archivo = $extencion .' '. $nro .' - '. $proveedor;
     $pdf->SetTitle($archivo);
@@ -642,7 +644,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id']) && isset($_GET['c
         $pdf->SetX($pdf->GetX() + 120);
 
         $pdf->Cell(16.1, 5, iconv('UTF-8', 'windows-1252', 'Otros'), 0, 0, 'R', 0);    // Enviar el PDF directamente al navegador
-        $pdf->Cell(27, 5.5, iconv('UTF-8', 'windows-1252', ''), 1, 1, 'C', 0);    // Enviar el PDF directamente al navegador
+        
+        $pdf->Cell(27, 5.5, iconv('UTF-8', 'windows-1252', $desc), 1, 1, 'C', 0);    // Enviar el PDF directamente al navegador
 
 
         $pdf->SetX($pdf->GetX() + 120);
