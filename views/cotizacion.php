@@ -407,7 +407,7 @@
                     }
                     // Normal si no está anulado
                     return data ?
-                        `<a style="font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" href="/aistermcon/utils/download.php?file=${encodeURIComponent(data)}&route=presupuesto_proveedor" target="_blank" class="btn btnDescargar" title="PDF de proveedor">
+                        `<a style="font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" href="/aistermcon/utils/show.php?file=${encodeURIComponent(data)}&route=presupuesto_proveedor" target="_blank" class="btn btnDescargar" title="PDF de proveedor">
                 <i class="fas fa-file-check"></i>
             </a>` :
                         `<span class="btn" style="font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey"><i class="fas fa-file-xmark"></i></span>`;
