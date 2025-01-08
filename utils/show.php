@@ -1,5 +1,15 @@
 
 <?php
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!(isset($_SESSION['s_usuario']))) {
+    header("Location: /aistermcon");
+    exit();
+}
+
 // Obtener el nombre del archivo desde la URL
 $file = $_GET['file']; // Ejemplo: 2025/3.pdf
 $dir = $_GET['route']; // Ejemplo: presupuesto_proveedor

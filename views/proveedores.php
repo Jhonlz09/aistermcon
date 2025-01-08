@@ -168,9 +168,17 @@
                 }
             },
             {
+                targets: 1,
+                responsivePriority: 3,
+            },
+            {
+                targets: 2,
+                responsivePriority: 1,
+            },
+            {
                 targets: 6,
                 data: "acciones",
-                visible: true,
+                responsivePriority: 2,
                 render: function(data, type, row, full, meta) {
                     return (
                         "<center style='white-space: nowrap;'>" +
@@ -236,7 +244,7 @@
                 cambiarModal(span, ' Nuevo Proveedor', icon, 'fa-hand-holding-box', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 form.reset();
                 form.classList.remove('was-validated');
-                
+
             });
         }
 
@@ -290,9 +298,9 @@
                 dir = direccion.value.trim().toUpperCase(),
                 cor = correo.value.trim();
 
-                telefono.disabled = tel === '';
-                ruc.disabled = ruc_ === ''
-                correo.disabled = cor === '';
+            telefono.disabled = tel === '';
+            ruc.disabled = ruc_ === ''
+            correo.disabled = cor === '';
 
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');

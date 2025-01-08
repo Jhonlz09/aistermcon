@@ -24,7 +24,7 @@ class ModeloPersonal
         }
     }
 
-    static public function mdlAgregarPersonal($cedula, $nombres, $apellido, $fecha_ini, $fecha_cor, $sueldo)
+    static public function mdlAgregarPersonal($cedula, $nombres, $apellido, $fecha_ini, $fecha_cor, $sueldo, $ruta)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -42,11 +42,12 @@ class ModeloPersonal
             $id_empleado = $conexion->lastInsertId();
 
             // Segunda inserción: tblpersonal
-            $stmt = $conexion->prepare("INSERT INTO tblpersonal(id_empleado, fecha_ini, fecha_cor, sueldo) VALUES(:id_e, :fecha_ini, :fecha_cor, :sueldo)");
+            $stmt = $conexion->prepare("INSERT INTO tblpersonal(id_empleado, fecha_ini, fecha_cor, sueldo, ruta) VALUES(:id_e, :fecha_ini, :fecha_cor, :sueldo, :ruta)");
             $stmt->bindParam(':id_e', $id_empleado, PDO::PARAM_INT);
             $stmt->bindParam(':fecha_ini', $fecha_ini, PDO::PARAM_STR);
             $stmt->bindParam(':fecha_cor', $fecha_cor, PDO::PARAM_STR);
             $stmt->bindParam(':sueldo', $sueldo, PDO::PARAM_INT);
+            $stmt->bindParam(':ruta', $ruta, PDO::PARAM_STR);
             $stmt->execute();
             // Confirmar la transacción
             $conexion->commit();
@@ -81,7 +82,7 @@ class ModeloPersonal
         }
     }
 
-    static public function mdlEditarPersonal($id, $cedula, $nombres, $apellido, $fecha_ini, $fecha_cor, $sueldo)
+    static public function mdlEditarPersonal($id, $cedula, $nombres, $apellido, $fecha_ini, $fecha_cor, $sueldo, $ruta)
     {
         try {
             $db = Conexion::ConexionDB();
@@ -95,31 +96,29 @@ class ModeloPersonal
             $u->execute();
 
             $check = $db->prepare("SELECT 1 FROM tblpersonal WHERE id_empleado = :id LIMIT 1");
-        $check->bindParam(":id", $id, PDO::PARAM_INT);
-        $check->execute();
-        $exists = $check->fetchColumn();
+            $check->bindParam(":id", $id, PDO::PARAM_INT);
+            $check->execute();
+            $exists = $check->fetchColumn();
 
-        if(!$exists) {
-            // Insertar si no existe
-            $i = $db->prepare("INSERT INTO tblpersonal(id_empleado, fecha_ini, fecha_cor, sueldo) VALUES(:id_empleado, :fecha_ini, :fecha_cor, :sueldo)");
-            $i->bindParam(":id_empleado", $id, PDO::PARAM_INT);
-            $i->bindParam(":fecha_ini", $fecha_ini, PDO::PARAM_STR);
-            $i->bindParam(":fecha_cor", $fecha_cor, PDO::PARAM_STR);
-            $i->bindParam(":sueldo", $sueldo, PDO::PARAM_STR);
-            $i->execute();
-        } else {
-            // Actualizar si ya existe
-            $i = $db->prepare("UPDATE tblpersonal SET fecha_ini=:fecha_ini, fecha_cor=:fecha_cor, sueldo=:sueldo WHERE id_empleado=:id");
-            $i->bindParam(":id", $id, PDO::PARAM_INT);
-            $i->bindParam(":fecha_ini", $fecha_ini, PDO::PARAM_STR);
-            $i->bindParam(":fecha_cor", $fecha_cor, PDO::PARAM_STR);
-            $i->bindParam(":sueldo", $sueldo, PDO::PARAM_STR);
-            $i->execute();
-        }
-
-            
-           
-
+            if (!$exists) {
+                // Insertar si no existe
+                $i = $db->prepare("INSERT INTO tblpersonal(id_empleado, fecha_ini, fecha_cor, sueldo, ruta) VALUES(:id_empleado, :fecha_ini, :fecha_cor, :sueldo, :ruta)");
+                $i->bindParam(":id_empleado", $id, PDO::PARAM_INT);
+                $i->bindParam(":fecha_ini", $fecha_ini, PDO::PARAM_STR);
+                $i->bindParam(":fecha_cor", $fecha_cor, PDO::PARAM_STR);
+                $i->bindParam(":sueldo", $sueldo, PDO::PARAM_STR);
+                $i->bindParam(":ruta", $ruta, PDO::PARAM_STR);
+                $i->execute();
+            } else {
+                // Actualizar si ya existe
+                $i = $db->prepare("UPDATE tblpersonal SET fecha_ini=:fecha_ini, fecha_cor=:fecha_cor, sueldo=:sueldo, ruta=:ruta WHERE id_empleado=:id");
+                $i->bindParam(":id", $id, PDO::PARAM_INT);
+                $i->bindParam(":fecha_ini", $fecha_ini, PDO::PARAM_STR);
+                $i->bindParam(":fecha_cor", $fecha_cor, PDO::PARAM_STR);
+                $i->bindParam(":sueldo", $sueldo, PDO::PARAM_STR);
+                $i->bindParam(":ruta", $ruta, PDO::PARAM_STR);
+                $i->execute();
+            }
             $db->commit(); // Confirmar transacción
 
             return array(
@@ -159,6 +158,21 @@ class ModeloPersonal
                 'status' => 'danger',
                 'm' => 'No se pudo eliminar el empleado: ' . $e->getMessage()
             );
+        }
+    }
+
+    public static function mdlObtenerPersonalPorId($id) {
+        try {
+            $consulta = "SELECT e.id, e.cedula, e.nombre, e.apellido
+                         FROM tblempleado e
+                         LEFT JOIN tblpersonal p ON e.id = p.id_empleado
+                         WHERE e.id = :id";
+            $stmt = Conexion::ConexionDB()->prepare($consulta);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
         }
     }
 }

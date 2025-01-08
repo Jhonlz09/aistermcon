@@ -13,9 +13,6 @@ if (!(isset($_SESSION['s_usuario']))) {
     exit();
 }
 
-if (strpos(file_get_contents($file_path), '/ObjStm') !== false || strpos(file_get_contents($file_path), '/XRef') !== false) {
-    die("El archivo PDF utiliza técnicas de compresión no compatibles.");
-}
 // Obtener el nombre del archivo desde la URL
 try{
     $route = $_GET['file'];

@@ -261,10 +261,9 @@
                 render: function(data, type, row, full, meta) {
 
                     // let ruta = true;
-                    let ruta = row.ruta;
+                    let ruta = row.ruta ?? '';
                     return (
                         "<center style='white-space: nowrap;'>" +
-
                         (editar ?
                             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
@@ -313,7 +312,7 @@
                 localStorage.setItem('personal', JSON.stringify(tablaData));
             });
         }
-
+        let ruta_ced = '';
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
             elements = document.querySelectorAll('.modal .bg-gradient-green'),
@@ -417,6 +416,7 @@
             nombre.value = row["nombre"];
             cedula.value = row["cedula"];
             apellido.value = row["apellido"];
+            ruta_ced = row["ruta"];
             setChange(cboRol, row["id_rol"])
             fecha_ini.value = convertirFecha(row["fecha_ini"]);
             fecha_cor.value = convertirFecha(row["fecha_cor"]);
@@ -429,7 +429,7 @@
             $('.ten').hide();
 
             const file = inputFile.files[0];
-
+            let datos = new FormData();
             // Validar que el archivo es .pdf
             if (file && file.type !== "application/pdf") {
                 mostrarToast(
@@ -442,6 +442,7 @@
             } else if (file && file.type == "application/pdf") {
                 datos.append('fileCedula', file);
             }
+
             const ced = cedula.value.trim(),
                 nom = nombre.value.trim().toUpperCase(),
                 ape = apellido.value.trim().toUpperCase(),
@@ -457,7 +458,6 @@
                 return;
             }
             const id_e = id.value;
-            let datos = new FormData();
             datos.append('id', id_e);
             datos.append('cedula', ced);
             datos.append('nombre', nom);
@@ -465,6 +465,7 @@
             datos.append('fecha_ini', f_i);
             datos.append('fecha_cor', f_c);
             datos.append('sueldo', sue);
+            datos.append('ruta', ruta_ced);
             datos.append('accion', accion);
             confirmarAccion(datos, 'personal', tabla, modal, function(r) {})
         });
