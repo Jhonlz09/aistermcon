@@ -93,7 +93,7 @@
         let datos_anio = [];
         let selectedTab = '2';
         // let datos_und = [];
-        for (let i = 2023; i <= year; i++) {
+        for (let i = 2024; i <= year; i++) {
             datos_anio.push({
                 id: i,
                 text: String(i)

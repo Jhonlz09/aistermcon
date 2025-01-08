@@ -313,6 +313,11 @@ font-size: 1rem;
     font-size: 1rem;
 }
 
+.historial+.select2-container.select2-container--default .selection .select2-selection--single .select2-selection__rendered{
+    line-height: 30px;
+    font-size: 1.45rem
+}
+
 
 .control-sidebar:has(#radio-3:checked):not(.modal-body *) {
     --label-star: #2c6cb1;
@@ -682,7 +687,7 @@ nav .mode .toggle-switch {
     height: 2.1rem;
 }
 
-.card-header:has(select) {
+.card-header:has(select), .modal-header:has(select) {
     --select-border-bottom: transparent;
 }
 
@@ -774,6 +779,19 @@ input:focus-visible {
     bottom: 0;
 }
 
+i.exponent-icon {
+    font-size: 0.85rem;
+    position: relative;
+    top: -0.85em; 
+    color: #888888;
+    /* left: 0.1em;  */
+
+}
+.exponent-icon:hover{
+    color: #010101;
+    cursor: pointer;
+}
+
 #btnlogout:hover{
     background-color: #721c24;
     color: #fff;
@@ -807,6 +825,19 @@ tr.fila-anulada + tr.child {
     transform: translateY(-30px);
     font-size: 18px !important;
     font-weight: 600 !important;
+}
+
+.input-data input:read-only~.label
+{
+    transform: translateY(-30px);
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: var(--label-new);
+
+}
+.input-data input:read-only{
+    background-color: #b3b1b140;
+    border-bottom-color: var(--label-new);
 }
 
 .dtr-details {

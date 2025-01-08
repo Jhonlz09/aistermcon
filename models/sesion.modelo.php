@@ -30,7 +30,6 @@ class SesionModelo
                     $_SESSION["editar" . $permiso->id] = $permiso->editar;
                     $_SESSION["eliminar" . $permiso->id] = $permiso->eliminar;
                 }
-
                 $configuracion = self::mdlObtenerConfiguracion();
                 $_SESSION["empresa"] = $configuracion[0]->empresa;
                 $_SESSION["iva"] = $configuracion[0]->iva;

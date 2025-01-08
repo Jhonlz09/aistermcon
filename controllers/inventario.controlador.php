@@ -3,8 +3,8 @@ require_once "../models/inventario.modelo.php";
 class ControladorInventario
 {
     public $id;
-    public $codigo, $oldCod, $id_orden;
-    public $nombre, $unidad, $categoria, $percha, $stock, $stock_min, $stock_mal, $img;
+    public $codigo, $oldCod, $id_orden, $anio;
+    public $nombre, $unidad, $categoria, $percha, $stock, $stock_ini,$stock_min, $stock_mal, $img;
 
     static public function listarInventario()
     {
@@ -148,7 +148,7 @@ class ControladorInventario
         }
 
         // Llamar a la función de modelo para editar el inventario
-        $data = ModeloInventario::mdlEditarInventario($this->id, $this->codigo, $this->nombre, $this->stock, $this->stock_min, $this->stock_mal, $this->categoria, $this->unidad, $this->percha, $img);
+        $data = ModeloInventario::mdlEditarInventario($this->id, $this->codigo, $this->nombre, $this->stock, $this->stock_min, $this->stock_mal, $this->categoria, $this->unidad, $this->percha, $img, $this->stock_ini);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -183,14 +183,24 @@ class ControladorInventario
         $data = ModeloInventario::mdlBuscarProductos();
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-}
 
+    public function consultarHistorialProducto()
+    {
+        $data = ModeloInventario::mdlConsultarHistorialProducto($this->id, $this->anio);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function consultarStockIniAnio()
+    {
+        $data = ModeloInventario::mdlConsultarStockIniAnio($this->id, $this->anio);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+}
+$data = new ControladorInventario();
 if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
-    $data = new ControladorInventario();
     $data->listarInventario();
 } else {
     if ($_POST["accion"] == 1) {
-        $data = new ControladorInventario();
         $data->codigo = $_POST["cod"];
         $data->nombre = $_POST["des"];
         $data->stock = $_POST["sto"];
@@ -201,13 +211,13 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->percha = $_POST["ubi"];
         $data->agregarInventario();
     } else if ($_POST["accion"] == 2) {
-        $data = new ControladorInventario();
         $data->id = $_POST["id"];
         $data->codigo = $_POST["cod"];
         $data->nombre = $_POST["des"];
         $data->stock = $_POST["sto"];
         $data->stock_min = $_POST["st_min"];
         $data->stock_mal = $_POST["st_mal"];
+        $data->stock_ini = $_POST["st_ini"];
         $data->categoria = $_POST["cat"];
         $data->unidad = $_POST["uni"];
         $data->percha = $_POST["ubi"];
@@ -215,42 +225,41 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->oldCod = $_POST["oldCod"];
         $data->editarInventario();
     } else if ($_POST["accion"] == 3) {
-        $data = new ControladorInventario();
         $data->id = $_POST["id"];
         $data->eliminarInventario();
     } else if ($_POST["accion"] == 4) {
-        $data = new ControladorInventario();
         $data->codigo = $_POST["id"];
         $data->buscarCodigo();
     } else if ($_POST["accion"] == 5) {
-        $data = new ControladorInventario();
         $data->id = $_POST["id"];
         $data->buscarId();
     } else if ($_POST["accion"] == 6) {
-        $data = new ControladorInventario();
         $data->listarInventarioStock();
     } else if ($_POST["accion"] == 7) {
-        $data = new ControladorInventario();
         $data->buscarProductos();
     } else if ($_POST["accion"] == 8) {
-        $data = new ControladorInventario();
         $data->alertaStock();
     } else if ($_POST["accion"] == 9) {
-        $data = new ControladorInventario();
         $data->nombre = $_POST["nombre"];
         $data->unidad = $_POST["unidad"];
         $data->stock = $_POST["cantidad"];
         $data->agregarInventarioFab();
     } else if ($_POST["accion"] == 10) {
-        $data = new ControladorInventario();
         $data->id = $_POST["id_e"];
         $data->nombre = $_POST["nombre"];
         $data->unidad = $_POST["unidad"];
         $data->stock = $_POST["cantidad"];
         $data->editarInventarioFab();
     } else if ($_POST["accion"] == 11) {
-        $data = new ControladorInventario();
         $data->id = $_POST["id_producto_fab"];
         $data->listarProductoFab();
+    } else if ($_POST["accion"] == 12) {
+        $data->id = $_POST["id_producto"];
+        $data->anio = $_POST["anio"];
+        $data->consultarHistorialProducto();
+    }else if ($_POST["accion"] == 13) {
+        $data->id = $_POST["id_producto"];
+        $data->anio = $_POST["anio"];
+        $data->consultarStockIniAnio();
     }
 }

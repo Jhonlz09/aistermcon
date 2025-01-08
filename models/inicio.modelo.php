@@ -58,7 +58,7 @@ class ModeloInicio
     static public function mdlGraficoCategorias($categoria)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("SELECT cl.nombre  || ' - '|| o.nombre as cliente, 
+            $a = Conexion::ConexionDB()->prepare("SELECT o.nombre || ' '|| cl.nombre   as cliente, 
             COUNT(s.id_producto) AS salidas
             FROM tblclientes cl
             JOIN tblorden o ON cl.id = o.id_cliente

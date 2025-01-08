@@ -7,12 +7,15 @@ class ModeloInventario
     public static function mdlListarInventario()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo, i.descripcion, c.nombre as categoria, u.nombre as unidad, p.nombre as percha, i.stock_mal, i.stock, '' as acciones, 
-            i.stock_min,c.id as categoria_id,u.id as unidad_id,p.id as percha_id, i.img
+            $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo, i.descripcion, 
+            c.nombre as categoria,u.nombre as unidad, p.nombre as percha, i.stock_mal, i.stock,
+            '' as acciones, i.stock_min,c.id as categoria_id,u.id as unidad_id,p.id as percha_id,
+            i.img, si.stock_ini
                 FROM tblinventario i 
                 JOIN tblcategoria c on c.id= i.id_categoria
                 JOIN tblunidad u on u.id= i.id_unidad
                 JOIN tblubicacion p on p.id= i.id_percha
+                JOIN tblstock_inicial si on si.id_producto = i.id
                 WHERE i.estado=true
                 ORDER BY id ASC");
             $l->execute();
@@ -77,7 +80,7 @@ class ModeloInventario
     public static function mdlAgregarInventario($cod, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi, $img)
     {
         try {
-            // Construir la consulta base
+            $conn = Conexion::ConexionDB();
             $sql = "INSERT INTO tblinventario(codigo, descripcion, stock, stock_min, stock_mal, id_categoria, id_unidad, id_percha";
 
             // Agregar el campo 'img' solo si no es null
@@ -95,7 +98,7 @@ class ModeloInventario
             $sql .= ")";
 
             // Preparar la consulta
-            $a = Conexion::ConexionDB()->prepare($sql);
+            $a = $conn->prepare($sql);
 
             // Asignar los valores a los parámetros
             $a->bindParam(":cod", $cod, PDO::PARAM_STR);
@@ -115,6 +118,15 @@ class ModeloInventario
             // Ejecutar la consulta
             $a->execute();
 
+            $id_producto = $conn->lastInsertId();
+            $anio = date('Y');
+            $sql_stock_ini = "INSERT INTO tblstock_inicial(id_producto, anio, stock_ini) VALUES (:id_producto, :anio, :stock_ini)";
+            $b = $conn->prepare($sql_stock_ini);
+            $b->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+            $b->bindParam(":anio", $anio, PDO::PARAM_INT);
+            $b->bindParam(":stock_ini", $sto, PDO::PARAM_STR);
+            $b->execute();
+
             return array(
                 'status' => 'success',
                 'm' => 'El producto se agregó correctamente'
@@ -133,7 +145,6 @@ class ModeloInventario
             }
         }
     }
-
 
     public static function mdlAgregarInventarioFab($des, $uni, $sto)
     {
@@ -195,12 +206,13 @@ class ModeloInventario
         }
     }
 
-    public static function mdlEditarInventario($id, $codigo, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi, $img)
+    public static function mdlEditarInventario($id, $codigo, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi, $img, $st_ini)
     {
         try {
+            $conn = Conexion::ConexionDB();
+
             // Construir la consulta base
             $sql = "UPDATE tblinventario SET codigo=:codigo, descripcion=:des, stock=:sto, stock_min=:st_min, stock_mal=:st_mal, id_categoria=:cat, id_unidad=:uni, id_percha=:ubi";
-
             // Agregar el campo 'img' solo si no es null
             if ($img !== 'null') {
                 $sql .= ", img=:img";
@@ -208,7 +220,7 @@ class ModeloInventario
 
             $sql .= " WHERE id=:id";
 
-            $e = Conexion::ConexionDB()->prepare($sql);
+            $e = $conn->prepare($sql);
             // Asignar los valores a los parámetros
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->bindParam(":codigo", $codigo, PDO::PARAM_STR);
@@ -226,6 +238,16 @@ class ModeloInventario
 
             // Ejecutar la consulta
             $e->execute();
+
+            // $id_producto = $conn->lastInsertId();
+            $anio = date('Y');
+            $sql_stock_ini = "INSERT INTO tblstock_inicial(id_producto, anio, stock_ini) VALUES (:id_producto, :anio, :stock_ini)";
+            $b = $conn->prepare($sql_stock_ini);
+            $b->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+            $b->bindParam(":anio", $anio, PDO::PARAM_INT);
+            $b->bindParam(":stock_ini", $sto_ini, PDO::PARAM_STR);
+            $b->execute();
+
 
             return array(
                 'status' => 'success',
@@ -245,7 +267,6 @@ class ModeloInventario
             }
         }
     }
-
 
     public static function mdlEliminarInventario($id)
     {
@@ -347,6 +368,108 @@ class ModeloInventario
                 FROM tblinventario i WHERE i.estado = true 
                 AND NOT (i.fabricado = true AND i.stock = 0)
                 ORDER BY i.descripcion;");
+            $e->execute();
+            return $e->fetchAll();
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlConsultarStockIniAnio($id_producto, $anio)
+    {
+        try {
+            $e = Conexion::ConexionDB()->prepare("SELECT stock_ini
+                    FROM tblstock_inicial  
+                    WHERE id_producto = :id_producto AND anio = :anio;"); 
+            $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $e->bindParam(':anio', $anio, PDO::PARAM_INT);
+            $e->execute();
+            return $e->fetchAll();
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
+            );
+        }
+    }
+
+
+    public static function mdlConsultarHistorialProducto($id_producto, $anio)
+    {
+        try {
+            $e = Conexion::ConexionDB()->prepare("WITH combined_data AS (
+        -- Salidas
+        SELECT 
+            b.fecha::date AS fecha_raw, TO_CHAR(b.fecha, 'DD/MM/YYYY') AS fecha,
+            o.id AS id_orden, o.nombre AS orden_trabajo, c.nombre AS empresa,
+            s.cantidad_salida AS salida, NULL::numeric AS entrada, NULL::numeric AS compras
+        FROM 
+            tblsalidas s
+        JOIN 
+            tblboleta b ON s.id_boleta = b.id
+        JOIN 
+            tblorden o ON b.id_orden = o.id
+        JOIN 
+            tblclientes c ON o.id_cliente = c.id
+        WHERE 
+            s.id_producto = :id_producto
+            AND EXTRACT(YEAR FROM b.fecha) = :anio
+        UNION ALL
+        -- Retornos
+        SELECT 
+            b.fecha_retorno::date AS fecha_raw, TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') AS fecha,
+            o.id AS id_orden, o.nombre AS orden_trabajo, c.nombre AS empresa, NULL AS salida,
+            s.retorno AS entrada, NULL::numeric AS compras
+        FROM 
+            tblsalidas s
+        JOIN 
+            tblboleta b ON s.id_boleta = b.id
+        JOIN 
+            tblorden o ON b.id_orden = o.id
+        JOIN 
+            tblclientes c ON o.id_cliente = c.id
+        WHERE 
+            s.id_producto = :id_producto
+            AND s.retorno <> 0
+            AND EXTRACT(YEAR FROM b.fecha_retorno) = :anio
+        UNION ALL
+        -- Compras
+        SELECT f.fecha::date AS fecha_raw, TO_CHAR(f.fecha, 'DD/MM/YYYY') AS fecha,
+            NULL AS id_orden, NULL AS orden_trabajo, pr.nombre AS empresa, NULL AS salida,
+            NULL AS entrada, e.cantidad_entrada AS compras
+        FROM tblentradas e
+        LEFT JOIN tblfactura f ON e.id_factura = f.id
+        JOIN tblproveedores pr ON f.id_proveedor = pr.id
+        WHERE e.id_producto = :id_producto
+            AND EXTRACT(YEAR FROM f.fecha) = :anio),
+        aggregated_data AS (
+        -- Agregar stock inicial y calcular acumulado
+        SELECT cd.fecha_raw, cd.fecha, cd.id_orden, cd.orden_trabajo,
+        cd.empresa,SUM(COALESCE(cd.salida, NULL)) AS salida,
+            SUM(COALESCE(cd.entrada, NULL)) AS entrada,
+            SUM(COALESCE(cd.compras, NULL)) AS compras,
+            COALESCE(si.stock_ini, NULL) AS stock_inicial
+        FROM combined_data cd
+        LEFT JOIN tblstock_inicial si ON si.id_producto = :id_producto AND si.anio = :anio
+        GROUP BY 
+            cd.fecha_raw, cd.fecha, cd.id_orden, cd.orden_trabajo, 
+            cd.empresa, si.stock_ini),
+        final_data AS (
+        SELECT 
+            ad.fecha_raw, ad.fecha, ad.orden_trabajo, ad.empresa, ad.salida, ad.entrada,
+            ad.compras, ad.stock_inicial, SUM(COALESCE(-ad.salida, 0) + COALESCE(ad.entrada, 0) 
+            + COALESCE(ad.compras, 0)) 
+                OVER (ORDER BY ad.fecha_raw ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) + 
+                ad.stock_inicial AS stock 
+        FROM aggregated_data ad)
+        SELECT fecha, orden_trabajo, empresa, salida, entrada, compras, stock 
+        FROM final_data
+        ORDER BY fecha_raw;");
+            $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $e->bindParam(':anio', $anio, PDO::PARAM_INT);
             $e->execute();
             return $e->fetchAll();
         } catch (PDOException $e) {

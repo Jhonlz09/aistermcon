@@ -1,4 +1,7 @@
-<?php require_once "../utils/database/config.php"; ?>
+<?php require_once "../utils/database/config.php";
+
+$id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
+?>
 
 <head>
     <title>Inventario</title>
@@ -31,7 +34,6 @@
                             <div class="row">
                                 <div class="col col-p">
                                     <h3 class="card-title" style="white-space:nowrap;display: flex;align-items: center;">Listado de productos
-                                        <!-- <i id="stock_icon" class="fas fa-arrow-down-big-small"> </i> -->
                                         <div class="icon-container ml-1">
                                             <input autocomplete="off" style="border:none" type="checkbox" id="check_stock">
                                             <label class="m-0" for="check_stock">
@@ -39,18 +41,7 @@
                                             </label>
                                         </div>
                                     </h3>
-                                    <!-- <label class="switch-2">
-                                        <input class="switch__input" type="checkbox" name="1" value="1" onkeydown="toggleWithEnter(event, this)"> -->
-                                    <!-- <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
-                                            <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
-                                        </svg> -->
-                                    <!-- <svg fill="#000" class="switch__check" width="16px" height="16px" viewBox="0 0 24 24">
-                                            <path class="switch__check-line" d="M7 4V20M7 20L3 16M7 20L11 16M15.6 11H19.4C19.9601 11 20.2401 11 20.454 10.891C20.6422 10.7951 20.7951 10.6422 20.891 10.454C21 10.2401 21 9.96005 21 9.4V5.6C21 5.03995 21 4.75992 20.891 4.54601C20.7951 4.35785 20.6422 4.20487 20.454 4.10899C20.2401 4 19.9601 4 19.4 4H15.6C15.0399 4 14.7599 4 14.546 4.10899C14.3578 4.20487 14.2049 4.35785 14.109 4.54601C14 4.75992 14 5.03995 14 5.6V9.4C14 9.96005 14 10.2401 14.109 10.454C14.2049 10.6422 14.3578 10.7951 14.546 10.891C14.7599 11 15.0399 11 15.6 11ZM15.6 20H17.4C17.9601 20 18.2401 20 18.454 19.891C18.6422 19.7951 18.7951 19.6422 18.891 19.454C19 19.2401 19 18.9601 19 18.4V16.6C19 16.0399 19 15.7599 18.891 15.546C18.7951 15.3578 18.6422 15.2049 18.454 15.109C18.2401 15 17.9601 15 17.4 15H15.6C15.0399 15 14.7599 15 14.546 15.109C14.3578 15.2049 14.2049 15.3578 14.109 15.546C14 15.7599 14 16.0399 14 16.6V18.4C14 18.9601 14 19.2401 14.109 19.454C14.2049 19.6422 14.3578 19.7951 14.546 19.891C14.7599 20 15.0399 20 15.6 20Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-
-                                    </label> -->
                                 </div>
-
                                 <div class="col-sm p-0">
                                     <div class="card-tools">
                                         <div class="input-group">
@@ -126,22 +117,22 @@
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="row">
-                                <div class="col-sm-6">
+                                <div class="col-sm-6" id="divStockIni">
                                     <div class="input-data">
-                                        <input autocomplete="off" id="stock_ini" name="stock_ini" class="input-nuevo" type="text" required>
-                                        <label class="label"><i class="fa-solid fa-barcode"></i> Cantidad Inicial</label>
+                                        <?php echo  $id_user ? '' : '<span class="input-group-text" style="position:absolute;top:56%;right:12px"><i class="fas fa-lock"></i></span>'; ?>
+                                        <input autocomplete="off" id="stock_ini" name="stock_ini" class="input-nuevo" type="text" required <?php echo  $id_user ? '' : 'readonly'; ?> onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)">
+                                        <label class="label"><i class="fas fa-boxes-stacked"></i> Cantidad Inicial</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm">
                                     <div class="input-data s1">
                                         <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
-                                        <label class="label"><i class="fa-solid fa-boxes-stacked"></i> Cantidad</label>
+                                        <label class="label"><i class="fas fa-cubes"></i> Cantidad</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
@@ -150,14 +141,14 @@
                                 <div class="col-sm-6">
                                     <div class=" input-data" style="margin-bottom:26px">
                                         <input type="text" id="stock_min" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)" required>
-                                        <label style="font-size:21px" id="min" class="label"><i class="fa-solid fa-box-taped"></i> Cantidad Min.</label>
+                                        <label style="font-size:21px" id="min" class="label"><i class="fas fa-box"></i> Cantidad Min.</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="input-data" style="margin-bottom:26px">
                                         <input type="text" id="stock_mal" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)">
-                                        <label class="label"><i class="fa-solid fa-hammer-crash"></i> Dañado</label>
+                                        <label class="label"><i class="fas fa-hammer-crash"></i> Dañado</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
@@ -209,9 +200,9 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="row">
+                            <div class="row flex-column-reverse flex-md-row">
                                 <div class="col-md-6 form-group">
-                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-image"></i> Imagen</label>
+                                    <label class="combo" style="font-size: 1.15rem;"><i class="fas fa-image"></i> Imagen</label>
                                     <input type="file" name="fileImg" id="fileImg" class="form-control" accept=".png, .jpg, .jpeg, .webp">
                                 </div>
                                 <div class="col-md-6">
@@ -246,6 +237,86 @@
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalH">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable ">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-light" style="align-items: center;">
+                <div class="row">
+                    <div class="col-auto" style="padding-block:.2rem">
+                        <h4 class="modal-title text-wrap"><i class="fas fa-clock-rotate-left"></i> Historial de producto</h4>
+                    </div>
+                    <div class="col">
+                        <select id="cboAnio" class="form-control select2 select2-dark historial" data-dropdown-css-class="select2-dark">
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body " style="padding-block:1rem .5rem;">
+                <!-- <div class="row mb-3">
+                    <div class="col-md-9">
+                        <label for="descripcionProducto" class="font-weight-bold">Descripción:</label>
+                        <span id="descripcionProducto">Producto genérico</span>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="stockInicial" class="font-weight-bold">Stock Inicial:</label>
+                        <span id="stockInicial">0</span>
+                    </div>
+                </div> -->
+
+                <!-- <div class="row mb-3">
+                    <div class="col-12 d-flex justify-content-between">
+                        <div>
+                            <label for="stockInicial" class="font-weight-bold">Stock Inicial:</label>
+                            <span id="stockInicial"></span>
+                        </div>
+                        <div>
+                            <label for="descripcionProducto" class="font-weight-bold">Descripción:</label>
+                            <span id="descripcionProducto"></span>
+                        </div>
+                    </div>
+                </div> -->
+
+
+                <div class="row mb-3">
+                    <div class="col-12 d-flex flex-column flex-md-row justify-content-between">
+                        <div class="mb-2 mb-md-0">
+                            <label for="stockInicial" class="font-weight-bold">Stock Inicial:</label>
+                            <span id="stockInicial"></span>
+                        </div>
+                        <div>
+                            <label for="descripcionProducto" class="font-weight-bold">Descripción:</label>
+                            <span id="descripcionProducto"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <table id="tblHistorial" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>FECHA</th>
+                            <th>ORDEN DE TRABAJO</th>
+                            <th>EMPRESA / PROVEEDOR</th>
+                            <th>SALIDA</th>
+                            <th>ENTRADA</th>
+                            <th>COMPRA</th>
+                            <th class="text-center">STOCK</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <!-- /.modal-content -->
     </div>
@@ -289,10 +360,6 @@
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
-            <!-- <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel">Imagen completa</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div> -->
             <div class="modal-body p-0" style="display:contents;">
                 <img id="modalImage" src="" alt="Imagen completa" class="img-fluid" style="max-width:100%;height:auto;max-height:85vh;object-fit:contain;">
             </div>
@@ -317,7 +384,7 @@
     var eliminar = '<?php echo $_SESSION["eliminar3"] ?>';
 
     configuracionTable = {
-        "dom": mostrarCol ? '<"row"<"col-md-6"B><"col-md-6"p>>t' : 'pt',
+        "dom": '<"row"<"col-md-6"B><"col-md-6"p>>t',
         "responsive": true,
         "pageLength": 20, // Cambia este valor según tus necesidades
         "lengthChange": false,
@@ -352,19 +419,20 @@
             {
                 targets: 8,
                 className: 'text-center',
+                responsivePriority: 3,
                 render: function(data, type, row) {
                     let resultado = row.stock - row.stock_mal;
                     let stockMin = row.stock_min;
                     let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
 
                     let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                    return `<span style='font-size:1.3rem' class="${comparacion} font-weight-bold">${formatR}</span>`;
+                    return `<span style='font-size:1.3rem;text-wrap:nowrap' class="${comparacion} font-weight-bold">${formatR} </span>`;
                 }
             },
             {
                 targets: 9,
                 data: "img",
-                responsivePriority: 3,
+                responsivePriority: 4,
                 className: "text-center",
                 render: function(data, type, row) {
                     if (data) {
@@ -384,7 +452,6 @@
                 targets: 10,
                 data: "acciones",
                 responsivePriority: 2,
-                visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
                     return (
                         "<center style='white-space: nowrap;'>" +
@@ -392,6 +459,9 @@
                             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modalI' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
                             "</button>" : "") +
+                        " <button type='button' class='btn bg-gradient-light btnHistorial' data-target='#modalH' data-toggle='modal'  title='Consultar historial'>" +
+                        " <i class='fas fa-clock-rotate-left'></i>" +
+                        "</button>" +
                         (eliminar ?
                             " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
@@ -520,10 +590,11 @@
 
 
     $(document).ready(function() {
-        // Obtener el input y el icono
+        let anio = year;
+        let id_producto = 0;
         const checkbox = document.getElementById('check_stock');
         const icona = document.getElementById('stock_icon');
-
+        const divStockIni = document.getElementById('divStockIni');
         // setTimeout(function() {
         //     $.ajax({
         //         url: "controllers/inventario.controlador.php",
@@ -590,8 +661,84 @@
                 localStorage.setItem('i', JSON.stringify(tablaData));
             });
         }
+
+
+        tblHistorial = $("#tblHistorial").DataTable({
+            "ajax": {
+                "url": "controllers/inventario.controlador.php",
+                "type": "POST",
+                "dataSrc": '',
+                data: function(data) {
+                    data.accion = 12;
+                    data.anio = anio;
+                    data.id_producto = id_producto;
+                }
+            },
+            "dom": 't',
+            "responsive": false,
+            "pageLength": 500,
+            "lengthChange": false,
+            "ordering": false,
+            "autoWidth": false,
+            columnDefs: [ //{
+                //         targets: 0,
+                //         data: null,
+                //         className: "text-center",
+                //         render: function(data, type, row, meta) {
+                //             if (type === 'display') {
+                //                 return meta.row + 1;
+                //             }
+                //             return meta.row;
+                //         }
+                //     },
+                {
+                    targets: 3,
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        let resultado = row.salida ?? '-';
+                        // let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
+
+                        let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-danger" font-weight-bold">${formatR} </span>`;
+                    }
+                }, {
+                    targets: 4,
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        let resultado = row.entrada ?? '-';
+                        // let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
+
+                        let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-success" font-weight-bold">${formatR} </span>`;
+                    }
+                },
+                {
+                    targets: 5,
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        let resultado = row.compras ?? '-'; // let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
+
+                        let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-success" font-weight-bold">${formatR} </span>`;
+                    }
+                },
+                {
+                    targets: 6,
+                    className: 'text-center',
+                    responsivePriority: 3,
+                    render: function(data, type, row) {
+                        let resultado = row.stock ?? 0;
+                        // let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
+
+                        let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-info" font-weight-bold">${formatR} </span>`;
+                    }
+                },
+            ],
+        });
+
         let name;
-        let opcion = 0;
+        let opcion = '0';
         let imgActual;
         let oldCod;
         const id = document.getElementById('id'),
@@ -600,6 +747,7 @@
             stock = document.getElementById('stock'),
             stock_min = document.getElementById('stock_min'),
             stock_mal = document.getElementById('stock_mal'),
+            stock_ini = document.getElementById('stock_ini'),
             cboCategoria = document.getElementById('cboCategoria'),
             cboUnidad = document.getElementById('cboUnidad'),
             fileImg = document.getElementById('fileImg'),
@@ -624,6 +772,16 @@
             placeholder: 'SELECCIONE',
             width: '100%',
         });
+
+        $(cboAnio).select2({
+            width: '105%',
+            data: datos_anio,
+
+            minimumResultsForSearch: -1,
+        })
+
+        setChange(cboAnio, anio);
+
 
         $(cboUnidad).select2({
             placeholder: 'SELECCIONE',
@@ -650,6 +808,52 @@
             opcionSelect(this, 'p')
         });
 
+        $(cboAnio).on("change", function() {
+            let a = this.options[this.selectedIndex].text
+            if (a == anio) {
+                return;
+            }
+            anio = a
+            tblHistorial.ajax.reload();
+            // Parámetros POST
+            const params = new URLSearchParams();
+            params.append('accion', 13);
+            params.append('anio', anio);
+            params.append('id_producto', id_producto); // Asegúrate de que id_producto esté definido
+
+            // Realizar el fetch
+            fetch('controllers/inventario.controlador.php', {
+                    method: 'POST',
+                    body: params
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const stockInicialElement = document.getElementById('stockInicial');
+                    if (Array.isArray(data) && data.length > 0) {
+                        const stock_ini_r = data[0].stock_ini || 0;
+
+                        let r = stock_ini_r.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+                        stockInicialElement.textContent = r;
+                    } else {
+                        stockInicialElement.textContent = '0.00';
+                    }
+
+                    // Verificar si el elemento existe y data.stock_ini tiene un valor
+                    // const stockInicialElement = document.getElementById('stockInicial');
+                    // if (data.stock_ini !== undefined) {
+                    //     stockInicialElement.textContent = data.stock_ini;
+                    // } else {
+                    //     console.error('Elemento stockInicial no encontrado o data.stock_ini no definido');
+                    // }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+        });
+
+
         document.addEventListener('keydown', function(e) {
             if (e.key === "Escape") {
                 const activeModal = document.querySelector('.modal.show');
@@ -666,10 +870,6 @@
         $(modalE).on("hidden.bs.modal", function() {
             if (scroll) {
                 const navbar = document.getElementById('navbar-fix');
-                // $(body).remove('modal-open');
-
-                console.log('adas quiestoy en bav')
-                // $(body).css('padding-right', '6px');
                 $(navbar).css('margin-right', '');
             }
             accion_inv = 0;
@@ -703,6 +903,7 @@
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
                 });
+                divStockIni.style.display = 'none';
                 form.reset();
                 fileImg.value = '';
                 stock_mal.value = '0';
@@ -710,6 +911,8 @@
                 form.classList.remove('was-validated');
             });
         }
+
+
 
         $('#tblInventario tbody').on('click', '.btnEditar', function() {
             if (scroll) {
@@ -730,11 +933,31 @@
             stock.value = row["stock"];
             stock_min.value = row["stock_min"];
             stock_mal.value = row["stock_mal"];
+            stock_ini.value = row["stock_ini"];
             imgActual = row["img"];
             oldCod = row["codigo"];
             setChange(cboCategoria, row["categoria_id"]);
             setChange(cboUnidad, row["unidad_id"]);
             setChange(cboUbicacion, row["percha_id"]);
+            divStockIni.style.display = 'block';
+        });
+
+        $('#tblInventario tbody').on('click', '.btnHistorial', function() {
+            if (scroll) {
+                const navbar = document.getElementById('navbar-fix');
+                $(navbar).css('margin-right', '6px');
+            }
+            let row = obtenerFila(this, tabla);
+
+            let stockInicial = row["stock_ini"] ?? 0;
+            stockInicial = stockInicial.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') // Ajusta la clave según tu tabla
+            let descripcion = row["descripcion"]; // Ajusta la clave según tu tabla
+            id_producto = row["id"]; // ID del producto
+            tblHistorial.ajax.reload();
+            // Actualizar los valores en el modal
+            document.getElementById('stockInicial').textContent = stockInicial;
+            document.getElementById('descripcionProducto').textContent = descripcion;
+
         });
 
         $('#tblInventario tbody').on('click', '.btnEliminar', function() {
@@ -783,6 +1006,7 @@
             data.append('des', descripcion.value.trim().toUpperCase());
             data.append('sto', stock.value);
             data.append('st_min', stock_min.value);
+            data.append('st_ini', stock_ini.value);
             data.append('st_mal', stock_mal.value);
             data.append('cat', cboCategoria.value);
             data.append('uni', cboUnidad.value);
