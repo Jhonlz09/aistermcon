@@ -943,17 +943,17 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         $('#tblInventario tbody').on('click', '.btnHistorial', function() {
+            
             if (scroll) {
                 const navbar = document.getElementById('navbar-fix');
                 $(navbar).css('margin-right', '6px');
             }
             let row = obtenerFila(this, tabla);
-
             let stockInicial = row["stock_ini"] ?? 0;
             stockInicial = stockInicial.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') // Ajusta la clave según tu tabla
             let descripcion = row["descripcion"]; // Ajusta la clave según tu tabla
             id_producto = row["id"]; // ID del producto
-            tblHistorial.ajax.reload();
+            setChange(cboAnio, year);
             // Actualizar los valores en el modal
             document.getElementById('stockInicial').textContent = stockInicial;
             document.getElementById('descripcionProducto').textContent = descripcion;

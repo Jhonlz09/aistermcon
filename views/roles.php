@@ -10,7 +10,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Perfil</h1>
             </div>
-            <?php if (isset($_SESSION["crear19"]) && $_SESSION["crear19"] === true) : ?>
+            <?php if (isset($_SESSION["crear26"]) && $_SESSION["crear26"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -585,46 +585,8 @@
                                         </label>
                                     </td>
                                 </tr>
-                                
-
-
                                 <tr>
-                                    <th scope="row" class=" "><i class="fas tab-icon fa-users"></i> Usuarios</th>
-                                    <td class="text-center">
-                                        <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="18" value="18" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
-                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
-                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
-                                            </svg>
-                                        </label>
-                                    </td>
-                                    <td class="text-center lh-1">
-                                        <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="18" onkeydown="toggleWithEnter(event, this)">
-                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
-                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
-                                            </svg>
-                                        </label>
-                                    </td>
-                                    <td class="text-center lh-1">
-                                        <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="18" onkeydown="toggleWithEnter(event, this)">
-                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
-                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
-                                            </svg>
-                                        </label>
-                                    </td>
-                                    <td class="text-center lh-1">
-                                        <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="18" onkeydown="toggleWithEnter(event, this)">
-                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
-                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
-                                            </svg>
-                                        </label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class=" "><i class="fas tab-icon fa-id-card-clip"></i> Perfiles</th>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-person-circle-plus"></i> Ingreso Personal</th>
                                     <td class="text-center">
                                         <label class="switch-2">
                                             <input class="switch__input" type="checkbox" name="19" value="19" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
@@ -659,10 +621,115 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-calendar-circle-user"></i> Horario Personal</th>
+                                    <td class="text-center">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="20" value="20" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                    <td class="text-center lh-1">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="20" onkeydown="toggleWithEnter(event, this)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                    <td class="text-center lh-1">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="20" onkeydown="toggleWithEnter(event, this)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                    <td class="text-center lh-1">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="20" onkeydown="toggleWithEnter(event, this)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-users"></i> Usuarios</th>
+                                    <td class="text-center">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="25" value="25" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                    <td class="text-center lh-1">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="25" onkeydown="toggleWithEnter(event, this)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                    <td class="text-center lh-1">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="25" onkeydown="toggleWithEnter(event, this)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                    <td class="text-center lh-1">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="25" onkeydown="toggleWithEnter(event, this)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class=" "><i class="fas tab-icon fa-id-card-clip"></i> Perfiles</th>
+                                    <td class="text-center">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="26" value="26" oninput="changeToggle(this)" onkeydown="toggleWithEnter(event, this,true)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                    <td class="text-center lh-1">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="26" onkeydown="toggleWithEnter(event, this)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                    <td class="text-center lh-1">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="26" onkeydown="toggleWithEnter(event, this)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                    <td class="text-center lh-1">
+                                        <label class="switch-2">
+                                            <input class="switch__input" type="checkbox" name="26" onkeydown="toggleWithEnter(event, this)">
+                                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
+                                            </svg>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th scope="row" class=" "><i class="fas tab-icon fa-upload"></i> Cargar</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="20" value="20" onkeydown="toggleWithEnter(event, this)">
+                                            <input class="switch__input" type="checkbox" name="27" value="27" onkeydown="toggleWithEnter(event, this)">
                                             <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                 <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                             </svg>
@@ -670,7 +737,7 @@
                                     </td>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="20" onkeydown="toggleWithEnter(event, this)" disabled>
+                                            <input class="switch__input" type="checkbox" name="27" onkeydown="toggleWithEnter(event, this)" disabled>
                                             <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                 <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                             </svg>
@@ -678,7 +745,7 @@
                                     </td>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="20" onkeydown="toggleWithEnter(event, this)" disabled>
+                                            <input class="switch__input" type="checkbox" name="27" onkeydown="toggleWithEnter(event, this)" disabled>
                                             <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                 <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                             </svg>
@@ -686,7 +753,7 @@
                                     </td>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="20" onkeydown="toggleWithEnter(event, this)" disabled>
+                                            <input class="switch__input" type="checkbox" name="27" onkeydown="toggleWithEnter(event, this)" disabled>
                                             <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                 <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                             </svg>
@@ -697,7 +764,7 @@
                                     <th scope="row" class=" "><i class="fas tab-icon fa-users"></i> Configuración</th>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="21" value="21" onkeydown="toggleWithEnter(event, this)">
+                                            <input class="switch__input" type="checkbox" name="28" value="28" onkeydown="toggleWithEnter(event, this)">
                                             <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                 <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                             </svg>
@@ -705,7 +772,7 @@
                                     </td>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="21" onkeydown="toggleWithEnter(event, this)" disabled>
+                                            <input class="switch__input" type="checkbox" name="28" onkeydown="toggleWithEnter(event, this)" disabled>
                                             <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                 <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                             </svg>
@@ -713,7 +780,7 @@
                                     </td>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="21" onkeydown="toggleWithEnter(event, this)" disabled>
+                                            <input class="switch__input" type="checkbox" name="28" onkeydown="toggleWithEnter(event, this)" disabled>
                                             <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                 <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                             </svg>
@@ -721,7 +788,7 @@
                                     </td>
                                     <td class="text-center lh-1">
                                         <label class="switch-2">
-                                            <input class="switch__input" type="checkbox" name="21" onkeydown="toggleWithEnter(event, this)" disabled>
+                                            <input class="switch__input" type="checkbox" name="28" onkeydown="toggleWithEnter(event, this)" disabled>
                                             <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                 <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
                                             </svg>
@@ -744,9 +811,9 @@
 </div>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar19"] || $_SESSION["eliminar19"] ?>';
-    var editar = '<?php echo $_SESSION["editar19"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar19"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar26"] || $_SESSION["eliminar26"] ?>';
+    var editar = '<?php echo $_SESSION["editar26"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar26"] ?>';
 
     configuracionTable = {
         "responsive": true,
@@ -899,7 +966,7 @@
                         checkbox[0].checked = true;
                         checkbox[0].dispatchEvent(new Event('input'));
 
-                        if (modulo === 1 || modulo === 20 || modulo === 21) {
+                        if (modulo === 1 || modulo === 27 || modulo === 28) {
                             return; // Salta este ciclo del forEach
                         }
                         // Buscar el checkbox correspondiente al id_modulo
@@ -921,11 +988,13 @@
                 },
                 dataType: "json",
                 success: function(r) {
-                    let name = [1, 3, 4, 5, 6, 7, 9, 10,11,13, 14, 16, 17, 18, 19, 20, 21];
+                    let name = [1, 3, 4, 5, 6, 7, 9, 10, 11, 13, 14, 16, 17, 19, 20, 25, 26, 27, 28];
                     let data = [];
                     let isBodega = true;
                     let isCompras = true;
+                    let isRRHH = true;
                     let isPersonas = true;
+
                     let isOperaciones = true;
 
                     name.forEach(function(id) {
@@ -974,6 +1043,17 @@
                                         eliminar: true
                                     };
                                     isOperaciones = false;
+                                    data.push(obj);
+                                }
+                            } else if (id === 19 || id === 20) {
+                                if (isRRHH) {
+                                    let obj = {
+                                        id_modulo: 18,
+                                        crear: true,
+                                        editar: true,
+                                        eliminar: true
+                                    };
+                                    isRRHH = false;
                                     data.push(obj);
                                 }
                             }

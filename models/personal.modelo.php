@@ -163,7 +163,7 @@ class ModeloPersonal
 
     public static function mdlObtenerPersonalPorId($id) {
         try {
-            $consulta = "SELECT e.id, e.cedula, e.nombre, e.apellido
+            $consulta = "SELECT p.ruta
                          FROM tblempleado e
                          LEFT JOIN tblpersonal p ON e.id = p.id_empleado
                          WHERE e.id = :id";

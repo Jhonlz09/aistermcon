@@ -416,7 +416,7 @@
             nombre.value = row["nombre"];
             cedula.value = row["cedula"];
             apellido.value = row["apellido"];
-            ruta_ced = row["ruta"];
+            ruta_ced = row["ruta"] ?? '';
             setChange(cboRol, row["id_rol"])
             fecha_ini.value = convertirFecha(row["fecha_ini"]);
             fecha_cor.value = convertirFecha(row["fecha_cor"]);

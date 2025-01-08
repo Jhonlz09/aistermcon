@@ -15,8 +15,9 @@ class ControladorPersonal
     {
 
         if (isset($_FILES['fileCedula']) && $_FILES['fileCedula']['type'] === 'application/pdf') {
+            $fechaActual = date('d-m-Y');
             $uploadDir = '/var/www/cedula_personal/';
-            $fullNameFinal = $this->nombre . ' ' . $this->apellido . '.pdf';
+            $fullNameFinal = 'CI- '. $this->nombre . ' ' . $this->apellido . ' '.$fechaActual.'.pdf';
             $savePath = $uploadDir . $fullNameFinal;
 
             if (move_uploaded_file($_FILES['fileCedula']['tmp_name'], $savePath)) {
@@ -58,16 +59,18 @@ class ControladorPersonal
         // $personalActual = ModeloPersonal::mdlObtenerPersonalPorId($this->id);
         // Verificar si se ha subido un nuevo archivo PDF
         if (isset($_FILES['fileCedula']) && $_FILES['fileCedula']['type'] === 'application/pdf') {
+            $fechaActual = date('d-m-Y');
             $uploadDir = '/var/www/cedula_personal/';
-            $fullNameFinal = $this->nombre . ' ' . $this->apellido . '.pdf';
+            $fullNameFinal = 'CI- '.$this->nombre . ' ' .$this->apellido.' '.$fechaActual.'.pdf';
             $savePath = $uploadDir . $fullNameFinal;
 
             // Eliminar el archivo PDF anterior si existe
-            $oldPdfPath = $uploadDir . $personalActual['nombre'] . ' ' . $personalActual['apellido'] . '.pdf';
-            if (file_exists($oldPdfPath)) {
-                unlink($oldPdfPath);
+            if (!empty($personalActual['ruta'])) {
+                $oldPdfPath = $uploadDir . $personalActual['ruta'];
+                if (file_exists($oldPdfPath)) {
+                    unlink($oldPdfPath);
+                }
             }
-
             // Guardar el nuevo archivo PDF
             if (move_uploaded_file($_FILES['fileCedula']['tmp_name'], $savePath)) {
                 // Archivo subido exitosamente
