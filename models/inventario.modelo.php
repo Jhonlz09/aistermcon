@@ -15,7 +15,7 @@ class ModeloInventario
                 JOIN tblcategoria c on c.id= i.id_categoria
                 JOIN tblunidad u on u.id= i.id_unidad
                 JOIN tblubicacion p on p.id= i.id_percha
-                JOIN tblstock_inicial si on si.id_producto = i.id
+                LEFT JOIN tblstock_inicial si on si.id_producto = i.id
                 WHERE i.estado=true
                 ORDER BY id ASC");
             $l->execute();

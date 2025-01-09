@@ -810,9 +810,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
         $(cboAnio).on("change", function() {
             let a = this.options[this.selectedIndex].text
-            if (a == anio) {
-                return;
-            }
+            // if (a == anio) {
+            //     return;
+            // }
             anio = a
             tblHistorial.ajax.reload();
             // Parámetros POST

@@ -55,9 +55,7 @@ class ControladorPersonal
             echo json_encode(['status' => 'danger', 'm' => 'Personal no encontrado']);
             return;
         }
-        // Obtener la información del personal actual
-        // $personalActual = ModeloPersonal::mdlObtenerPersonalPorId($this->id);
-        // Verificar si se ha subido un nuevo archivo PDF
+
         if (isset($_FILES['fileCedula']) && $_FILES['fileCedula']['type'] === 'application/pdf') {
             $fechaActual = date('d-m-Y');
             $uploadDir = '/var/www/cedula_personal/';

@@ -42,8 +42,8 @@ class ModeloPersonal
             $id_empleado = $conexion->lastInsertId();
 
             // Segunda inserción: tblpersonal
-            $stmt = $conexion->prepare("INSERT INTO tblpersonal(id_empleado, fecha_ini, fecha_cor, sueldo, ruta) VALUES(:id_e, :fecha_ini, :fecha_cor, :sueldo, :ruta)");
-            $stmt->bindParam(':id_e', $id_empleado, PDO::PARAM_INT);
+            $stmt = $conexion->prepare("INSERT INTO tblpersonal(id_empleado, fecha_ini, fecha_cor, sueldo, ruta) VALUES(:id_empleado, :fecha_ini, :fecha_cor, :sueldo, :ruta)");
+            $stmt->bindParam(':id_empleado', $id_empleado, PDO::PARAM_INT);
             $stmt->bindParam(':fecha_ini', $fecha_ini, PDO::PARAM_STR);
             $stmt->bindParam(':fecha_cor', $fecha_cor, PDO::PARAM_STR);
             $stmt->bindParam(':sueldo', $sueldo, PDO::PARAM_INT);
@@ -74,7 +74,6 @@ class ModeloPersonal
         } catch (Exception $e) {
             // Revertir transacción en caso de error general
             $conexion->rollBack();
-
             return array(
                 'status' => 'danger',
                 'm' => 'No se pudo agregar el empleado: ' . $e->getMessage()
@@ -86,7 +85,7 @@ class ModeloPersonal
     {
         try {
             $db = Conexion::ConexionDB();
-            $db->beginTransaction(); // Iniciar transacción
+            $db->beginTransaction();
             // Actualizar la tabla tblempleado
             $u = $db->prepare("UPDATE tblempleado SET cedula=:cedula, nombre=:nombres, apellido=:apellido WHERE id=:id");
             $u->bindParam(":id", $id, PDO::PARAM_INT);
@@ -164,9 +163,9 @@ class ModeloPersonal
     public static function mdlObtenerPersonalPorId($id) {
         try {
             $consulta = "SELECT p.ruta
-                         FROM tblempleado e
-                         LEFT JOIN tblpersonal p ON e.id = p.id_empleado
-                         WHERE e.id = :id";
+                            FROM tblempleado e
+                            LEFT JOIN tblpersonal p ON e.id = p.id_empleado
+                            WHERE e.id = :id";
             $stmt = Conexion::ConexionDB()->prepare($consulta);
             $stmt->bindParam(":id", $id, PDO::PARAM_INT);
             $stmt->execute();

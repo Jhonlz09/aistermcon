@@ -418,8 +418,8 @@
             apellido.value = row["apellido"];
             ruta_ced = row["ruta"] ?? '';
             setChange(cboRol, row["id_rol"])
-            fecha_ini.value = convertirFecha(row["fecha_ini"]);
-            fecha_cor.value = convertirFecha(row["fecha_cor"]);
+            fecha_ini.value = convertirFecha(row["fecha_ini"]) ?? '';
+            fecha_cor.value = convertirFecha(row["fecha_cor"]) ?? '';
             sueldo.value = parseFloat(row["sueldo"].replace(/[$,]/g, ''));
             $('.ten').hide();
         });
@@ -457,8 +457,8 @@
                 }
                 return;
             }
-            const id_e = id.value;
-            datos.append('id', id_e);
+            // const id_e = id.value;
+            datos.append('id', id.value);
             datos.append('cedula', ced);
             datos.append('nombre', nom);
             datos.append('apellido', ape);
@@ -471,6 +471,9 @@
         });
 
         function convertirFecha(fecha) {
+            if (!fecha) {
+                return null;
+            }
             let [day, month, year] = fecha.split('/');
             return `${year}-${month}-${day}`;
         }
