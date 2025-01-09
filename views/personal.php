@@ -123,11 +123,10 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="input-data">
-                                                <input autocomplete="off" id="sueldo" inputmode="numeric" class="input-nuevo" type="text" oninput="validarNumber(this,/[^0-9.]/g)" maxlength="10" required>
+                                                <input autocomplete="off" id="sueldo" inputmode="numeric" class="input-nuevo" type="text" oninput="validarNumber(this,/[^0-9.]/g)" maxlength="10">
                                                 <div class="line underline"></div>
                                                 <label for="sueldo" class="label">
                                                     <i class="fas fa-sack-dollar"></i> Sueldo</label>
-                                                <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
                                         </div>
                                     </div>
@@ -137,14 +136,12 @@
                                         <div class="col-sm-6 form-group">
                                             <label class="combo" style="line-height:.8" for="fecha_ini">
                                                 <i class="fas fa-calendar"></i> Fecha de inicio</label>
-                                            <input id="fecha_ini" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
-                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                            <input id="fecha_ini" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
                                         </div>
                                         <div class="col-sm-6 form-group">
                                             <label class="combo" style="line-height:.8" for="fecha_cor">
                                                 <i class="fas fa-calendar"></i> Fecha de corte</label>
-                                            <input id="fecha_cor" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
-                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                            <input id="fecha_cor" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
@@ -167,7 +164,6 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Pdf cédula</label>
                                     <input type="file" name="fileCedula" id="fileCedula" class="form-control" accept=".pdf">
-                                    <div class="ten no-margin">*Debe selecionar un archivo .pdf</div>
                                 </div>
                             </div>
                         </div>
@@ -223,7 +219,7 @@
 
     configuracionTable = {
         "responsive": true,
-        "dom": 'pt',
+        "dom": '<"row"<"col-md-6"B><"col-md-6"p>>t',
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
@@ -259,7 +255,6 @@
                 data: null,
                 visible: mostrarCol,
                 render: function(data, type, row, full, meta) {
-
                     // let ruta = true;
                     let ruta = row.ruta ?? '';
                     return (
@@ -284,6 +279,111 @@
                 },
             },
         ],
+        buttons: [{
+                extend: "excelHtml5",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied",
+                },
+                text: "<i class='fa-regular fa-file-xls fa-xl'style='color: #0a8f00'></i>",
+                titleAttr: "Exportar a Excel",
+                title: "LISTADO DE PERSONAL",
+                className: "btn btn-light",
+            },
+            {
+                extend: "pdfHtml5",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied",
+                },
+                text: "<i class='fa-regular fa-file-pdf fa-xl' style='color: #bd0000'></i>",
+                titleAttr: "Exportar a PDF",
+                className: "btn btn-light",
+                title: "LISTADO DE PERSONAL",
+                customize: function(doc) {
+                    var now = new Date();
+                    var jsDate = now.getDate() + "/" + (now.getMonth() + 1) + "/" + now.getFullYear();
+                    doc.content.splice(0, 1);
+                    doc.pageMargins = [40, 90, 40, 50];
+                    doc["header"] = function() {
+                        return {
+                            columns: [{
+                                    alignment: "left",
+                                    text: "LISTADO DE PERSONAL",
+                                    fontSize: 14,
+                                    margin: [20, 25],
+                                },
+                                {
+                                    alignment: "right",
+                                    margin: [20, 0],
+                                    text: ["Creado el: ", {
+                                        text: jsDate.toString()
+                                    }],
+                                },
+
+                            ],
+                            margin: 20,
+                        };
+                    };
+
+                    var objLayout = {};
+                    objLayout["hLineWidth"] = function(i) {
+                        return 1;
+                    };
+                    objLayout["vLineWidth"] = function(i) {
+                        return 0.5;
+                    };
+                    objLayout["hLineColor"] = function(i) {
+                        return "#aaa";
+                    };
+                    objLayout["vLineColor"] = function(i) {
+                        return "#aaa";
+                    };
+                    doc.content[0].layout = objLayout;
+
+                    doc["footer"] = function(page, pages) {
+                        return {
+                            columns: [{
+                                alignment: "right",
+                                text: [
+                                    "pag ",
+                                    {
+                                        text: page.toString()
+                                    },
+                                    " de ",
+                                    {
+                                        text: pages.toString()
+                                    },
+                                ],
+                            }, ],
+                            margin: [20, 10, 40, 10],
+                        };
+                    };
+                },
+            },
+            {
+                extend: "print",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied"
+                },
+                oSelectorOpts: {
+                    filter: "applied",
+                    order: "current"
+                },
+                text: "<i class='fa fa-print fa-xl'</i>",
+                titleAttr: "Imprimir",
+                className: "btn btn-light",
+                title: "LISTADO DE PERSONAL",
+            },
+            {
+                extend: "colvis",
+                className: "btn btn-light font-weight-bold",
+            }
+        ]
     }
 
     $(document).ready(function() {

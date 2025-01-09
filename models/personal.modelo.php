@@ -31,7 +31,15 @@ class ModeloPersonal
 
             // Iniciar transacción
             $conexion->beginTransaction();
-
+            if (empty($fecha_cor)) {
+                $fecha_cor = null;
+            }
+            if (empty($fecha_ini)) {
+                $fecha_ini = null;
+            }
+            if (empty($sueldo)) {
+                $sueldo = null;
+            }
             // Primera inserción: tblempleado
             $a = $conexion->prepare("INSERT INTO tblempleado(cedula, nombre, apellido) VALUES(:cedula, :nombres, :apellidos)");
             $a->bindParam(":cedula", $cedula, PDO::PARAM_STR);
@@ -86,6 +94,15 @@ class ModeloPersonal
         try {
             $db = Conexion::ConexionDB();
             $db->beginTransaction();
+            if (empty($fecha_cor)) {
+                $fecha_cor = null;
+            }
+            if (empty($fecha_ini)) {
+                $fecha_ini = null;
+            }
+            if (empty($sueldo)) {
+                $sueldo = null;
+            }
             // Actualizar la tabla tblempleado
             $u = $db->prepare("UPDATE tblempleado SET cedula=:cedula, nombre=:nombres, apellido=:apellido WHERE id=:id");
             $u->bindParam(":id", $id, PDO::PARAM_INT);
