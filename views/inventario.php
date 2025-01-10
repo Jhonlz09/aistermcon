@@ -129,7 +129,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
                                 </div>
-                                <div class="col-sm">
+                                <div class="col-xxl-6 col">
                                     <div class="input-data s1">
                                         <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
                                         <label class="label"><i class="fas fa-cubes"></i> Cantidad</label>

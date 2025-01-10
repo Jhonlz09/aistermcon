@@ -30,7 +30,7 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col col-p">
-                                    <h3 style="white-space:normal;" class="card-title ">Listado de empleados / clientes</h3>
+                                    <h3 style="white-space:normal;" class="card-title ">Listado de horario de personal</h3>
                                 </div>
                                 <div class="col-sm-8 p-0">
                                     <div class="card-tools">
@@ -44,23 +44,32 @@
                         </div>
                     </div>
                     <!-- /.card-header -->
-                    <div id="card_empleados" class="card-body p-0">
-                        <table id="tblEmpleados" class="table table-bordered table-striped">
+                    <div class="card-body p-0">
+                        <!-- <div class="table-responsive"> -->
+                        <table id="tblHorario" cellspacing="0" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th class="filterhead"></th>
+                                    <th class="filterhead"></th>
+                                    <th class="filterhead"></th>
+                                    <th class="filterhead"></th>
+                                    <th class="filterhead"></th>
+                                    <th class="filterhead"></th>
+
+                                </tr>
+                                <tr>
                                     <th class="text-center">Nº</th>
-                                    <th>CÉDULA</th>
                                     <th>NOMBRES</th>
-                                    <th>APELLIDOS</th>
-                                    <th>TELÉFONO</th>
-                                    <th>EMPRESA</th>
-                                    <th class="text-center">ROL</th>
+                                    <th>Nº DE ORDEN</th>
+                                    <th>CLIENTE</th>
+                                    <th>FECHA</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
                         </table>
+                        <!-- </div> -->
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -79,7 +88,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green">
-                <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Empleado/Cliente</span></h4>
+                <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Horario</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -167,7 +176,7 @@
                                                 <div class="invalid-feedback">*Campo obligatorio</div>
                                             </div>
                                             <div class="span-btn r" style="padding-right:.5rem;">
-                                            <span class="new-span badge bg-gradient-dark" data-icon="fa-id-badge" data-title='Nuevo' data-value="Rol" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
+                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-id-badge" data-title='Nuevo' data-value="Rol" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
                                                 <span style="display:none" class="dis e-span badge bg-gradient-dark" data-target='#modalS' data-icon="fa-id-badge" data-value="Rol" data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
                                             </div>
 
@@ -260,19 +269,10 @@
             },
             {
                 targets: 3,
-                responsivePriority: 1,
             },
             {
-                targets: 6,
-                className: "text-center",
-                render: function(data, type, full, meta) {
-                    return "<span class='alert alert-default-primary'>" + data + "</span>";
-                }
-            },
-            {
-                targets: 7,
-                responsivePriority: 2,
-                data: "acciones",
+                targets: 5,
+                data: 'acciones',
                 visible: mostrarCol,
                 render: function(data, type, row, full, meta) {
                     return (
@@ -290,23 +290,48 @@
                 },
             },
         ],
+        initComplete: function() {
+            var api = this.api();
+            $('.filterhead', api.table().header()).each(function(i) {
+                var column = api.column(i);
+                if (i === 0 || i === api.columns().count() - 1) {
+                    // No agregar ningún elemento en la columna 0 y la última columna
+                    $(this).empty();
+                    return;
+                }
+
+                var inputType = 'text';
+                if (i === 4) { // Columna de fecha
+                    inputType = 'date';
+                }
+
+                var input = $('<input style="border-bottom-width:2px;padding:0" class="form-control responsive-input" type="' + inputType + '" placeholder="Buscar" />')
+                    .appendTo($(this).empty())
+                    .on('input', function() {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search(val ? '^' + val + '$' : '', true, false)
+                            .draw();
+                    });
+            });
+        }
     }
+
+
 
     $(document).ready(function() {
         let accion = 0;
-        let accion_select = 0;
-        let empresa_filter = 0;
 
-        if (!$.fn.DataTable.isDataTable('#tblEmpleados')) {
-            tabla = $("#tblEmpleados").DataTable({
+
+        if (!$.fn.DataTable.isDataTable('#tblHorario')) {
+            tabla = $("#tblHorario").DataTable({
                 "ajax": {
-                    "url": "controllers/empleados.controlador.php",
+                    "url": "controllers/horario.controlador.php",
                     "type": "POST",
                     "dataSrc": '',
-                    data: function(data) {
-                        data.accion = accion;
-                        data.id_empresa = empresa_filter;
-                    }
                 },
                 ...configuracionTable
             });
@@ -321,12 +346,30 @@
                 }
 
                 let tablaData = tabla.rows().data().toArray();
-                localStorage.setItem('empleados', JSON.stringify(tablaData));
+                localStorage.setItem('horario', JSON.stringify(tablaData));
             });
+
         }
 
-        $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-buildings"></i> Empresa:</label></div> <div class="col-sm"><select id="cboEmpresaFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"></select> </div>  </div>');
-        // $('.select-filter').html('<div class="row"><div class="col-sm-2"><label>Empresa: </label></div><div class="col-sm-10"><select id="cboEmpresaFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE"></select></div></div>');
+
+        // tabla.on('responsive-resize', function(e, datatable, columns) {
+        //     // Encontrar el índice de la última columna visible
+        //     let lastVisibleColumnIndex = columns.reduce((lastIndex, col, index) => {
+        //         return col.responsiveHidden ? lastIndex : index;
+        //     }, -1);
+
+        //     // Iterar sobre todas las columnas del encabezado
+        //     $('#tblHorario thead tr:first-child th').each(function(index) {
+        //         // Si es la última columna visible, asegurarse de que no tenga la clase 'd-none'
+        //         // Si no lo es, no hacer nada (para no ocultar las otras columnas)
+        //         if (index === lastVisibleColumnIndex) {
+        //             $(this).removeClass('d-none');
+        //         } else {
+        //             $(this).addClass('d-none');
+        //         }
+        //     });
+        // });
+
 
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
@@ -348,35 +391,8 @@
             cedula = document.getElementById('cedula'),
             nombre = document.getElementById('nombre'),
             apellido = document.getElementById('apellido'),
-            celular = document.getElementById('celular'),
-            cboEmpresa = document.getElementById('cboEmpresa'),
-            cboEmpresaFilter = document.getElementById('cboEmpresaFilter'),
-            cboRol = document.getElementById('cboRol'),
-            cboPlaca = document.getElementById('cboPlaca');
+            celular = document.getElementById('celular');
 
-        let datos_empresa;
-
-        cargarCombo('Empresa');
-
-        cargarCombo('EmpresaFilter', '', 10)
-
-        cargarCombo('Placa');
-
-        cargarCombo('Rol');
-
-        $('#cboRol').select2({
-            minimumResultsForSearch: -1,
-        })
-
-        $('#cboEmpresa').select2({
-            minimumResultsForSearch: -1,
-        })
-
-        $('#cboPlaca').select2({})
-
-        $('#cboEmpresaFilter').select2({
-            width: '100%',
-        })
 
         OverlayScrollbars(document.querySelector('.scroll-modal'), {
             autoUpdate: true,
@@ -452,7 +468,7 @@
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
                 const icon = document.querySelector('.modal-title i');
-                cambiarModal(span, ' Nuevo Empleado/Cliente', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
+                cambiarModal(span, ' Nuevo Horario', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
@@ -465,28 +481,7 @@
                 $('.ten').hide();
             });
         }
-
-        $(cboEmpresaFilter).on("change", function() {
-            empresa_filter = this.value;
-            console.log(empresa_filter);
-            accion = 0;
-            tabla.ajax.reload(null, false);
-        });
-
-        $(cboEmpresa).change(function() {
-            estilosSelect2(this, 'lblE')
-        });
-
-        $(cboRol).change(function() {
-            opcionSelect(this, 'r')
-            estilosSelect2(this, 'lblR')
-        });
-
-        $(cboPlaca).change(function() {
-            estilosSelect2(this, 'lblP', 'multiple')
-        });
-
-        $('#tblEmpleados tbody').on('click', '.btnEliminar', function() {
+        $('#tblHorario tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
             accion = 3
             const id_e = e["id"];
@@ -495,9 +490,9 @@
             src.append('accion', accion);
             src.append('id', id_e);
             accion = 0;
-            confirmarEliminar('este', 'empleado', function(r) {
+            confirmarEliminar('este', 'horario de empleado', function(r) {
                 if (r) {
-                    confirmarAccion(src, 'empleados', tabla, '', function(r) {
+                    confirmarAccion(src, 'horario', tabla, '', function(r) {
                         cargarCombo('Conductor', '', 2);
                         cargarCombo('Despachado', '', 6);
                         cargarCombo('Responsable', '', 7)
@@ -506,11 +501,11 @@
             });
         });
 
-        $('#tblEmpleados tbody').on('click', '.btnEditar', function() {
+        $('#tblHorario tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             accion = 2;
             const icon = document.querySelector('.modal-title i');
-            cambiarModal(span, ' Editar Empleado/Cliente', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Editar Horario', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             select.forEach(function(s) {
                 s.classList.remove('select2-success');
                 s.classList.add('select2-warning');
@@ -537,7 +532,7 @@
                 rol = cboRol.value,
                 pla = $(cboPlaca).val();
 
-                
+
             if (!this.checkValidity() || ced.length < 10 || tel.length < 10) {
                 this.classList.add('was-validated');
                 if (ced.length > 0 && ced.length < 10) {
@@ -561,7 +556,7 @@
             datos.append('accion', accion);
             accion = 0;
             empresa_filter = cboEmpresaFilter.value;
-            confirmarAccion(datos, 'empleados', tabla, modal, function(r) {
+            confirmarAccion(datos, 'horario', tabla, modal, function(r) {
                 cargarCombo('Conductor', '', 2);
                 cargarCombo('Despachado', '', 6);
                 cargarCombo('Responsable', '', 7);

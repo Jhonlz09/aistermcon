@@ -105,23 +105,23 @@
 
     configuracionTable = {
         "responsive": true,
-        "dom": 'tp',
+        "dom": 'Ptp',
         "lengthChange": false,
         "pageLength": 100,
         "ordering": false,
         "autoWidth": false,
         "paging": true,
-        // searchPanes: {
-        //     cascadePanes: true,
-        //     columns: [2, 8, 9],
-        //     initCollapsed: true,
-        //     threshold: 0.8, // Ajusta este valor según tus necesidades
-        //     dtOpts: {
-        //         select: {
-        //             style: 'multiple'
-        //         }
-        //     },
-        // },
+        searchPanes: {
+            cascadePanes: true,
+            columns: [2, 8, 9],
+            initCollapsed: true,
+            threshold: 0.8, // Ajusta este valor según tus necesidades
+            dtOpts: {
+                select: {
+                    style: 'multiple'
+                }
+            },
+        },
 
         rowGroup: {
             dataSrc: [4],

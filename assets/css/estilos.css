@@ -318,6 +318,17 @@ font-size: 1rem;
     font-size: 1.45rem
 }
 
+/* .responsive-input {
+    box-sizing: border-box;
+} */
+
+/* @media (max-width: 768px) {
+    .responsive-input {
+        width: auto;
+        display: block;
+        margin-bottom: 10px;
+    }
+} */
 
 .control-sidebar:has(#radio-3:checked):not(.modal-body *) {
     --label-star: #2c6cb1;
