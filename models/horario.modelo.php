@@ -8,7 +8,7 @@ class ModeloHorario
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT h.id, e.nombre || ' ' || e.apellido as nombres,
-             o.nombre as orden, c.nombre as cliente,  TO_CHAR(h.fecha, 'MM-DD-YYYY') , null as acciones
+             o.nombre as orden, c.nombre as cliente,  TO_CHAR(h.fecha, 'DD/MM/YYYY') , null as acciones
 	            FROM public.tblhorario h
 	            JOIN tblorden o ON o.id = h.id_orden
 	            JOIN tblempleado e ON e.id = h.id_empleado 

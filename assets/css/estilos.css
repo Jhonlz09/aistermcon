@@ -44,6 +44,11 @@
     color: #fff;
 }
 
+
+button.dtsp-collapseButton, button.dtsp-collapseButton:focus, button.dtsp-collapseButton:hover, button.dtsp-collapseButton:active {
+    background-color: transparent!important;
+    border: none!important;
+}
 .dtsp-panes.dtsp-panesContainer {
     padding: 0 .75rem;
 }
@@ -560,7 +565,7 @@ input[type="number"] {
 
 }
 
-#tblInforme tr.dtrg-group {
+#tblInforme tr.dtrg-group, .th-blue {
     color: #004085;
     background-color: #cfe6fe;
     --btn-row-color: #004085;
@@ -571,7 +576,12 @@ input[type="number"] {
     border: 1px solid #b8daff;
 }
 
-#tblEntradas tr.dtrg-group {
+.th-orange {
+    color: #BE5014;
+    background-color: #FBE2D5;
+}
+
+#tblEntradas tr.dtrg-group, .th-green {
     color: #155724;
     background-color: #d4edda;
     --btn-row-color: #155724;

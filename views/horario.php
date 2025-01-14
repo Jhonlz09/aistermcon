@@ -4,7 +4,7 @@
     <title>Ingreso personal</title>
 </head>
 <!-- Contenido Header -->
-<section class="content-header">
+<section id="div_header" class="content-header">
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
@@ -12,8 +12,8 @@
             </div>
             <?php if (isset($_SESSION["crear20"]) && $_SESSION["crear20"] === true) : ?>
                 <div class="col">
-                    <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
-                        <i class="fa fa-plus"></i> Nuevo</button>
+                    <button id="btnNuevo" class="btn bg-gradient-green">
+                        <i class="fa fa-plus"></i> Agregar horario</button>
                 </div>
             <?php endif; ?>
         </div><!-- /.row -->
@@ -21,7 +21,7 @@
 </section>
 <!-- /.content-header -->
 <!-- Main content -->
-<section class="content">
+<section id="div_content" class="content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -30,7 +30,7 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col col-p">
-                                    <h3 style="white-space:normal;" class="card-title ">Listado de horario de personal</h3>
+                                    <h3 style="white-space:normal;" class="card-title ">Listado de horario</h3>
                                 </div>
                                 <div class="col-sm-8 p-0">
                                     <div class="card-tools">
@@ -48,15 +48,7 @@
                         <!-- <div class="table-responsive"> -->
                         <table id="tblHorario" cellspacing="0" class="table table-bordered table-striped">
                             <thead>
-                                <tr>
-                                    <th class="filterhead"></th>
-                                    <th class="filterhead"></th>
-                                    <th class="filterhead"></th>
-                                    <th class="filterhead"></th>
-                                    <th class="filterhead"></th>
-                                    <th class="filterhead"></th>
 
-                                </tr>
                                 <tr>
                                     <th class="text-center">Nº</th>
                                     <th>NOMBRES</th>
@@ -83,12 +75,157 @@
 </section>
 <!-- /.Contenido -->
 
+<section id="div_hor_header" style="display:none" class="content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-auto">
+                <h4>
+                    <i id="btnReturn" style="cursor:pointer" class="fa-regular fa-circle-arrow-left"></i><span id="text_accion"> Nuevo horario</span>
+                </h4>
+            </div>
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+<section id="div_hor_filter" class="content" style="display: none;">
+    <div class="container-fluid">
+        <div class="row" style="align-items:flex-start">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3 mb-2">
+                                <label for="input1" class="m-0"><i class="fas fa-person-digging"></i> Obra</label>
+                                <input type="text" id="input1" class="form-control">
+                            </div>
+                            <div class="col-sm-3 mb-2">
+                                <label for="input2" class="m-0"><i class="fas fa-calendar"></i> Fecha</label>
+                                <input type="date" id="input2" class="form-control">
+                            </div>
+                            <div class="col-sm-3 mb-2">
+                                <label for="input2" class="m-0"><i class="fas fa-user-helmet-safety"></i> Personas</label>
+                                <input type="text" id="input2" class="form-control">
+                            </div>
+                            <div class="col-sm-3 mb-2">
+                                <div class="row">
+                                    <div class="col-sm ">
+                                        <label for="input3" class="m-0"><i class="fas fa-table-rows"></i> Filas</label>
+                                        <input type="text" id="input3" class="form-control">
+                                    </div>
+                                    <div class="col-sm mt-2">
+                                        <button type="button" id="addRow" class="btn btn-sm bg-gradient-green">
+                                            Agregar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</section>
+<section id="div_hor" class="content" style="display: none;">
+    <div class="container-fluid">
+        <div class="row" style="align-items:flex-start">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <form id="formHorario">
+                            <div class="table-responsive" style="padding:0;border:1px solid #ccc;border-radius: 4px;">
+                                <table id="tblPersonH" class="table table-bordered w-100 table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="4"></th>
+                                            <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
+                                            <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="th-orange">NOMBRES</th>
+                                            <th class="th-orange">CLIENTE</th>
+                                            <th class="th-orange">Nº DE ORDEN</th>
+                                            <th class="th-orange">FECHA</th>
+                                            <th class="th-green">HORARIO NORMAL</th>
+                                            <th class="th-green">HORA SUPLEMENTARIA</th>
+                                            <th class="th-green">HORA 100%</th>
+                                            <th class="th-green">TOTAL DE HORAS</th>
+                                            <th class="th-blue">MATERIAL</th>
+                                            <th class="th-blue">TRANSPORTE</th>
+                                            <th class="th-blue">ALIMENTACION</th>
+                                            <th class="th-blue">HOSPEDAJE</th>
+                                            <th class="th-blue">GUARDIANIA</th>
+                                            <th class="th-blue">AGUA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="col-xl-3" style="position:sticky;top:10%">
+                        <div class="card">
+                            <div class="card-body">
+                                <div>
+                                    <div class="d-flex justify-content-around">
+                                        <div class="custom-control custom-radio">
+                                            <input class="custom-control-input" type="radio" id="customRadio1" name="customRadio" data-tax="0" value="0">
+                                            <label for="customRadio1" class="custom-control-label">0%</label>
+                                        </div>
+                                        <div class="custom-control custom-radio">
+                                            <input class="custom-control-input" type="radio" id="customRadio2" name="customRadio" data-tax="5" value="05">
+                                            <label for="customRadio2" class="custom-control-label">5%</label>
+                                        </div>
+                                        <div class="custom-control custom-radio">
+                                            <input class="custom-control-input" type="radio" id="customRadio3" name="customRadio" data-tax="<?php echo $_SESSION["iva"]; ?>" value="<?php echo $_SESSION["iva"]; ?>" checked>
+                                            <label for="customRadio3" class="custom-control-label">
+                                                <?php echo $_SESSION["iva"]; ?>%
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Descuento:</span>
+                                        <span><input type="text" id="otros" readonly maxlength="6" class="form-control p-0 d-inline" autocomplete="off" spellcheck="false" placeholder="$0.00" oninput="validarNumber(this, /[^0-9.]/g)" style="background-color:#fff;border:none;width:100%;height:auto;max-width:4.8em;text-align:right"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Subtotal:</span>
+                                        <span id="subtotal">$0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>(IVA <span id="tax"><?php echo $_SESSION["iva"] ?></span>%):</span>
+                                        <span id="can_tax">$0.00</span>
+                                    </div>
+
+                                    <hr>
+                                    <div class="d-flex justify-content-between font-weight-bold">
+                                        <span>Total:</span>
+                                        <span id="total">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <button type="button" id="btnGuardarSoli" style="margin-bottom:.75rem;background:#3f6791 linear-gradient(180deg, #3f6791, #0b4395) repeat-x; color:#fff" class="btn w-100"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                                <button type="button" id="CerrarSoli" style="border-color:#d6d8df69" class="btn bg-gradient-light w-100"><i class="fas fa-right-from-bracket"></i><span class="button-text"> </span>Cancelar</button>
+                            </div>
+                        </div>
+                    </div> -->
+        </div>
+    </div>
+    </div>
+</section>
 <!-- Modal -->
 <div class="modal fade" id="modal">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green">
-                <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Horario</span></h4>
+                <h4 class="modal-title"><i class="fas fa-calendar-circle-user"></i><span> Nuevo Horario</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -96,7 +233,7 @@
             <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
                 <div class="modal-body scroll-modal" style="padding-block:1rem .5rem">
                     <input type="hidden" id="id" value="">
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="col-md-6">
@@ -200,6 +337,51 @@
                                 </div>
                             </div>
                         </div>
+                    </div> -->
+                    <div class="table-responsive">
+                        <table id="tblPersonH" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th colspan="4"></th>
+                                    <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
+                                    <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
+                                </tr>
+                                <tr>
+                                    <th class="th-orange">NOMBRES</th>
+                                    <th class="th-orange">CLIENTE</th>
+                                    <th class="th-orange">Nº DE ORDEN</th>
+                                    <th class="th-orange">FECHA</th>
+                                    <th class="th-green">HORARIO NORMAL</th>
+                                    <th class="th-green">HORA SUPLEMENTARIA</th>
+                                    <th class="th-green">HORA 100%</th>
+                                    <th class="th-green">TOTAL DE HORAS</th>
+                                    <th class="th-blue">MATERIAL</th>
+                                    <th class="th-blue">TRANSPORTE</th>
+                                    <th class="th-blue">ALIMENTACION</th>
+                                    <th class="th-blue">HOSPEDAJE</th>
+                                    <th class="th-blue">GUARDIANIA</th>
+                                    <th class="th-blue">AGUA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row" style="margin-top:1.4rem;">
+                        <div class="col-md-4 form-inline">
+                            <label for="input1" class="mr-2">Obra</label>
+                            <input type="text" id="input1" class="form-control">
+                        </div>
+                        <div class="col-md-4 form-inline">
+                            <label for="input2" class="mr-2">Fecha</label>
+                            <input type="date" id="input2" class="form-control">
+                        </div>
+                        <div class="col-md-4 form-inline" style="display: flex; align-items: center; gap: 12px;">
+                            <input type="text" id="rowCount" style="width:4rem;border-bottom: 2px solid var(--select-border-bottom)" class="form-control text-center" oninput="validarNumber(this,/[^0-9]/g)" maxlength="2" inputmode="numeric" autocomplete="off" maxlength="6" oninput="validarCantidad(this)" value="1">
+                            <button type="button" id="addRow" class="btn bg-gradient-green">
+                                <i class="fas fa-table-rows"></i> Agregar filas
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -207,38 +389,7 @@
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<div class="modal fade" id="modalS" style="background-color:#424a51b0;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);">
-    <div class="modal-dialog modal-sm" style="top:20%">
-        <div class="modal-content">
-            <div class="modal-header bg-gradient-green">
-                <h4 id="span-title" class="modal-title"><i class="fa-solid "></i><span></span></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="formNuevoS" class="needs-validation" autocomplete="off" novalidate>
-                <div class="modal-body">
-                    <input type="hidden" id="idS" value="">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="input-data">
-                                <input autocomplete="off" id="nombreS" class="input-nuevo" type="text" required>
-                                <label class="label"></label>
-                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardarS" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
-                </div>
-            </form>
+
         </div>
         <!-- /.modal-content -->
     </div>
@@ -252,10 +403,21 @@
 
     configuracionTable = {
         "responsive": true,
-        "dom": '<"row"<"col-sm-6 select-filter"><"col-sm-6"p>>t',
+        "dom": 'Ptp',
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
+        searchPanes: {
+            cascadePanes: true,
+            columns: [1, 2, 3],
+            initCollapsed: true,
+            threshold: 0.8, // Ajusta este valor según tus necesidades
+            dtOpts: {
+                select: {
+                    style: 'multiple'
+                }
+            },
+        },
         columnDefs: [{
                 targets: 0,
                 data: "acciones",
@@ -290,37 +452,35 @@
                 },
             },
         ],
-        initComplete: function() {
-            var api = this.api();
-            $('.filterhead', api.table().header()).each(function(i) {
-                var column = api.column(i);
-                if (i === 0 || i === api.columns().count() - 1) {
-                    // No agregar ningún elemento en la columna 0 y la última columna
-                    $(this).empty();
-                    return;
-                }
+        // initComplete: function() {
+        //     var api = this.api();
+        //     $('.filterhead', api.table().header()).each(function(i) {
+        //         var column = api.column(i);
+        //         if (i === 0 || i === api.columns().count() - 1) {
+        //             // No agregar ningún elemento en la columna 0 y la última columna
+        //             $(this).empty();
+        //             return;
+        //         }
 
-                var inputType = 'text';
-                if (i === 4) { // Columna de fecha
-                    inputType = 'date';
-                }
+        //         var inputType = 'text';
+        //         if (i === 4) { // Columna de fecha
+        //             inputType = 'date';
+        //         }
 
-                var input = $('<input style="border-bottom-width:2px;padding:0" class="form-control responsive-input" type="' + inputType + '" placeholder="Buscar" />')
-                    .appendTo($(this).empty())
-                    .on('input', function() {
-                        var val = $.fn.dataTable.util.escapeRegex(
-                            $(this).val()
-                        );
+        //         var input = $('<input style="border-bottom-width:2px;padding:0" class="form-control responsive-input" type="' + inputType + '" placeholder="Buscar" />')
+        //             .appendTo($(this).empty())
+        //             .on('input', function() {
+        //                 var val = $.fn.dataTable.util.escapeRegex(
+        //                     $(this).val()
+        //                 );
 
-                        column
-                            .search(val ? '^' + val + '$' : '', true, false)
-                            .draw();
-                    });
-            });
-        }
+        //                 column
+        //                     .search(val ? '^' + val + '$' : '', true, false)
+        //                     .draw();
+        //             });
+        //     });
+        // }
     }
-
-
 
     $(document).ready(function() {
         let accion = 0;
@@ -341,15 +501,31 @@
                     const b = document.body;
                     const s = b.scrollHeight;
                     const w = window.innerHeight;
-
                     handleScroll(b, s, w);
                 }
-
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('horario', JSON.stringify(tablaData));
             });
-
         }
+
+        tblPerson = $("#tblPersonH").DataTable({
+            "ajax": {
+                "url": "controllers/inventario.controlador.php",
+                "type": "POST",
+                "dataSrc": '',
+                data: function(data) {
+                    data.accion = 12;
+                    data.anio = 2025;
+                    data.id_producto = 0;
+                }
+            },
+            "dom": 't',
+            "responsive": false,
+            "pageLength": 100,
+            "lengthChange": false,
+            "ordering": false,
+            "autoWidth": false,
+        });
 
 
         // tabla.on('responsive-resize', function(e, datatable, columns) {
@@ -384,7 +560,9 @@
             iconElement = document.querySelector('#span-title i'),
             inputContent = document.getElementById('nombreS'),
             inputId = document.getElementById('idS'),
-            btnNuevo = document.getElementById('btnNuevo');
+            btnNuevo = document.getElementById('btnNuevo'),
+            btnReturn = document.getElementById('btnReturn');
+
 
 
         const id = document.getElementById('id'),
@@ -418,67 +596,48 @@
             }
         });
 
-        $(".new-span").on('click', function() {
-            accion_select = 1;
-            name = this.dataset.value;
-            const selectE = document.querySelector('#cbo' + name);
-            const iconS = this.dataset.icon;
-            const titleS = this.dataset.title;
-            inputId.value = selectE.value;
-            cambiarModal(spanE, ' ' + titleS + ' ' + name, iconElement, iconS, elementsE, 'bg-gradient-blue', 'bg-gradient-green', modalS, 'modal-new', 'modal-change')
-            formS.reset();
-            formS.classList.remove('was-validated');
+        btnReturn.addEventListener('click', function() {
+            ocultarFormulario();
         });
 
-        $(".e-span").on('click', function() {
-            accion_select = 2;
-            name = this.dataset.value;
-            const selectE = document.getElementById('cbo' + name);
-            const iconS = this.dataset.icon;
-            inputId.value = selectE.value;
-            inputContent.value = selectE.options[selectE.selectedIndex].textContent;
-            cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-green', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
-        });
+        function visibleForm(show) {
+            let look = show ? 'block' : 'none';
+            document.getElementById("div_cot").style.display = "none";
+            document.getElementById("div_content").style.display = "block";
+            $('#tblCotizacion').DataTable().columns.adjust().draw(false);
+            tblSolicitud.clear().draw();
+            document.getElementById("div_header").style.display = "block";
+        }
 
-        formS.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (!this.checkValidity()) {
-                this.classList.add('was-validated');
-                inputContent.focus();
-                return;
-            } else {
-                const ids = inputId.value;
-                const nombre = inputContent.value.trim().toUpperCase();
-                const tbl = 'tbl' + name.toLowerCase();
-                const data = new FormData();
-                data.append('id', ids);
-                data.append('nombre', nombre);
-                data.append('accion', accion_select);
-                data.append('tabla', tbl);
-                confirmarAccion(data, 'producto', null, modalS, function(res) {
-                    if (res) {
-                        cargarCombo(name, ids);
-                        cargarCombo('EmpresaFilter', '', 10)
-                    }
-                });
-            }
-        });
+        function novisibleForm(show) {
+            let look = show ? 'block' : 'none';
+            document.getElementById("div_cot").style.display = "none";
+            document.getElementById("div_content").style.display = "block";
+            $('#tblCotizacion').DataTable().columns.adjust().draw(false);
+            tblSolicitud.clear().draw();
+            document.getElementById("div_header").style.display = "block";
+        }
 
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                const icon = document.querySelector('.modal-title i');
-                cambiarModal(span, ' Nuevo Horario', icon, 'fa-user-plus', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
-                select.forEach(function(s) {
-                    s.classList.remove('select2-warning');
-                    s.classList.add('select2-success');
-                });
-                form.reset();
-                form.classList.remove('was-validated');
-                setChange(cboEmpresa, 0);
-                setChange(cboRol, 0);
-                setChange(cboPlaca, []);
-                $('.ten').hide();
+                // const icon = document.querySelector('.modal-title i');
+                // cambiarModal(span, ' Nuevo Horario', icon, 'fa-calendar-circle-user', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
+                // select.forEach(function(s) {
+                //     s.classList.remove('select2-warning');
+                //     s.classList.add('select2-success');
+                // });div_hor_filter
+                document.getElementById("div_hor_header").style.display = "block";
+                document.getElementById("div_hor_filter").style.display = "block";
+                document.getElementById("div_hor").style.display = "block";
+                document.getElementById("div_content").style.display = "table-column";
+                document.getElementById("div_header").style.display = "none";
+                // form.reset();
+                // form.classList.remove('was-validated');
+                // setChange(cboEmpresa, 0);
+                // setChange(cboRol, 0);
+                // setChange(cboPlaca, []);
+
             });
         }
         $('#tblHorario tbody').on('click', '.btnEliminar', function() {

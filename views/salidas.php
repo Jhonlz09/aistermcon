@@ -122,7 +122,6 @@
                 }
             },
         },
-
         rowGroup: {
             dataSrc: [4],
             // startRender: function(rows, group) {

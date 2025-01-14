@@ -286,8 +286,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                         </div>
                     </div>
                 </div> -->
-
-
                 <div class="row mb-3">
                     <div class="col-12 d-flex flex-column flex-md-row justify-content-between">
                         <div class="mb-2 mb-md-0">
@@ -300,12 +298,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                         </div>
                     </div>
                 </div>
-
                 <table id="tblHistorial" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>FECHA</th>
-                            <th>ORDEN DE TRABAJO</th>
+                            <th>Nº DE ORDEN</th>
                             <th>EMPRESA / PROVEEDOR</th>
                             <th>SALIDA</th>
                             <th>ENTRADA</th>
@@ -680,17 +677,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             "lengthChange": false,
             "ordering": false,
             "autoWidth": false,
-            columnDefs: [ //{
-                //         targets: 0,
-                //         data: null,
-                //         className: "text-center",
-                //         render: function(data, type, row, meta) {
-                //             if (type === 'display') {
-                //                 return meta.row + 1;
-                //             }
-                //             return meta.row;
-                //         }
-                //     },
+            columnDefs: [
                 {
                     targets: 3,
                     className: 'text-center',
