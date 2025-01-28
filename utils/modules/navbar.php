@@ -42,13 +42,17 @@ if (!isset($_SESSION["crear12"])) {
         </li>
 
         <li class="nav-item">
-
+            <a class="nav-link" data-toggle="dropdown" href="#" role="button" onclick="updateAll('content-wrapper', 'views/perfil.php')">
+                <i class="fas fa-rotate-right"></i>
+                <!-- <span class="badge badge-warning navbar-badge">15</span> -->
+            </a>
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
                 <i class="fas fa-user-gear"></i>
                 <!-- <span class="badge badge-warning navbar-badge">15</span> -->
             </a>
+
             <div class="dropdown-menu dropdown-menu-md dropdown-menu-right" style="left: inherit; right: 0px;">
                 <a class="dropdown-item setA" onclick="cargarContenido('content-wrapper', 'views/perfil.php')" role="button">
                     <i class="fas fa-user mr-2"></i> Cuenta

@@ -93,7 +93,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-sm-3 mb-2">
+                            <div class="col mb-2">
                                 <label for="input1" class="m-0"><i class="fas fa-person-digging"></i> Obra</label>
                                 <input type="text" id="input1" class="form-control">
                             </div>
@@ -102,16 +102,17 @@
                                 <input type="date" id="input2" class="form-control">
                             </div>
                             <div class="col-sm-3 mb-2">
-                                <label for="input2" class="m-0"><i class="fas fa-user-helmet-safety"></i> Personas</label>
-                                <input type="text" id="input2" class="form-control">
+                                <label for="input3" class="m-0 text-nowrap"><i class="fas fa-user-helmet-safety"></i> Persona</label>
+                                <!-- <input type="text" id="input3" class="form-control"> -->
+                                <span data-toggle="modal" data-target="#modal_personal" class="form-control badge bg-gradient-blue d-flex align-content-center align-items-center justify-content-center" style="width:3.5rem"><i class="fa-solid fa-up-right-from-square"></i></span>
                             </div>
                             <div class="col-sm-3 mb-2">
                                 <div class="row">
                                     <div class="col-sm ">
-                                        <label for="input3" class="m-0"><i class="fas fa-table-rows"></i> Filas</label>
+                                        <label for="input3" class="m-0 text-nowrap"><i class="fas fa-table-rows"></i> Filas</label>
                                         <input type="text" id="input3" class="form-control">
                                     </div>
-                                    <div class="col-sm mt-2">
+                                    <div class="col-auto mt-2">
                                         <button type="button" id="addRow" class="btn btn-sm bg-gradient-green">
                                             Agregar
                                         </button>
@@ -125,7 +126,6 @@
         </div>
     </div>
 </section>
-
 </section>
 <section id="div_hor" class="content" style="display: none;">
     <div class="container-fluid">
@@ -221,11 +221,12 @@
     </div>
 </section>
 <!-- Modal -->
-<div class="modal fade" id="modal">
-    <div class="modal-dialog modal-xl">
+
+<div class="modal fade" id="modal_personal">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green">
-                <h4 class="modal-title"><i class="fas fa-calendar-circle-user"></i><span> Nuevo Horario</span></h4>
+                <h4 class="modal-title"><i class="fas fa-calendar-circle-user"></i><span> Selecciona el personal</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -233,155 +234,17 @@
             <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
                 <div class="modal-body scroll-modal" style="padding-block:1rem .5rem">
                     <input type="hidden" id="id" value="">
-                    <!-- <div class="row">
-                        <div class="col-md-12">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="input-data">
-                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
-                                        <div class="line underline"></div>
-                                        <label for="nombre" class="label"><i class="fa-solid fa-signature"></i> Nombres</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-data">
-                                        <input autocomplete="off" id="apellido" class="input-nuevo" type="text" required>
-                                        <div class="line underline"></div>
-                                        <label for="apellido" class="label"><i class="fa-solid fa-signature"></i> Apellidos</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="input-data">
-                                                <input autocomplete="off" id="cedula" inputmode="numeric" class="input-nuevo" type="text" oninput="validarNumber(this,/[^0-9]/g,true)" maxlength="10" required>
-                                                <div class="line underline"></div>
-                                                <label for="cedula" class="label">
-                                                    <i class="fa-solid fa-id-card"></i> Cédula</label>
-                                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                <div class="ten">*Debe contener 10 dígitos</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="input-data">
-                                                <input autocomplete="off" id="celular" inputmode="numeric" class="input-nuevo" type="text" oninput="validarNumber(this,/[^0-9]/g,true)" maxlength="10" required>
-                                                <div class="line underline"></div>
-                                                <label for="celular" class="label">
-                                                    <i class="fa-solid fa-mobile-screen-button"></i> Teléfono</label>
-                                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                <div class="ten">*Debe contener 10 dígitos</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label id="lblE" class="mb-0 combo"><i class="fas fa-buildings"></i> Empresa</label>
-                                        <div class="row">
-                                            <div class="col">
-                                                <select id="cboEmpresa" class="cbo modalB form-control select2 select2-success" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE" required>
-                                                </select>
-                                                <div id="Empresa" class="invalid-feedback">*Campo obligatorio</div>
-                                            </div>
-                                            <div class="span-btn cat" style="padding-right:.5rem;">
-                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-buildings" data-title='Nueva' data-value="Empresa" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                                <?php if ($_SESSION["editar20"]) : ?>
-                                                    <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-buildings" data-value="Empresa" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
-                                                <?php endif; ?>
-                                                <?php if ($_SESSION["eliminar20"]) : ?>
-                                                    <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Empresa" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
-                                                <?php endif; ?>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group mb-4">
-                                        <label id="lblR" class="mb-0 combo"><i class="fas fa-id-badge"></i> Rol</label>
-                                        <div class="row">
-                                            <div class="col">
-                                                <select id="cboRol" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE" required>
-                                                </select>
-                                                <div class="invalid-feedback">*Campo obligatorio</div>
-                                            </div>
-                                            <div class="span-btn r" style="padding-right:.5rem;">
-                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-id-badge" data-title='Nuevo' data-value="Rol" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                                <span style="display:none" class="dis e-span badge bg-gradient-dark" data-target='#modalS' data-icon="fa-id-badge" data-value="Rol" data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6" id="div_placas">
-                                    <div class="form-group mb-4">
-                                        <label id="lblP" class="mb-0 combo"><i class="fas fa-rectangle-barcode"></i> Placa <span style="font-size:70%;">(opcional)</span> </label>
-                                        <div class="row">
-                                            <div class="col">
-                                                <select id="cboPlaca" class="form-control select2 select2-success" multiple="multiple" data-dropdown-css-class="select2-dark" style="width: 100%;">
-                                                </select>
-                                                <div class="invalid-feedback">*Campo obligatorio</div>
-                                            </div>
-                                            <div class="span-btn p" style="padding-right:.5rem;">
-                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-rectangle-barcode" data-title='Nueva' data-value="Placa" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="table-responsive">
-                        <table id="tblPersonH" class="table table-bordered table-striped">
+                        <table id="tblEmpleadoH" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th colspan="4"></th>
-                                    <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
-                                    <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
-                                </tr>
-                                <tr>
-                                    <th class="th-orange">NOMBRES</th>
-                                    <th class="th-orange">CLIENTE</th>
-                                    <th class="th-orange">Nº DE ORDEN</th>
-                                    <th class="th-orange">FECHA</th>
-                                    <th class="th-green">HORARIO NORMAL</th>
-                                    <th class="th-green">HORA SUPLEMENTARIA</th>
-                                    <th class="th-green">HORA 100%</th>
-                                    <th class="th-green">TOTAL DE HORAS</th>
-                                    <th class="th-blue">MATERIAL</th>
-                                    <th class="th-blue">TRANSPORTE</th>
-                                    <th class="th-blue">ALIMENTACION</th>
-                                    <th class="th-blue">HOSPEDAJE</th>
-                                    <th class="th-blue">GUARDIANIA</th>
-                                    <th class="th-blue">AGUA</th>
+                                    <th>N</th>
+                                    <th>NOMBRES Y APELLIDOS</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
                         </table>
-                    </div>
-                    <div class="row" style="margin-top:1.4rem;">
-                        <div class="col-md-4 form-inline">
-                            <label for="input1" class="mr-2">Obra</label>
-                            <input type="text" id="input1" class="form-control">
-                        </div>
-                        <div class="col-md-4 form-inline">
-                            <label for="input2" class="mr-2">Fecha</label>
-                            <input type="date" id="input2" class="form-control">
-                        </div>
-                        <div class="col-md-4 form-inline" style="display: flex; align-items: center; gap: 12px;">
-                            <input type="text" id="rowCount" style="width:4rem;border-bottom: 2px solid var(--select-border-bottom)" class="form-control text-center" oninput="validarNumber(this,/[^0-9]/g)" maxlength="2" inputmode="numeric" autocomplete="off" maxlength="6" oninput="validarCantidad(this)" value="1">
-                            <button type="button" id="addRow" class="btn bg-gradient-green">
-                                <i class="fas fa-table-rows"></i> Agregar filas
-                            </button>
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -395,6 +258,7 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+
 
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
@@ -525,6 +389,35 @@
             "lengthChange": false,
             "ordering": false,
             "autoWidth": false,
+        });
+
+
+        tblEmpleadoH = $("#tblEmpleadoH").DataTable({
+            "ajax": {
+                "url": "controllers/combo.controlador.php",
+                "type": "POST",
+                "dataSrc": '',
+                data: function(data) {
+                    data.accion = 7;
+                }
+            },
+            "dom": 'ft',
+            select: {
+                selector: 'td:first-child'
+            },
+            "lengthChange": false,
+            "ordering": false,
+            "autoWidth": false,
+            "columns": [{
+                    "data": null,
+                    "defaultContent": '',
+                    "className": 'select-checkbox',
+                },
+                {
+                    "data": "nombre"
+                },
+            ],
+            "pageLength": 100,
         });
 
 

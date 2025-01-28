@@ -211,6 +211,7 @@
                 setA = body.querySelectorAll('.setA'),
                 setB = body.querySelectorAll('.setB'),
                 inputauto = body.querySelector('#codProducto'),
+                // inputOrden = body.querySelector('#nro_orden'),
                 inputBarras = body.querySelector('#codBarras');
 
             // const configu = {
@@ -880,10 +881,10 @@
                         width: 'auto',
                         data: datos_orden
                     })
-
                 });
+
                 cargarCombo('Despachado', bodegueroPorDefecto, 6);
-                cargarCombo('Responsable', '', 7)
+                cargarCombo('Responsable', '', 7);
 
 
                 cargarCombo('Unidad', '', 1, true).then(datos_ => {
@@ -1181,6 +1182,28 @@
                         ).appendTo(ul);
                     };
                 })
+
+                cargarAutocompletado(function(items) {
+                    $(nro_orden).autocomplete({
+                        source: items,
+                        minLength: 1,
+                        focus: function() {
+                            return false;
+                        },
+                        select: function(event, ui) {
+                            // CargarProductos(ui.item.id);
+                            // return false;
+                            console.log(ui.item.cod)
+                        },
+                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                        // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        return $("<li>").append(
+                            "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
+                            item.cantidad + " </strong><span>AÑO:</span></div></div>"
+                        ).appendTo(ul);
+                    };
+                }, null, 'orden', 6)
+                // cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'inventario', action = 7)
 
                 let action;
                 const tabs = document.querySelectorAll('.tabs input');

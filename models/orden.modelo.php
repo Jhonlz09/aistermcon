@@ -200,6 +200,7 @@ class ModeloOrden
         }
     }
 
+   
 
     static private function enviarCorreoEnSegundoPlano($descrip, $orden, $fecha, $cliente)
     {
@@ -327,6 +328,28 @@ class ModeloOrden
             return array(
                 'status' => 'danger',
                 'm' => 'No se pudo actualizar el estado de la orden de trabajo: ' . $e->getMessage()
+            );
+        }
+    }
+
+
+    public static function mdlBuscarOrdenes()
+    {
+        try {
+
+            $e = Conexion::ConexionDB()->prepare("SELECT o.id, o.nombre || '   ' || c.nombre AS descripcion,
+                e.estado_obra as estado_obra
+                FROM tblorden o 
+                JOIN tblclientes c ON o.id_cliente = c.id
+                JOIN tblestado_obra e ON o.estado_obra = e.id
+                WHERE o.estado = true 
+                ORDER BY o.id DESC;");
+            $e->execute();
+            return $e->fetchAll();
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
             );
         }
     }

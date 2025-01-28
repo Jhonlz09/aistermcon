@@ -99,9 +99,9 @@
     var crear = '<?php echo $_SESSION["crear4"] ?>';
     var editar = '<?php echo $_SESSION["editar4"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar4"] ?>';
-
     var collapsedGroups = {};
     // var alturaDisponible = window.innerHeight - 300; // Ejemplo de cálculo
+    // var scrollPosition = 0;
 
     configuracionTable = {
         "responsive": true,
@@ -223,22 +223,26 @@
         //     scrollPosition = $(window).scrollTop();
         // },
         // "drawCallback": function(settings) {
+
         //     // Restaurar la posición del scroll después de redibujar
         //     setTimeout(function() {
         //         console.log("Restaurando posición del scroll:", scrollPosition);
         //         $(window).scrollTop(scrollPosition);
-        //     }, 3);
+        //     }, 0.1);
         // }
     }
 
     $('#tblSalidas tbody').on('click', 'tr.dtrg-start', function() {
+
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
+            let scrollPosition = $(window).scrollTop();
 
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
             // tabla.draw(false);
             tabla.draw(false)
-            // $(window).scrollTop(windowScrollTop);
+            $(window).scrollTop(scrollPosition);
+
             // $('#tblSalidas_wrapper').scrollTop(tableScrollTop);
         }
     });

@@ -16,9 +16,9 @@
 // };
 
 
-function confirmarEliminar(art, name, callback, opcion='eliminar', subtitle= 'Una vez eliminado no podrá recuperarlo') {
+function confirmarEliminar(art, name, callback, opcion = 'eliminar', subtitle = 'Una vez eliminado no podrá recuperarlo') {
   Swal.fire({
-    title: "¿Está seguro de "+ opcion+ " " + art + " " + name + "?",
+    title: "¿Está seguro de " + opcion + " " + art + " " + name + "?",
     text: subtitle,
     icon: "warning",
     showCancelButton: true,
@@ -147,75 +147,57 @@ function cargarComboFabricado(s = 0) {
   });
 }
 
-function formatInputOrden(input, cbo, isformart = true) {
-  let value = input.value.replace(/\D/g, "");
+// function formatInputOrden(input, cbo, isformart = true) {
+//   let value = input.value.replace(/\D/g, "");
 
-  // Refactorización: Uso de una expresión regular para insertar espacios
-  value = value.replace(/(\d{2})(\d{3})?(\d+)?/, (match, p1, p2, p3) => {
-    return p1 + (p2 ? " " + p2 : "") + (p3 ? " " + p3 : "");
-  });
+//   // Refactorización: Uso de una expresión regular para insertar espacios
+//   value = value.replace(/(\d{2})(\d{3})?(\d+)?/, (match, p1, p2, p3) => {
+//     return p1 + (p2 ? " " + p2 : "") + (p3 ? " " + p3 : "");
+//   });
 
-  input.value = value;
-  const cboCli = document.getElementById(cbo);
+//   input.value = value;
+  
 
-  if (isformart) {
-    // Simplificación de la lógica de activación/desactivación y consulta AJAX
-    const lengthCheck = value.length === 6 || value.length === 9;
-    const cboValueCheck = cboCli.value !== "0";
+ 
+// }
 
-    if (lengthCheck) {
-      fetchOrderId(value, function(response) {
-        console.log(response);
-        if(response[0] != null){
-          const id_cli = response[0]["id_cliente"];
-          cboCli.disabled = id_cli !== 0;
-          if (id_cli !== 0) {
-            setChange(cboCli, id_cli);
-          }
-        }else{
-          let isError = response.status === "danger";
-          mostrarToast(response.status, 
-            isError ? "Error" : "Advertencia",
-            isError ? "fa-xmark" : "fa-triangle-exclamation",
-            response.m, 5500);
-          if (!isError) {
-            setChange(cboCli, 0);
-          }
-        }
-      });
-    } else {
-      cboCli.disabled = !cboValueCheck;
-      // if (!cboValueCheck) {
-      //   setChange(cboCli, 0);
-      // }
-    }
+
+
+function formatInputOrden(input) {
+  // Obtén el valor actual del input
+  let value = input.value;
+
+  // Verifica si los dos primeros caracteres son números
+  if (/^\d{2}/.test(value)) {
+    // Si el tercer carácter es un número, agrega un espacio después de los dos primeros números
+    value = value.replace(/^(\d{2})(\d)/, "$1 $2");
+    input.value = value; // Actualiza el valor del input solo si cumple la condición
   }
 }
 
-// function fetchOrderId(nombre, cbo) {
-//   $.ajax({
-//     url: "controllers/orden.controlador.php", // Cambia 'tu_script_php.php' por la ruta correcta de tu script PHP
-//     type: "POST",
-//     dataSrc: "",
-//     data: {
-//       nombre: nombre,
-//       accion: 4,
-//     },
-//     cache: false,
-//     dataType: "json",
-
-//     success: function (response) {
-//       const cboCli = document.getElementById(cbo);
-//       let id_cli = response[0]["id_cliente"];
-//       if (id_cli === 0) {
-//         cboCli.disabled = false;
-//       } else {
-//         setChange(cboCli, id_cli);
-//         cboCli.disabled = true;
-//       }
-//     },
-//   });
-// }
+function fetchOrderId(nombre, cbo) {
+  $.ajax({
+    url: "controllers/orden.controlador.php", // Cambia 'tu_script_php.php' por la ruta correcta de tu script PHP
+    type: "POST",
+    dataSrc: "",
+    data: {
+      nombre: nombre,
+      accion: 4,
+    },
+    cache: false,
+    dataType: "json",
+    success: function (response) {
+      const cboCli = document.getElementById(cbo);
+      let id_cli = response[0]["id_cliente"];
+      if (id_cli === 0) {
+        cboCli.disabled = false;
+      } else {
+        setChange(cboCli, id_cli);
+        cboCli.disabled = true;
+      }
+    },
+  });
+}
 
 function fetchOrderId(nombre, callback) {
   $.ajax({
@@ -228,7 +210,7 @@ function fetchOrderId(nombre, callback) {
     cache: false,
     dataType: "json",
     success: function (response) {
-        callback(response);
+      callback(response);
     },
   });
 }
@@ -286,7 +268,7 @@ function formatNumberInput(input) {
 }
 
 
-function confirmarAccion(datos, ruta, tabla, modal = "", callback, time=5500, showToast=true) {
+function confirmarAccion(datos, ruta, tabla, modal = "", callback, time = 5500, showToast = true) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
     method: "POST",
@@ -301,10 +283,10 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback, time=5500, sh
         accion_inv = 0;
         tabla.ajax.reload(null, false);
         $(modal).modal("hide");
-      }else if(isSuccess){
+      } else if (isSuccess) {
         $(modal).modal("hide");
       }
-      if(showToast){
+      if (showToast) {
         mostrarToast(
           r.status,
           isSuccess ? "Completado" : "Error",
@@ -319,13 +301,13 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback, time=5500, sh
   });
 }
 
-function mostrarToast(status, title, icon, m, time=5500) {
+function mostrarToast(status, title, icon, m, time = 5500) {
   $(document).Toasts("create", {
     autohide: true,
     delay: time,
     class: "bg-" + status,
     title: title,
-    icon: 'fa-solid '+ icon + ' fa-lg',
+    icon: 'fa-solid ' + icon + ' fa-lg',
     body: m,
   });
 }
@@ -444,7 +426,7 @@ function convertirArray(arr) {
   }
 }
 
-function validarNumber(input, regex, ten = false, decimal=2) {
+function validarNumber(input, regex, ten = false, decimal = 2) {
   input.value = input.value.replace(regex, "");
   if (ten) {
     // $(".ten").toggle(!(input.value.length === 10 || input.value.length === 0));
@@ -567,29 +549,48 @@ function validarClave(input, sub) {
   }
 }
 
-function cargarAutocompletado(callback = false) {
+function updateAll() {
+ let  scrollPosition = $(window).scrollTop();
+
+  tabla.ajax.reload(null, false);
+  $(window).scrollTop(scrollPosition);
+
+  cargarAutocompletado();
+  cargarCombo('Conductor', 0, 2);
+  cargarCombo('Proveedores', '', 1, true).then(datos_ => {
+    datos_prove = datos_;
+  });
+  cargarCombo('Clientes', '', 1, true).then(datos_ => {
+    datos_cliente = datos_;
+  });
+  cargarCombo('Orden', '', 3, true).then(datos_ => {
+    datos_orden = datos_;
+  });
+}
+
+function cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'inventario', action = 7) {
   $.ajax({
-    url: "controllers/inventario.controlador.php",
+    url: "controllers/"+ruta+".controlador.php",
     method: "POST",
     data: {
-      accion: 7,
+      accion: action,
     },
     dataType: "json",
     success: function (respuesta) {
       var items = [];
       for (let i = 0; i < respuesta.length; i++) {
         var formattedItem = {
-          cod: respuesta[i]["codigo"],
-          label: respuesta[i]["descripcion"],
-          value: respuesta[i]["descripcion"],
-          cantidad: respuesta[i]["cantidad"],
+          cod: respuesta[i][0],
+          label: respuesta[i][1],
+          value: respuesta[i][1],
+          cantidad: respuesta[i][2],
         };
         items.push(formattedItem);
       }
       if (typeof callback === "function") {
         callback(items);
       } else {
-        $("#codProducto").autocomplete("option", "source", items);
+        $('#'+input).autocomplete("option", "source", items);
       }
     },
   });

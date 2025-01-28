@@ -82,21 +82,17 @@ class ModeloInventario
         try {
             $conn = Conexion::ConexionDB();
             $sql = "INSERT INTO tblinventario(codigo, descripcion, stock, stock_min, stock_mal, id_categoria, id_unidad, id_percha";
-
             // Agregar el campo 'img' solo si no es null
             if ($img !== null) {
                 $sql .= ", img";
             }
-
             $sql .= ") VALUES (:cod, :des, :sto, :st_min, :st_mal, :cat, :uni, :ubi";
 
             // Agregar el valor de la imagen solo si no es null
             if ($img !== null) {
                 $sql .= ", :img";
             }
-
             $sql .= ")";
-
             // Preparar la consulta
             $a = $conn->prepare($sql);
 
@@ -126,7 +122,6 @@ class ModeloInventario
             $b->bindParam(":anio", $anio, PDO::PARAM_INT);
             $b->bindParam(":stock_ini", $sto, PDO::PARAM_STR);
             $b->execute();
-
             return array(
                 'status' => 'success',
                 'm' => 'El producto se agregó correctamente'
@@ -217,9 +212,7 @@ class ModeloInventario
             if ($img !== 'null') {
                 $sql .= ", img=:img";
             }
-
             $sql .= " WHERE id=:id";
-
             $e = $conn->prepare($sql);
             // Asignar los valores a los parámetros
             $e->bindParam(":id", $id, PDO::PARAM_INT);
@@ -235,17 +228,13 @@ class ModeloInventario
             if ($img !== 'null') {
                 $e->bindParam(":img", $img, PDO::PARAM_STR);
             }
-
-            // Ejecutar la consulta
             $e->execute();
-
-            // $id_producto = $conn->lastInsertId();
             $anio = date('Y');
-            $sql_stock_ini = "INSERT INTO tblstock_inicial(id_producto, anio, stock_ini) VALUES (:id_producto, :anio, :stock_ini)";
+            $sql_stock_ini = "UPDATE tblstock_inicial SET stock_ini=:stock_ini WHERE id_producto=:id_producto AND anio=:anio";
             $b = $conn->prepare($sql_stock_ini);
-            $b->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+            $b->bindParam(":id_producto", $id, PDO::PARAM_INT);
             $b->bindParam(":anio", $anio, PDO::PARAM_INT);
-            $b->bindParam(":stock_ini", $sto_ini, PDO::PARAM_STR);
+            $b->bindParam(":stock_ini", $st_ini, PDO::PARAM_INT);
             $b->execute();
 
 

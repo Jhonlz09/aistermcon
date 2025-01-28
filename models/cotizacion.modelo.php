@@ -102,7 +102,6 @@ class ModeloCotizacion
             JOIN tblunidad u ON c.id_unidad= u.id  WHERE c.id_cotizacion=:id ORDER BY c.id");
             $a->bindParam(":id", $num_co, PDO::PARAM_INT);
             $a->execute();
-
             return $a->fetchAll();
         } catch (PDOException $e) {
             return array(
@@ -403,23 +402,23 @@ class ModeloCotizacion
             }
             $consultaMotivo = "UPDATE tblcotizacion
                 SET motivo = CONCAT(
-            (
-                SELECT STRING_AGG(descripcion, ', ' ORDER BY id)
-                FROM (
-                    SELECT descripcion
-                    FROM tbldetalle_cotizacion
-                    WHERE id_cotizacion = :id_cotizacion
-                    ORDER BY id
-                    LIMIT 5
-                ) AS subquery
-            ),
-            CASE 
-                WHEN (SELECT COUNT(*) FROM tbldetalle_cotizacion WHERE id_cotizacion = :id_cotizacion) > 5
-                THEN '...'
-                ELSE ''
-            END
-        )
-            WHERE id = :id_cotizacion;";
+                    (
+                        SELECT STRING_AGG(SPLIT_PART(descripcion, ' ', 1), ', ' ORDER BY id)
+                        FROM (
+                            SELECT descripcion
+                            FROM tbldetalle_cotizacion
+                            WHERE id_cotizacion = :id_cotizacion
+                            ORDER BY id
+                            LIMIT 5
+                        ) AS subquery
+                    ),
+                    CASE 
+                        WHEN (SELECT COUNT(*) FROM tbldetalle_cotizacion WHERE id_cotizacion = :id_cotizacion) > 5
+                        THEN '...'
+                        ELSE ''
+                    END
+                )
+                WHERE id = :id_cotizacion;";
 
             $aMotivo = $conexion->prepare($consultaMotivo);
             $aMotivo->bindParam(":id_cotizacion", $id_cotizacion, PDO::PARAM_INT);

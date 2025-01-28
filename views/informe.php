@@ -265,10 +265,11 @@
     $('#tblInforme tbody').on('click', 'tr.dtrg-start', function() {
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
             // var windowScrollTop = $(window).scrollTop();
-            // var tableScrollTop = $('#tblInforme_wrapper').scrollTop();
+            let scrollPosition = $(window).scrollTop();
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
             tabla.draw(false);
+            $(window).scrollTop(scrollPosition);
             // $(window).scrollTop(windowScrollTop);
             // $('#tblInforme_wrapper').scrollTop(tableScrollTop);
         }

@@ -128,6 +128,12 @@ class ControladorOrden
         $data = ModeloOrden::mdlobtenerIdOrden($this->nombres);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    public function buscarOrdenes()
+    {
+        $data = ModeloOrden::mdlBuscarOrdenes();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 
 if (!isset($_POST["accion"])) {
@@ -169,5 +175,8 @@ if (!isset($_POST["accion"])) {
         $data->fecha = $_POST["fecha"];
         $data->nota = $_POST["nota"];
         $data->cambiarEstadoOrden();
+    }else if ($_POST["accion"] == 6) {
+        $data = new ControladorOrden();
+        $data->buscarOrdenes();
     }
 }

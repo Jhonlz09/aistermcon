@@ -76,10 +76,10 @@ class ModeloRegistro
             }
 
             // Insertar orden si es necesario
-            $id_orden = self::insertarOrden($conexion, $orden, $cliente, $responsable, $fecha);
+            // $id_orden = self::insertarOrden($conexion, $orden, $cliente, $responsable, $fecha);
 
             // Insertar boleta
-            $id_boleta = self::insertarBoleta($conexion, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo);
+            $id_boleta = self::insertarBoleta($conexion, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo);
 
             // Insertar salidas
             self::insertarSalidas($conexion, $id_boleta, $arr);
@@ -268,9 +268,9 @@ class ModeloRegistro
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
             // Insertar orden si es necesario
-            $id_orden = self::insertarOrden($conexion, $orden, $cliente, $responsable, $fecha);
+            // $id_orden = self::insertarOrden($conexion, $orden, $cliente, $responsable, $fecha);
             // Insertar boleta
-            $id_boleta = self::insertarBoletaEntrada($conexion, $id_orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado);
+            $id_boleta = self::insertarBoletaEntrada($conexion, $orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado);
             // Insertar salidas
             self::insertarEntradas($conexion, $id_boleta, $arr);
             $conexion->commit();
@@ -283,7 +283,7 @@ class ModeloRegistro
             $conexion->rollBack();
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo registrar la guía: ' . $e->getMessage() . ' ' . $id_orden
+                'm' => 'No se pudo registrar la guía: ' . $e->getMessage() . ' ' . $orden
             );
         } catch (Exception $e) {
             $conexion->rollBack();
@@ -294,48 +294,48 @@ class ModeloRegistro
         }
     }
 
-    static private function insertarOrden($conexion, $orden, $cliente, $responsable, $fecha)
-    {
-        if ($orden == '') {
-            $stmtO = $conexion->prepare("INSERT INTO tblorden(id_cliente, id_encargado, fecha_ini) VALUES (:id_cliente, :responsable, now())");
-            $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
-            if ($responsable === null || $responsable == '') {
-                $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
-            } else {
-                $stmtO->bindParam(':responsable', $responsable, PDO::PARAM_INT);
-            }
-            $stmtO->execute();
-            return $conexion->lastInsertId();
-        } else {
-            $hora = date('H:i:s');
-            $fechaHora = $fecha . ' ' . $hora;
-            $anioActual = date('Y', strtotime($fecha));
-            $stmtVerificar = $conexion->prepare("SELECT id FROM tblorden WHERE nombre = :orden AND id_cliente = :cliente AND (EXTRACT(YEAR FROM fecha) = :anioActual OR estado_obra IN (0, 1))");
-            $stmtVerificar->bindParam(':orden', $orden, PDO::PARAM_STR);
-            $stmtVerificar->bindParam(':cliente', $cliente, PDO::PARAM_INT);
-            $stmtVerificar->bindParam(':anioActual', $anioActual, PDO::PARAM_INT);
-            $stmtVerificar->execute();
-            $resultadoVerificar = $stmtVerificar->fetch(PDO::FETCH_ASSOC);
-            if ($resultadoVerificar) {
-                $state = $conexion->prepare("UPDATE tblorden SET estado_obra=1, fecha_ini=:fecha  WHERE id = :id");
-                $state->bindParam(':id', $resultadoVerificar['id'], PDO::PARAM_INT);
-                $state->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
-                $state->execute();
-                return $resultadoVerificar['id'];
-            } else {
-                $stmtO = $conexion->prepare("INSERT INTO tblorden(nombre, id_cliente, id_encargado, fecha_ini) VALUES (:orden, :id_cliente, :responsable, now());");
-                $stmtO->bindParam(':orden', $orden, PDO::PARAM_STR);
-                $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
-                if ($responsable === null || $responsable === '') {
-                    $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
-                } else {
-                    $stmtO->bindParam(':responsable', $responsable, PDO::PARAM_INT);
-                }
-                $stmtO->execute();
-                return $conexion->lastInsertId();
-            }
-        }
-    }
+    // static private function insertarOrden($conexion, $orden, $cliente, $responsable, $fecha)
+    // {
+    //     if ($orden == '') {
+    //         $stmtO = $conexion->prepare("INSERT INTO tblorden(id_cliente, id_encargado, fecha_ini) VALUES (:id_cliente, :responsable, now())");
+    //         $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
+    //         if ($responsable === null || $responsable == '') {
+    //             $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
+    //         } else {
+    //             $stmtO->bindParam(':responsable', $responsable, PDO::PARAM_INT);
+    //         }
+    //         $stmtO->execute();
+    //         return $conexion->lastInsertId();
+    //     } else {
+    //         $hora = date('H:i:s');
+    //         $fechaHora = $fecha . ' ' . $hora;
+    //         $anioActual = date('Y', strtotime($fecha));
+    //         $stmtVerificar = $conexion->prepare("SELECT id FROM tblorden WHERE nombre = :orden AND id_cliente = :cliente AND (EXTRACT(YEAR FROM fecha) = :anioActual OR estado_obra IN (0, 1))");
+    //         $stmtVerificar->bindParam(':orden', $orden, PDO::PARAM_STR);
+    //         $stmtVerificar->bindParam(':cliente', $cliente, PDO::PARAM_INT);
+    //         $stmtVerificar->bindParam(':anioActual', $anioActual, PDO::PARAM_INT);
+    //         $stmtVerificar->execute();
+    //         $resultadoVerificar = $stmtVerificar->fetch(PDO::FETCH_ASSOC);
+    //         if ($resultadoVerificar) {
+    //             $state = $conexion->prepare("UPDATE tblorden SET estado_obra=1, fecha_ini=:fecha  WHERE id = :id");
+    //             $state->bindParam(':id', $resultadoVerificar['id'], PDO::PARAM_INT);
+    //             $state->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
+    //             $state->execute();
+    //             return $resultadoVerificar['id'];
+    //         } else {
+    //             $stmtO = $conexion->prepare("INSERT INTO tblorden(nombre, id_cliente, id_encargado, fecha_ini) VALUES (:orden, :id_cliente, :responsable, now());");
+    //             $stmtO->bindParam(':orden', $orden, PDO::PARAM_STR);
+    //             $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
+    //             if ($responsable === null || $responsable === '') {
+    //                 $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
+    //             } else {
+    //                 $stmtO->bindParam(':responsable', $responsable, PDO::PARAM_INT);
+    //             }
+    //             $stmtO->execute();
+    //             return $conexion->lastInsertId();
+    //         }
+    //     }
+    // }
 
     static private function insertarBoleta($conexion, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo)
     {
@@ -502,7 +502,7 @@ class ModeloRegistro
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $id_orden = self::insertarOrden($conexion, $orden, $cliente, null, $fecha);
+            // $id_orden = self::insertarOrden($conexion, $orden, $cliente, null, $fecha);
             $stmtB = $conexion->prepare("UPDATE tblboleta 
             SET fecha = to_timestamp(:fecha || ' ' || to_char(fecha, 'HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS'),
             id_conductor = :conductor,id_despachado = :despachado,
@@ -511,7 +511,7 @@ class ModeloRegistro
 
             $stmtB->bindParam(':fecha', $fecha, PDO::PARAM_STR);
             $stmtB->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
-            $stmtB->bindParam(':orden', $id_orden, PDO::PARAM_INT);
+            $stmtB->bindParam(':orden', $orden, PDO::PARAM_INT);
             $stmtB->bindParam(':nro_guia', $nro_guia, PDO::PARAM_STR);
             $stmtB->bindParam(':motivo', $motivo, PDO::PARAM_STR);
             $stmtB->bindParam(':conductor', $conductor, PDO::PARAM_INT);

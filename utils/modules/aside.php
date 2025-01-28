@@ -11,18 +11,19 @@
             <form id="form_guia" style="display:contents" autocomplete="off" class="needs-validation" novalidate>
                 <div class="col-xl-9">
                     <div class="card">
-                        <div class="card-body" style="padding:1.25em">
+                        <div class="card-body" style="padding: 1.06em 1.25em">
                             <div class="tabs-container">
                                 <div class="row" style="align-items:normal">
-                                    <div class="col-md-4 d-flex">
+                                    <div class="col-md-6 d-flex">
                                         <div class="tabs" style="margin-block: 0.5rem 1.8rem ">
                                             <?php if ($_SESSION["crear4"] && !$_SESSION["crear9"]) : ?>
                                                 <input type="radio" id="radio-2" name="tabs" value="2" checked />
                                                 <label class="tab" for="radio-2">Salida</label>
                                                 <input type="radio" id="radio-3" name="tabs" value="3" />
                                                 <label class="tab" for="radio-3">Entrada</label>
-                                                <span style="width:50%;" class="glider"></span>
-
+                                                <input type="radio" id="radio-4" name="tabs" value="7" />
+                                                <label class="tab" for="radio-7">Fabricacion</label>
+                                                <span style="width:33.3%;" class="glider"></span>
                                             <?php endif; ?>
                                             <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                 <script>
@@ -40,13 +41,15 @@
                                                 <label class="tab" for="radio-3">Entrada</label>
                                                 <input type="radio" id="radio-1" name="tabs" value="1" />
                                                 <label class="tab" for="radio-1"> Compra</label>
-                                                <span class="glider"></span>
+                                                <input type="radio" id="radio-7" name="tabs" value="7" />
+                                                <label class="tab" for="radio-7">Fabricacion</label>
+                                                <span style="width:25%;" class="glider"></span>
                                             <?php endif; ?>
 
                                             <!-- <span class="glider"></span> -->
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-md-6">
                                         <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
 
                                             <div id="div_orden" style="display:none;line-height:1">
@@ -54,17 +57,17 @@
                                                 <div id="div_orden" style="display:block;line-height:1">
                                                 <?php endif; ?>
                                                 <div class="row">
-                                                    <div class=" col-md-6 form-group">
+                                                    <div class=" col-sm form-group ui-front">
                                                         <label class="col-form-label combo" for="nro_orden">
-                                                            <i class="fas fa-ticket"></i> Orden</label>
-                                                        <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="9" oninput="formatInputOrden(this, 'cboClientes')" type="text" class="form-control form-control-sm" id="nro_orden" placeholder="Ingrese el nro. de orden">
+                                                            <i class="fas fa-ticket"></i> Orden de trabajo</label>
+                                                        <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);"type="search" class="form-control form-control-sm" id="nro_orden" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden">
                                                     </div>
-                                                    <div class=" col-md-6 form-group">
+                                                    <!-- <div class=" col-sm-8 form-group">
                                                         <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
                                                         <select id="cboClientes" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                                         </select>
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                    </div>
+                                                    </div> -->
                                                 </div>
                                                 </div>
                                                 <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
@@ -86,7 +89,7 @@
                                                                 <div class="col-md-6" style="margin-bottom:1.8rem">
                                                                     <label class="col-form-label combo" for="nro_ordenEntrada">
                                                                         <i class="fas fas fa-ticket"></i> Orden</label>
-                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="9" oninput="formatInputOrden(this, 'cboClienteEntrada')" type="text" class="form-control form-control-sm" id="nro_ordenEntrada" placeholder="Ingrese el nro. de orden">
+                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="9" type="text" class="form-control form-control-sm" id="nro_ordenEntrada" placeholder="Ingrese el nro. de orden">
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 <div class="col-md-6" style="margin-bottom:1.8rem">
@@ -104,7 +107,7 @@
                                                     <div class="form-group mb-0">
                                                         <label class="col-form-label combo" for="fecha">
                                                             <i class="fas fa-calendar"></i> Fecha inicio</label>
-                                                        <input id="fecha" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                                                        <input id="fecha" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
@@ -119,7 +122,7 @@
                                                     <div class="form-group">
                                                         <label class="col-form-label combo" for="fecha_retorno">
                                                             <i class="fas fa-calendar"></i> Fecha fin</label>
-                                                        <input id="fecha_retorno" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                                                        <input id="fecha_retorno" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
@@ -131,7 +134,7 @@
                                                         <div class="form-group mb-0">
                                                             <label class="col-form-label combo" for="nro_fac">
                                                                 <i class="fas fa-list-ol"></i> Nro. Factura</label>
-                                                            <input id="nro_fac" inputmode="numeric" autocomplete="off" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" placeholder="Ingrese el nro. de factura" required>
+                                                            <input id="nro_fac" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" placeholder="Ingrese el nro. de factura" required>
                                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                                         </div>
                                                         </div>
@@ -144,13 +147,13 @@
                                                                 <div id="card_nro_guia" class="form-group mb-0">
                                                                     <label class="col-form-label combo" for="nro_guia">
                                                                         <i class="fas fa-list-ol"></i> Nro. Guia</label>
-                                                                    <input id="nro_guia" maxlength="9" inputmode="numeric" autocomplete="off" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia">
+                                                                    <input id="nro_guia" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia">
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 <div style="display: none;" id="card_nro_guiaE" class="form-group mb-0">
                                                                     <label class="col-form-label combo" for="nro_guia">
                                                                         <i class="fas fa-list-ol"></i> Nro. Guia</label>
-                                                                    <input id="nro_guiaEntrada" maxlength="9" inputmode="numeric" autocomplete="off" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia">
+                                                                    <input id="nro_guiaEntrada" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia">
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 </div>
@@ -165,7 +168,6 @@
                                                                             </select>
                                                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                         </div>
-
                                                                         <div style="display: none;" id="card_conductorE" class="form-group mb-0">
                                                                             <label id="lbl" class="mb-0 combo"><i class="fas fa-steering-wheel"></i> Transportista</label>
                                                                             <select id="cboConductorEntrada" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
@@ -275,7 +277,6 @@
                                                                                     </table>
                                                                                 </div>
                                                                             </div>
-
                                                                             <div id="form-5" class="form-container">
                                                                                 <div class="table-responsive">
                                                                                     <table id="tblDetalleCompra" class="table table-bordered w-100 table-striped">
@@ -594,9 +595,6 @@
         nombre_fab.focus();
     });
 
-    // if (Dropzone.forElement("div.dropzone")) {
-    //     Dropzone.forElement("div.dropzone").destroy();
-    // }
     Dropzone.autoDiscover = false;
 
     // Inicializar Dropzone manualmente
@@ -630,7 +628,6 @@
     //                         nombre_imagen: file.name // Verificar por nombre de la imagen
     //                     },
     //                     success: function(response) {
-
     //                     }
     //                 });
     //             } else {
