@@ -371,7 +371,21 @@ font-size: 1rem;
     --label-new:#294579;
 } */
 
+.clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 46%;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: gray;
+    background: none;
+    border: none;
+    display: none;
+}
 
+.clear-btn:hover {
+    color: red;
+}
 
 #radio-orden:checked~.glider {
     transform: translateX(0);

@@ -77,6 +77,8 @@
         let accion_inv = 0;
         let scroll = false;
         let sub = false;
+        let id_orden_guia_salida;
+        let id_orden_guia_entrada;
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
@@ -1162,10 +1164,39 @@
                 $('#tblIn tbody').on('click', '.btnEliminarIn', function() {
                     tblIn.row($(this).parents('tr')).remove().draw();
                 });
+                const clearButton = document.getElementById("clearButton");
+                const clearButtonEntrada = document.getElementById("clearButtonEntrada");
+                // nro_orden.addEventListener("mouseenter", function() {
+                //     if (nro_orden.readOnly) {
+                //         clearButton.style.display = "block";
+                //     }
+                // });
+
+                // // Ocultar la X cuando el mouse sale del input
+                // nro_orden.addEventListener("mouseleave", function() {
+                //     clearButton.style.display = "none";
+                // });
+
+                clearButton.addEventListener("click", function() {
+                    // Borra el contenido
+                    nro_orden.readOnly = false; // Desbloquea el input
+                    nro_orden.value = "";
+                    nro_orden.focus()
+                    clearButton.style.display = "none";; // Oculta la X
+                });
+
+                clearButtonEntrada.addEventListener("click", function() {
+                    // Borra el contenido
+                    nro_ordenEntrada.readOnly = false; // Desbloquea el input
+                    nro_ordenEntrada.value = "";
+                    nro_ordenEntrada.focus()
+                    clearButtonEntrada.style.display = "none";; // Oculta la X
+                });
 
                 cargarAutocompletado(function(items) {
                     $(inputauto).autocomplete({
                         source: items,
+                        autoFocus: true,
                         minLength: 3,
                         focus: function() {
                             return false;
@@ -1187,19 +1218,48 @@
                     $(nro_orden).autocomplete({
                         source: items,
                         minLength: 1,
+                        autoFocus: true,
                         focus: function() {
                             return false;
                         },
+                        // open: function() {
+                        //     // Seleccionar automáticamente el primer elemento al abrir
+                        //     $(this).autocomplete("widget").children().first().find(".ui-menu-item-wrapper").addClass("ui-state-active");
+                        // },
                         select: function(event, ui) {
-                            // CargarProductos(ui.item.id);
-                            // return false;
-                            console.log(ui.item.cod)
+                            nro_orden.readOnly = true;
+                            id_orden_guia_salida = ui.item.cod;
+                            clearButton.style.display = "block";
                         },
                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
                         // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         return $("<li>").append(
                             "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
-                            item.cantidad + " </strong><span>AÑO:</span></div></div>"
+                            item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
+                        ).appendTo(ul);
+                    };
+                    
+                    $(nro_ordenEntrada).autocomplete({
+                        source: items,
+                        minLength: 1,
+                        autoFocus: true,
+                        focus: function() {
+                            return false;
+                        },
+                        // open: function() {
+                        //     // Seleccionar automáticamente el primer elemento al abrir
+                        //     $(this).autocomplete("widget").children().first().find(".ui-menu-item-wrapper").addClass("ui-state-active");
+                        // },
+                        select: function(event, ui) {
+                            nro_ordenEntrada.readOnly = true;
+                            id_orden_guia_entrada = ui.item.cod;
+                            clearButtonEntrada.style.display = "block";
+                        },
+                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                        // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        return $("<li>").append(
+                            "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
+                            item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
                         ).appendTo(ul);
                     };
                 }, null, 'orden', 6)

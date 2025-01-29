@@ -1,14 +1,14 @@
 <?php require_once "../utils/database/config.php";?>
 
 <head>
-    <title>Fabricacion</title>
+    <title>Fabricación</title>
 </head>
 <!-- Contenido Header -->
 <section class="content-header">
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
-                <h1 class="col-p">Fabricacion</h1>
+                <h1 class="col-p">Fabricación</h1>
             </div>
             <?php if (isset($_SESSION["crear3"]) && $_SESSION["crear3"] === true) : ?>
                 <div class="col">
@@ -58,11 +58,7 @@
                                     <th class="text-center">Nº</th>
                                     <th>CÓDIGO</th>
                                     <th>DESCRIPCIÓN</th>
-                                    <th>CATEGORÍA</th>
                                     <th>UNIDAD</th>
-                                    <th>UBICACIÓN</th>
-                                    <th>DAÑADO</th>
-                                    <th class="text-center">CANTIDAD</th>
                                     <th class="text-center">CANT. DISP.</th>
                                     <th class="text-center">IMAGEN</th>
                                     <th class="text-center">ACCIONES</th>

@@ -156,23 +156,27 @@ function cargarComboFabricado(s = 0) {
 //   });
 
 //   input.value = value;
-  
 
- 
+
+
 // }
 
 
 
 function formatInputOrden(input) {
-  // Obtén el valor actual del input
   let value = input.value;
 
-  // Verifica si los dos primeros caracteres son números
-  if (/^\d{2}/.test(value)) {
-    // Si el tercer carácter es un número, agrega un espacio después de los dos primeros números
-    value = value.replace(/^(\d{2})(\d)/, "$1 $2");
-    input.value = value; // Actualiza el valor del input solo si cumple la condición
+  // Agregar un espacio después de los dos primeros números si aún no está presente
+  if (/^\d{2}\S/.test(value)) {
+    value = value.replace(/^(\d{2})(\S)/, "$1 $2");
   }
+
+  // Agregar un espacio antes del sexto carácter sin importar si es un número o letra
+  if (/^\d{2} \S{3}\S/.test(value)) {
+    value = value.replace(/^(\d{2} \S{3})(\S)/, "$1 $2");
+  }
+
+  input.value = value;
 }
 
 function fetchOrderId(nombre, cbo) {
@@ -214,7 +218,6 @@ function fetchOrderId(nombre, callback) {
     },
   });
 }
-
 
 function moveFocusOnTab(event) {
   if (event.key === "Tab") {
@@ -267,7 +270,6 @@ function formatNumberInput(input) {
   input.value = integerPart + decimalPart;
 }
 
-
 function confirmarAccion(datos, ruta, tabla, modal = "", callback, time = 5500, showToast = true) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
@@ -301,10 +303,11 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback, time = 5500, 
   });
 }
 
-function mostrarToast(status, title, icon, m, time = 5500) {
+function mostrarToast(status, title, icon, m, time = 5500, position = "topRight") {
   $(document).Toasts("create", {
     autohide: true,
     delay: time,
+    position: position,
     class: "bg-" + status,
     title: title,
     icon: 'fa-solid ' + icon + ' fa-lg',
@@ -320,18 +323,7 @@ function obtenerFila(fila, tabla) {
   return row;
 }
 
-function cambiarModal(
-  span,
-  title,
-  iconE,
-  icon,
-  e,
-  bg1,
-  bg2,
-  modalElement,
-  m1,
-  m2
-) {
+function cambiarModal(span,title,iconE,icon,e,bg1,bg2,modalElement,m1,m2) {
   span.textContent = title;
   iconE.classList.remove(...iconE.classList);
   iconE.classList.add("fa-solid", icon);
@@ -549,28 +541,53 @@ function validarClave(input, sub) {
   }
 }
 
-function updateAll() {
- let  scrollPosition = $(window).scrollTop();
+async function updateAll(element) {
+  console.log("Iniciando updateAll");
 
-  tabla.ajax.reload(null, false);
-  $(window).scrollTop(scrollPosition);
+  // Deshabilitar el botón (usando pointer-events) y cambiar el fondo a gris
+  $(element).css({
+    'pointer-events': 'none',  // Deshabilitar clics
+    'background-color': '#d3d3d3'  // Cambiar el fondo a gris
+  });
 
-  cargarAutocompletado();
-  cargarCombo('Conductor', 0, 2);
-  cargarCombo('Proveedores', '', 1, true).then(datos_ => {
-    datos_prove = datos_;
-  });
-  cargarCombo('Clientes', '', 1, true).then(datos_ => {
-    datos_cliente = datos_;
-  });
-  cargarCombo('Orden', '', 3, true).then(datos_ => {
-    datos_orden = datos_;
-  });
+  // Ejecutar la recarga de la tabla
+  try {
+    console.log("Recargando tabla");
+    tabla.ajax.reload(null, false);
+    // Usar Promise.all para esperar todas las promesas
+    await cargarDatos();
+
+  } catch (error) {
+    console.error("Error en la ejecución de alguna de las promesas:", error);
+  } finally {
+    // Este bloque se ejecuta siempre
+    console.log("Todos los procesos han terminado.");
+    // Restaurar el fondo y habilitar los clics nuevamente
+    $(element).css({
+      'pointer-events': 'auto',  // Reactivar el enlace
+      'background-color': ''  // Restaurar el color original
+    });
+    mostrarToast("success", "Completado", "fas fa-check", "Datos actualizados correctamente", 2000, "bottomRight");
+  }
+}
+
+async function cargarDatos() {
+  // Ejecutar todas las promesas en paralelo y esperar a que terminen
+  const [autocompletado, proveedores, clientes, orden] = await Promise.all([
+    cargarAutocompletado(),
+    cargarCombo('Proveedores', '', 1, true),
+    cargarCombo('Clientes', '', 1, true),
+    cargarCombo('Orden', '', 3, true)
+  ]);
+  // Asignar los resultados de las promesas
+  datos_prove = proveedores;
+  datos_cliente = clientes;
+  datos_orden = orden;
 }
 
 function cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'inventario', action = 7) {
   $.ajax({
-    url: "controllers/"+ruta+".controlador.php",
+    url: "controllers/" + ruta + ".controlador.php",
     method: "POST",
     data: {
       accion: action,
@@ -584,13 +601,14 @@ function cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'i
           label: respuesta[i][1],
           value: respuesta[i][1],
           cantidad: respuesta[i][2],
+          anio: respuesta[i][3],
         };
         items.push(formattedItem);
       }
       if (typeof callback === "function") {
         callback(items);
       } else {
-        $('#'+input).autocomplete("option", "source", items);
+        $('#' + input).autocomplete("option", "source", items);
       }
     },
   });

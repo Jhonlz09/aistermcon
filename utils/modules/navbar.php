@@ -42,9 +42,8 @@ if (!isset($_SESSION["crear12"])) {
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" data-toggle="dropdown" href="#" role="button" onclick="updateAll('content-wrapper', 'views/perfil.php')">
+            <a id="updateButton" style="padding:.5rem .75rem;border-radius:50%" class="nav-link" data-toggle="dropdown" href="#" role="button" onclick="updateAll(this)">
                 <i class="fas fa-rotate-right"></i>
-                <!-- <span class="badge badge-warning navbar-badge">15</span> -->
             </a>
         </li>
         <li class="nav-item dropdown">

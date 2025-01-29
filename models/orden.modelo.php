@@ -200,7 +200,7 @@ class ModeloOrden
         }
     }
 
-   
+
 
     static private function enviarCorreoEnSegundoPlano($descrip, $orden, $fecha, $cliente)
     {
@@ -215,7 +215,7 @@ class ModeloOrden
         // Comando para ejecutar en segundo plano
         $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario > /dev/null 2>&1 &";
         exec($command);
-        
+
         // Ejecutar en segundo plano usando popen
         // pclose(popen("start /B " . $command, "r"));
     }
@@ -337,12 +337,14 @@ class ModeloOrden
     {
         try {
 
-            $e = Conexion::ConexionDB()->prepare("SELECT o.id, o.nombre || '   ' || c.nombre AS descripcion,
-                e.estado_obra as estado_obra
+            $e = Conexion::ConexionDB()->prepare("SELECT o.id, 
+            o.nombre || ' ' || c.nombre AS descripcion,e.estado_obra AS estado_obra, 
+            EXTRACT(YEAR FROM o.fecha) AS anio 
                 FROM tblorden o 
                 JOIN tblclientes c ON o.id_cliente = c.id
                 JOIN tblestado_obra e ON o.estado_obra = e.id
                 WHERE o.estado = true 
+                AND o.estado_obra IN (0, 1, 4)
                 ORDER BY o.id DESC;");
             $e->execute();
             return $e->fetchAll();

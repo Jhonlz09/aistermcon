@@ -60,7 +60,10 @@
                                                     <div class=" col-sm form-group ui-front">
                                                         <label class="col-form-label combo" for="nro_orden">
                                                             <i class="fas fa-ticket"></i> Orden de trabajo</label>
-                                                        <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);"type="search" class="form-control form-control-sm" id="nro_orden" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden">
+                                                        <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);"type="search" class="form-control form-control-sm" id="nro_orden" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
+                                                        <button class="clear-btn" type="button" id="clearButton" style="display:none">&times;</button>
+                                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+
                                                     </div>
                                                     <!-- <div class=" col-sm-8 form-group">
                                                         <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
@@ -86,18 +89,19 @@
                                                         </div>
                                                         <div class="form-group mb-0" id="div_return" style="display:none;line-height:1">
                                                             <div class="row">
-                                                                <div class="col-md-6" style="margin-bottom:1.8rem">
+                                                                <div class="col-sm ui-front" style="margin-bottom:1.8rem">
                                                                     <label class="col-form-label combo" for="nro_ordenEntrada">
-                                                                        <i class="fas fas fa-ticket"></i> Orden</label>
-                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" maxlength="9" type="text" class="form-control form-control-sm" id="nro_ordenEntrada" placeholder="Ingrese el nro. de orden">
+                                                                        <i class="fas fas fa-ticket"></i> Orden de trabajo</label>
+                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="nro_ordenEntrada" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
+                                                                    <button class="clear-btn" type="button" id="clearButtonEntrada" style="display:none">&times;</button>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
-                                                                <div class="col-md-6" style="margin-bottom:1.8rem">
+                                                                <!-- <div class="col-md-6" style="margin-bottom:1.8rem">
                                                                     <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
                                                                     <select id="cboClienteEntrada" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                                                     </select>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                                </div>
+                                                                </div> -->
                                                             </div>
                                                         </div>
                                                     </div>
