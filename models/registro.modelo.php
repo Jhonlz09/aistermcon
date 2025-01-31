@@ -51,7 +51,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlRegistrarSalida($arr, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
+    static public function mdlRegistrarSalida($arr, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -84,14 +84,15 @@ class ModeloRegistro
             // Insertar salidas
             self::insertarSalidas($conexion, $id_boleta, $arr);
 
-            // Manejar las imágenes
-            self::guardarImagenesSalida($conexion, $id_boleta, $img);
+            if(!empty($img)){
+                self::guardarImagenesSalida($conexion, $id_boleta, $img);
+            }
 
             $conexion->commit();
 
             return array(
                 'status' => 'success',
-                'm' => 'La guía fue registrada correctamente con imágenes incluidas.'
+                'm' => 'La guía de remision fue registrada correctamente.'
             );
         } catch (PDOException $e) {
             $conexion->rollBack();
@@ -498,11 +499,10 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlEditarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
+    static public function mdlEditarRegistroSalida($id_boleta, $orden,  $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
     {
         try {
             $conexion = Conexion::ConexionDB();
-            // $id_orden = self::insertarOrden($conexion, $orden, $cliente, null, $fecha);
             $stmtB = $conexion->prepare("UPDATE tblboleta 
             SET fecha = to_timestamp(:fecha || ' ' || to_char(fecha, 'HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS'),
             id_conductor = :conductor,id_despachado = :despachado,

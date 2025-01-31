@@ -11,14 +11,16 @@ class ajaxRegistro
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function registrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
+    public function registrarSalida($datos, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
     {
-
-        $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img);
+        if ($img === null) {
+            $img = []; // Define un array vacío si no se enviaron imágenes
+        }
+        $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-
-    // public function registrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes)
+    
+   // public function registrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes)
     // {
     //     // Guardar la salida en la base de datos
     //     $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo);
@@ -116,7 +118,8 @@ if (isset($_POST["accion"])) {
     if ($accion == 1) {
         $registro->registrarCompra($_POST["arr"], $_POST["nro_factura"], $_POST["proveedor"], $_POST["fecha"]);
     } else if ($accion == 2) {
-        $registro->registrarSalida($_POST["arr"], $_POST["orden"], $_POST["cliente"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"], $_FILES["imagenes"]);
+        $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : null;
+        $registro->registrarSalida($_POST["arr"], $_POST["orden"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"], $imagenes);
     } else if ($accion == 3) {
         $registro->registrarRetorno($_POST["arr"], $_POST["boleta"], $_POST["fecha_retorno"], $_POST["nro_guia"]);
     } else if ($accion == 4) {

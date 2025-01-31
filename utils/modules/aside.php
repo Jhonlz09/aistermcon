@@ -60,9 +60,10 @@
                                                     <div class=" col-sm form-group ui-front">
                                                         <label class="col-form-label combo" for="nro_orden">
                                                             <i class="fas fa-ticket"></i> Orden de trabajo</label>
-                                                        <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);"type="search" class="form-control form-control-sm" id="nro_orden" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
+                                                        <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_orden" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente" required>
                                                         <button class="clear-btn" type="button" id="clearButton" style="display:none">&times;</button>
-                                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                        <div class="ten invalid-feedback">*Campo obligatorio.</div>
+                                                        <!-- <div class="ten">*Seleccione.</div> -->
 
                                                     </div>
                                                     <!-- <div class=" col-sm-8 form-group">
@@ -151,7 +152,7 @@
                                                                 <div id="card_nro_guia" class="form-group mb-0">
                                                                     <label class="col-form-label combo" for="nro_guia">
                                                                         <i class="fas fa-list-ol"></i> Nro. Guia</label>
-                                                                    <input id="nro_guia" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia">
+                                                                    <input id="nro_guia" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia" required>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 <div style="display: none;" id="card_nro_guiaE" class="form-group mb-0">
@@ -340,7 +341,7 @@
                                                                         <label id="lbl" class="mb-0 combo"><i class="fas fa-clipboard-check"></i> Autorizado por</label>
                                                                         <div class="row">
                                                                             <div class="col-12">
-                                                                                <select id="cboAutorizado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                                                <select id="cboAutorizado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" >
                                                                                 </select>
                                                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                             </div>

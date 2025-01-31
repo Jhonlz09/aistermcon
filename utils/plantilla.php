@@ -79,6 +79,7 @@
         let sub = false;
         let id_orden_guia_salida;
         let id_orden_guia_entrada;
+        // let valid_orden = false;
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
@@ -1176,13 +1177,15 @@
                 // nro_orden.addEventListener("mouseleave", function() {
                 //     clearButton.style.display = "none";
                 // });
-
                 clearButton.addEventListener("click", function() {
                     // Borra el contenido
                     nro_orden.readOnly = false; // Desbloquea el input
                     nro_orden.value = "";
-                    nro_orden.focus()
+                    nro_orden.focus();
                     clearButton.style.display = "none";; // Oculta la X
+                    // nro_orden.parentNode.querySelector(".ten").style.display = "block";
+
+                    // valid_orden = false;
                 });
 
                 clearButtonEntrada.addEventListener("click", function() {
@@ -1190,7 +1193,8 @@
                     nro_ordenEntrada.readOnly = false; // Desbloquea el input
                     nro_ordenEntrada.value = "";
                     nro_ordenEntrada.focus()
-                    clearButtonEntrada.style.display = "none";; // Oculta la X
+                    clearButtonEntrada.style.display = "none"; // Oculta la X
+
                 });
 
                 cargarAutocompletado(function(items) {
@@ -1203,6 +1207,7 @@
                         },
                         select: function(event, ui) {
                             CargarProductos(ui.item.cod);
+                            valid_orden = true;
                             return false;
                         },
                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
@@ -1229,7 +1234,10 @@
                         select: function(event, ui) {
                             nro_orden.readOnly = true;
                             id_orden_guia_salida = ui.item.cod;
+
+                            nro_orden.parentNode.querySelector(".ten").style.display = "none";
                             clearButton.style.display = "block";
+                            nro_orden.focus();
                         },
                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
                         // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -1238,7 +1246,7 @@
                             item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
                         ).appendTo(ul);
                     };
-                    
+
                     $(nro_ordenEntrada).autocomplete({
                         source: items,
                         minLength: 1,
@@ -1380,7 +1388,7 @@
                         formData.append('accion', 1);
                         realizarRegistro(tblCompra, formData, clases);
                     } else if (selectedTab === '2') {
-                        let elementosAValidar = [fecha, nro_orden, cboClientes, nro_guia, cboDespachado, cboConductor];
+                        let elementosAValidar = [fecha, nro_guia, cboDespachado, cboConductor];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -1388,20 +1396,25 @@
                                 form_guia.classList.add('was-validated');
                             }
                         });
+
+                        if (!nro_orden.readOnly && nro_orden.value.length > 0) {
+                            nro_orden.parentNode.querySelector(".ten").style.display = "block";
+                            return;
+                        }
+
                         if (!isValid) {
                             return;
                         }
                         let clases = ['cantidad'];
-                        formData.append('orden', nro_orden.value);
+                        formData.append('orden', id_orden_guia_salida);
                         formData.append('nro_guia', nro_guia.value);
-                        formData.append('cliente', cboClientes.value);
+                        // formData.append('cliente', cboClientes.value);
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
                         formData.append('motivo', motivo.value);
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 2);
-
                         dropzone.getAcceptedFiles().forEach((file, index) => {
                             if (!file.isExisting) {
                                 formData.append(`imagenes[${index}]`, file, file.name);
@@ -1612,7 +1625,6 @@
                                 btnCancelarTrans.style.display = 'none'
                             } else {
                                 btnCancelarTrans.style.display = 'block'
-
                             }
 
                         } else if (selectedTab === '3' || selectedTab === '6') {
@@ -1623,22 +1635,15 @@
                             div_person.style.display = 'block';
                             div_retorno.style.display = 'block';
                             card_nro_guia.style.display = 'none';
-
                             card_conductor.style.display = 'none';
                             card_conductorEntrada.style.display = 'block';
                             div_conductor.style.display = 'block';
-
-
-
                             if (selectedTab === '3') {
                                 btnCancelarTrans.style.display = 'none';
-
                                 div_fecha.style.display = 'block';
-
                                 div_productos.style.display = 'flex';
                                 card_nro_guiaEntrada.style.display = 'none';
                                 div_nroguia.style.display = 'none';
-
                                 // div_person.style.display = 'none';
                                 // div_nroguia.style.display = 'none';
                                 // div_motivo.style.display = 'block';
@@ -1651,8 +1656,6 @@
                                 card_nro_guiaEntrada.style.display = 'block';
                                 div_nroguia.style.display = 'block';
                                 div_fecha.style.display = 'none';
-
-
                                 // div_person.style.display = 'block';
                                 // div_nroguia.style.display = 'block';
                                 // div_motivo.style.display = 'none';

@@ -156,7 +156,7 @@ class ModeloSalidas
 
             return array(
                 'status' => 'success',
-                'm' => 'Se eliminó la boleta y las imágenes asociadas correctamente.'
+                'm' => 'Se eliminó la guia de remision y las imágenes asociadas correctamente.'
             );
         } catch (PDOException $e) {
             return array(

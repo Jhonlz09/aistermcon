@@ -25,17 +25,16 @@ $data_boleta = ModeloSalidas::mdlObtenerImgBoleta($id_boleta);
 $pdf->SetTitle("Evidencia fotografica");
 $dir = __DIR__ . "/../../guia_img/";
 
-$pdf->SetFont('Arial', 'B', 20); // Fuente para el título
-$pdf->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'Evidencia Fotográfica'), 0, 1, 'C'); // Cel
+$pdf->SetFont('Arial', 'B', 20);
+$pdf->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'Evidencia Fotográfica'), 0, 1, 'C');
 
-$x = 40; // Margen izquierdo
-$y = 20; // Margen superior inicial
-$maxImagesPerPage = 2; // Máximo de imágenes por página
-$imageCount = 0; // Contador de imágenes por página
+$x = 40;
+$y = 20;
+$maxImagesPerPage = 2;
+$imageCount = 0;
 
-// Altura y ancho para las imágenes
-$newWidth = 150; // Ancho deseado
-$maxHeight = 120; // Altura máxima por imagen (ajustada para dos imágenes por página)
+$newWidth = 150;
+$maxHeight = 120;
 
 if (empty($data_boleta)) {
     $pdf->SetFont('Arial', '', 16);
@@ -45,40 +44,49 @@ if (empty($data_boleta)) {
     foreach ($data_boleta as $imagen) {
         $image_path = $dir . $imagen['nombre_imagen'];
 
-        // Comprobar si la imagen existe
         if (file_exists($image_path)) {
-            // Obtener dimensiones de la imagen
-            list($width, $height) = getimagesize($image_path);
+            $extension = strtolower(pathinfo($image_path, PATHINFO_EXTENSION));
 
-            // Escalar la imagen proporcionalmente para el ancho máximo permitido
+            // Si la imagen es WebP, convertirla temporalmente a PNG
+            if ($extension === 'webp') {
+                $image = imagecreatefromwebp($image_path);
+                if ($image) {
+                    $tempFile = tempnam(sys_get_temp_dir(), 'img') . '.png';
+                    imagepng($image, $tempFile);
+                    imagedestroy($image);
+                    $image_path = $tempFile;
+                }
+            }
+
+            list($width, $height) = getimagesize($image_path);
             $scale = $newWidth / $width;
             $newHeight = $height * $scale;
 
-            // Ajustar la altura si excede el máximo permitido
             if ($newHeight > $maxHeight) {
                 $newHeight = $maxHeight;
                 $newWidth = $width * ($maxHeight / $height);
             }
 
-            // Verificar si se necesitan dos imágenes por página
             if ($imageCount == $maxImagesPerPage) {
-                $pdf->AddPage(); // Añadir nueva página
-                $x = 40; // Reiniciar posición horizontal
-                $y = 15; // Reiniciar posición vertical
-                $imageCount = 0; // Reiniciar contador de imágenes
+                $pdf->AddPage();
+                $x = 40;
+                $y = 15;
+                $imageCount = 0;
             }
 
-            // Añadir la imagen al PDF
             $pdf->Image($image_path, $x, $y, $newWidth, $newHeight);
-            $y += $newHeight + 10; // Mover hacia abajo para la próxima imagen
-            $imageCount++; // Incrementar contador de imágenes
+            $y += $newHeight + 10;
+            $imageCount++;
+
+            // Eliminar la imagen temporal si se creó
+            if (isset($tempFile)) {
+                unlink($tempFile);
+                unset($tempFile);
+            }
         } else {
-            // Registrar un mensaje de error si la imagen no existe
             $pdf->Cell(0, 10, "Imagen no encontrada: " . $imagen['nombre_imagen'], 0, 1);
         }
     }
 }
-// Iterar sobre las imágenes
 
-// Salida del PDF
 $pdf->Output();
