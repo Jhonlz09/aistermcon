@@ -132,16 +132,6 @@
 
             //     });
 
-            //     var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer" ><strong class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_guia.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_boleta" class="input_boleta" value=""><button type="submit" class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button></form>' +
-            //         (editar ? '<button id="editS" class="btn btn-row pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button>' : '') +
-            //         (crear ? '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') +
-            //         (eliminar ? '<button id="eliS" class="btn btn-row pt-0 pb-0"><i class="fas fa-trash-can" ></i></button>' : '') + '</div></div>';
-
-            //     return $('<tr/>')
-            //         .append('<td colspan="8"> ' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
-            //         .attr('data-name', group)
-            //         .toggleClass('collapsed', collapsed);
-            // }
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
 
@@ -236,18 +226,14 @@
 
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
             let scrollPosition = $(window).scrollTop();
-
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
             // tabla.draw(false);
             tabla.draw(false)
             $(window).scrollTop(scrollPosition);
-
             // $('#tblSalidas_wrapper').scrollTop(tableScrollTop);
         }
     });
-
-
 
     $(document).ready(function() {
         let anio = year;

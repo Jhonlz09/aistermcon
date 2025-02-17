@@ -65,9 +65,8 @@
                                     <button style="width:100%" type="submit" value="Cargar" class="btn btn-primary" id="btnCargarUnd"><i class="fa-solid fa-arrow-up-from-bracket mr-2"></i> <span style="display: inline-block;">Cargar </span></button>
                                 </div>
                             </div>
-
                         </form>
-
+                        
                         <form method="post" enctype="multipart/form-data" id="form_ubi" class="needs-validation" novalidate>
                             <div class="row align-items-end">
                                 <div class="col-md-10 pad-col">

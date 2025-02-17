@@ -124,7 +124,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                 <div class="col-sm-6" id="divStockIni">
                                     <div class="input-data">
                                         <?php echo  $id_user ? '' : '<span class="input-group-text" style="position:absolute;top:56%;right:12px"><i class="fas fa-lock"></i></span>'; ?>
-                                        <input autocomplete="off" id="stock_ini" name="stock_ini" class="input-nuevo" type="text" required <?php echo  $id_user ? '' : 'readonly'; ?> onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)">
+                                        <input autocomplete="off" id="stock_ini" name="stock_ini" class="input-nuevo" type="text" <?php echo  $id_user ? '' : 'readonly'; ?> onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)">
                                         <label class="label"><i class="fas fa-boxes-stacked"></i> Cantidad Inicial</label>
                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                     </div>
@@ -891,6 +891,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     s.classList.add('select2-success');
                 });
                 divStockIni.style.display = 'none';
+
                 form.reset();
                 fileImg.value = '';
                 stock_mal.value = '0';
@@ -969,6 +970,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             e.preventDefault();
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
+                console.log('no valido')
                 return;
             }
 
@@ -1012,7 +1014,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             name = this.dataset.value;
             const selectE = document.querySelector('#cbo' + name);
             const iconS = this.dataset.icon;
-
             inputId.value = selectE.value;
             cambiarModal(spanE, ' Nueva ' + name, iconElement, iconS, elementsE, 'bg-gradient-blue', 'bg-gradient-green', modalS, 'modal-new', 'modal-change')
             formS.reset();

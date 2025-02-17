@@ -89,6 +89,18 @@ function limpiar(btn) {
   }
 }
 
+
+function cargarOpcionesSelect(selectElement, value, size = '110%') {
+  selectElement.select2({
+    data: datos_uni,
+    minimumResultsForSearch: -1,
+    width: size,
+  });
+  if (value) {
+    selectElement.val(value).trigger('change');
+  }
+}
+
 function cargarCombo(id, s, a = 1, isDataCbo = false) {
   return new Promise((resolve, reject) => {
     const cbo = document.getElementById("cbo" + id);
@@ -323,7 +335,7 @@ function obtenerFila(fila, tabla) {
   return row;
 }
 
-function cambiarModal(span,title,iconE,icon,e,bg1,bg2,modalElement,m1,m2) {
+function cambiarModal(span, title, iconE, icon, e, bg1, bg2, modalElement, m1, m2) {
   span.textContent = title;
   iconE.classList.remove(...iconE.classList);
   iconE.classList.add("fa-solid", icon);

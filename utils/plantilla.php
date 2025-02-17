@@ -69,7 +69,7 @@
 <?php if (isset($_SESSION['s_usuario'])) {
 ?>
     <script>
-        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblFab;
+        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblFab, tblProdFab;
         var configuracionTable = {};
         let items = [];
         let id_boleta = 0;
@@ -780,7 +780,6 @@
                     nro_orden = document.getElementById('nro_orden'),
                     nro_ordenEntrada = document.getElementById('nro_ordenEntrada'),
                     cboOrdenFab = document.getElementById('cboOrdenFab'),
-                    // motivoEntrada = document.getElementById('inpMotivoEntrada'),
                     form_guia = document.getElementById('form_guia'),
                     cboProveedor = document.getElementById('cboProveedores'),
                     cboConductor = document.getElementById('cboConductor'),
@@ -789,24 +788,23 @@
                     cboAutorizado = document.getElementById('cboAutorizado'),
                     cboResponsable = document.getElementById('cboResponsable'),
                     btnGuia = document.getElementById('btnGuardarGuia');
-                // const formFab = document.getElementById('formFab'),
-                //     formFabCon = document.getElementById('formFabCon'),
-                //     formFabNew = document.getElementById('formFabNew');
                 const audio = document.getElementById("scanner");
 
-
-
-                // $(cboOrden).select2({
-                //     placeholder: 'SELECCIONE',
-                //     width: 'auto',
-                // })
-
-                // $(cboEmpleado).select2({
-                //     placeholder: 'SELECCIONE',
-                //     width: 'auto',
-                // })
-
-
+                const addProFab = document.getElementById("addProFab")
+                // const btnAggFab = document.getElementById("btnNuevoFab");
+                // if (btnAggFab) {
+                //     btnAggFab.addEventListener('click', function() {
+                //         formFabNew.reset();
+                //         formFabNew.classList.remove('was-validated');
+                //         accion_fab = 9;
+                //         cambiarModal(title_fab, ' Nueva Fabricación', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-green', 'bg-gradient-yellow', modal_fab, 'modal-yellow', 'modal-change')
+                //         select_fab.forEach(function(s) {
+                //             s.classList.remove('select2-warning');
+                //             s.classList.add('select2-success');
+                //         });
+                //         setChange(cboUnidad_fab, 1)
+                //     });
+                // }
 
                 $(cboClientes).select2({
                     placeholder: 'SELECCIONE',
@@ -992,16 +990,7 @@
                             text: "<i class='fa-regular fa-layer-plus fa-xl'></i> Nuevo Prod.",
                             className: "btn btn-light text-success btnNuevoPro",
                             action: function(e, dt, node, config) {
-                                formFabNew.reset();
-                                formFabNew.classList.remove('was-validated');
-                                accion_fab = 9;
-                                // setChange(cboOrdenFab, 0);
-                                cambiarModal(title_fab, ' Nuevo Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-blue', 'bg-gradient-green', modal_fab, 'modal-new', 'modal-change')
-                                select_fab.forEach(function(s) {
-                                    s.classList.remove('select2-warning');
-                                    s.classList.add('select2-success');
-                                });
-                                $('#modal-new-fab').modal("show");
+
                             }
                         },
                         {
@@ -1009,23 +998,12 @@
                             className: "btn btn-light text-info",
                             action: function(e, dt, node, config) {
                                 tblOut.rows().every(function() {
-                                    var row = $(this.node());
-                                    var rowData = this.data();
-                                    // Obtener el valor del input en la tercera columna (índice 2)
-                                    var inputValue = row.find('input.cantidad').val();
-
-                                    // Actualizar el valor en rowData
+                                    let row = $(this.node());
+                                    let rowData = this.data();
+                                    let inputValue = row.find('input.cantidad').val();
                                     rowData[2] = '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + inputValue + '">',
-
                                         // Agregar la fila con los valores actualizados a tblFab
-                                        tblFab.row.add([
-                                            rowData[0],
-                                            rowData[1],
-                                            rowData[2],
-                                            rowData[3],
-                                            rowData[4],
-                                            rowData[5]
-                                        ]).draw(false);
+                                        tblFab.row.add([rowData[0], rowData[1], rowData[2], rowData[3], rowData[4], rowData[5]]).draw(false);
                                 });
 
                                 // Opcional: Limpiar todas las filas de tblOut después de transferir
@@ -1041,7 +1019,6 @@
                                 // formFabCon.classList.remove('was-validated');
                                 setChange(cboFabricadoCon, 0)
                                 $('#modal-consul').modal("show");
-
                             }
                         },
                     ]
@@ -1091,6 +1068,190 @@
                         }
                     }, ]
                 });
+
+                tblProdFab = $('#tblProdFab').DataTable({
+                    "dom": 'fpt',
+                    "responsive": true,
+                    "lengthChange": false,
+                    "ordering": false,
+                    "autoWidth": false,
+                    "paging": false,
+                    columnDefs: [{
+                            targets: 0,
+                            data: null,
+                            className: 'dt-control',
+                            orderable: false,
+                            defaultContent: '',
+                            render: function(data, type, row, meta) {
+                                if (type === 'display') {
+                                    return meta.row + 1;
+                                }
+                                return meta.row;
+                            }
+                        },
+                        {
+                            targets: 1,
+                            className: "text-center d-flex justify-content-center",
+                            render: function(data, type, row) {
+                                return `<input type="text" class="form-control text-center cantidad" value="${data || 1}" 
+                                style="width:72px;border-bottom-width:2px;margin:0;font-size:1.2rem" maxlength="6"
+                                inputmode="numeric" onfocus="selecTexto(this)" autocomplete="off" oninput="validarNumber(this,/[^0-9.]/g)">`;
+                            }
+                        },
+                        {
+                            targets: 2,
+                            className: "text-center ",
+                            render: function(data, type, row) {
+                                return `<select class="form-control select2 id_unidad" data-dropdown-css-class="select2-dark" required>
+                                </select>`;
+                            }
+                        },
+                        {
+                            targets: 3,
+                            render: function(data, type, row) {
+                                return `<input type="text" class="form-control descripcion" value="${data || ''}" 
+                            style="width:100%;border-bottom-width:2px;margin:auto;font-size:1.1rem" 
+                            autocomplete="off" onfocus="selecTexto(this)" spellcheck="false">`;
+                            }
+                        },
+                        {
+                            targets: 4,
+                            className: "text-center",
+                            render: function(data, type, row) {
+                                return `<center>
+                            <span class='btnEliminarFab text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
+                            data-bs-placement='top' title='Eliminar producto'> 
+                                <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
+                                </i> </span>
+                            </center>`;
+                            }
+                        }
+                    ],
+                    createdRow: function(row, data, dataIndex) {
+                        const selectElement = $(row).find('.id_unidad');
+                        cargarOpcionesSelect(selectElement, data.id_unidad);
+
+                    },
+                });
+
+                addProFab.addEventListener('click', function() {
+                    agregarFilaFab();
+                });
+
+                function agregarFilaFab() {
+                    let idUnico = "temp-" + Date.now();
+                    // Define la nueva fila con el ID en la primera celda
+                    let nuevaFila = [idUnico, '1', '', '', ''];
+                    let rowNode = tblProdFab.row.add(nuevaFila).draw(false).node();
+                }
+
+                $('#tblProdFab tbody').on('click', 'td.dt-control', function() {
+                    let tr = $(this).closest('tr'); // Encuentra la fila más cercana
+                    let row = tblProdFab.row(tr); // Obtiene la fila de DataTable
+                    let rowData = row.data(); // Obtiene los datos de la fila
+
+                    let idUnico = rowData[0]; // Identificador único
+                    let tablaId = `#tbl${idUnico}`; // ID correcto basado en format()
+
+                    if (row.child.isShown()) {
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    } else {
+                        // Verificar si la fila ya tiene contenido para evitar recrearla
+                        if (!tr.hasClass('loaded')) {
+                            row.child(format(idUnico)).show();
+                            tr.addClass('loaded'); // Marcamos que ya ha sido cargada
+                        } else {
+                            row.child.show();
+                        }
+
+                        // Verificar si la DataTable ya existe antes de inicializarla
+                        if (!$.fn.dataTable.isDataTable(tablaId)) {
+                            $(tablaId).DataTable({
+                                dom: "t",
+                                "ordering": false,
+                                "autoWidth": false,
+                                data: null,
+                                columnDefs: [{
+                                        targets: 0,
+                                        title: "N°",
+                                        data: null,
+                                        render: function(data, type, row, meta) {
+                                            return type === 'display' ? meta.row + 1 : meta.row;
+                                        }
+                                    },
+                                    {
+                                        targets: 1,
+                                        title: "CODIGO",
+                                        visible: false
+                                    },
+                                    {
+                                        targets: 2,
+                                        title: "CANT.",
+                                        className: "text-center"
+                                    },
+                                    {
+                                        targets: 3,
+                                        title: "UND",
+                                        className: "text-center"
+                                    },
+                                    {
+                                        targets: 4,
+                                        title: "DESCRIPCION"
+                                    },
+                                    {
+                                        targets: 5,
+                                        title: "ACCIONES",
+                                        className: "text-center"
+                                    }
+                                ]
+                            });
+                        }
+                        tr.addClass('shown');
+                        // Evitar la reinicialización del autocompletado
+                        let searchBox = $(`#search-${idUnico}`);
+                        if (!searchBox.data("ui-autocomplete")) {
+                            cargarAutocompletado(function(items) {
+                                searchBox.autocomplete({
+                                    source: items,
+                                    minLength: 3,
+                                    autoFocus: true,
+                                    focus: function() {
+                                        return false;
+                                    },
+                                    select: function(event, ui) {
+                                        CargarProductos(ui.item.cod, null, $(tablaId).DataTable());
+                                        return false;
+                                    }
+                                }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                                    let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                                    return $("<li>").append(
+                                        "<div>" + item.label + "<strong class='large-text'>CANTIDAD: " +
+                                        res + "</strong></div>"
+                                    ).appendTo(ul);
+                                };
+                            });
+                        }
+                    }
+                });
+
+                // Función que genera el contenido de la fila expandida
+                function format(rowData) {
+                    return `<div class="mb-4 ui-front" style="padding-left:8%">
+                        <label class="col-form-label combo" for="search-${rowData}">
+                            <i class="fas fa-arrow-up-a-z"></i> Productos
+                        </label>
+                        <input style="border-bottom: 2px solid var(--select-border-bottom);" 
+                    type="search" 
+                    class="form-control form-control-sm searchFab" 
+                    id="search-${rowData}" 
+                    placeholder="Escriba para agregar...">
+                    </div>
+                    <table class="table table-hover" id="tbl${rowData}" cellpadding="5" cellspacing="0" border="0" style="padding-left:8%; width:100%">
+                    </table>`;
+                }
+
+
 
                 // tblOut.on('draw', function() {
                 //     $('#tblOut tbody tr').each(function() {
@@ -1152,6 +1313,10 @@
 
                 $('#tblCompra tbody').on('click', '.btnEliminarIn', function() {
                     tblCompra.row($(this).parents('tr')).remove().draw();
+                });
+
+                $('#tblProdFab tbody').on('click', '.btnEliminarFab', function() {
+                    tblProdFab.row($(this).parents('tr')).remove().draw();
                 });
 
                 $('#tblFab tbody').on('click', '.btnEliminarIn', function() {
@@ -1276,7 +1441,8 @@
                 let action;
                 const tabs = document.querySelectorAll('.tabs input');
                 const btnCancelarTrans = document.getElementById('Cancelar')
-                const div_fecha = document.getElementById('div_fecha')
+                const div_fecha = document.getElementById('div_fecha');
+                const div_fab = document.getElementById('div_fab');
                 const div_orden = document.getElementById('div_orden');
                 const div_proveedor = document.getElementById('div_proveedor');
                 const div_return = document.getElementById('div_return');
@@ -1287,9 +1453,11 @@
                 const div_nrofactura = document.getElementById('div_nrofac');
                 // const div_motivo = document.getElementById('div_motivo');
                 const div_person = document.getElementById('card_person');
-
+                const div_prod_fab = document.getElementById('div_prod_fab');
+                const card_nro_guiaFab = document.getElementById('card_nro_guiaFab');
                 const card_nro_guia = document.getElementById('card_nro_guia');
                 const card_nro_guiaEntrada = document.getElementById('card_nro_guiaE');
+                const card_nro_fac = document.getElementById('card_nro_fac');
 
                 const card_conductor = document.getElementById('card_conductor');
                 const card_conductorEntrada = document.getElementById('card_conductorE');
@@ -1554,20 +1722,27 @@
                         formData.append('accion', 3);
                         realizarRegistro(tblReturn, formData, clases, 0, 'productos', function(response) {
                             if (response) {
-
                                 btnCancelarTrans.click();
                             }
                         });
-
+                    } else if (selectedTab === '7') {
+                        let clases = ['retorno'];
+                        formData.append('boleta', id_boleta);
+                        formData.append('fecha_retorno', fecha_retorno.value);
+                        formData.append('nro_guia', nro_guia.value)
+                        formData.append('accion', 3);
+                        realizarRegistro(tblReturn, formData, clases, 0, 'productos', function(response) {
+                            if (response) {
+                                btnCancelarTrans.click();
+                            }
+                        });
                     }
                 })
 
                 tabs.forEach(tab => {
                     tab.addEventListener('change', function() {
                         selectedTab = this.value;
-                        // if (selectedTab === '4') {
-
-                        // }
+                        console.log(selectedTab)
                         form_guia.classList.remove('was-validated');
                         const selectedForm = document.getElementById(`form-${selectedTab}`);
                         const formContainers = document.querySelectorAll('.form-container');
@@ -1575,11 +1750,9 @@
                         formContainers.forEach(container => {
                             container.style.display = 'none';
                         });
-
                         if (selectedForm) {
                             selectedForm.style.display = 'block';
                         }
-
                         if (selectedTab === '1' || selectedTab === '5') {
                             div_orden.style.display = 'none';
                             div_fecha.style.display = 'block'
@@ -1588,16 +1761,17 @@
                             div_conductor.style.display = 'none';
                             div_retorno.style.display = 'none';
                             div_nroguia.style.display = 'none';
-
-                            // div_motivo.style.display = 'none';
                             card_nro_guia.style.display = 'none';
                             card_nro_guiaEntrada.style.display = 'none';
-
                             card_conductor.style.display = 'none';
                             card_conductorEntrada.style.display = 'none';
                             div_return.style.display = 'none';
                             div_person.style.display = 'none';
+                            div_fab.style.display = 'none';
                             div_nrofactura.style.display = 'block';
+                            card_nro_guiaFab.style.display = 'none';
+                            card_nro_fac.style.display = 'block';
+                            div_prod_fab.style.display = 'none';
                             if (selectedTab === '1') {
                                 btnCancelarTrans.style.display = 'none'
                             } else {
@@ -1608,18 +1782,19 @@
                             div_proveedor.style.display = 'none';
                             div_fecha.style.display = 'block'
                             div_productos.style.display = 'flex';
-                            // div_motivo.style.display = 'none';
                             div_return.style.display = 'none';
                             div_conductor.style.display = 'block';
                             div_retorno.style.display = 'none';
                             div_nroguia.style.display = 'block';
+                            div_fab.style.display = 'none';
                             div_nrofactura.style.display = 'none';
                             div_person.style.display = 'block';
                             card_nro_guia.style.display = 'block';
                             card_nro_guiaEntrada.style.display = 'none';
-
                             card_conductor.style.display = 'block';
                             card_conductorEntrada.style.display = 'none';
+                            card_nro_guiaFab.style.display = 'none';
+                            div_prod_fab.style.display = 'none';
 
                             if (selectedTab === '2') {
                                 btnCancelarTrans.style.display = 'none'
@@ -1637,19 +1812,17 @@
                             card_nro_guia.style.display = 'none';
                             card_conductor.style.display = 'none';
                             card_conductorEntrada.style.display = 'block';
+                            div_fab.style.display = 'none';
                             div_conductor.style.display = 'block';
+                            card_nro_guiaFab.style.display = 'none';
+                            div_prod_fab.style.display = 'none';
+
                             if (selectedTab === '3') {
                                 btnCancelarTrans.style.display = 'none';
                                 div_fecha.style.display = 'block';
                                 div_productos.style.display = 'flex';
                                 card_nro_guiaEntrada.style.display = 'none';
                                 div_nroguia.style.display = 'none';
-                                // div_person.style.display = 'none';
-                                // div_nroguia.style.display = 'none';
-                                // div_motivo.style.display = 'block';
-                                // div_retorno.style.display = 'none';
-                                // div_conductor.style.display = 'none';
-                                // div_fecha.style.display = 'block'
                             } else {
                                 btnCancelarTrans.style.display = 'block';
                                 div_productos.style.display = 'none';
@@ -1660,11 +1833,28 @@
                                 // div_nroguia.style.display = 'block';
                                 // div_motivo.style.display = 'none';
                             }
+                        } else if (selectedTab === '7') {
+                            div_orden.style.display = 'none';
+                            div_proveedor.style.display = 'none';
+                            div_return.style.display = 'none';
+                            div_nroguia.style.display = 'none';
+                            div_nrofactura.style.display = 'block';
+                            div_person.style.display = 'block';
+                            div_retorno.style.display = 'none';
+                            card_nro_guia.style.display = 'none';
+                            card_conductor.style.display = 'none';
+                            card_conductorEntrada.style.display = 'none';
+                            div_conductor.style.display = 'none';
+                            div_fab.style.display = 'block';
+                            div_productos.style.display = 'none';
+                            card_nro_fac.style.display = 'none';
+                            card_nro_guiaFab.style.display = 'block';
+                            div_prod_fab.style.display = 'block';
                         }
                     });
                 });
 
-                function CargarProductos(p = "", barras = false) {
+                function CargarProductos(p = "", barras = false, tablaUnica = "") {
                     function manejarRespuesta(r, tblDetalle, tabla) {
                         tblDetalle.ajax.reload(null, false);
                         tabla.ajax.reload(null, false);
@@ -1697,7 +1887,7 @@
                         let nuevaFila = [
                             '',
                             respuesta['id'],
-                            `<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" 
+                            `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
                             class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
                             onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
                             oninput="validarNumber(this,/[^0-9.]/g)" value="${respuesta['cantidad']}">`,
@@ -1798,8 +1988,10 @@
                                         agregarFila(respuesta, tblCompra);
                                     } else if (selectedTab === '2') {
                                         agregarFila(respuesta, tblOut);
-                                    } else if (selectedTab === '3')
+                                    } else if (selectedTab === '3') {
                                         agregarFila(respuesta, tblIn)
+                                    } else if (selectedTab === '7')
+                                        agregarFila(respuesta, tablaUnica)
                                 } else {
                                     // Manejar el caso en el que la respuesta sea falsa
                                 }

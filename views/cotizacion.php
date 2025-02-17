@@ -741,33 +741,18 @@
                         // }, false);
                     }
                 });
-
             } else {
                 for (let i = 0; i < rowCount; i++) {
                     agregarFila(); // Llama a tu función de agregar fila
                 }
-
                 // Resetear el valor del input a 1 (opcional)
                 rowCountInput.value = 1;
             }
-
         });
 
         function agregarFila() {
             let nuevaFila = ['', '1', 1, '', '', '$0.00', ''];
             let rowNode = tblSolicitud.row.add(nuevaFila).draw(false).node();
-        }
-
-        function cargarOpcionesSelect(selectElement, value) {
-            selectElement.select2({
-                data: datos_uni,
-                minimumResultsForSearch: -1,
-                width: '110%',
-            });
-
-            if (value) {
-                selectElement.val(value).trigger('change');
-            }
         }
 
         $('#tblSolicitud tbody').on('click', '.btnBorrar', function() {
@@ -789,7 +774,6 @@
                         });
                     }
                 });
-
             } else {
                 tblSolicitud.row($(this).parents('tr')).remove().draw();
                 actualizarSubtotal();

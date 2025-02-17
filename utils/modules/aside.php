@@ -64,7 +64,6 @@
                                                         <button class="clear-btn" type="button" id="clearButton" style="display:none">&times;</button>
                                                         <div class="ten invalid-feedback">*Campo obligatorio.</div>
                                                         <!-- <div class="ten">*Seleccione.</div> -->
-
                                                     </div>
                                                     <!-- <div class=" col-sm-8 form-group">
                                                         <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
@@ -105,6 +104,17 @@
                                                                 </div> -->
                                                             </div>
                                                         </div>
+                                                        <div class="form-group mb-0" id="div_fab" style="display:none;line-height:1">
+                                                            <div class="row">
+                                                                <div class="col-sm ui-front" style="margin-bottom:1.8rem">
+                                                                    <label class="col-form-label combo" for="nro_ordenFab">
+                                                                        <i class="fas fas fa-ticket"></i> Orden de trabajo</label>
+                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="nro_ordenFab" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
+                                                                    <button class="clear-btn" type="button" id="clearButtonFab" style="display:none">&times;</button>
+                                                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                             </div>
                                             <div class="row" style="line-height:1;">
@@ -116,13 +126,6 @@
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
-                                                <!-- <div id="div_motivo" class="col" style="margin-bottom:1.8rem;display:none">
-                                                    <div class="form-group mb-0">
-                                                        <label class="col-form-label combo" for="inpMotivoEntrada">
-                                                            <i class="fa-solid fa-clipboard-question"></i> Motivo</label>
-                                                        <input style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpMotivoEntrada" placeholder="Traslado de herramientas">
-                                                    </div>
-                                                </div> -->
                                                 <div class="col-sm-4" id="div_retorno" style="display:none">
                                                     <div class="form-group">
                                                         <label class="col-form-label combo" for="fecha_retorno">
@@ -136,10 +139,16 @@
                                                     <?php else : ?>
                                                         <div class="col" id="div_nrofac" style="display:none;margin-bottom:1.8rem">
                                                         <?php endif; ?>
-                                                        <div class="form-group mb-0">
+                                                        <div class="form-group mb-0" id="card_nro_fac">
                                                             <label class="col-form-label combo" for="nro_fac">
                                                                 <i class="fas fa-list-ol"></i> Nro. Factura</label>
                                                             <input id="nro_fac" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" placeholder="Ingrese el nro. de factura" required>
+                                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                        </div>
+                                                        <div id="card_nro_guiaFab" style="display:none;" class="form-group mb-0">
+                                                            <label class="col-form-label combo" for="nro_guiaFab">
+                                                                <i class="fas fa-list-ol"></i> Nro. Guia</label>
+                                                            <input id="nro_guiaFab" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia" required>
                                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                                         </div>
                                                         </div>
@@ -189,6 +198,9 @@
                                                                                     <i class="fas fa-arrow-up-a-z"></i> Productos</label>
                                                                                 <input style="border-bottom: 2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="codProducto" placeholder="Ingrese el nombre del producto">
                                                                             </div>
+                                                                            <div class="col-md-9">
+
+                                                                            </div>
                                                                         </div>
                                                                         <div class="col-lg-4">
                                                                             <div class="form-group">
@@ -196,6 +208,19 @@
                                                                                     <i class="fas fa-barcode"></i> Cod. Barras</label>
                                                                                 <input inputmode='text' style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="codBarras" placeholder="Ingrese el código de barras" onkeypress="return evitarEnvio(event)">
                                                                             </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="div_prod_fab" class="mb-2" style="display:none;">
+                                                                        <div class='row'>
+                                                                            <div class="col-auto" >
+                                                                                <label class="mb-0" for="fab-1" style="font-weight:bold;text-wrap:nowrap;font-size:1.15rem;"><i class="fas fa-hammer-crash"></i> Productos fabricado</label>
+                                                                            </div>
+                                                                            <div class="col">
+                                                                                <span id="addProFab" class="btn btn-sm btn-outline-warning">
+                                                                                    <i class="fas fa-plus-circle"></i> Agregar
+                                                                                </span>
+                                                                            </div>
+
                                                                         </div>
                                                                     </div>
                                                             </div>
@@ -225,7 +250,6 @@
                                                                         </table>
                                                                     </div>
                                                                     </div>
-
                                                                     <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                                         <div id="form-2" class="form-container">
                                                                         <?php else : ?>
@@ -316,6 +340,23 @@
                                                                                     </table>
                                                                                 </div>
                                                                             </div>
+                                                                            <div id="form-7" class="form-container">
+                                                                                <div class="table-responsive">
+                                                                                    <table id="tblProdFab" class="table table-bordered w-100 table-striped">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>Nº</th>
+                                                                                                <th class="text-center">CANTIDAD</th>
+                                                                                                <th class="text-center">UNIDAD</th>
+                                                                                                <th class="text-nowrap">PRODUCTO FABRICADO</th>
+                                                                                                <th class="text-center">ACCIONES</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                 </div>
                                                     </div>
@@ -337,11 +378,11 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="form-group" style="margin-bottom: 1.6rem;">
+                                                                    <div class="form-group" style="margin-bottom:1.6rem;">
                                                                         <label id="lbl" class="mb-0 combo"><i class="fas fa-clipboard-check"></i> Autorizado por</label>
                                                                         <div class="row">
                                                                             <div class="col-12">
-                                                                                <select id="cboAutorizado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" >
+                                                                                <select id="cboAutorizado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
                                                                                 </select>
                                                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                             </div>
@@ -362,13 +403,11 @@
                                                                             <i class="fas fa-clipboard-question"></i> Motivo</label>
                                                                         <input style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas">
                                                                     </div>
-                                                                    <div class="form-group" style="margin-bottom:0.8rem;">
+                                                                    <div class="form-group" style="margin-bottom:.8rem;">
                                                                         <label class="col-form-label combo mb-2" for="inp">
                                                                             <i class="fa-solid fa-images"></i> Evidencia fotográfica</label>
                                                                         <div class="dropzone">
-
                                                                         </div>
-
                                                                     </div>
                                                                 </div>
                                                                 </div>
@@ -572,12 +611,10 @@
         formFabCon = document.getElementById('formFabCon'),
         formFabNew = document.getElementById('formFabNew');
     const modal_fab = document.getElementById('modal-new-fab');
-    // modal_consul = document.getElementById('modal-consul') ;
 
     const nombre_fab = document.getElementById('nombre_fab'),
         cboUnidad_fab = document.getElementById('cboUnidad_fab'),
         cantidad_fab = document.getElementById('cantidad_fab');
-    // cboOrdenFab = document.getElementById('cboOrdenFab');
 
     const cboFab = document.getElementById('cboFabricado'),
         cboFabCon = document.getElementById('cboFabricadoCon');
@@ -828,15 +865,6 @@
         datos.append('cantidad', cant);
         // datos.append('id_orden', id_orden);
         datos.append('accion', accion_fab);
-        confirmarAccion(datos, 'inventario', null, modal_fab, function(r) {
-            cargarAutocompletado();
-            if (id_e != 0) {
-                cargarComboFabricado(id_e);
-            } else {
-                cargarComboFabricado();
-            }
-            cargarCombo('FabricadoCon', '', 9);
-        })
     })
 
     formFab.addEventListener("submit", function(e) {

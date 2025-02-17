@@ -250,16 +250,6 @@
                 visible: false,
             },
         ],
-        // "preDrawCallback": function(settings) {
-        //     scrollPosition = $(window).scrollTop();
-        // },
-        // "drawCallback": function(settings) {
-        //     // Restaurar la posición del scroll después de redibujar
-        //     setTimeout(function() {
-        //         console.log("Restaurando posición del scroll:", scrollPosition);
-        //         $(window).scrollTop(scrollPosition);
-        //     }, 3);
-        // }
     }
 
     $('#tblInforme tbody').on('click', 'tr.dtrg-start', function() {
