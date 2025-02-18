@@ -31,8 +31,34 @@ function confirmarEliminar(art, name, callback, opcion = 'eliminar', subtitle = 
   });
 }
 
-function limpiar(btn) {
-  if (selectedTab === "4") {
+function limpiar(btn = false) {
+  if (selectedTab === "1") {
+
+  } else if (selectedTab === "2") {
+    setChange(cboConductor, conductorPorDefecto);
+    setChange(cboDespachado, bodegueroPorDefecto);
+    setChange(cboResponsable, 0);
+    fecha.value = `${year}-${mes}-${dia}`;
+    nro_guia.value = "";
+    nro_orden.readOnly = false; // Desbloquea el input
+    nro_orden.value = "";
+    clearButton.style.display = "none";
+    motivo.value = "";
+    // setChange(cboClientes, 0);
+    // salida_radio.value = "2";
+    // salida_radio.dispatchEvent(new Event("change"));
+  } else if (selectedTab === "3") {
+      setChange(cboConductor, conductorPorDefecto);
+      setChange(cboDespachado, bodegueroPorDefecto);
+      setChange(cboResponsable, 0);
+      fecha.value = `${year}-${mes}-${dia}`;
+      fecha_retorno.value = `${year}-${mes}-${dia}`;
+      nro_ordenEntrada.readOnly = false;
+      nro_ordenEntrada.value = "";
+      clearButtonEntrada.style.display = "none";
+      motivo.value = "";
+  }
+  else if (selectedTab === "4") {
     const salida_radio = document.getElementById("radio-2");
     setChange(cboConductor, conductorPorDefecto);
     setChange(cboDespachado, bodegueroPorDefecto);
@@ -81,6 +107,19 @@ function limpiar(btn) {
     fecha.value = `${year}-${mes}-${dia}`;
     setChange(cboProveedores, 0);
     nro_factura.value = "";
+
+    entrada_radio.value = "1";
+    entrada_radio.dispatchEvent(new Event("change"));
+
+    btn.style.display = "none";
+  } else if (selectedTab === "7") {
+    const entrada_radio = document.getElementById("radio-1");
+    const nro_factura = document.getElementById('nro_fac');
+
+    fecha.value = `${year}-${mes}-${dia}`;
+    setChange(cboProveedores, 0);
+    nro_factura.value = "";
+    motivo.value = "";
 
     entrada_radio.value = "1";
     entrada_radio.dispatchEvent(new Event("change"));

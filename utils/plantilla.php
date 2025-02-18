@@ -986,41 +986,41 @@
                                 dt.clear().draw(); // Esta línea vacía los datos de la tabla
                             }
                         },
-                        {
-                            text: "<i class='fa-regular fa-layer-plus fa-xl'></i> Nuevo Prod.",
-                            className: "btn btn-light text-success btnNuevoPro",
-                            action: function(e, dt, node, config) {
+                        // {
+                        //     text: "<i class='fa-regular fa-layer-plus fa-xl'></i> Nuevo Prod.",
+                        //     className: "btn btn-light text-success btnNuevoPro",
+                        //     action: function(e, dt, node, config) {
 
-                            }
-                        },
-                        {
-                            text: "<i class='fa-regular fa-hammer fa-xl'></i> Agregar a Prod.",
-                            className: "btn btn-light text-info",
-                            action: function(e, dt, node, config) {
-                                tblOut.rows().every(function() {
-                                    let row = $(this.node());
-                                    let rowData = this.data();
-                                    let inputValue = row.find('input.cantidad').val();
-                                    rowData[2] = '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + inputValue + '">',
-                                        // Agregar la fila con los valores actualizados a tblFab
-                                        tblFab.row.add([rowData[0], rowData[1], rowData[2], rowData[3], rowData[4], rowData[5]]).draw(false);
-                                });
+                        //     }
+                        // },
+                        // {
+                        //     text: "<i class='fa-regular fa-hammer fa-xl'></i> Agregar a Prod.",
+                        //     className: "btn btn-light text-info",
+                        //     action: function(e, dt, node, config) {
+                        //         tblOut.rows().every(function() {
+                        //             let row = $(this.node());
+                        //             let rowData = this.data();
+                        //             let inputValue = row.find('input.cantidad').val();
+                        //             rowData[2] = '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + inputValue + '">',
+                        //                 // Agregar la fila con los valores actualizados a tblFab
+                        //                 tblFab.row.add([rowData[0], rowData[1], rowData[2], rowData[3], rowData[4], rowData[5]]).draw(false);
+                        //         });
 
-                                // Opcional: Limpiar todas las filas de tblOut después de transferir
-                                tblOut.clear().draw();
-                                $('#modal-fab').modal("show");
-                            }
-                        },
-                        {
-                            text: "<i class='fa-regular fa-building-magnifying-glass fa-xl'></i> Consultar Prod.",
-                            className: "btn btn-light text-dark btnAgregarPro",
-                            action: function(e, dt, node, config) {
-                                // formFabCon.reset();
-                                // formFabCon.classList.remove('was-validated');
-                                setChange(cboFabricadoCon, 0)
-                                $('#modal-consul').modal("show");
-                            }
-                        },
+                        //         // Opcional: Limpiar todas las filas de tblOut después de transferir
+                        //         tblOut.clear().draw();
+                        //         $('#modal-fab').modal("show");
+                        //     }
+                        // },
+                        // {
+                        //     text: "<i class='fa-regular fa-building-magnifying-glass fa-xl'></i> Consultar Prod.",
+                        //     className: "btn btn-light text-dark btnAgregarPro",
+                        //     action: function(e, dt, node, config) {
+                        //         // formFabCon.reset();
+                        //         // formFabCon.classList.remove('was-validated');
+                        //         setChange(cboFabricadoCon, 0)
+                        //         $('#modal-consul').modal("show");
+                        //     }
+                        // },
                     ]
                 });
 
@@ -1119,7 +1119,7 @@
                             className: "text-center",
                             render: function(data, type, row) {
                                 return `<center>
-                            <span class='btnEliminarFab text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
+                            <span class='btnEliminaRow text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
                             data-bs-placement='top' title='Eliminar producto'> 
                                 <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
                                 </i> </span>
@@ -1129,7 +1129,7 @@
                     ],
                     createdRow: function(row, data, dataIndex) {
                         const selectElement = $(row).find('.id_unidad');
-                        cargarOpcionesSelect(selectElement, data.id_unidad);
+                        cargarOpcionesSelect(selectElement, data.id_unidad, '100%');
 
                     },
                 });
@@ -1310,26 +1310,30 @@
                 });
 
                 // const btnAgregarPro = document.querySelector('.btnAgregarPro');
-
-                $('#tblCompra tbody').on('click', '.btnEliminarIn', function() {
-                    tblCompra.row($(this).parents('tr')).remove().draw();
+                $(document).on('click', '.btnEliminaRow', function() {
+                    let tabla = $(this).closest('table').DataTable(); // Obtener la DataTable correspondiente
+                    tabla.row($(this).closest('tr')).remove().draw(); // Eliminar la fila seleccionada
                 });
 
-                $('#tblProdFab tbody').on('click', '.btnEliminarFab', function() {
-                    tblProdFab.row($(this).parents('tr')).remove().draw();
-                });
+                // $('#tblCompra tbody').on('click', '.btnEliminarIn', function() {
+                //     tblCompra.row($(this).parents('tr')).remove().draw();
+                // });
 
-                $('#tblFab tbody').on('click', '.btnEliminarIn', function() {
-                    tblFab.row($(this).parents('tr')).remove().draw();
-                });
+                // $('#tblProdFab tbody').on('click', '.btnEliminarFab', function() {
+                //     tblProdFab.row($(this).parents('tr')).remove().draw();
+                // });
 
-                $('#tblOut tbody').on('click', '.btnEliminarIn', function() {
-                    tblOut.row($(this).parents('tr')).remove().draw();
-                });
+                // $('#tblFab tbody').on('click', '.btnEliminarIn', function() {
+                //     tblFab.row($(this).parents('tr')).remove().draw();
+                // });
 
-                $('#tblIn tbody').on('click', '.btnEliminarIn', function() {
-                    tblIn.row($(this).parents('tr')).remove().draw();
-                });
+                // $('#tblOut tbody').on('click', '.btnEliminarIn', function() {
+                //     tblOut.row($(this).parents('tr')).remove().draw();
+                // });
+
+                // $('#tblIn tbody').on('click', '.btnEliminarIn', function() {
+                //     tblIn.row($(this).parents('tr')).remove().draw();
+                // });
                 const clearButton = document.getElementById("clearButton");
                 const clearButtonEntrada = document.getElementById("clearButtonEntrada");
                 // nro_orden.addEventListener("mouseenter", function() {
@@ -1347,7 +1351,7 @@
                     nro_orden.readOnly = false; // Desbloquea el input
                     nro_orden.value = "";
                     nro_orden.focus();
-                    clearButton.style.display = "none";; // Oculta la X
+                    clearButton.style.display = "none";// Oculta la X
                     // nro_orden.parentNode.querySelector(".ten").style.display = "block";
 
                     // valid_orden = false;
@@ -1554,7 +1558,12 @@
                         formData.append('nro_factura', nro_factura.value);
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 1);
-                        realizarRegistro(tblCompra, formData, clases);
+                        realizarRegistro(tblCompra, formData, clases, 1, 'productos', function(r) {
+                            if (r) {
+                                form_guia.classList.remove('was-validated');
+                                limpiar();
+                            }
+                        });
                     } else if (selectedTab === '2') {
                         let elementosAValidar = [fecha, nro_guia, cboDespachado, cboConductor];
                         let isValid = true;
@@ -1573,6 +1582,7 @@
                         if (!isValid) {
                             return;
                         }
+
                         let clases = ['cantidad'];
                         formData.append('orden', id_orden_guia_salida);
                         formData.append('nro_guia', nro_guia.value);
@@ -1580,7 +1590,7 @@
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
-                        formData.append('motivo', motivo.value);
+                        formData.append('motivo',  motivo.value.trim().toUpperCase());
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 2);
                         dropzone.getAcceptedFiles().forEach((file, index) => {
@@ -1591,6 +1601,8 @@
                         realizarRegistro(tblOut, formData, clases, 1, 'productos', function(r) {
                             if (r) {
                                 dropzone.removeAllFiles(false);
+                                form_guia.classList.remove('was-validated');
+                                limpiar();
                             }
                         });
                     } else if (selectedTab === '3') {
@@ -1606,9 +1618,9 @@
                             return;
                         }
                         let clases = ['cantidad'];
-                        formData.append('orden', nro_ordenEntrada.value);
-                        formData.append('cliente', cboClienteEntrada.value);
-                        // formData.append('nro_guia', nro_guiaEntrada.value);
+                        formData.append('orden', id_orden_guia_entrada);
+                        // formData.append('cliente', cboClienteEntrada.value);
+                        formData.append('nro_guia', nro_guiaEntrada.value);
                         formData.append('conductor', cboConductorEntrada.value);
                         formData.append('responsable', cboResponsable.value);
                         formData.append('despachado', cboDespachado.value);
@@ -1901,7 +1913,7 @@
                         nuevaFila.push(
                             respuesta['descripcion'],
                             `<center>
-                            <span class='btnEliminarIn text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
+                            <span class='btnEliminaRow text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
                             data-bs-placement='top' title='Eliminar producto'> 
                                 <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
                                 </i> </span>

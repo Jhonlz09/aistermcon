@@ -92,16 +92,10 @@
                                                                 <div class="col-sm ui-front" style="margin-bottom:1.8rem">
                                                                     <label class="col-form-label combo" for="nro_ordenEntrada">
                                                                         <i class="fas fas fa-ticket"></i> Orden de trabajo</label>
-                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="nro_ordenEntrada" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
+                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_ordenEntrada" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
                                                                     <button class="clear-btn" type="button" id="clearButtonEntrada" style="display:none">&times;</button>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
-                                                                <!-- <div class="col-md-6" style="margin-bottom:1.8rem">
-                                                                    <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
-                                                                    <select id="cboClienteEntrada" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                                                    </select>
-                                                                    <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                                </div> -->
                                                             </div>
                                                         </div>
                                                         <div class="form-group mb-0" id="div_fab" style="display:none;line-height:1">
@@ -550,60 +544,7 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<div class="modal fade" id="modal-consul">
-    <div class="modal-dialog modal-lg  modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header bg-gradient-dark" style="padding: 1rem">
-                <h4 class="modal-title"><i class="fas fa-screwdriver-wrench"></i><span> Consultar Producción</span></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="formFabCon" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body scroll-modal">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group" style="margin-bottom: .25rem;">
-                                <label class="mb-0 combo"><i class="fas fa-trowel-bricks"></i> Producto</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select id="cboFabricadoCon" class="cbo form-control select2 select2-success flex-grow-1" data-dropdown-css-class="select2-dark" required>
-                                        </select>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                    <!-- <div class="span-btn d-flex align-items-center justify-content-end" id="div_span" style="padding-right:.5rem">
-                                        <span class="badge bg-gradient-dark" id="new_orden" title='Nuevo' data-target='#modal-fab' data-toggle='modal'><i class="fa-solid fa-plus"></i></span>
-                                        <span style="display:none" class="badge bg-gradient-dark" id="edit_orden" title='Editar'><i class="fa-solid fa-pencil"></i></span>
-                                        <span style="display:none" class="badge bg-gradient-dark" id="eli_orden" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
-                                    </div> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="tblFabCon">
-                                <thead style="background-color:#1f2a3dd1!important;color: aliceblue;">
-                                    <tr>
-                                        <th class="text-center">Nº</th>
-                                        <th>CANTIDAD</th>
-                                        <th>UNIDAD</th>
-                                        <th>DESCRIPCION</th>
-                                        <th>FECHA</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
 
 <script>
     const btnGuardarFab = document.getElementById('btnAgregarFab');
