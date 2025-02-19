@@ -109,7 +109,6 @@ class ModeloRegistro
         }
     }
 
-
     static private function guardarImagenesSalida($conexion, $id_boleta, $imagenes)
     {
         // Directorio para almacenar las imágenes
@@ -263,7 +262,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlRegistrarEntrada($arr, $orden, $cliente, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado)
+    static public function mdlRegistrarEntrada($arr, $orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado)
     {
         try {
             $conexion = Conexion::ConexionDB();

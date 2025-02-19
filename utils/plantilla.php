@@ -77,6 +77,7 @@
         let accion_inv = 0;
         let scroll = false;
         let sub = false;
+        let items_orden = [];
         let id_orden_guia_salida;
         let id_orden_guia_entrada;
         // let valid_orden = false;
@@ -1315,25 +1316,6 @@
                     tabla.row($(this).closest('tr')).remove().draw(); // Eliminar la fila seleccionada
                 });
 
-                // $('#tblCompra tbody').on('click', '.btnEliminarIn', function() {
-                //     tblCompra.row($(this).parents('tr')).remove().draw();
-                // });
-
-                // $('#tblProdFab tbody').on('click', '.btnEliminarFab', function() {
-                //     tblProdFab.row($(this).parents('tr')).remove().draw();
-                // });
-
-                // $('#tblFab tbody').on('click', '.btnEliminarIn', function() {
-                //     tblFab.row($(this).parents('tr')).remove().draw();
-                // });
-
-                // $('#tblOut tbody').on('click', '.btnEliminarIn', function() {
-                //     tblOut.row($(this).parents('tr')).remove().draw();
-                // });
-
-                // $('#tblIn tbody').on('click', '.btnEliminarIn', function() {
-                //     tblIn.row($(this).parents('tr')).remove().draw();
-                // });
                 const clearButton = document.getElementById("clearButton");
                 const clearButtonEntrada = document.getElementById("clearButtonEntrada");
                 // nro_orden.addEventListener("mouseenter", function() {
@@ -1352,21 +1334,17 @@
                     nro_orden.value = "";
                     nro_orden.focus();
                     clearButton.style.display = "none";// Oculta la X
-                    // nro_orden.parentNode.querySelector(".ten").style.display = "block";
-
-                    // valid_orden = false;
                 });
 
                 clearButtonEntrada.addEventListener("click", function() {
-                    // Borra el contenido
                     nro_ordenEntrada.readOnly = false; // Desbloquea el input
                     nro_ordenEntrada.value = "";
                     nro_ordenEntrada.focus()
                     clearButtonEntrada.style.display = "none"; // Oculta la X
-
                 });
 
                 cargarAutocompletado(function(items) {
+                   
                     $(inputauto).autocomplete({
                         source: items,
                         autoFocus: true,
@@ -1386,9 +1364,10 @@
                             res + "</strong></div>"
                         ).appendTo(ul);
                     };
-                })
+                });
 
                 cargarAutocompletado(function(items) {
+                    items_orden = items;
                     $(nro_orden).autocomplete({
                         source: items,
                         minLength: 1,
@@ -1396,10 +1375,6 @@
                         focus: function() {
                             return false;
                         },
-                        // open: function() {
-                        //     // Seleccionar automáticamente el primer elemento al abrir
-                        //     $(this).autocomplete("widget").children().first().find(".ui-menu-item-wrapper").addClass("ui-state-active");
-                        // },
                         select: function(event, ui) {
                             nro_orden.readOnly = true;
                             id_orden_guia_salida = ui.item.cod;
@@ -1409,7 +1384,6 @@
                             nro_orden.focus();
                         },
                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                        // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         return $("<li>").append(
                             "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
                             item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
@@ -1606,7 +1580,7 @@
                             }
                         });
                     } else if (selectedTab === '3') {
-                        let elementosAValidar = [fecha_retorno, nro_ordenEntrada, cboClienteEntrada];
+                        let elementosAValidar = [fecha_retorno];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -1619,7 +1593,6 @@
                         }
                         let clases = ['cantidad'];
                         formData.append('orden', id_orden_guia_entrada);
-                        // formData.append('cliente', cboClienteEntrada.value);
                         formData.append('nro_guia', nro_guiaEntrada.value);
                         formData.append('conductor', cboConductorEntrada.value);
                         formData.append('responsable', cboResponsable.value);
@@ -1627,11 +1600,11 @@
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('fecha', fecha.value);
-
                         formData.append('accion', 8);
                         realizarRegistro(tblIn, formData, clases, 1, 'productos', function(r) {
                             if (r) {
                                 dropzone.removeAllFiles(false);
+                                limpiar();
                             }
                         });
                     } else if (selectedTab === '4') {

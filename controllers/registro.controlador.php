@@ -58,21 +58,21 @@ class ajaxRegistro
     //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     // }
 
-    public function registrarEntrada($datos, $orden, $cliente, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado)
+    public function registrarEntrada($datos, $orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado)
     {
 
-        $data = ModeloRegistro::mdlRegistrarEntrada($datos, $orden, $cliente, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado);
+        $data = ModeloRegistro::mdlRegistrarEntrada($datos, $orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function editarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes)
+    public function editarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes)
     {
 
         if ($imagenes === null) {
             $imagenes = []; // Define un array vacío si no se enviaron imágenes
         }
 
-        $data = ModeloRegistro::mdlEditarRegistroSalida($id_boleta, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes);
+        $data = ModeloRegistro::mdlEditarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -132,7 +132,7 @@ if (isset($_POST["accion"])) {
     } else if ($accion == 7) {
         $registro->registrarProductosFab($_POST["arr"], $_POST["id_producto_fab"]);
     } else if ($accion == 8) {
-        $registro->registrarEntrada($_POST["arr"], $_POST["orden"], $_POST["cliente"], $_POST["fecha"], $_POST["fecha_retorno"], $_POST["motivo"], $_POST["conductor"], $_POST["responsable"], $_POST["despachado"]);
+        $registro->registrarEntrada($_POST["arr"], $_POST["orden"], $_POST["fecha"], $_POST["fecha_retorno"], $_POST["motivo"], $_POST["conductor"], $_POST["responsable"], $_POST["despachado"]);
     } else if ($accion == 9) {
         $registro->registrarSolicitudCotizacion($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"]);
     } else if ($accion == 10) {
