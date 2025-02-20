@@ -35,7 +35,6 @@ function limpiar(btn = false) {
   if (selectedTab === "1") {
     setChange(cboProveedores, 0);
     nro_factura.value = "";
-   
   } else if (selectedTab === "2") {
     setChange(cboConductor, conductorPorDefecto);
     setChange(cboDespachado, bodegueroPorDefecto);
@@ -64,8 +63,10 @@ function limpiar(btn = false) {
     fecha.value = `${year}-${mes}-${dia}`;
     nro_guia.value = "";
     nro_orden.value = "";
+    nro_orden.readOnly = false;
+    clearButton.style.display = "none";
     motivo.value = "";
-    setChange(cboClientes, 0);
+  
     salida_radio.value = "2";
     salida_radio.dispatchEvent(new Event("change"));
     btn.style.display = "none";
@@ -79,12 +80,11 @@ function limpiar(btn = false) {
     setChange(cboResponsable, 0);
     cboResponsable.disabled = false;
     nro_guiaEntrada.value = "";
+    nro_ordenEntrada.readOnly = false;
     nro_ordenEntrada.value = "";
+    clearButtonEntrada.style.display = "none";
     nro_ordenEntrada.disabled = false;
     motivo.value = "";
-
-    setChange(cboClienteEntrada, 0);
-    cboClienteEntrada.disabled = false;
     retorno.value = "3";
     retorno.dispatchEvent(new Event("change"));
     btn.style.display = "none";

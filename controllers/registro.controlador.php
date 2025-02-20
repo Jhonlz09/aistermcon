@@ -124,7 +124,7 @@ if (isset($_POST["accion"])) {
         $registro->registrarRetorno($_POST["arr"], $_POST["boleta"], $_POST["fecha_retorno"], $_POST["nro_guia"]);
     } else if ($accion == 4) {
         $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : null;
-        $registro->editarRegistroSalida($_POST["id_boleta"], $_POST["orden"], $_POST["cliente"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"],  $imagenes);
+        $registro->editarRegistroSalida($_POST["id_boleta"], $_POST["orden"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"],  $imagenes);
     } else if ($accion == 5) {
         $registro->editarRegistroCompra($_POST["id_factura"], $_POST["nro_factura"], $_POST["proveedor"], $_POST["fecha"]);
     } else if ($accion == 6) {

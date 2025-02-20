@@ -236,401 +236,412 @@
     });
 
     $(document).ready(function() {
-                let anio = year;
-                let mes = month;
+        let anio = year;
+        let mes = month;
 
-                if (!$.fn.DataTable.isDataTable('#tblSalidas')) {
-                    tabla = $("#tblSalidas").DataTable({
-                        "ajax": {
-                            "url": "controllers/salidas.controlador.php",
-                            "type": "POST",
-                            "dataSrc": '',
-                            data: function(data) {
-                                data.anio = anio;
-                                data.mes = mes;
-                            }
-                        },
-                        ...configuracionTable
-                    });
+        if (!$.fn.DataTable.isDataTable('#tblSalidas')) {
+            tabla = $("#tblSalidas").DataTable({
+                "ajax": {
+                    "url": "controllers/salidas.controlador.php",
+                    "type": "POST",
+                    "dataSrc": '',
+                    data: function(data) {
+                        data.anio = anio;
+                        data.mes = mes;
+                    }
+                },
+                ...configuracionTable
+            });
 
-                    tabla.on('draw.dt', function() {
-                        if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
-                            const b = document.body;
-                            const s = b.scrollHeight + 58;
-                            const w = window.innerHeight;
+            tabla.on('draw.dt', function() {
+                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
+                    const b = document.body;
+                    const s = b.scrollHeight + 58;
+                    const w = window.innerHeight;
 
-                            handleScroll(b, s, w);
-                        }
-
-                        let tablaData = tabla.rows().data().toArray();
-                        localStorage.setItem('s', JSON.stringify(tablaData));
-                    });
+                    handleScroll(b, s, w);
                 }
 
-                let accion = 0;
-                const modal = document.querySelector('.modal'),
-                    span = document.querySelector('.modal-title span'),
-                    elements = document.querySelectorAll('.modal .bg-gradient-green'),
-                    form = document.getElementById('formNuevo'),
-                    form_pdf = document.getElementById('form_pdf'),
-                    btnNuevo = document.getElementById('btnNuevo');
-                let input_pdf = document.getElementById('input_boleta');
+                let tablaData = tabla.rows().data().toArray();
+                localStorage.setItem('s', JSON.stringify(tablaData));
+            });
+        }
+
+        let accion = 0;
+        const modal = document.querySelector('.modal'),
+            span = document.querySelector('.modal-title span'),
+            elements = document.querySelectorAll('.modal .bg-gradient-green'),
+            form = document.getElementById('formNuevo'),
+            form_pdf = document.getElementById('form_pdf'),
+            btnNuevo = document.getElementById('btnNuevo');
+        let input_pdf = document.getElementById('input_boleta');
 
 
-                $(cboAnio).select2({
-                    width: '110%',
-                    data: datos_anio,
-                    minimumResultsForSearch: -1,
-                })
-                setChange(cboAnio, anio);
+        $(cboAnio).select2({
+            width: '110%',
+            data: datos_anio,
+            minimumResultsForSearch: -1,
+        })
+        setChange(cboAnio, anio);
 
-                $(cboMeses).select2({
-                    minimumResultsForSearch: -1,
-                    width: 'calc(100% + .4vw)',
-                    data: datos_meses,
-                });
-                setChange(cboMeses, mes);
-
-
-                $(cboAnio).on("change", function() {
-                    let a = this.options[this.selectedIndex].text
-                    if (a == anio) {
-                        return;
-                    }
-                    anio = a
-                    if (cboMeses.value == 'null') {
-                        mes = null;
-                    } else {
-                        mes = cboMeses.value;
-                    }
-                    tabla.ajax.reload();
-                });
-
-                $(cboMeses).on("change", function() {
-                    let m = this.value;
-                    if (m == mes) {
-                        return;
-                    }
-                    if (m == 'null') {
-                        mes = null;
-                    } else {
-                        mes = m;
-                    }
-                    anio = cboAnio.options[cboAnio.selectedIndex].text;
-                    tabla.ajax.reload();
-                });
-
-                // $('#tblSalidas').on('submit', '.btn_pdf', function(event) {
-                //     event.preventDefault(); // Evita el envío predeterminado del formulario
-                //     // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
-                //     var boleta = tabla.row($(this).closest('tr').next()).data()[10];
-                //     // var input_pdf = $(this).find('.input_boleta');
-                //     // input_pdf.val(boleta);
-                //     $(this).find('.input_boleta').val(boleta);
-
-                //     // console.log(boleta)
-
-                //     this.submit(); // Envía el formulario actual
-                // });
+        $(cboMeses).select2({
+            minimumResultsForSearch: -1,
+            width: 'calc(100% + .4vw)',
+            data: datos_meses,
+        });
+        setChange(cboMeses, mes);
 
 
-                // $('#tblSalidas').on('click', '.btn_pdf', function(event) {
-                //     event.preventDefault(); // Evita la acción predeterminada
-                //     // Obtener la fila correspondiente
-                //     var rowData = tabla.row($(this).closest('tr').next()).data();
-                //     var boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
-                //     // console.log(boleta)
-                //     // Crear el formulario dinámicamente
-                //     var form = document.createElement('form');
-                //     form.action = 'PDF/pdf_guia.php';
-                //     form.method = 'POST';
-                //     form.autocomplete = 'off';
-                //     form.target = '_blank';
-                //     // Crear el input oculto para la boleta
-                //     var inputBoleta = document.createElement('input');
-                //     inputBoleta.type = 'hidden';
-                //     inputBoleta.name = 'id_boleta';
-                //     inputBoleta.value = boleta;
-                //     inputBoleta.classList.add('input_boleta');
-                //     // Añadir el input al formulario
-                //     form.appendChild(inputBoleta);
+        $(cboAnio).on("change", function() {
+            let a = this.options[this.selectedIndex].text
+            if (a == anio) {
+                return;
+            }
+            anio = a
+            if (cboMeses.value == 'null') {
+                mes = null;
+            } else {
+                mes = cboMeses.value;
+            }
+            tabla.ajax.reload();
+        });
 
-                //     // Añadir el formulario al DOM (se añade al body)
-                //     document.body.appendChild(form);
-                //     // Enviar el formulario
-                //     form.submit();
-                //     // Eliminar el formulario del DOM después de enviarlo
-                //     document.body.removeChild(form);
-                // });
+        $(cboMeses).on("change", function() {
+            let m = this.value;
+            if (m == mes) {
+                return;
+            }
+            if (m == 'null') {
+                mes = null;
+            } else {
+                mes = m;
+            }
+            anio = cboAnio.options[cboAnio.selectedIndex].text;
+            tabla.ajax.reload();
+        });
 
-                // $('#tblSalidas').on('click', '.btn_pdf_img', function(event) {
-                //     event.preventDefault(); // Evita la acción predeterminada
-                //     var rowData = tabla.row($(this).closest('tr').next()).data();
-                //     var boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
-                //     // console.log(boleta)
-                //     // Crear el formulario dinámicamente
-                //     var form = document.createElement('form');
-                //     form.action = 'PDF/pdf_guia_img.php';
-                //     form.method = 'POST';
-                //     form.autocomplete = 'off';
-                //     form.target = '_blank';
-                //     // Crear el input oculto para la boleta
-                //     var inputBoleta = document.createElement('input');
-                //     inputBoleta.type = 'hidden';
-                //     inputBoleta.name = 'id_boleta';
-                //     inputBoleta.value = boleta;
-                //     inputBoleta.classList.add('input_boleta');
-                //     // Añadir el input al formulario
-                //     form.appendChild(inputBoleta);
+        // $('#tblSalidas').on('submit', '.btn_pdf', function(event) {
+        //     event.preventDefault(); // Evita el envío predeterminado del formulario
+        //     // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
+        //     var boleta = tabla.row($(this).closest('tr').next()).data()[10];
+        //     // var input_pdf = $(this).find('.input_boleta');
+        //     // input_pdf.val(boleta);
+        //     $(this).find('.input_boleta').val(boleta);
 
-                //     // Añadir el formulario al DOM (se añade al body)
-                //     document.body.appendChild(form);
-                //     // Enviar el formulario
-                //     form.submit();
-                //     // Eliminar el formulario del DOM después de enviarlo
-                //     document.body.removeChild(form);
-                // });
-                $('#tblSalidas').on('click', '.btn_pdf', function(event) {
-                    event.preventDefault(); // Evita la acción predeterminada
-                    let rowData = tabla.row($(this).closest('tr').next()).data();
-                    let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
-                    enviarFormularioPDF('PDF/pdf_guia.php', boleta);
-                });
+        //     // console.log(boleta)
 
-                $('#tblSalidas').on('click', '.btn_pdf_img', function(event) {
-                    event.preventDefault(); // Evita la acción predeterminada
-                    let rowData = tabla.row($(this).closest('tr').next()).data();
-                    let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
-                    enviarFormularioPDF('PDF/pdf_guia_img.php', boleta);
-                });
+        //     this.submit(); // Envía el formulario actual
+        // });
 
-                function enviarFormularioPDF(action, boleta) {
-                    // Crear el formulario dinámicamente
-                    var form = document.createElement('form');
-                    form.action = action;
-                    form.method = 'POST';
-                    form.autocomplete = 'off';
-                    form.target = '_blank';
 
-                    // Crear el input oculto para la boleta
-                    var inputBoleta = document.createElement('input');
-                    inputBoleta.type = 'hidden';
-                    inputBoleta.name = 'id_boleta';
-                    inputBoleta.value = boleta;
+        // $('#tblSalidas').on('click', '.btn_pdf', function(event) {
+        //     event.preventDefault(); // Evita la acción predeterminada
+        //     // Obtener la fila correspondiente
+        //     var rowData = tabla.row($(this).closest('tr').next()).data();
+        //     var boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+        //     // console.log(boleta)
+        //     // Crear el formulario dinámicamente
+        //     var form = document.createElement('form');
+        //     form.action = 'PDF/pdf_guia.php';
+        //     form.method = 'POST';
+        //     form.autocomplete = 'off';
+        //     form.target = '_blank';
+        //     // Crear el input oculto para la boleta
+        //     var inputBoleta = document.createElement('input');
+        //     inputBoleta.type = 'hidden';
+        //     inputBoleta.name = 'id_boleta';
+        //     inputBoleta.value = boleta;
+        //     inputBoleta.classList.add('input_boleta');
+        //     // Añadir el input al formulario
+        //     form.appendChild(inputBoleta);
 
-                    // Añadir el input al formulario
-                    form.appendChild(inputBoleta);
+        //     // Añadir el formulario al DOM (se añade al body)
+        //     document.body.appendChild(form);
+        //     // Enviar el formulario
+        //     form.submit();
+        //     // Eliminar el formulario del DOM después de enviarlo
+        //     document.body.removeChild(form);
+        // });
 
-                    // Añadir el formulario al DOM (se añade al body)
-                    document.body.appendChild(form);
-                    // Enviar el formulario
-                    form.submit();
-                    // Eliminar el formulario del DOM después de enviarlo
-                    document.body.removeChild(form);
+        // $('#tblSalidas').on('click', '.btn_pdf_img', function(event) {
+        //     event.preventDefault(); // Evita la acción predeterminada
+        //     var rowData = tabla.row($(this).closest('tr').next()).data();
+        //     var boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+        //     // console.log(boleta)
+        //     // Crear el formulario dinámicamente
+        //     var form = document.createElement('form');
+        //     form.action = 'PDF/pdf_guia_img.php';
+        //     form.method = 'POST';
+        //     form.autocomplete = 'off';
+        //     form.target = '_blank';
+        //     // Crear el input oculto para la boleta
+        //     var inputBoleta = document.createElement('input');
+        //     inputBoleta.type = 'hidden';
+        //     inputBoleta.name = 'id_boleta';
+        //     inputBoleta.value = boleta;
+        //     inputBoleta.classList.add('input_boleta');
+        //     // Añadir el input al formulario
+        //     form.appendChild(inputBoleta);
+
+        //     // Añadir el formulario al DOM (se añade al body)
+        //     document.body.appendChild(form);
+        //     // Enviar el formulario
+        //     form.submit();
+        //     // Eliminar el formulario del DOM después de enviarlo
+        //     document.body.removeChild(form);
+        // });
+        $('#tblSalidas').on('click', '.btn_pdf', function(event) {
+            event.preventDefault(); // Evita la acción predeterminada
+            let rowData = tabla.row($(this).closest('tr').next()).data();
+            let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+            enviarFormularioPDF('PDF/pdf_guia.php', boleta);
+        });
+
+        $('#tblSalidas').on('click', '.btn_pdf_img', function(event) {
+            event.preventDefault(); // Evita la acción predeterminada
+            let rowData = tabla.row($(this).closest('tr').next()).data();
+            let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+            enviarFormularioPDF('PDF/pdf_guia_img.php', boleta);
+        });
+
+        function enviarFormularioPDF(action, boleta) {
+            // Crear el formulario dinámicamente
+            var form = document.createElement('form');
+            form.action = action;
+            form.method = 'POST';
+            form.autocomplete = 'off';
+            form.target = '_blank';
+
+            // Crear el input oculto para la boleta
+            var inputBoleta = document.createElement('input');
+            inputBoleta.type = 'hidden';
+            inputBoleta.name = 'id_boleta';
+            inputBoleta.value = boleta;
+
+            // Añadir el input al formulario
+            form.appendChild(inputBoleta);
+
+            // Añadir el formulario al DOM (se añade al body)
+            document.body.appendChild(form);
+            // Enviar el formulario
+            form.submit();
+            // Eliminar el formulario del DOM después de enviarlo
+            document.body.removeChild(form);
+        }
+
+        if (btnNuevo) {
+            btnNuevo.addEventListener('click', () => {
+                accion = 1;
+                const salida = document.getElementById('radio-2');
+                first_control.click();
+                salida.click();
+                dropzone.removeAllFilesWithoutServer();
+                dropzone.enable();
+                drop_element.classList.remove("dropzone-disabled");
+
+            });
+        }
+
+        $('#tblSalidas').on('click', '#editS', function() {
+            let row = tabla.row($(this).closest('tr').next()).data()
+            id_boleta = row[10];
+            // console.log(id_boleta)
+            const id_orden = row[11],
+                id_cliente = row[12],
+                fecha_id = row[13],
+                conductor = row[14],
+                despachado_id = row[15],
+                entrega = row[16],
+                guia = row[17];
+            const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
+            const salida_radio = document.getElementById('radio-2');
+            const cancelar = document.getElementById('Cancelar');
+            // Buscar el ítem en el array de items cargados previamente
+            // console.log(items_orden)
+            let selectedItem = items_orden.find(item => item.cod === id_orden);
+            // console.log(selectedItem)
+            if (selectedItem) {
+                // Asignamos el valor al input de autocompletado
+                $(nro_orden).val(selectedItem.label);
+
+                // Simulamos la selección del ítem en el autocompletado
+                $(nro_orden)
+                    .autocomplete("instance")
+                    ._trigger("select", null, {
+                        item: selectedItem
+                    });
+            }
+            //         $(nro_orden)
+            // .val(id_orden)  // Asignamos el valor del 'cod' al input del autocompletado
+            // .autocomplete("search", id_orden_string)  // Hacemos la búsqueda programática
+            // .trigger('focus')  // Disparamos el evento focus para asegurar que el autocomplete se active
+            // .trigger('keydown');  // Disparamos el evento keydown para que se seleccione el ítem si es necesario
+
+            // setChange(cboConductor, conductor)
+            // setChange(cboDespachado, despachado_id)
+            // setChange(cboResponsable, entrega)
+            fecha.value = fecha_id;
+            nro_guia.value = guia;
+            // nro_orden.value = orden;
+            motivo.value = motivo_text;
+            // setChange(cboClientes, id_cliente)
+            salida_radio.value = '4';
+            salida_radio.checked = true;
+            salida_radio.dispatchEvent(new Event('change'));
+            first_control.click();
+            cancelar.style.display = 'block'
+            tblDetalleSalida.ajax.reload(null, false);
+            // salida_radio.value = '2';
+
+            cargarImagenesDropzone(id_boleta);
+            dropzone.enable();
+            if (eliminar) {
+                drop_element.classList.remove("dropzone-disabled");
+            } else {
+                drop_element.classList.add("dropzone-disabled");
+            }
+        });
+
+        function cargarImagenesDropzone(id_boleta) {
+            $.ajax({
+                url: 'controllers/salidas.controlador.php', // Ajusta esta URL a tu controlador PHP
+                type: 'POST',
+                "dataSrc": '',
+                data: {
+                    'boleta': id_boleta,
+                    'accion': 8
+                },
+                success: function(response) {
+                    dropzone.removeAllFilesWithoutServer();
+                    // Limpia los archivos existentes
+                    response = JSON.parse(response);
+                    response.imagenes.forEach(imagen => {
+                        const mockFile = {
+                            name: imagen.nombre_imagen || "Imagen", // Puedes asignar un nombre genérico si no guardas el nombre original
+                            size: 123456, // Valor genérico; Dropzone no valida este campo para imágenes precargadas
+                            ruta: imagen.nombre_imagen, // Ruta de la imagen en el servidor
+                            isExisting: true
+                        };
+
+                        // Añade la imagen simulando que ya está cargada
+                        dropzone.emit('addedfile', mockFile);
+                        dropzone.emit('thumbnail', mockFile, '/guia_img/' + imagen.nombre_imagen);
+                        dropzone.emit('complete', mockFile);
+                        dropzone.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
+                    });
+                },
+            });
+        }
+
+        $('#tblSalidas').on('click', '#editR', function() {
+            row = tabla.row($(this).closest('tr').next()).data()
+            id_boleta = row[10];
+            // console.log(row)
+            // console.log(id_boleta)
+            const id_orden = row[11],
+                id_cliente = row[12],
+                fecha_id = row[13],
+                conductor = row[14],
+                despachado_id = row[15],
+                entrega = row[16],
+                guia = row[17],
+                retorno = document.getElementById('radio-3');
+            const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
+
+
+            let selectedItem = items_orden.find(item => item.cod === id_orden);
+            // console.log(selectedItem)
+            if (selectedItem) {
+                // Asignamos el valor al input de autocompletado
+                $(nro_ordenEntrada).val(selectedItem.label);
+
+                // Simulamos la selección del ítem en el autocompletado
+                $(nro_ordenEntrada)
+                    .autocomplete("instance")
+                    ._trigger("select", null, {
+                        item: selectedItem
+                    });
+            }
+
+            setChange(cboConductor, conductor)
+            // cboConductor.disabled = true;
+            setChange(cboDespachado, despachado_id)
+            // cboDespachado.disabled = true;
+            setChange(cboResponsable, entrega)
+            // cboResponsable.disabled = true;
+            fecha_retorno.value = fecha_hoy;
+            
+            nro_guiaEntrada.value = guia;
+            motivo.value = motivo_text;
+            // motivo.disabled = true;
+            // retorno.click();
+            retorno.value = '6';
+            retorno.checked = true;
+            retorno.dispatchEvent(new Event('change'));
+            first_control.click();
+            tblReturn.ajax.reload(null, false);
+            cargarImagenesDropzone(id_boleta)
+            dropzone.disable();
+            document.querySelector(".dropzone").classList.add("dropzone-disabled");
+        });
+
+        $('#tblSalidas').on('click', '#eliS', function() {
+            const boleta = tabla.row($(this).closest('tr').next()).data()[10];
+            let src = new FormData();
+            src.append('accion', 3);
+            src.append('id', boleta);
+            confirmarEliminar('la', 'salida', function(r) {
+                if (r) {
+                    confirmarAccion(src, 'salidas', tabla);
+                    cargarAutocompletado();
                 }
+            })
+        });
 
-                if (btnNuevo) {
-                    btnNuevo.addEventListener('click', () => {
-                        accion = 1;
-                        const salida = document.getElementById('radio-2');
-                        first_control.click();
-                        salida.click();
-                        dropzone.removeAllFilesWithoutServer();
-                        dropzone.enable();
-                        drop_element.classList.remove("dropzone-disabled");
+        // $('#tblSalidas tbody').on('click', '.btnEliminar', function() {
 
-                    });
-                }
+        // });
 
-                $('#tblSalidas').on('click', '#editS', function() {
-                        let row = tabla.row($(this).closest('tr').next()).data()
-                        id_boleta = row[10];
-                        // console.log(id_boleta)
-                        const id_orden = row[11],
-                            id_cliente = row[12],
-                            fecha_id = row[13],
-                            conductor = row[14],
-                            despachado_id = row[15],
-                            entrega = row[16],
-                            guia = row[17];
-                        const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
-                        const salida_radio = document.getElementById('radio-2');
-                        const cancelar = document.getElementById('Cancelar');
-                        // Buscar el ítem en el array de items cargados previamente
-                        console.log(items_orden)
-                        let selectedItem = items_orden.find(item => item.cod === id_orden);
-                        console.log(selectedItem)
-                        if (selectedItem) {
-                            // Asignamos el valor al input de autocompletado
-                            $(nro_orden).val(selectedItem.label);
+        // document.addEventListener('keydown', function(e) {
+        //     if (e.key === "Escape") {
+        //         const activeModal = document.querySelector('.modal.show');
+        //         if (activeModal) {
+        //             $(activeModal).modal('hide');
+        //         }
+        //     }
+        // });
 
-                            // Simulamos la selección del ítem en el autocompletado
-                            $(nro_orden)
-                                .autocomplete("instance")
-                                ._trigger("select", null, {
-                                    item: selectedItem
-                                });
-                            }
-                            //         $(nro_orden)
-                            // .val(id_orden)  // Asignamos el valor del 'cod' al input del autocompletado
-                            // .autocomplete("search", id_orden_string)  // Hacemos la búsqueda programática
-                            // .trigger('focus')  // Disparamos el evento focus para asegurar que el autocomplete se active
-                            // .trigger('keydown');  // Disparamos el evento keydown para que se seleccione el ítem si es necesario
+        // $('#tblSalidas tbody').on('click', '.btnEditar', function() {
+        //     let row = obtenerFila(this, tabla);
+        //     accion = 2;
+        //     const icon = document.querySelector('.modal-title i');
+        //     cambiarModal(span, ' Editar Entrada', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+        //     id.value = row["id_empleado"];
+        //     nombre.value = row["nombres_empleado"];
+        //     cedula.value = row["cedula"];
+        //     conductor.checked = row["conductor"];
+        // });
 
-                            // setChange(cboConductor, conductor)
-                            // setChange(cboDespachado, despachado_id)
-                            // setChange(cboResponsable, entrega)
-                            fecha.value = fecha_id;
-                            nro_guia.value = guia;
-                            // nro_orden.value = orden;
-                            motivo.value = motivo_text;
-                            // setChange(cboClientes, id_cliente)
-                            salida_radio.value = '4';
-                            salida_radio.checked = true;
-                            salida_radio.dispatchEvent(new Event('change'));
-                            first_control.click();
-                            cancelar.style.display = 'block'
-                            tblDetalleSalida.ajax.reload(null, false);
-                            // salida_radio.value = '2';
-
-                            cargarImagenesDropzone(id_boleta);
-                            dropzone.enable();
-                            if (eliminar) {
-                                drop_element.classList.remove("dropzone-disabled");
-                            } else {
-                                drop_element.classList.add("dropzone-disabled");
-                            }
-                        });
-
-                    function cargarImagenesDropzone(id_boleta) {
-                        $.ajax({
-                            url: 'controllers/salidas.controlador.php', // Ajusta esta URL a tu controlador PHP
-                            type: 'POST',
-                            "dataSrc": '',
-                            data: {
-                                'boleta': id_boleta,
-                                'accion': 8
-                            },
-                            success: function(response) {
-                                dropzone.removeAllFilesWithoutServer();
-                                // Limpia los archivos existentes
-                                response = JSON.parse(response);
-                                response.imagenes.forEach(imagen => {
-                                    const mockFile = {
-                                        name: imagen.nombre_imagen || "Imagen", // Puedes asignar un nombre genérico si no guardas el nombre original
-                                        size: 123456, // Valor genérico; Dropzone no valida este campo para imágenes precargadas
-                                        ruta: imagen.nombre_imagen, // Ruta de la imagen en el servidor
-                                        isExisting: true
-                                    };
-
-                                    // Añade la imagen simulando que ya está cargada
-                                    dropzone.emit('addedfile', mockFile);
-                                    dropzone.emit('thumbnail', mockFile, '/guia_img/' + imagen.nombre_imagen);
-                                    dropzone.emit('complete', mockFile);
-                                    dropzone.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
-                                });
-                            },
-                        });
-                    }
-
-                    $('#tblSalidas').on('click', '#editR', function() {
-                        row = tabla.row($(this).closest('tr').next()).data()
-                        id_boleta = row[10];
-                        console.log(row)
-                        // console.log(id_boleta)
-                        const orden = row[7],
-                            id_cliente = row[12],
-                            fecha_id = row[13],
-                            conductor = row[14],
-                            despachado_id = row[15],
-                            entrega = row[16],
-                            guia = row[17],
-                            retorno = document.getElementById('radio-3');
-                        const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
-
-                        setChange(cboClienteEntrada, id_cliente)
-                        cboClienteEntrada.disabled = true;
-                        setChange(cboConductor, conductor)
-                        // cboConductor.disabled = true;
-                        setChange(cboDespachado, despachado_id)
-                        // cboDespachado.disabled = true;
-                        setChange(cboResponsable, entrega)
-                        // cboResponsable.disabled = true;
-                        fecha_retorno.value = fecha_hoy;
-                        // fecha.disabled = true;
-                        nro_ordenEntrada.value = orden;
-                        nro_ordenEntrada.disabled = true;
-                        nro_guiaEntrada.value = guia;
-                        motivo.value = motivo_text;
-                        // motivo.disabled = true;
-                        // retorno.click();
-                        retorno.value = '6';
-                        retorno.checked = true;
-                        retorno.dispatchEvent(new Event('change'));
-                        first_control.click();
-                        tblReturn.ajax.reload(null, false);
-                        cargarImagenesDropzone(id_boleta)
-                        dropzone.disable();
-                        document.querySelector(".dropzone").classList.add("dropzone-disabled");
-                    });
-
-                    $('#tblSalidas').on('click', '#eliS', function() {
-                        const boleta = tabla.row($(this).closest('tr').next()).data()[10];
-                        let src = new FormData();
-                        src.append('accion', 3);
-                        src.append('id', boleta);
-                        confirmarEliminar('la', 'salida', function(r) {
-                            if (r) {
-                                confirmarAccion(src, 'salidas', tabla);
-                                cargarAutocompletado();
-                            }
-                        })
-                    });
-
-                    // $('#tblSalidas tbody').on('click', '.btnEliminar', function() {
-
-                    // });
-
-                    // document.addEventListener('keydown', function(e) {
-                    //     if (e.key === "Escape") {
-                    //         const activeModal = document.querySelector('.modal.show');
-                    //         if (activeModal) {
-                    //             $(activeModal).modal('hide');
-                    //         }
-                    //     }
-                    // });
-
-                    // $('#tblSalidas tbody').on('click', '.btnEditar', function() {
-                    //     let row = obtenerFila(this, tabla);
-                    //     accion = 2;
-                    //     const icon = document.querySelector('.modal-title i');
-                    //     cambiarModal(span, ' Editar Entrada', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
-                    //     id.value = row["id_empleado"];
-                    //     nombre.value = row["nombres_empleado"];
-                    //     cedula.value = row["cedula"];
-                    //     conductor.checked = row["conductor"];
-                    // });
-
-                    // form.addEventListener("submit", function(e) {
-                    //     e.preventDefault();
-                    //     $('.ten').hide();
-                    //     const ced = cedula.value.trim(),
-                    //         nom = nombre.value.trim().toUpperCase(),
-                    //         con = conductor.checked;
-                    //     if (!this.checkValidity() || ced.length < 10) {
-                    //         this.classList.add('was-validated');
-                    //         ced.length > 0 && $('.ten').show();
-                    //         return;
-                    //     }
-                    //     console.log("Ejecutando el resto del código...");
-                    //     const id_e = id.value;
-                    //     let datos = new FormData();
-                    //     datos.append('id_empleado', id_e);
-                    //     datos.append('cedula', ced);
-                    //     datos.append('nombres_empleado', nom);
-                    //     datos.append('conductor', con);
-                    //     datos.append('accion', accion);
-                    //     confirmarAccion(datos, null, 'empleados', modal, tabla)
-                    // });
-                })
+        // form.addEventListener("submit", function(e) {
+        //     e.preventDefault();
+        //     $('.ten').hide();
+        //     const ced = cedula.value.trim(),
+        //         nom = nombre.value.trim().toUpperCase(),
+        //         con = conductor.checked;
+        //     if (!this.checkValidity() || ced.length < 10) {
+        //         this.classList.add('was-validated');
+        //         ced.length > 0 && $('.ten').show();
+        //         return;
+        //     }
+        //     console.log("Ejecutando el resto del código...");
+        //     const id_e = id.value;
+        //     let datos = new FormData();
+        //     datos.append('id_empleado', id_e);
+        //     datos.append('cedula', ced);
+        //     datos.append('nombres_empleado', nom);
+        //     datos.append('conductor', con);
+        //     datos.append('accion', accion);
+        //     confirmarAccion(datos, null, 'empleados', modal, tabla)
+        // });
+    })
 </script>

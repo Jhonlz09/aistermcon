@@ -52,15 +52,14 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-0">
-                        <table id="tblInventario" class="table table-bordered table-striped">
+                        <table id="tblFabricacion" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th class="text-center">Nº</th>
-                                    <th>CÓDIGO</th>
+                                    <th>NRO. ORDEN</th>
+                                    <th>CLIENTE</th>
+                                    <th>NRO. GUIA</th>
                                     <th>DESCRIPCIÓN</th>
-                                    <th>UNIDAD</th>
-                                    <th class="text-center">CANT. DISP.</th>
-                                    <th class="text-center">IMAGEN</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>

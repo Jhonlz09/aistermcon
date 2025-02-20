@@ -80,6 +80,7 @@
         let items_orden = [];
         let id_orden_guia_salida;
         let id_orden_guia_entrada;
+        let id_orden_guia_fab;
         // let valid_orden = false;
         const now = new Date();
         const year = now.getFullYear();
@@ -767,9 +768,9 @@
 
             })
 
-            const cboClienteEntrada = document.getElementById('cboClienteEntrada'),
-                cboClientes = document.getElementById('cboClientes'),
-                cboOrdenActivas = document.getElementById('cboPorOrden'),
+            // const cboClienteEntrada = document.getElementById('cboClienteEntrada'),
+            // cboClientes = document.getElementById('cboClientes'),
+            const cboOrdenActivas = document.getElementById('cboPorOrden'),
                 fecha = document.getElementById('fecha'),
                 fecha_retorno = document.getElementById('fecha_retorno'),
                 motivo = document.getElementById('inpMotivo');
@@ -777,9 +778,11 @@
             $(document).ready(function() {
                 const nro_guia = document.getElementById('nro_guia'),
                     nro_guiaEntrada = document.getElementById('nro_guiaEntrada'),
+                    nro_guiaFab = document.getElementById('nro_guiaFab'),
                     nro_factura = document.getElementById('nro_fac'),
                     nro_orden = document.getElementById('nro_orden'),
                     nro_ordenEntrada = document.getElementById('nro_ordenEntrada'),
+                    nro_ordenFab = document.getElementById('nro_ordenFab'),
                     cboOrdenFab = document.getElementById('cboOrdenFab'),
                     form_guia = document.getElementById('form_guia'),
                     cboProveedor = document.getElementById('cboProveedores'),
@@ -792,25 +795,11 @@
                 const audio = document.getElementById("scanner");
 
                 const addProFab = document.getElementById("addProFab")
-                // const btnAggFab = document.getElementById("btnNuevoFab");
-                // if (btnAggFab) {
-                //     btnAggFab.addEventListener('click', function() {
-                //         formFabNew.reset();
-                //         formFabNew.classList.remove('was-validated');
-                //         accion_fab = 9;
-                //         cambiarModal(title_fab, ' Nueva Fabricación', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-green', 'bg-gradient-yellow', modal_fab, 'modal-yellow', 'modal-change')
-                //         select_fab.forEach(function(s) {
-                //             s.classList.remove('select2-warning');
-                //             s.classList.add('select2-success');
-                //         });
-                //         setChange(cboUnidad_fab, 1)
-                //     });
-                // }
 
-                $(cboClientes).select2({
-                    placeholder: 'SELECCIONE',
-                    width: '100%',
-                })
+                // $(cboClientes).select2({
+                //     placeholder: 'SELECCIONE',
+                //     width: '100%',
+                // })
 
                 $(cboOrdenActivas).select2({
                     placeholder: 'SELECCIONE',
@@ -859,15 +848,15 @@
                 cargarCombo('Unidad', '', 1, true).then(datos_ => {
                     datos_uni = datos_;
                 });
-                cargarCombo('Clientes', '', 1, true).then(datos_ => {
-                    datos_cliente = datos_;
-                    $(cboClienteEntrada).select2({
-                        placeholder: 'SELECCIONE',
-                        width: '100%',
-                        data: datos_cliente
-                    })
-                    setChange(cboClienteEntrada, 0)
-                });
+                // cargarCombo('Clientes', '', 1, true).then(datos_ => {
+                //     datos_cliente = datos_;
+                //     $(cboClienteEntrada).select2({
+                //         placeholder: 'SELECCIONE',
+                //         width: '100%',
+                //         data: datos_cliente
+                //     })
+                //     setChange(cboClienteEntrada, 0)
+                // });
 
 
                 cargarCombo('Conductor', conductorPorDefecto, 2);
@@ -1092,10 +1081,10 @@
                         },
                         {
                             targets: 1,
-                            className: "text-center d-flex justify-content-center",
+                            className: "text-center",
                             render: function(data, type, row) {
                                 return `<input type="text" class="form-control text-center cantidad" value="${data || 1}" 
-                                style="width:72px;border-bottom-width:2px;margin:0;font-size:1.2rem" maxlength="6"
+                                style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.2rem" maxlength="6"
                                 inputmode="numeric" onfocus="selecTexto(this)" autocomplete="off" oninput="validarNumber(this,/[^0-9.]/g)">`;
                             }
                         },
@@ -1316,8 +1305,9 @@
                     tabla.row($(this).closest('tr')).remove().draw(); // Eliminar la fila seleccionada
                 });
 
-                const clearButton = document.getElementById("clearButton");
-                const clearButtonEntrada = document.getElementById("clearButtonEntrada");
+                const clearButton = document.getElementById("clearButton"),
+                    clearButtonFab = document.getElementById("clearButtonFab"),
+                    clearButtonEntrada = document.getElementById("clearButtonEntrada");
                 // nro_orden.addEventListener("mouseenter", function() {
                 //     if (nro_orden.readOnly) {
                 //         clearButton.style.display = "block";
@@ -1333,7 +1323,7 @@
                     nro_orden.readOnly = false; // Desbloquea el input
                     nro_orden.value = "";
                     nro_orden.focus();
-                    clearButton.style.display = "none";// Oculta la X
+                    clearButton.style.display = "none"; // Oculta la X
                 });
 
                 clearButtonEntrada.addEventListener("click", function() {
@@ -1343,8 +1333,15 @@
                     clearButtonEntrada.style.display = "none"; // Oculta la X
                 });
 
+                clearButtonFab.addEventListener("click", function() {
+                    nro_ordenFab.readOnly = false; // Desbloquea el input
+                    nro_ordenFab.value = "";
+                    nro_ordenFab.focus()
+                    clearButtonFab.style.display = "none"; // Oculta la X
+                });
+
                 cargarAutocompletado(function(items) {
-                   
+
                     $(inputauto).autocomplete({
                         source: items,
                         autoFocus: true,
@@ -1413,100 +1410,51 @@
                             item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
                         ).appendTo(ul);
                     };
+
+                    $(nro_ordenFab).autocomplete({
+                        source: items,
+                        minLength: 1,
+                        autoFocus: true,
+                        focus: function() {
+                            return false;
+                        },
+                        select: function(event, ui) {
+                            nro_ordenFab.readOnly = true;
+                            id_orden_guia_fab = ui.item.cod;
+                            clearButtonFab.style.display = "block";
+                        },
+                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                        // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        return $("<li>").append(
+                            "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
+                            item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
+                        ).appendTo(ul);
+                    };
                 }, null, 'orden', 6)
                 // cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'inventario', action = 7)
 
                 let action;
-                const tabs = document.querySelectorAll('.tabs input');
-                const btnCancelarTrans = document.getElementById('Cancelar')
-                const div_fecha = document.getElementById('div_fecha');
-                const div_fab = document.getElementById('div_fab');
-                const div_orden = document.getElementById('div_orden');
-                const div_proveedor = document.getElementById('div_proveedor');
-                const div_return = document.getElementById('div_return');
-                const div_retorno = document.getElementById('div_retorno');
-                const div_nroguia = document.getElementById('div_nroguia');
-                const div_conductor = document.getElementById('div_conductor');
-                const div_productos = document.getElementById('div_productos');
-                const div_nrofactura = document.getElementById('div_nrofac');
+                const tabs = document.querySelectorAll('.tabs input'),
+                    btnCancelarTrans = document.getElementById('Cancelar'),
+                    div_fecha = document.getElementById('div_fecha'),
+                    div_fab = document.getElementById('div_fab'),
+                    div_orden = document.getElementById('div_orden'),
+                    div_proveedor = document.getElementById('div_proveedor'),
+                    div_return = document.getElementById('div_return'),
+                    div_retorno = document.getElementById('div_retorno'),
+                    div_nroguia = document.getElementById('div_nroguia'),
+                    div_conductor = document.getElementById('div_conductor'),
+                    div_productos = document.getElementById('div_productos'),
+                    div_nrofactura = document.getElementById('div_nrofac');
                 // const div_motivo = document.getElementById('div_motivo');
-                const div_person = document.getElementById('card_person');
-                const div_prod_fab = document.getElementById('div_prod_fab');
-                const card_nro_guiaFab = document.getElementById('card_nro_guiaFab');
-                const card_nro_guia = document.getElementById('card_nro_guia');
-                const card_nro_guiaEntrada = document.getElementById('card_nro_guiaE');
-                const card_nro_fac = document.getElementById('card_nro_fac');
-
-                const card_conductor = document.getElementById('card_conductor');
-                const card_conductorEntrada = document.getElementById('card_conductorE');
-
-
-
-                // const formOrden = document.getElementById('formOrden'),
-                //     id_orden = document.getElementById('id_orden'),
-                //     nro_orden = document.getElementById('num_orden'),
-                //     span_text = document.getElementById('nom_action');
-
-                // const new_orden = document.getElementById('new_orden'),
-                //     edit_orden = document.getElementById('edit_orden'),
-                //     eli_orden = document.getElementById('edit_orden');
-
-                // document.addEventListener("keydown", function(event) {
-                //     // Verifica si se presionó la tecla 'g' y la tecla 'ctrl' (o 'command' en Mac)
-                //     if (event.ctrlKey && (event.key === "g" || event.key === "G")) {
-                //         // Evita el comportamiento por defecto del navegador
-                //         event.preventDefault();
-
-                //         // Simula el clic en el botón
-                //         control.click();
-                //     }
-                // });
-
-
-                // new_orden.addEventListener('click', () => {
-                //     card_orden.style.display = 'block'
-                //     action = 4
-                //     nro_orden.focus();
-                //     formOrden.reset();
-                //     setChange(cboCliente, 0);
-                // })
-
-                // edit_orden.addEventListener('click', () => {
-                //     card_orden.style.display = 'block'
-                //     action = 5
-                //     nro_orden.focus();
-                // })
-
-                // eli_orden.addEventListener('click', () => {
-                //     action = 6
-                // })
-
-                // formOrden.addEventListener("submit", function(e) {
-                //     e.preventDefault();
-                //     const id_o = id_orden.value,
-                //         num = nro_orden.value.trim(),
-                //         cli = cboCliente.value;
-                //     if (!this.checkValidity()) {
-                //         this.classList.add('was-validated');
-                //         return;
-                //     }
-                //     let datos = new FormData();
-                //     datos.append('id', id_o);
-                //     datos.append('num_orden', num);
-                //     datos.append('id_cliente', cli);
-                //     datos.append('accion', action)
-                //     confirmarAccion(datos, 'producto', null, '', function(r) {
-                //         if (r) {
-                //             cargarCombo('Orden', r.res, 3, true).then(datos_ => {
-                //                 datos_orden = datos_;
-                //                 console.log(id_o)
-                //             });
-                //         }
-                //     });
-                //     card_orden.style.display = 'none'
-                //     formOrden.reset();
-                //     setChange(cboCliente, 0);
-                // });
+                const div_person = document.getElementById('card_person'),
+                    div_prod_fab = document.getElementById('div_prod_fab'),
+                    card_nro_guiaFab = document.getElementById('card_nro_guiaFab'),
+                    card_nro_guia = document.getElementById('card_nro_guia'),
+                    card_nro_guiaEntrada = document.getElementById('card_nro_guiaE'),
+                    card_nro_fac = document.getElementById('card_nro_fac'),
+                    card_conductor = document.getElementById('card_conductor'),
+                    card_conductorEntrada = document.getElementById('card_conductorE');
 
                 form_guia.addEventListener("submit", function(e) {
                     e.preventDefault();
@@ -1560,11 +1508,10 @@
                         let clases = ['cantidad'];
                         formData.append('orden', id_orden_guia_salida);
                         formData.append('nro_guia', nro_guia.value);
-                        // formData.append('cliente', cboClientes.value);
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
-                        formData.append('motivo',  motivo.value.trim().toUpperCase());
+                        formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 2);
                         dropzone.getAcceptedFiles().forEach((file, index) => {
@@ -1608,7 +1555,7 @@
                             }
                         });
                     } else if (selectedTab === '4') {
-                        let elementosAValidar = [fecha, nro_orden, cboClientes, nro_guia, cboDespachado, cboResponsable, cboConductor];
+                        let elementosAValidar = [fecha, nro_orden, nro_guia, cboDespachado, cboResponsable, cboConductor];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             console.log(elemento);
@@ -1621,8 +1568,8 @@
                             return;
                         }
                         formData.append('id_boleta', id_boleta);
-                        formData.append('orden', nro_orden.value);
-                        formData.append('cliente', cboClientes.value);
+                        formData.append('orden', id_orden_guia_salida);
+                        // formData.append('cliente', cboClientes.value);
                         formData.append('nro_guia', nro_guia.value);
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
@@ -1711,14 +1658,54 @@
                             }
                         });
                     } else if (selectedTab === '7') {
-                        let clases = ['retorno'];
-                        formData.append('boleta', id_boleta);
-                        formData.append('fecha_retorno', fecha_retorno.value);
-                        formData.append('nro_guia', nro_guia.value)
-                        formData.append('accion', 3);
-                        realizarRegistro(tblReturn, formData, clases, 0, 'productos', function(response) {
-                            if (response) {
-                                btnCancelarTrans.click();
+                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab, cboDespachado, cboResponsable];
+                        let isValid = true;
+                        elementosAValidar.forEach(function(elemento) {
+                            console.log(elemento);
+                            if (!elemento.checkValidity()) {
+                                isValid = false;
+                                form_guia.classList.add('was-validated');
+                            }
+                        });
+                        if (!isValid) {
+                            return;
+                        }
+                        formData.append('id_boleta', id_boleta);
+                        formData.append('orden', id_orden_guia_fab);
+                        formData.append('nro_guia', nro_guia.value);
+                        formData.append('conductor', cboConductor.value);
+                        formData.append('despachado', cboDespachado.value);
+                        formData.append('responsable', cboResponsable.value);
+                        formData.append('fecha', fecha.value);
+                        formData.append('motivo', motivo.value.trim().toUpperCase());
+                        formData.append('accion', 7);
+                        dropzone.getAcceptedFiles().forEach((file, index) => {
+                            if (!file.isExisting) {
+                                formData.append(`imagenes[${index}]`, file, file.name);
+                            }
+                        });
+                        $.ajax({
+                            url: "controllers/registro.controlador.php",
+                            method: "POST",
+                            data: formData,
+                            cache: false,
+                            dataType: "json",
+                            contentType: false,
+                            processData: false,
+                            success: function(r) {
+                                let isSuccess = r.status === "success";
+
+                                mostrarToast(r.status,
+                                    isSuccess ? "Completado" : "Error",
+                                    isSuccess ? "fa-check" : "fa-xmark",
+                                    r.m);
+
+                                if (isSuccess) {
+                                    // tblDetalleSalida.clear().draw();
+                                    tabla ? tabla.ajax.reload(null, false) : ''
+                                    cargarAutocompletado();
+                                    btnCancelarTrans.click();
+                                }
                             }
                         });
                     }
@@ -1954,6 +1941,13 @@
                             let existingRowIn = tblIn.row("#producto_" + p);
                             if (existingRowIn.any()) {
                                 actualizarCantidad(existingRowIn);
+                                return;
+                            }
+                        }
+                        if (selectedTab == '7') {
+                            let existingRowFab = tablaUnica.row("#producto_" + p);
+                            if (existingRowFab.any()) {
+                                actualizarCantidad(existingRowFab);
                                 return;
                             }
                         }

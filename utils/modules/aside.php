@@ -103,7 +103,7 @@
                                                                 <div class="col-sm ui-front" style="margin-bottom:1.8rem">
                                                                     <label class="col-form-label combo" for="nro_ordenFab">
                                                                         <i class="fas fas fa-ticket"></i> Orden de trabajo</label>
-                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="nro_ordenFab" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
+                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_ordenFab" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
                                                                     <button class="clear-btn" type="button" id="clearButtonFab" style="display:none">&times;</button>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
