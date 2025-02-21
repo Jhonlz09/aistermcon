@@ -1129,7 +1129,7 @@
                 });
 
                 function agregarFilaFab() {
-                    let idUnico = "temp-" + Date.now();
+                    let idUnico = Date.now();
                     // Define la nueva fila con el ID en la primera celda
                     let nuevaFila = [idUnico, '1', '', '', ''];
                     let rowNode = tblProdFab.row.add(nuevaFila).draw(false).node();
@@ -1243,61 +1243,48 @@
 
 
 
-                // tblOut.on('draw', function() {
-                //     $('#tblOut tbody tr').each(function() {
-                //         // Desactivar tabindex en la primera columna
-                //         $(this).find('td:first-child *').attr('tabindex', '-1');
-
-                //         // Desactivar tabindex en la última columna
-                //         // $(this).find('td:last-child *').attr('tabindex', '-1');
-
-                //         // Si deseas desactivar tabindex en otras columnas específicas, ajusta los selectores como sea necesario
-                //         // Ejemplo: $(this).find('td:nth-child(3) *').attr('tabindex', '-1'); para la tercera columna
-                //     });
-                // });
-
                 $('#tblOut').on('keydown', 'input.cantidad', moveFocusOnTab);
 
 
-                tblFab = $('#tblFab').DataTable({
-                    "dom": '<"row"<"col-sm-6"B><"col-sm-6"p>>t',
-                    "responsive": true,
-                    "lengthChange": false,
-                    "ordering": false,
-                    "autoWidth": false,
-                    columnDefs: [{
-                            targets: 0,
-                            data: null,
-                            className: "text-center",
-                            render: function(data, type, row, meta) {
-                                if (type === 'display') {
-                                    return meta.row + 1;
-                                }
-                                return meta.row;
-                            }
-                        },
+                // tblFab = $('#tblFab').DataTable({
+                //     "dom": '<"row"<"col-sm-6"B><"col-sm-6"p>>t',
+                //     "responsive": true,
+                //     "lengthChange": false,
+                //     "ordering": false,
+                //     "autoWidth": false,
+                //     columnDefs: [{
+                //             targets: 0,
+                //             data: null,
+                //             className: "text-center",
+                //             render: function(data, type, row, meta) {
+                //                 if (type === 'display') {
+                //                     return meta.row + 1;
+                //                 }
+                //                 return meta.row;
+                //             }
+                //         },
 
-                        {
-                            targets: 1,
-                            visible: false,
-                        },
-                        {
-                            targets: 2,
-                            className: "text-center ",
-                        },
-                        {
-                            targets: 3,
-                            className: "text-center ",
-                        },
-                    ],
-                    buttons: [{
-                        text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
-                        className: "btn btn-light text-danger",
-                        action: function(e, dt, node, config) {
-                            dt.clear().draw(); // Esta línea vacía los datos de la tabla
-                        }
-                    }, ]
-                });
+                //         {
+                //             targets: 1,
+                //             visible: false,
+                //         },
+                //         {
+                //             targets: 2,
+                //             className: "text-center ",
+                //         },
+                //         {
+                //             targets: 3,
+                //             className: "text-center ",
+                //         },
+                //     ],
+                //     buttons: [{
+                //         text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
+                //         className: "btn btn-light text-danger",
+                //         action: function(e, dt, node, config) {
+                //             dt.clear().draw(); // Esta línea vacía los datos de la tabla
+                //         }
+                //     }, ]
+                // });
 
                 // const btnAgregarPro = document.querySelector('.btnAgregarPro');
                 $(document).on('click', '.btnEliminaRow', function() {
@@ -1670,44 +1657,77 @@
                         if (!isValid) {
                             return;
                         }
-                        formData.append('id_boleta', id_boleta);
+                        let datosPrincipales = [];
+
+                        tblProdFab.rows().every(function(rowIdx, tableLoop, rowLoop) {
+                            let rowData = this.data();
+                            let idUnico = rowData[0]; // ID único generado
+                            let tablaSecundariaId = `#tbl${idUnico}`;
+
+                            // Obtenemos los valores de los inputs y selects de la fila principal
+                            let filaPrincipal = {
+                                id: idUnico,
+                                cantidad: $(this.node()).find('.cantidad').val(),
+                                unidad: $(this.node()).find('.id_unidad').val(),
+                                descripcion: $(this.node()).find('.descripcion').val(),
+                                productos: []
+                            };
+
+                            // Verificar si la tabla secundaria existe y tiene datos
+                            if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
+                                let tablaSecundaria = $(tablaSecundariaId).DataTable();
+                                tablaSecundaria.rows().every(function() {
+                                    let secData = this.data();
+                                    let cantidad = $(this.node()).find('.cantidad').val(); // Obtiene SOLO el valor del input
+                                    filaPrincipal.productos.push({
+                                        codigo: secData[1],
+                                        cantidad:cantidad
+                                    });
+                                });
+                            }
+
+                            datosPrincipales.push(filaPrincipal);
+                        });
+
+                        // console.log(datosPrincipales);
+                        formData.append('datos', JSON.stringify(datosPrincipales));
                         formData.append('orden', id_orden_guia_fab);
-                        formData.append('nro_guia', nro_guia.value);
+                        formData.append('nro_guia', nro_guiaFab.value);
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
                         formData.append('fecha', fecha.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
-                        formData.append('accion', 7);
+                        formData.append('accion', 11);
                         dropzone.getAcceptedFiles().forEach((file, index) => {
                             if (!file.isExisting) {
                                 formData.append(`imagenes[${index}]`, file, file.name);
                             }
                         });
-                        $.ajax({
-                            url: "controllers/registro.controlador.php",
-                            method: "POST",
-                            data: formData,
-                            cache: false,
-                            dataType: "json",
-                            contentType: false,
-                            processData: false,
-                            success: function(r) {
-                                let isSuccess = r.status === "success";
+                        // $.ajax({
+                        //     url: "controllers/registro.controlador.php",
+                        //     method: "POST",
+                        //     data: formData,
+                        //     cache: false,
+                        //     dataType: "json",
+                        //     contentType: false,
+                        //     processData: false,
+                        //     success: function(r) {
+                        //         let isSuccess = r.status === "success";
 
-                                mostrarToast(r.status,
-                                    isSuccess ? "Completado" : "Error",
-                                    isSuccess ? "fa-check" : "fa-xmark",
-                                    r.m);
+                        //         mostrarToast(r.status,
+                        //             isSuccess ? "Completado" : "Error",
+                        //             isSuccess ? "fa-check" : "fa-xmark",
+                        //             r.m);
 
-                                if (isSuccess) {
-                                    // tblDetalleSalida.clear().draw();
-                                    tabla ? tabla.ajax.reload(null, false) : ''
-                                    cargarAutocompletado();
-                                    btnCancelarTrans.click();
-                                }
-                            }
-                        });
+                        //         if (isSuccess) {
+                        //             // tblDetalleSalida.clear().draw();
+                        //             tabla ? tabla.ajax.reload(null, false) : ''
+                        //             cargarAutocompletado();
+                        //             btnCancelarTrans.click();
+                        //         }
+                        //     }
+                        // });
                     }
                 })
 

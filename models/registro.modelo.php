@@ -84,7 +84,7 @@ class ModeloRegistro
             // Insertar salidas
             self::insertarSalidas($conexion, $id_boleta, $arr);
 
-            if(!empty($img)){
+            if (!empty($img)) {
                 self::guardarImagenesSalida($conexion, $id_boleta, $img);
             }
 
@@ -108,6 +108,117 @@ class ModeloRegistro
             );
         }
     }
+
+
+    static public function mdlRegistrarFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+
+            // Decodificar el JSON de productos
+            $productos = json_decode($datos, true);
+            if (!$productos) {
+                throw new Exception("Los datos de productos son inválidos.");
+            }
+
+            // Insertar el registro de fabricación (boleta)
+            $id_boleta = self::insertarBoleta($conexion, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo);
+
+            foreach ($productos as $producto) {
+                $codigoFabricado = $producto['codigo'];
+                $cantidadFabricada = $producto['cantidad'];
+                $insumos = $producto['insumos']; // Insumos utilizados para fabricar
+
+                // Validar y actualizar stock de insumos
+                foreach ($insumos as $insumo) {
+                    $codigoInsumo = $insumo['codigo'];
+                    $cantidadUtilizada = $insumo['cantidad'];
+
+                    $stmtStock = $conexion->prepare("SELECT stock FROM tblinventario WHERE id = :codigoInsumo");
+                    $stmtStock->bindParam(':codigoInsumo', $codigoInsumo, PDO::PARAM_INT);
+                    $stmtStock->execute();
+                    $stockActual = $stmtStock->fetch(PDO::FETCH_ASSOC)['stock'];
+
+                    if ($stockActual < $cantidadUtilizada) {
+                        throw new Exception("Stock insuficiente para el insumo con código $codigoInsumo.");
+                    }
+
+                    // Actualizar stock del insumo
+                    $stmtUpdate = $conexion->prepare("UPDATE tblinventario SET stock = stock - :cantidad WHERE id = :codigoInsumo");
+                    $stmtUpdate->bindParam(':cantidad', $cantidadUtilizada, PDO::PARAM_INT);
+                    $stmtUpdate->bindParam(':codigoInsumo', $codigoInsumo, PDO::PARAM_INT);
+                    $stmtUpdate->execute();
+
+                    // Registrar relación insumo-producto fabricado
+                    $stmtRelacion = $conexion->prepare("INSERT INTO tblfabricacion_insumo (id_fabricacion, id_producto_fabricado, id_insumo, cantidad_utilizada) VALUES (:id_fabricacion, :id_producto_fabricado, :id_insumo, :cantidad_utilizada)");
+                    $stmtRelacion->bindParam(':id_fabricacion', $id_fabricacion, PDO::PARAM_INT);
+                    $stmtRelacion->bindParam(':id_producto_fabricado', $codigoFabricado, PDO::PARAM_INT);
+                    $stmtRelacion->bindParam(':id_insumo', $codigoInsumo, PDO::PARAM_INT);
+                    $stmtRelacion->bindParam(':cantidad_utilizada', $cantidadUtilizada, PDO::PARAM_INT);
+                    $stmtRelacion->execute();
+                }
+
+                // Actualizar o insertar el producto fabricado en inventario
+                $stmtCheckProducto = $conexion->prepare("SELECT id FROM tblinventario WHERE id = :codigoFabricado");
+                $stmtCheckProducto->bindParam(':codigoFabricado', $codigoFabricado, PDO::PARAM_INT);
+                $stmtCheckProducto->execute();
+
+                if ($stmtCheckProducto->rowCount() > 0) {
+                    // Producto ya existe, actualizar stock
+                    $stmtUpdateFabricado = $conexion->prepare("UPDATE tblinventario SET stock = stock + :cantidad WHERE id = :codigoFabricado");
+                    $stmtUpdateFabricado->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_INT);
+                    $stmtUpdateFabricado->bindParam(':codigoFabricado', $codigoFabricado, PDO::PARAM_INT);
+                    $stmtUpdateFabricado->execute();
+                } else {
+                    // Producto nuevo, insertar en inventario
+                    $stmtInsertFabricado = $conexion->prepare("INSERT INTO tblinventario (id, stock) VALUES (:codigoFabricado, :cantidad)");
+                    $stmtInsertFabricado->bindParam(':codigoFabricado', $codigoFabricado, PDO::PARAM_INT);
+                    $stmtInsertFabricado->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_INT);
+                    $stmtInsertFabricado->execute();
+                }
+            }
+
+            // Guardar imágenes si existen
+            if (!empty($img)) {
+                self::guardarImagenesFabricacion($conexion, $id_fabricacion, $img);
+            }
+
+            $conexion->commit();
+
+            return array(
+                'status' => 'success',
+                'm' => 'La fabricación se registró correctamente.'
+            );
+        } catch (PDOException $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => 'Error al registrar la fabricación: ' . $e->getMessage()
+            );
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => $e->getMessage()
+            );
+        }
+    }
+
+    private static function insertarFabricacion($conexion, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo)
+    {
+        $stmt = $conexion->prepare("INSERT INTO tblfabricacion (orden, fecha, nro_guia, conductor, despachado, responsable, motivo) VALUES (:orden, :fecha, :nro_guia, :conductor, :despachado, :responsable, :motivo) RETURNING id");
+        $stmt->bindParam(':orden', $orden);
+        $stmt->bindParam(':fecha', $fecha);
+        $stmt->bindParam(':nro_guia', $nro_guia);
+        $stmt->bindParam(':conductor', $conductor);
+        $stmt->bindParam(':despachado', $despachado);
+        $stmt->bindParam(':responsable', $responsable);
+        $stmt->bindParam(':motivo', $motivo);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
 
     static private function guardarImagenesSalida($conexion, $id_boleta, $imagenes)
     {

@@ -110,6 +110,11 @@ class ajaxRegistro
         $data = ModeloRegistro::mdlOrdenCompra($datos, $proveedor, $comprador, $fecha, $subtotal, $iva, $impuesto, $total, $desc);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+    public function registrarFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img)
+    {
+        $data = ModeloRegistro::mdlRegistrarFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 
 if (isset($_POST["accion"])) {
@@ -137,5 +142,8 @@ if (isset($_POST["accion"])) {
         $registro->registrarSolicitudCotizacion($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"]);
     } else if ($accion == 10) {
         $registro->registrarOrdenCompra($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"], $_POST["subtotal"], $_POST["iva"], $_POST["impuesto"], $_POST["total"], $_POST["descuento"]);
+    }else if ($accion == 11) {
+        $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : [];
+        $registro->registrarFabricacion($_POST["datos"], $_POST["orden"], $_POST["nro_guia"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["fecha"], $_POST["motivo"], $imagenes);
     }
 }
