@@ -605,7 +605,6 @@ foreach ($data_boleta as $fill) {
     ), array(9, 9, 9, 9), '', 5, array(247, 247, 245));
 
     $total += $cantidad_salida;
-   
 }
 
 $pdf->SetAligns(array('C', 'R', 'C', 'C'));

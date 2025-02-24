@@ -1061,7 +1061,7 @@
 
                 tblProdFab = $('#tblProdFab').DataTable({
                     "dom": 'fpt',
-                    "responsive": true,
+                    // "responsive": true,
                     "lengthChange": false,
                     "ordering": false,
                     "autoWidth": false,
@@ -1645,10 +1645,10 @@
                             }
                         });
                     } else if (selectedTab === '7') {
-                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab, cboDespachado, cboResponsable];
+                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
-                            console.log(elemento);
+                            // console.log(elemento);
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
@@ -1657,39 +1657,49 @@
                         if (!isValid) {
                             return;
                         }
-                        let datosPrincipales = [];
 
-                        tblProdFab.rows().every(function(rowIdx, tableLoop, rowLoop) {
+                        tblProdFab.rows().every(function() {
+                            let row = this;
+                            let tr = $(row.node());
+                            let rowData = row.data(); // Obtiene los datos de la fila
+                            let idUnico = rowData[0];
+
+                            
+                                row.child.show(); // Simplemente la mostramos si ya fue cargada
+                           
+                        });
+
+                        // Ahora obtenemos los datos
+                        let datosPrincipales = [];
+                        tblProdFab.rows().every(function() {
                             let rowData = this.data();
-                            let idUnico = rowData[0]; // ID único generado
+                            let idUnico = rowData[0];
                             let tablaSecundariaId = `#tbl${idUnico}`;
 
-                            // Obtenemos los valores de los inputs y selects de la fila principal
                             let filaPrincipal = {
                                 id: idUnico,
                                 cantidad: $(this.node()).find('.cantidad').val(),
                                 unidad: $(this.node()).find('.id_unidad').val(),
-                                descripcion: $(this.node()).find('.descripcion').val(),
+                                descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
                                 productos: []
                             };
 
-                            // Verificar si la tabla secundaria existe y tiene datos
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
                                 tablaSecundaria.rows().every(function() {
                                     let secData = this.data();
-                                    let cantidad = $(this.node()).find('.cantidad').val(); // Obtiene SOLO el valor del input
+                                    let cantidad = $(this.node()).find('.cantidad').val();
                                     filaPrincipal.productos.push({
                                         codigo: secData[1],
-                                        cantidad:cantidad
+                                        cantidad: cantidad
                                     });
                                 });
                             }
-
                             datosPrincipales.push(filaPrincipal);
                         });
 
-                        // console.log(datosPrincipales);
+                        console.log(datosPrincipales)
+
                         formData.append('datos', JSON.stringify(datosPrincipales));
                         formData.append('orden', id_orden_guia_fab);
                         formData.append('nro_guia', nro_guiaFab.value);
@@ -1704,30 +1714,30 @@
                                 formData.append(`imagenes[${index}]`, file, file.name);
                             }
                         });
-                        // $.ajax({
-                        //     url: "controllers/registro.controlador.php",
-                        //     method: "POST",
-                        //     data: formData,
-                        //     cache: false,
-                        //     dataType: "json",
-                        //     contentType: false,
-                        //     processData: false,
-                        //     success: function(r) {
-                        //         let isSuccess = r.status === "success";
+                        $.ajax({
+                            url: "controllers/registro.controlador.php",
+                            method: "POST",
+                            data: formData,
+                            cache: false,
+                            dataType: "json",
+                            contentType: false,
+                            processData: false,
+                            success: function(r) {
+                                let isSuccess = r.status === "success";
 
-                        //         mostrarToast(r.status,
-                        //             isSuccess ? "Completado" : "Error",
-                        //             isSuccess ? "fa-check" : "fa-xmark",
-                        //             r.m);
+                                mostrarToast(r.status,
+                                    isSuccess ? "Completado" : "Error",
+                                    isSuccess ? "fa-check" : "fa-xmark",
+                                    r.m);
 
-                        //         if (isSuccess) {
-                        //             // tblDetalleSalida.clear().draw();
-                        //             tabla ? tabla.ajax.reload(null, false) : ''
-                        //             cargarAutocompletado();
-                        //             btnCancelarTrans.click();
-                        //         }
-                        //     }
-                        // });
+                                if (isSuccess) {
+                                    // tblDetalleSalida.clear().draw();
+                                    tabla ? tabla.ajax.reload(null, false) : ''
+                                    cargarAutocompletado();
+                                    // btnCancelarTrans.click();
+                                }
+                            }
+                        });
                     }
                 })
 

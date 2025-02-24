@@ -139,8 +139,14 @@
                     $(r).toggleClass('collapsedrow', !collapsed);
                 });
 
+                let fabricacion = rows.data().pluck('fab')[0];
+                console.log(fabricacion)
+                let fabricacionSpan = fabricacion ?
+                    '<span class="badge bg-danger mr-2">Fabricado</span>' :
+                    '';
+
                 var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer">' +
-                    '<strong class="pl-2">' + group + ' (' + rows.count() + ')</strong>' +
+                    '<strong class="pl-2">' +  fabricacionSpan +group + '  (' + rows.count() + ')</strong>' +
                     '<div class="txt-wrap-sm">' +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button>' +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf_img"><i class="fas fa-file-image"></i></button>' +
@@ -207,6 +213,16 @@
             },
 
         ],
+        // createdRow: function(row, data, dataIndex) {
+        //     if (data.fabricado == true) {
+        //         // Cambia el color de fondo y texto de toda la fila
+        //         $(row).addClass('fila-destacada');
+
+
+        //         // Si solo quieres afectar una celda específica:
+        //         // $('td', row).eq(1).css({ 'background-color': '#FFEB3B', 'color': '#000000' });
+        //     }
+        // },
         // "preDrawCallback": function(settings) {
         //     // Guardar la posición del scroll antes de redibujar
         //     console.log("Guardando posición del scroll:", $(window).scrollTop());
@@ -570,7 +586,7 @@
             setChange(cboResponsable, entrega)
             // cboResponsable.disabled = true;
             fecha_retorno.value = fecha_hoy;
-            
+
             nro_guiaEntrada.value = guia;
             motivo.value = motivo_text;
             // motivo.disabled = true;

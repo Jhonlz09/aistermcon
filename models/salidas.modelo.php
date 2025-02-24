@@ -14,7 +14,7 @@ class ModeloSalidas
                 LPAD(b.nro_guia::TEXT, 9, '0') as boleta, b.id as id_boleta, 
                 o.id as id_orden, c.id as id_cliente, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha,
                 b.id_conductor,b.id_despachado, b.id_responsable,b.nro_guia,b.motivo,
-                ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila
+                ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila, s.fabricado, b.fab
             FROM 
                 tblsalidas s
                 JOIN tblinventario i ON s.id_producto = i.id
@@ -23,7 +23,8 @@ class ModeloSalidas
                 JOIN tblclientes c ON c.id = o.id_cliente
                 JOIN tblunidad u ON i.id_unidad = u.id
                 WHERE 
-                    EXTRACT(YEAR FROM b.fecha) = :anio ";
+                    EXTRACT(YEAR FROM b.fecha) = :anio 
+                    AND s.id_producto_fab IS NULL ";
             if ($mes !== '') {
                 $consulta .= "AND EXTRACT(MONTH FROM b.fecha) = :mes ";
             }
@@ -179,13 +180,7 @@ class ModeloSalidas
                 JOIN tblorden o ON b.id_orden = o.id
                 JOIN tblunidad u ON i.id_unidad = u.id
                 WHERE b.id = :id
-                AND (s.fabricado = false OR NOT EXISTS (
-                    SELECT 1
-                    FROM tblsalidas s_inner
-                    JOIN tblinventario i_inner ON s_inner.id_producto = i_inner.id
-                    WHERE s_inner.id_boleta = b.id
-                    AND i_inner.fabricado = true))
-                    ORDER BY b.fecha ASC, s.id;");
+                AND s.id_producto_fab IS NULL");
 
             $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
             $l->execute();
