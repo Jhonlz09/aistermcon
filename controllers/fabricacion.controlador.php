@@ -3,7 +3,7 @@ require_once "../models/fabricacion.modelo.php";
 class ControladorFabricacion
 {
     public $id;
-    public $nombre, $unidad, $stock, $stock_ini,$stock_min, $id_boleta, $img;
+    public $nombre, $id_prod_fab, $stock, $stock_ini,$stock_min, $id_boleta, $img;
 
     static public function listarGuiaProdFab()
     {
@@ -17,35 +17,23 @@ class ControladorFabricacion
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
+    public function eliminarProductoFab()
+    {
+        $data = ModeloFabricacion::mdlEliminarProductoFab($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
 }
 $data = new ControladorFabricacion();
 if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
     $data->listarGuiaProdFab();
 } else {
     if ($_POST["accion"] == 1) {
-        $data->codigo = $_POST["cod"];
-        $data->nombre = $_POST["des"];
-        $data->stock = $_POST["sto"];
-        $data->stock_min = $_POST["st_min"];
-        $data->stock_mal = $_POST["st_mal"];
-        $data->categoria = $_POST["cat"];
-        $data->unidad = $_POST["uni"];
-        $data->percha = $_POST["ubi"];
-        $data->agregarInventario();
+        $data->id_prod_fab = $_POST["id_prod_fab"];
+        $data->listarProductoFabUtil();
     } else if ($_POST["accion"] == 2) {
-        $data->id = $_POST["id"];
-        $data->codigo = $_POST["cod"];
-        $data->nombre = $_POST["des"];
-        $data->stock = $_POST["sto"];
-        $data->stock_min = $_POST["st_min"];
-        $data->stock_mal = $_POST["st_mal"];
-        $data->stock_ini = $_POST["st_ini"];
-        $data->categoria = $_POST["cat"];
-        $data->unidad = $_POST["uni"];
-        $data->percha = $_POST["ubi"];
-        $data->img = $_POST["img"];
-        $data->oldCod = $_POST["oldCod"];
-        $data->editarInventario();
+        $data->id_prod_fab = $_POST["id_prod_fab"];
+        $data->eliminarProductoFab();
     } else if ($_POST["accion"] == 3) {
         $data->id = $_POST["id"];
         $data->eliminarInventario();

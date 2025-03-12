@@ -26,6 +26,12 @@ class ControladorSalidas
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
+    public function buscarBoletaFab()
+    {
+        $data = ModeloSalidas::mdlBuscarBoletaFab($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
     public function buscarBoletaPDF()
     {
         $data = ModeloSalidas::mdlBuscarBoletaPDF($this->id);
@@ -123,5 +129,9 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorSalidas();
         $data->id = $_POST["nombre_imagen"];
         $data->eliminarImgBoleta();
+    }else if ($_POST["accion"] == 10) {
+        $data = new ControladorSalidas();
+        $data->id = $_POST["boleta"];
+        $data->buscarBoletaFab();
     }
 }

@@ -351,6 +351,23 @@
                                                                                     </table>
                                                                                 </div>
                                                                             </div>
+                                                                            <div id="form-8" class="form-container">
+                                                                                <div class="table-responsive">
+                                                                                    <table id="tblDetalleFab" class="table table-bordered w-100 table-striped">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>Nº</th>
+                                                                                                <th class="text-center">CANTIDAD</th>
+                                                                                                <th class="text-center">UNIDAD</th>
+                                                                                                <th class="text-nowrap">PRODUCTO FABRICADO</th>
+                                                                                                <th class="text-center">ACCIONES</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                 </div>
                                                     </div>

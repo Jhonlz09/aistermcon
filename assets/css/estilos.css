@@ -844,7 +844,7 @@ i.exponent-icon {
 }
 
 #btnlogout:hover{
-    background-color: #a93e3e99;
+    background-color: #890000;
     color: #fff;
 }
 
@@ -853,6 +853,10 @@ i.exponent-icon {
     color: #ffffff !important;           /* Texto negro */
 }
 
+.bg-fab{
+    background-color: #be7c82 !important;
+    color: #fff;
+}
 tr.fila-anulada + tr.child {
     background-color: #f8d7da; /* Fondo rojo claro */
     color: #721c24; /* Texto rojo oscuro */

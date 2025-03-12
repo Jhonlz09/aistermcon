@@ -69,10 +69,11 @@
 <?php if (isset($_SESSION['s_usuario'])) {
 ?>
     <script>
-        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblFab, tblProdFab;
+        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblFab, tblProdFab, tblDetalleFab;
         var configuracionTable = {};
         let items = [];
         let id_boleta = 0;
+        let id_prod_fab = 0;
         let accion_salida = 4;
         let accion_inv = 0;
         let scroll = false;
@@ -1060,8 +1061,7 @@
                 });
 
                 tblProdFab = $('#tblProdFab').DataTable({
-                    "dom": 'fpt',
-                    // "responsive": true,
+                    "dom": 'pt',
                     "lengthChange": false,
                     "ordering": false,
                     "autoWidth": false,
@@ -1124,15 +1124,85 @@
                     },
                 });
 
+                tblDetalleFab = $('#tblDetalleFab').DataTable({
+                    "dom": 'pt',
+                    "lengthChange": false,
+                    "ordering": false,
+                    "autoWidth": false,
+                    "paging": false,
+                    columnDefs: [{
+                            targets: 0,
+                            data: null,
+                            className: 'dt-control',
+                            orderable: false,
+                            defaultContent: '',
+                            render: function(data, type, row, meta) {
+                                if (type === 'display') {
+                                    return meta.row + 1;
+                                }
+                                return meta.row;
+                            }
+                        },
+                        {
+                            targets: 1,
+                            className: "text-center",
+                            render: function(data, type, row) {
+                                return `<input type="text" class="form-control text-center cantidad" value="${data || 1}" 
+                                style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.2rem" maxlength="6"
+                                inputmode="numeric" onfocus="selecTexto(this)" autocomplete="off" oninput="validarNumber(this,/[^0-9.]/g)">`;
+                            }
+                        },
+                        {
+                            targets: 2,
+                            className: "text-center ",
+                            render: function(data, type, row) {
+                                return `<select class="form-control select2 id_unidad" data-dropdown-css-class="select2-dark" required>
+                                </select>`;
+                            }
+                        },
+                        {
+                            targets: 3,
+                            render: function(data, type, row) {
+                                return `<input type="text" class="form-control descripcion" value="${data || ''}" 
+                            style="width:100%;border-bottom-width:2px;margin:auto;font-size:1.1rem" 
+                            autocomplete="off" onfocus="selecTexto(this)" spellcheck="false">`;
+                            }
+                        },
+                        {
+                            targets: 4,
+                            className: "text-center",
+                            render: function(data, type, row) {
+                                return `<center>
+                            <span class='btnEliminaRowServer text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
+                            data-bs-placement='top' title='Eliminar producto'> 
+                                <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
+                                </i> </span>
+                            </center>`;
+                            }
+                        }
+                    ],
+                    createdRow: function(row, data, dataIndex) {
+                        const selectElement = $(row).find('.id_unidad');
+                        cargarOpcionesSelect(selectElement, data.id_unidad, '100%');
+                    },
+                });
+
+
                 addProFab.addEventListener('click', function() {
                     agregarFilaFab();
                 });
 
                 function agregarFilaFab() {
+                    let tablaAdd;
+                    if (selectedTab == '8') {
+                        tablaAdd = tblDetalleFab;
+                    } else {
+                        tablaAdd = tblProdFab;
+                    }
                     let idUnico = Date.now();
                     // Define la nueva fila con el ID en la primera celda
                     let nuevaFila = [idUnico, '1', '', '', ''];
-                    let rowNode = tblProdFab.row.add(nuevaFila).draw(false).node();
+                    let rowNode = tablaAdd.row.add(nuevaFila).draw(false).node();
                 }
 
                 $('#tblProdFab tbody').on('click', 'td.dt-control', function() {
@@ -1225,7 +1295,6 @@
                     }
                 });
 
-                // Función que genera el contenido de la fila expandida
                 function format(rowData) {
                     return `<div class="mb-4 ui-front" style="padding-left:8%">
                         <label class="col-form-label combo" for="search-${rowData}">
@@ -1241,6 +1310,90 @@
                     </table>`;
                 }
 
+                $('#tblDetalleFab tbody').on('click', 'td.dt-control', function() {
+                    let tr = $(this).closest('tr');
+                    let row = tblDetalleFab.row(tr);
+                    let rowData = row.data();
+                    let idUnico = rowData[0]; // Se asume que el ID del producto está en la segunda columna
+                    let tablaId = `#tbl${idUnico}`;
+                    id_prod_fab = idUnico;
+
+                    if (row.child.isShown()) {
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    } else {
+                        if (!tr.hasClass('loaded')) {
+                            row.child(format(idUnico)).show();
+                            tr.addClass('loaded');
+
+                            let dataTable = $(tablaId).DataTable({
+                                dom: "t",
+                                ordering: false,
+                                autoWidth: false,
+                                destroy: true, // Asegura que la tabla se reinicializa correctamente 
+                                ajax: {
+                                    url: "controllers/inventario.controlador.php",
+                                    dataSrc: "",
+                                    type: "POST",
+                                    data: function(d) {
+                                        d.accion = 11;
+                                        d.id_producto_fab = id_prod_fab;
+                                    }
+                                },
+                                columns: [{
+                                        title: "N°",
+                                        data: null,
+                                        render: function(data, type, row, meta) {
+                                            return meta.row + 1;
+                                        }
+                                    },
+                                    {
+                                        title: "CODIGO",
+                                        data: "codigo",
+                                        // visible: false
+                                    },
+                                    {
+                                        title: "CANT.",
+                                        data: "cantidad_salida",
+                                        className: "text-center",
+                                        render: function(data, type, row) {
+                                            return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
+                                            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                                            oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
+                                        }
+                                    },
+                                    {
+                                        title: "UND",
+                                        data: "unidad",
+                                        className: "text-center"
+                                    },
+                                    {
+                                        title: "DESCRIPCION",
+                                        data: "descripcion"
+                                    },
+                                    {
+                                        title: "ACCIONES",
+                                        data: null,
+                                        className: "text-center",
+                                        render: function(data, type, row) {
+                                            return `<center>
+                                            <span class='btnEliminaRowServer text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
+                                            data-bs-placement='top' title='Eliminar producto'> 
+                                                <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
+                                                </i> </span>
+                                            </center>`;
+                                        }
+                                    }
+                                ]
+                            });
+                        } else {
+                            row.child.show();
+                        }
+
+                        tr.addClass('shown');
+                    }
+                });
 
 
                 $('#tblOut').on('keydown', 'input.cantidad', moveFocusOnTab);
@@ -1290,6 +1443,24 @@
                 $(document).on('click', '.btnEliminaRow', function() {
                     let tabla = $(this).closest('table').DataTable(); // Obtener la DataTable correspondiente
                     tabla.row($(this).closest('tr')).remove().draw(); // Eliminar la fila seleccionada
+                });
+
+                $(document).on('click', '.btnEliminaRowServer', function() {
+                    let tabla = $(this).closest('table').DataTable(); // Obtener la DataTable correspondiente
+
+                    const e = obtenerFila(this, tabla)
+                    // accion_inv = 3
+                    const id = e["id"];
+                    let src = new FormData();
+                    src.append('accion', 3);
+                    src.append('id', id);
+                    confirmarEliminar('este', 'producto', function(res) {
+                        if (res) {
+                            confirmarAccion(src, 'fabricacion', tabla, '', function(res) {
+                                cargarAutocompletado();
+                            })
+                        }
+                    });
                 });
 
                 const clearButton = document.getElementById("clearButton"),
@@ -1664,9 +1835,101 @@
                             let rowData = row.data(); // Obtiene los datos de la fila
                             let idUnico = rowData[0];
 
-                            
-                                row.child.show(); // Simplemente la mostramos si ya fue cargada
-                           
+
+                            row.child.show(); // Simplemente la mostramos si ya fue cargada
+
+                        });
+
+                        // Ahora obtenemos los datos
+                        let datosPrincipales = [];
+                        tblProdFab.rows().every(function() {
+                            let rowData = this.data();
+                            let idUnico = rowData[0];
+                            let tablaSecundariaId = `#tbl${idUnico}`;
+
+                            let filaPrincipal = {
+                                id: idUnico,
+                                cantidad: $(this.node()).find('.cantidad').val(),
+                                unidad: $(this.node()).find('.id_unidad').val(),
+                                descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
+                                productos: []
+                            };
+
+                            if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
+                                let tablaSecundaria = $(tablaSecundariaId).DataTable();
+                                tablaSecundaria.rows().every(function() {
+                                    let secData = this.data();
+                                    let cantidad = $(this.node()).find('.cantidad').val();
+                                    filaPrincipal.productos.push({
+                                        codigo: secData[1],
+                                        cantidad: cantidad
+                                    });
+                                });
+                            }
+                            datosPrincipales.push(filaPrincipal);
+                        });
+
+                        console.log(datosPrincipales)
+
+                        formData.append('datos', JSON.stringify(datosPrincipales));
+                        formData.append('orden', id_orden_guia_fab);
+                        formData.append('nro_guia', nro_guiaFab.value);
+                        formData.append('conductor', cboConductor.value);
+                        formData.append('despachado', cboDespachado.value);
+                        formData.append('responsable', cboResponsable.value);
+                        formData.append('fecha', fecha.value);
+                        formData.append('motivo', motivo.value.trim().toUpperCase());
+                        formData.append('accion', 11);
+                        dropzone.getAcceptedFiles().forEach((file, index) => {
+                            if (!file.isExisting) {
+                                formData.append(`imagenes[${index}]`, file, file.name);
+                            }
+                        });
+                        $.ajax({
+                            url: "controllers/registro.controlador.php",
+                            method: "POST",
+                            data: formData,
+                            cache: false,
+                            dataType: "json",
+                            contentType: false,
+                            processData: false,
+                            success: function(r) {
+                                let isSuccess = r.status === "success";
+
+                                mostrarToast(r.status,
+                                    isSuccess ? "Completado" : "Error",
+                                    isSuccess ? "fa-check" : "fa-xmark",
+                                    r.m);
+
+                                if (isSuccess) {
+                                    // tblDetalleSalida.clear().draw();
+                                    tabla ? tabla.ajax.reload(null, false) : ''
+                                    cargarAutocompletado();
+                                    // btnCancelarTrans.click();
+                                }
+                            }
+                        });
+                    } else if (selectedTab === '8') {
+                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
+                        let isValid = true;
+                        elementosAValidar.forEach(function(elemento) {
+                            // console.log(elemento);
+                            if (!elemento.checkValidity()) {
+                                isValid = false;
+                                form_guia.classList.add('was-validated');
+                            }
+                        });
+                        if (!isValid) {
+                            return;
+                        }
+
+                        tblDetalleFab.rows().every(function() {
+                            let row = this;
+                            let tr = $(row.node());
+                            let rowData = row.data(); // Obtiene los datos de la fila
+                            let idUnico = rowData[0];
+                            row.child.show(); // Simplemente la mostramos si ya fue cargada
+
                         });
 
                         // Ahora obtenemos los datos
@@ -1818,7 +2081,6 @@
                             div_conductor.style.display = 'block';
                             card_nro_guiaFab.style.display = 'none';
                             div_prod_fab.style.display = 'none';
-
                             if (selectedTab === '3') {
                                 btnCancelarTrans.style.display = 'none';
                                 div_fecha.style.display = 'block';
@@ -1831,11 +2093,8 @@
                                 card_nro_guiaEntrada.style.display = 'block';
                                 div_nroguia.style.display = 'block';
                                 div_fecha.style.display = 'none';
-                                // div_person.style.display = 'block';
-                                // div_nroguia.style.display = 'block';
-                                // div_motivo.style.display = 'none';
                             }
-                        } else if (selectedTab === '7') {
+                        } else if (selectedTab === '7' || selectedTab === '8') {
                             div_orden.style.display = 'none';
                             div_proveedor.style.display = 'none';
                             div_return.style.display = 'none';
@@ -1852,6 +2111,11 @@
                             card_nro_fac.style.display = 'none';
                             card_nro_guiaFab.style.display = 'block';
                             div_prod_fab.style.display = 'block';
+                            if (selectedTab === '8') {
+                                btnCancelarTrans.style.display = 'block';
+                            } else {
+                                btnCancelarTrans.style.display = 'none';
+                            }
                         }
                     });
                 });

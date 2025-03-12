@@ -140,13 +140,11 @@
                 });
 
                 let fabricacion = rows.data().pluck('fab')[0];
-                console.log(fabricacion)
                 let fabricacionSpan = fabricacion ?
-                    '<span class="badge bg-danger mr-2">Fabricado</span>' :
+                    '<span class="badge bg-fab mr-2">Fabricado</span>' :
                     '';
-
                 var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer">' +
-                    '<strong class="pl-2">' +  fabricacionSpan +group + '  (' + rows.count() + ')</strong>' +
+                    '<strong class="pl-2">' + fabricacionSpan + group + '  (' + rows.count() + ')</strong>' +
                     '<div class="txt-wrap-sm">' +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button>' +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf_img"><i class="fas fa-file-image"></i></button>' +
@@ -167,7 +165,6 @@
             },
             {
                 targets: 2,
-                // className: "text-center",
                 responsivePriority: 1
             },
             {
@@ -213,41 +210,15 @@
             },
 
         ],
-        // createdRow: function(row, data, dataIndex) {
-        //     if (data.fabricado == true) {
-        //         // Cambia el color de fondo y texto de toda la fila
-        //         $(row).addClass('fila-destacada');
-
-
-        //         // Si solo quieres afectar una celda específica:
-        //         // $('td', row).eq(1).css({ 'background-color': '#FFEB3B', 'color': '#000000' });
-        //     }
-        // },
-        // "preDrawCallback": function(settings) {
-        //     // Guardar la posición del scroll antes de redibujar
-        //     console.log("Guardando posición del scroll:", $(window).scrollTop());
-        //     scrollPosition = $(window).scrollTop();
-        // },
-        // "drawCallback": function(settings) {
-
-        //     // Restaurar la posición del scroll después de redibujar
-        //     setTimeout(function() {
-        //         console.log("Restaurando posición del scroll:", scrollPosition);
-        //         $(window).scrollTop(scrollPosition);
-        //     }, 0.1);
-        // }
     }
 
     $('#tblSalidas tbody').on('click', 'tr.dtrg-start', function() {
-
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
             let scrollPosition = $(window).scrollTop();
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
-            // tabla.draw(false);
             tabla.draw(false)
             $(window).scrollTop(scrollPosition);
-            // $('#tblSalidas_wrapper').scrollTop(tableScrollTop);
         }
     });
 
@@ -292,7 +263,6 @@
             btnNuevo = document.getElementById('btnNuevo');
         let input_pdf = document.getElementById('input_boleta');
 
-
         $(cboAnio).select2({
             width: '110%',
             data: datos_anio,
@@ -336,19 +306,6 @@
             tabla.ajax.reload();
         });
 
-        // $('#tblSalidas').on('submit', '.btn_pdf', function(event) {
-        //     event.preventDefault(); // Evita el envío predeterminado del formulario
-        //     // event.stopImmediatePropagation(); // Evita que el evento de clic en la fila se dispare
-        //     var boleta = tabla.row($(this).closest('tr').next()).data()[10];
-        //     // var input_pdf = $(this).find('.input_boleta');
-        //     // input_pdf.val(boleta);
-        //     $(this).find('.input_boleta').val(boleta);
-
-        //     // console.log(boleta)
-
-        //     this.submit(); // Envía el formulario actual
-        // });
-
 
         // $('#tblSalidas').on('click', '.btn_pdf', function(event) {
         //     event.preventDefault(); // Evita la acción predeterminada
@@ -379,33 +336,6 @@
         //     document.body.removeChild(form);
         // });
 
-        // $('#tblSalidas').on('click', '.btn_pdf_img', function(event) {
-        //     event.preventDefault(); // Evita la acción predeterminada
-        //     var rowData = tabla.row($(this).closest('tr').next()).data();
-        //     var boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
-        //     // console.log(boleta)
-        //     // Crear el formulario dinámicamente
-        //     var form = document.createElement('form');
-        //     form.action = 'PDF/pdf_guia_img.php';
-        //     form.method = 'POST';
-        //     form.autocomplete = 'off';
-        //     form.target = '_blank';
-        //     // Crear el input oculto para la boleta
-        //     var inputBoleta = document.createElement('input');
-        //     inputBoleta.type = 'hidden';
-        //     inputBoleta.name = 'id_boleta';
-        //     inputBoleta.value = boleta;
-        //     inputBoleta.classList.add('input_boleta');
-        //     // Añadir el input al formulario
-        //     form.appendChild(inputBoleta);
-
-        //     // Añadir el formulario al DOM (se añade al body)
-        //     document.body.appendChild(form);
-        //     // Enviar el formulario
-        //     form.submit();
-        //     // Eliminar el formulario del DOM después de enviarlo
-        //     document.body.removeChild(form);
-        // });
         $('#tblSalidas').on('click', '.btn_pdf', function(event) {
             event.preventDefault(); // Evita la acción predeterminada
             let rowData = tabla.row($(this).closest('tr').next()).data();
@@ -458,56 +388,96 @@
             });
         }
 
+        function obtenerDatosProdFab(id_boleta) {
+            // Aquí deberías hacer una llamada AJAX para obtener los datos relacionados con id_boleta
+            $.ajax({
+                url: 'controllers/salidas.controlador.php', // Cambiar por la URL de tu backend
+                type: 'POST',
+                data: {
+                    boleta: id_boleta,
+                    accion: 10
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response) {
+                        tblDetalleFab.clear().draw();
+                        response.forEach(item => {
+                            let nuevaFila = [
+                                item.id_fab, // ID único de la fila
+                                item.retorno, // Cantidad
+                                item.id_unidad, // Unidad
+                                item.descripcion, // Descripción
+                                '' // Espacio para eliminar
+                            ];
+                            tblDetalleFab.row.add(nuevaFila).draw(false);
+                        });
+
+                        console.log('Datos obtenidos:', response);
+                    } else {
+                        console.error('No se encontraron datos para el id_boleta:', id_boleta);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al obtener los datos:', error);
+                }
+            });
+        }
+        
         $('#tblSalidas').on('click', '#editS', function() {
             let row = tabla.row($(this).closest('tr').next()).data()
             id_boleta = row[10];
-            // console.log(id_boleta)
             const id_orden = row[11],
                 id_cliente = row[12],
                 fecha_id = row[13],
                 conductor = row[14],
                 despachado_id = row[15],
                 entrega = row[16],
+                fab = row[21],
                 guia = row[17];
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
-            const salida_radio = document.getElementById('radio-2');
+            const isfab = fab ? '7' : '2';
+            const isfabValue = fab ? '8' : '4';
+            const radio = document.getElementById('radio-' + isfab);
             const cancelar = document.getElementById('Cancelar');
-            // Buscar el ítem en el array de items cargados previamente
-            // console.log(items_orden)
+
             let selectedItem = items_orden.find(item => item.cod === id_orden);
-            // console.log(selectedItem)
-            if (selectedItem) {
-                // Asignamos el valor al input de autocompletado
-                $(nro_orden).val(selectedItem.label);
+            if (fab) {
+                if (selectedItem) {
+                    // Asignamos el valor al input de autocompletado
+                    $(nro_ordenFab).val(selectedItem.label);
+                    // Simulamos la selección del ítem en el autocompletado
+                    $(nro_ordenFab)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: selectedItem
+                        });
+                }
+                nro_guiaFab.value = guia;
+                obtenerDatosProdFab(id_boleta);
+            } else {
+                if (selectedItem) {
+                    // Asignamos el valor al input de autocompletado
+                    $(nro_orden).val(selectedItem.label);
+                    // Simulamos la selección del ítem en el autocompletado
+                    $(nro_orden)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: selectedItem
+                        });
+                }
+                setChange(cboConductor, conductor)
+                nro_guia.value = guia;
+                tblDetalleSalida.ajax.reload(null, false);
 
-                // Simulamos la selección del ítem en el autocompletado
-                $(nro_orden)
-                    .autocomplete("instance")
-                    ._trigger("select", null, {
-                        item: selectedItem
-                    });
             }
-            //         $(nro_orden)
-            // .val(id_orden)  // Asignamos el valor del 'cod' al input del autocompletado
-            // .autocomplete("search", id_orden_string)  // Hacemos la búsqueda programática
-            // .trigger('focus')  // Disparamos el evento focus para asegurar que el autocomplete se active
-            // .trigger('keydown');  // Disparamos el evento keydown para que se seleccione el ítem si es necesario
-
-            // setChange(cboConductor, conductor)
-            // setChange(cboDespachado, despachado_id)
-            // setChange(cboResponsable, entrega)
             fecha.value = fecha_id;
-            nro_guia.value = guia;
-            // nro_orden.value = orden;
             motivo.value = motivo_text;
-            // setChange(cboClientes, id_cliente)
-            salida_radio.value = '4';
-            salida_radio.checked = true;
-            salida_radio.dispatchEvent(new Event('change'));
-            first_control.click();
+            radio.value = isfabValue;
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change'));
+
             cancelar.style.display = 'block'
-            tblDetalleSalida.ajax.reload(null, false);
-            // salida_radio.value = '2';
+            first_control.click();
 
             cargarImagenesDropzone(id_boleta);
             dropzone.enable();
@@ -552,8 +522,7 @@
         $('#tblSalidas').on('click', '#editR', function() {
             row = tabla.row($(this).closest('tr').next()).data()
             id_boleta = row[10];
-            // console.log(row)
-            // console.log(id_boleta)
+    
             const id_orden = row[11],
                 id_cliente = row[12],
                 fecha_id = row[13],

@@ -387,7 +387,7 @@ class ModeloRegistro
 
             $motivo = mb_strtoupper($motivo, 'UTF-8');
 
-            $id_cotizacion = self::insertarNroCotizacion($conexion, $proveedor, $comprador, $motivo, false, $fecha);
+            $id_cotizacion = self::insertarNroCotizacion($conexion, $proveedor, $comprador, $motivo, true, $fecha);
 
             // Insertar salidas
             self::insertarCotizacion($conexion, $id_cotizacion, $arr);

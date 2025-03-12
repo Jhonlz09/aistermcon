@@ -592,34 +592,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         const checkbox = document.getElementById('check_stock');
         const icona = document.getElementById('stock_icon');
         const divStockIni = document.getElementById('divStockIni');
-        // setTimeout(function() {
-        //     $.ajax({
-        //         url: "controllers/inventario.controlador.php",
-        //         method: "POST",
-        //         dataType: "json",
-        //         data: {
-        //             'accion': 8
-        //         },
-        //         success: function(respuesta) {
-        //             if (respuesta[0]['poco_stock'] > 0) {
-        //                 Swal.fire({
-        //                     title: "¡Existen productos con poco stock!",
-        //                     text: "Hay " + respuesta[0]['poco_stock'] + " producto(s) con poco stock",
-        //                     icon: "warning",
-        //                     showCancelButton: true,
-        //                     confirmButtonText: "Ver detalles",
-        //                     cancelButtonText: "Cerrar",
-        //                 }).then((result) => {
-        //                     if (result.value) {
-        //                         checkbox.click();
-        //                     }
-        //                 });
-        //             }
-
-        //         },
-        //     });
-        // }, 1000); // Espera 3 segundos (3000 milisegundos)
-
 
         // Agregar evento de cambio al input
         checkbox.addEventListener('change', function() {
@@ -797,9 +769,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
         $(cboAnio).on("change", function() {
             let a = this.options[this.selectedIndex].text
-            // if (a == anio) {
-            //     return;
-            // }
             anio = a
             tblHistorial.ajax.reload();
             // Parámetros POST
@@ -825,14 +794,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     } else {
                         stockInicialElement.textContent = '0.00';
                     }
-
-                    // Verificar si el elemento existe y data.stock_ini tiene un valor
-                    // const stockInicialElement = document.getElementById('stockInicial');
-                    // if (data.stock_ini !== undefined) {
-                    //     stockInicialElement.textContent = data.stock_ini;
-                    // } else {
-                    //     console.error('Elemento stockInicial no encontrado o data.stock_ini no definido');
-                    // }
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -873,7 +834,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 const navbar = body.querySelector('.navbar')
                 $(body).addClass('modal-open');
                 $(body).css('padding-right', '6px');
-                // $(navbar).css('margin-right', '6px');
             }
         });
 
@@ -881,7 +841,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             btnNuevo.addEventListener('click', function() {
                 if (scroll) {
                     const navbar = document.getElementById('navbar-fix');
-                    // console.log('adas quiestoy en bav')
                     $(navbar).css('margin-right', '6px');
                 }
                 accion_inv = 1;
@@ -891,7 +850,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     s.classList.add('select2-success');
                 });
                 divStockIni.style.display = 'none';
-
                 form.reset();
                 fileImg.value = '';
                 stock_mal.value = '0';
@@ -931,7 +889,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         $('#tblInventario tbody').on('click', '.btnHistorial', function() {
-            
             if (scroll) {
                 const navbar = document.getElementById('navbar-fix');
                 $(navbar).css('margin-right', '6px');
@@ -949,7 +906,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         $('#tblInventario tbody').on('click', '.btnEliminar', function() {
-
             const e = obtenerFila(this, tabla)
             accion_inv = 3
             const id = e["id"];
@@ -963,7 +919,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     })
                 }
             });
-
         });
 
         form.addEventListener('submit', function(e) {
@@ -1003,7 +958,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             data.append('img', imgActual);
             data.append('oldCod', oldCod);
             data.append('accion', accion_inv);
-
             confirmarAccion(data, 'inventario', tabla, modalE, function(res) {
                 cargarAutocompletado();
             });
@@ -1025,7 +979,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             name = this.dataset.value;
             const selectE = document.getElementById('cbo' + name);
             const iconS = this.dataset.icon;
-
             inputId.value = selectE.value;
             inputContent.value = selectE.options[selectE.selectedIndex].textContent;
             cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-green', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')

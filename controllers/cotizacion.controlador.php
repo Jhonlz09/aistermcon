@@ -143,7 +143,7 @@ if (!isset($_POST["accion"])) {
             'comprador' => isset($_POST["comprador"]) ? $_POST["comprador"] : null,
             'fecha' => isset($_POST["fecha"]) ? $_POST["fecha"] : null,
             'id_prove' => isset($_POST["id_prove"]) ? $_POST["id_prove"] : null,
-            'estado_orden' => isset($_POST["estado_orden"]) ? $_POST["estado_orden"] : false,
+            'estado_orden' => isset($_POST["estado_orden"]) ? $_POST["estado_orden"] : true,
             'isIva' => isset($_POST["isIva"]) ? $_POST["isIva"] : null,
             'isInputs' => isset($_POST["isInputs"]) ? $_POST["isInputs"] : null,
             'isFilas' => isset($_POST["isFilas"]) ? $_POST["isFilas"] : null

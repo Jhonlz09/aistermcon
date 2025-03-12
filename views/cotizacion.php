@@ -538,7 +538,6 @@
                         return `$<input type="text" class="form-control text-center d-inline precio_final" value="${data || ''}" 
                             style="width:82px;border-bottom-width:2px;padding:0;font-size:1.2rem" maxlength="8"
                             inputmode="numeric" onfocus="selecTexto(this)" autocomplete="off" oninput="validarNumber(this,/[^0-9.]/g)" onpaste="validarPegado(this, event)">`;
-                        //     `$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.2rem" class="form-control text-center d-inline precio" maxlength="8" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" oninput="validarNumber(this,/[^0-9.]/g)" value="">`,
                     }
                 },
                 {
