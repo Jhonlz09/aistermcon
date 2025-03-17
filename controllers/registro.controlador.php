@@ -115,6 +115,16 @@ class ajaxRegistro
         $data = ModeloRegistro::mdlRegistrarFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+    public function actualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img)
+    {
+        $data = ModeloRegistro::mdlActualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+    // public function editarFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img)
+    // {
+    //     $data = ModeloRegistro::mdlActualizarDatosFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img);
+    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    // }
 }
 
 if (isset($_POST["accion"])) {
@@ -144,6 +154,9 @@ if (isset($_POST["accion"])) {
         $registro->registrarOrdenCompra($_POST["arr"], $_POST["proveedor"], $_POST["comprador"], $_POST["fecha"], $_POST["subtotal"], $_POST["iva"], $_POST["impuesto"], $_POST["total"], $_POST["descuento"]);
     }else if ($accion == 11) {
         $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : [];
-        $registro->registrarFabricacion($_POST["datos"], $_POST["orden"], $_POST["nro_guia"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["fecha"], $_POST["motivo"], $imagenes);
+        $registro->registrarFabricacion($_POST["datos"], $_POST["orden"], $_POST["nro_guia"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["fecha"], $_POST["motivo"],$imagenes);
+    }else if ($accion == 12) {
+        $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : [];
+        $registro->actualizarDatosFabricacion($_POST["datos"], $_POST["id_boleta"], $_POST["orden"], $_POST["nro_guia"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["fecha"], $_POST["motivo"],$imagenes);
     }
 }

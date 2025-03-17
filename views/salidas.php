@@ -426,6 +426,7 @@
         $('#tblSalidas').on('click', '#editS', function() {
             let row = tabla.row($(this).closest('tr').next()).data()
             id_boleta = row[10];
+            id_boleta_fab = row[10];
             const id_orden = row[11],
                 id_cliente = row[12],
                 fecha_id = row[13],
@@ -441,6 +442,7 @@
             const cancelar = document.getElementById('Cancelar');
 
             let selectedItem = items_orden.find(item => item.cod === id_orden);
+            
             if (fab) {
                 if (selectedItem) {
                     // Asignamos el valor al input de autocompletado

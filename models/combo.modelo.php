@@ -53,19 +53,25 @@ class ModeloCombos
         }
     }
 
-    static public function mdlListarOrden()
+    static public function mdlListarOrden($anio)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT o.id, o.nombre || ' | '|| c.nombre as nombre 
-            FROM tblorden o
-            JOIN tblclientes c ON c.id = o.id_cliente
-            WHERE o.estado =true ORDER BY o.id DESC");
+            $l = Conexion::ConexionDB()->prepare("SELECT o.id, 
+                o.nombre || ' | ' || c.nombre as nombre 
+                FROM tblorden o
+                JOIN tblclientes c ON c.id = o.id_cliente
+                WHERE o.estado = true 
+                AND EXTRACT(YEAR FROM o.fecha) = :anio
+                ORDER BY o.id DESC");
+                
+            $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
         }
     }
+    
 
     static public function mdlListarClientesActivos()
     {

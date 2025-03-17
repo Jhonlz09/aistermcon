@@ -4,7 +4,7 @@ require_once "../models/combo.modelo.php";
 
 class ControladorCombos{
     public $tabla;
-
+    public $anio;
     public function listar()
     {
         $data = ModeloCombos::mdlListar($this->tabla);
@@ -20,7 +20,7 @@ class ControladorCombos{
 
     public function listarNumOrden(){
 
-        $data = ModeloCombos::mdlListarOrden();
+        $data = ModeloCombos::mdlListarOrden($this->anio);
         
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -90,6 +90,7 @@ if (isset($_POST['accion']) && $_POST['accion'] == 1) {
     $data->listarConductor();
 }else if(isset($_POST['accion']) && $_POST['accion'] == 3){
     $data = new ControladorCombos();
+    $data->anio = $_POST["anio"];
     $data->listarNumOrden();
 }else if(isset($_POST['accion']) && $_POST['accion'] == 4){
     $data = new ControladorCombos();

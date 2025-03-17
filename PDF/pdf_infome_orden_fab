@@ -232,7 +232,7 @@ if ($datos_guias == null) {
     $pdf->Ln(50);
     $pdf->Image('../assets/img/logo_pdf.jpeg', 42, null, 128, 25);
     $pdf->SetFont('Arial', 'B', 22);
-    $pdf->MultiCell(0, 10, 'INFORME DE MOVIMIENTOS DE HERRAMIENTAS' . "\n" . 'Y MATERIALES', 0, 'C', 0);
+    $pdf->MultiCell(0, 10, 'INFORME DE FABRICACIÓN', 0, 'C', 0);
     $pdf->SetFont('Arial', 'B', 16);
     $pdf->Ln();
     $pdf->SetX(20);

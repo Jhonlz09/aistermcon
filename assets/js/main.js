@@ -131,7 +131,7 @@ function cargarOpcionesSelect(selectElement, value, size = '110%') {
   }
 }
 
-function cargarCombo(id, s, a = 1, isDataCbo = false) {
+function cargarCombo(id, s, a = 1, isDataCbo = false, anio = null) {
   return new Promise((resolve, reject) => {
     const cbo = document.getElementById("cbo" + id);
     $(cbo).empty();
@@ -143,19 +143,28 @@ function cargarCombo(id, s, a = 1, isDataCbo = false) {
       data: {
         tabla: tabla,
         accion: a,
+        anio: anio
       },
       success: function (respuesta) {
         let dataCbo = [];
         var options = "";
+
         for (let index = 0; index < respuesta.length; index++) {
           options += `<option value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
-          dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
+          if (anio !== null) {
+            let text;
+            if (respuesta[index][2]) {
+              text = respuesta[index][1] + '<span class="alert alert-default-primary" style="color:#fff">FAB</span>';
+            }
+            dataCbo.push({ id: respuesta[index][0], text: '<div style="color:green"> '+ text +' </div>' });
+          }else if(isDataCbo){
+            dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
+          }
         }
         $(cbo).html(options);
         $(cbo)
           .val(s !== "" ? s : 0)
           .trigger("change");
-        // }
         if (isDataCbo) {
           resolve(dataCbo);
         }

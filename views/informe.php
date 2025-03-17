@@ -30,7 +30,7 @@
                     <div class="card-header">
                         <div class="col-12">
                             <div class="row">
-                                <div  class="col-auto col-p" style="padding-right: .3rem" >
+                                <div class="col-auto col-p" style="padding-right: .3rem">
                                     <h3 class="card-title ">Listado de informe</h3>
                                 </div>
 
@@ -97,64 +97,63 @@
                 </button>
             </div>
             <form id="formInforme" method="POST" action="PDF/pdf_informe_orden.php" class="needs-validation" autocomplete="off" target="_blank" novalidate>
-                <div class="modal-body" style="padding:1rem 1rem 0rem 1rem">
+                <div class="modal-body" style="padding: 1rem;">
                     <input type="hidden" name="variable" id="variable" value="">
                     <input type="hidden" name="id_usuario" id="id_usuario" value="">
-                    <div class="row">
-                        <!-- <div class="col d-flex" style="padding-bottom:.75rem;">
-                            <div style="background-color:var(--primary-color-light)" class="tabs">
-                                <input type="radio" class="rd-i" id="radio-orden" name="tabs" value="1" checked />
-                                <label class="tab" for="radio-orden"> Orden</label>
-                                <input type="radio" class="rd-i" id="radio-cliente" name="tabs" value="2" />
-                                <label class="tab" for="radio-cliente">Cliente</label>
-                                <input type="radio" class="rd-i" id="radio-fecha" name="tabs" value="3" />
-                                <label class="tab" for="radio-fecha">Fecha</label>
-                                <span class="glider"></span>
-                            </div>
-                        </div> -->
-                        <div class="col col-sm" id="col_group">
-                            <div class="form-group" id="groupCliente" style="display:none">
-                                <label class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select id="cboCliente_i" name="cliente" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
-                                        </select>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group " id="groupOrden">
-                                <label id="lblO" class="mb-0 combo"><i class="fas fa-receipt"></i> Orden</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <!-- <form id="form_orden" action=""> -->
-                                        <select id="cboOrden_i" name="id_orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                        </select>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                        <!-- </form> -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" id="row_date" style="display:none">
-                        <div class="col">
-                            <div class="input-data">
-                                <label style="font-size:1.15rem" for="desde"><i class="fas fa-calendar"></i> Desde</label>
-                                <input style="font-size:1.28rem" autocomplete="off" id="desde" name="desde" type="date" value="">
-                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="input-data">
-                                <label style="font-size:1.15rem" for="hasta"><i class="fas fa-calendar"></i> Hasta</label>
-                                <input style="font-size:1.28rem" autocomplete="off" id="hasta" name="hasta" type="date" value="">
-                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                            </div>
-                        </div>
-                    </div>
 
+                    <div class="container-fluid">
+                        <!-- Selección de Año -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-4">
+                                    <label id="lblP" class="mb-0 combo"><i class="fas fa-calendar"></i> Año</label>
+                                    <div class="row">
+                                        <div class="col">
+                                            <select id="cboAnioOrden" class="form-control select2 select2-success" data-dropdown-css-class="select2-dark">
+                                            </select>
+                                            <div class="invalid-feedback">*Campo obligatorio</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Orden de Trabajo -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3" id="groupOrden">
+                                    <label for="none" class="mb-0 combo d-flex justify-content-between align-items-center flex-wrap w-100">
+                                        <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px">
+                                            <i class="fas fa-ticket"></i> Orden de trabajo
+                                        </div>
+                                        <div class="d-flex align-items-center" style="font-size: 60%;">
+                                            <label for="isEntradaEdit" class="col-form-label text-nowrap" style="cursor:pointer; padding-block: .5rem; color: #616c7a; font-size: 140%;">
+                                                Generar fabricación
+                                            </label>
+                                            <label class="switch-2 ml-2" for="isEntradaEdit" style="font-size: 115%;">
+                                                <input class="switch__input" type="checkbox" id="isEntradaEdit" onkeydown="toggleWithEnter(event, this)">
+                                                <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                    <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11"></polyline>
+                                                </svg>
+                                            </label>
+                                        </div>
+                                    </label>
+
+                                    <!-- Selector de Orden -->
+                                    <div class="row">
+                                        <div class="col">
+                                            <select id="cboOrden_i" name="id_orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                            </select>
+                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- Fin container-fluid -->
                 </div>
+
                 <div class="modal-footer justify-content-between">
                     <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-file-lines"> </i><span class="button-text"> </span>Generar informe</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
@@ -189,7 +188,7 @@
         rowGroup: {
             dataSrc: [9],
             startRender: function(rows, group) {
-              var collapsed = !!collapsedGroups[group];
+                var collapsed = !!collapsedGroups[group];
 
                 // rows.nodes().each(function(r) {
                 //     r.style.visibility = collapsed ? '' : 'collapse';
@@ -269,26 +268,28 @@
         let anio = year;
         let mes = month;
         // console.log(da)
-        $(cboCliente_i).select2({
-            placeholder: 'SELECCIONA UN CLIENTE',
-            width: '100%',
-            data: datos_cliente,
-        })
-        setChange(cboCliente_i, 0);
+
 
         $(cboOrden_i).select2({
             placeholder: 'SELECCIONA UNA ORDEN',
             width: '100%',
-            data: datos_orden,
         })
-        setChange(cboOrden_i, 0);
+
+        cargarCombo('Orden_i', '', 3, false, anio);
+
 
         $(cboAnio).select2({
             width: '110%',
             data: datos_anio,
             minimumResultsForSearch: -1,
-        })
+        });
 
+        $(cboAnioOrden).select2({
+            width: '100%',
+            data: datos_anio,
+            minimumResultsForSearch: -1,
+        })
+        setChange(cboAnioOrden, anio);
         setChange(cboAnio, anio);
 
         $(cboMeses).select2({
@@ -328,16 +329,6 @@
         //     span = document.querySelector('.modal-title span'),
         //     elements = document.querySelectorAll('.modal .bg-gradient-green'),
         const form = document.getElementById('formInforme');
-        //     // form_pdf = document.getElementById('form_pdf'),
-        // btnNuevo = document.getElementById('btnNuevo');
-
-        // btnPdf = document.getElementById('pdf');
-        // let input_pdf = document.getElementById('input_boleta');
-        // const cboAnio = document.getElementById('cboAnio'),
-        //     cboOrden_i = document.getElementById('cboOrden_i'),
-        //     cboCliente_i = document.getElementById('cboCliente_i'),
-        //     desde = document.getElementById('desde'),
-        //     hasta = document.getElementById('hasta');
 
         const row_date = document.getElementById('row_date');
         const col_group = document.getElementById('col_group');
@@ -378,23 +369,7 @@
                     groupOrden.style.display = 'block';
                     groupCliente.style.display = 'none';
                     col_group.style.display = 'block';
-                } //else if (tabSelecteds === '2') {
-                //     cboOrden_i.required = false
-                //     cboCliente_i.required = true
-                //     desde.required = true
-                //     hasta.required = true
-                //     row_date.style.display = 'flex';
-                //     groupOrden.style.display = 'none';
-                //     groupCliente.style.display = 'block';
-                //     col_group.style.display = 'block';
-                // } else if (tabSelecteds === '3') {
-                //     row_date.style.display = 'flex';
-                //     col_group.style.display = 'none';
-                //     cboOrden_i.required = false
-                //     cboCliente_i.required = false
-                //     desde.required = true
-                //     hasta.required = true
-                // }
+                }
             });
         });
 
@@ -410,6 +385,15 @@
                 mes = cboMeses.value;
             }
             tabla.ajax.reload();
+        });
+
+        $(cboAnioOrden).on("change", function() {
+            let a = this.options[this.selectedIndex].text
+            if (a == anio) {
+                return;
+            }
+            anio = a
+            cargarCombo('Orden_i', '', 3, false, anio);
         });
 
         $(cboMeses).on("change", function() {

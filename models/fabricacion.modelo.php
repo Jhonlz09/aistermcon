@@ -67,27 +67,40 @@ class ModeloFabricacion
                     i.estado = true
                     AND (i.stock - i.stock_mal) <= i.stock_min
                 ORDER BY id ASC;");
-                $l->execute();
+            $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
         }
     }
 
-    public static function mdlAgregarInventarioFab($des, $uni, $sto)
+    public static function mdlAgregarProdFabricado($id_boleta)
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,:sto,:uni, true)");
-            $a->bindParam(":des", $des, PDO::PARAM_STR);
-            $a->bindParam(":uni", $uni, PDO::PARAM_INT);
-            $a->bindParam(":sto", $sto, PDO::PARAM_INT);
+            $a = $conexion->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),'',1,1, true)");
+
+
+            if ($a->execute()) {
+                $id_producto_fab = $conexion->lastInsertId('tblinventario_id_seq');
+                $stmtSalida = $conexion->prepare("INSERT INTO tblsalidas(id_boleta, retorno, id_producto, fabricado) VALUES(:id_boleta, 1, :id, true)");
+                $stmtSalida->bindParam(':id', $id_producto_fab, PDO::PARAM_INT);
+                // $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_INT);
+                $stmtSalida->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+                $stmtSalida->execute();
+            };
+
+            // $a = $conexion->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,:sto,:uni, true)");
+            // $a->bindParam(":des", $des, PDO::PARAM_STR);
+            // $a->bindParam(":uni", $uni, PDO::PARAM_INT);
+            // $a->bindParam(":sto", $sto, PDO::PARAM_INT);
             // $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
 
-            $a->execute();
+
             return array(
                 'status' => 'success',
-                'm' => 'El producto se agregó correctamente'
+                'm' => 'El producto se agregó correctamente',
+                'id' => $conexion->lastInsertId()
             );
         } catch (PDOException $e) {
             if ($e->getCode() == '23505') {
@@ -101,6 +114,50 @@ class ModeloFabricacion
                     'm' => 'No se pudo agregar el producto: ' . $e->getMessage()
                 );
             }
+        }
+    }
+
+    public static function mdlAgregarProdUtilFab($id_producto, $id_boleta, $id_producto_fab)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction(); // Iniciar una transacción
+
+            // Verificar el stock disponible del producto
+            $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) as stock, descripcion FROM tblinventario WHERE id = :id_producto");
+            $stmtStock->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $stmtStock->execute();
+            $resultadoStock = $stmtStock->fetch(PDO::FETCH_ASSOC);
+
+            if (!$resultadoStock) {
+                throw new Exception("El producto con ID '$id_producto' no existe en el inventario.");
+            }
+
+            if ($resultadoStock['stock'] <= 0) {
+                throw new Exception("No hay suficiente stock disponible para el producto '{$resultadoStock['descripcion']}'.");
+            }
+
+            // Si hay stock disponible, proceder con la inserción
+            $a = $conexion->prepare("INSERT INTO tblsalidas(id_boleta, cantidad_salida, id_producto, id_producto_fab) 
+                                    VALUES(:id_boleta, 1, :id_producto, :id_producto_fab)");
+            $a->bindParam(':id_producto_fab', $id_producto_fab, PDO::PARAM_INT);
+            $a->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+            $a->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $a->execute();
+
+            $conexion->commit(); // Confirmar la transacción
+
+            return array(
+                'status' => 'success',
+                'm' => 'El producto se agregó correctamente',
+                'id' => $conexion->lastInsertId()
+            );
+        } catch (Exception $e) {
+            $conexion->rollBack(); // Revertir la transacción en caso de error
+            return array(
+                'status' => 'danger',
+                'm' => 'Error: ' . $e->getMessage()
+            );
         }
     }
 
@@ -204,6 +261,24 @@ class ModeloFabricacion
             return array(
                 'status' => 'danger',
                 'm' => 'No se pudo eliminar el producto fabricado: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlEliminarProdUtil($id)
+    {
+        try {
+            $e = Conexion::ConexionDB()->prepare("DELETE FROM tblsalidas WHERE id=:id");
+            $e->bindParam(":id", $id, PDO::PARAM_INT);
+            $e->execute();
+            return array(
+                'status' => 'success',
+                'm' => 'El producto utilizado se eliminó correctamente.'
+            );
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo eliminar el producto utilizado: ' . $e->getMessage()
             );
         }
     }

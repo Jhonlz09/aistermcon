@@ -109,109 +109,11 @@ class ModeloRegistro
         }
     }
 
-
-    // static public function mdlRegistrarFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img)
-    // {
-    //     try {
-    //         $conexion = Conexion::ConexionDB();
-    //         $conexion->beginTransaction();
-
-    //         // Decodificar el JSON de productos
-    //         $productos = json_decode($datos, true);
-    //         if (!$productos) {
-    //             throw new Exception("Los datos de productos son inválidos.");
-    //         }
-
-    //         // Insertar el registro de fabricación (boleta)
-    //         $id_boleta = self::insertarBoleta($conexion, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, true);
-
-    //         foreach ($productos as $producto) {
-    //             $codigoFabricado = $producto['codigo'];
-    //             $cantidadFabricada = $producto['cantidad'];
-    //             $insumos = $producto['insumos']; // Insumos utilizados para fabricar
-
-    //             // Validar y actualizar stock de insumos
-    //             foreach ($insumos as $insumo) {
-    //                 $codigoInsumo = $insumo['codigo'];
-    //                 $cantidadUtilizada = $insumo['cantidad'];
-
-    //                 $stmtStock = $conexion->prepare("SELECT stock FROM tblinventario WHERE id = :codigoInsumo");
-    //                 $stmtStock->bindParam(':codigoInsumo', $codigoInsumo, PDO::PARAM_INT);
-    //                 $stmtStock->execute();
-    //                 $stockActual = $stmtStock->fetch(PDO::FETCH_ASSOC)['stock'];
-
-    //                 if ($stockActual < $cantidadUtilizada) {
-    //                     throw new Exception("Stock insuficiente para el insumo con código $codigoInsumo.");
-    //                 }
-
-    //                 // Actualizar stock del insumo
-    //                 $stmtUpdate = $conexion->prepare("UPDATE tblinventario SET stock = stock - :cantidad WHERE id = :codigoInsumo");
-    //                 $stmtUpdate->bindParam(':cantidad', $cantidadUtilizada, PDO::PARAM_INT);
-    //                 $stmtUpdate->bindParam(':codigoInsumo', $codigoInsumo, PDO::PARAM_INT);
-    //                 $stmtUpdate->execute();
-
-    //                 // Registrar relación insumo-producto fabricado
-    //                 $stmtRelacion = $conexion->prepare("INSERT INTO tblfabricacion_insumo (id_fabricacion, id_producto_fabricado, id_insumo, cantidad_utilizada) VALUES (:id_fabricacion, :id_producto_fabricado, :id_insumo, :cantidad_utilizada)");
-    //                 $stmtRelacion->bindParam(':id_fabricacion', $id_fabricacion, PDO::PARAM_INT);
-    //                 $stmtRelacion->bindParam(':id_producto_fabricado', $codigoFabricado, PDO::PARAM_INT);
-    //                 $stmtRelacion->bindParam(':id_insumo', $codigoInsumo, PDO::PARAM_INT);
-    //                 $stmtRelacion->bindParam(':cantidad_utilizada', $cantidadUtilizada, PDO::PARAM_INT);
-    //                 $stmtRelacion->execute();
-    //             }
-
-    //             // Actualizar o insertar el producto fabricado en inventario
-    //             $stmtCheckProducto = $conexion->prepare("SELECT id FROM tblinventario WHERE id = :codigoFabricado");
-    //             $stmtCheckProducto->bindParam(':codigoFabricado', $codigoFabricado, PDO::PARAM_INT);
-    //             $stmtCheckProducto->execute();
-
-    //             if ($stmtCheckProducto->rowCount() > 0) {
-    //                 // Producto ya existe, actualizar stock
-    //                 $stmtUpdateFabricado = $conexion->prepare("UPDATE tblinventario SET stock = stock + :cantidad WHERE id = :codigoFabricado");
-    //                 $stmtUpdateFabricado->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_INT);
-    //                 $stmtUpdateFabricado->bindParam(':codigoFabricado', $codigoFabricado, PDO::PARAM_INT);
-    //                 $stmtUpdateFabricado->execute();
-    //             } else {
-    //                 // Producto nuevo, insertar en inventario
-    //                 $stmtInsertFabricado = $conexion->prepare("INSERT INTO tblinventario (id, stock) VALUES (:codigoFabricado, :cantidad)");
-    //                 $stmtInsertFabricado->bindParam(':codigoFabricado', $codigoFabricado, PDO::PARAM_INT);
-    //                 $stmtInsertFabricado->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_INT);
-    //                 $stmtInsertFabricado->execute();
-    //             }
-    //         }
-
-    //         // Guardar imágenes si existen
-    //         if (!empty($img)) {
-    //             self::guardarImagenesSalida($conexion, $id_fabricacion, $img);
-    //         }
-
-    //         $conexion->commit();
-
-    //         return array(
-    //             'status' => 'success',
-    //             'm' => 'La fabricación se registró correctamente.'
-    //         );
-    //     } catch (PDOException $e) {
-    //         $conexion->rollBack();
-    //         return array(
-    //             'status' => 'danger',
-    //             'm' => 'Error al registrar la fabricación: ' . $e->getMessage()
-    //         );
-    //     } catch (Exception $e) {
-    //         $conexion->rollBack();
-    //         return array(
-    //             'status' => 'danger',
-    //             'm' => $e->getMessage()
-    //         );
-    //     }
-    // }
-
-
     static public function mdlRegistrarFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img)
     {
         try {
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
-
             $productos = json_decode($datos, true);
             if (!$productos) {
                 throw new Exception("Los datos de productos son inválidos.");
@@ -228,15 +130,12 @@ class ModeloRegistro
                 foreach ($insumos as $insumo) {
                     $codigoInsumo = $insumo['codigo'];
                     $cantidadUtilizada = $insumo['cantidad'];
-
                     $stmtStock = $conexion->prepare("SELECT stock, descripcion FROM tblinventario WHERE id = :codigoInsumo");
                     $stmtStock->bindParam(':codigoInsumo', $codigoInsumo, PDO::PARAM_INT);
                     $stmtStock->execute();
                     $response = $stmtStock->fetch(PDO::FETCH_ASSOC);
                     $stockActual = $response['stock'];
                     $descripPro = $response['descripcion'];
-
-
                     if ($stockActual < $cantidadUtilizada) {
                         throw new Exception("Stock insuficiente para el producto $descripPro.");
                     }
@@ -247,8 +146,6 @@ class ModeloRegistro
                 $stmtInsertFabricado->bindParam(":uni", $uni, PDO::PARAM_INT);
                 $stmtInsertFabricado->execute();
                 $id_producto_fab = $conexion->lastInsertId('tblinventario_id_seq');
-
-
 
 
                 $stmtSalida = $conexion->prepare("INSERT INTO tblsalidas(id_boleta, retorno, id_producto, fabricado) VALUES(:id_boleta, :cantidad, :id, true)");
@@ -285,12 +182,89 @@ class ModeloRegistro
             );
         }
     }
-    
+
+    static public function mdlActualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+            $productos = json_decode($datos, true);
+            if (!$productos) {
+                throw new Exception("Los datos de productos son inválidos.");
+            }
+            $id_boleta = self::actualizarBoleta($conexion, $id_boleta, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, true);
+
+            foreach ($productos as $producto) {
+                $id_prod_fab = $producto['id'];
+                $cantidadFabricada = $producto['cantidad'];
+                $des = $producto['descripcion'];
+                $uni = $producto['unidad'];
+                $insumos = $producto['productos'];
+
+                foreach ($insumos as $insumo) {
+                    // $codigoInsumo = $insumo['codigo'];
+                    $cantidadUtilizada = $insumo['cantidad'];
+                    $id_producto_util = $insumo['id_producto'];
+
+
+
+                    $stmtStock = $conexion->prepare("SELECT stock, descripcion FROM tblinventario WHERE id = :insumo");
+                    $stmtStock->bindParam(':insumo', $id_producto_util, PDO::PARAM_INT);
+                    $stmtStock->execute();
+                    $response = $stmtStock->fetch(PDO::FETCH_ASSOC);
+                    $stockActual = $response['stock'];
+                    $descripPro = $response['descripcion'];
+                    if ($stockActual < $cantidadUtilizada) {
+                        throw new Exception("Stock insuficiente para el producto '$descripPro'.");
+                    }
+                }
+
+                $stmtInsertFabricado = $conexion->prepare("UPDATE tblinventario SET descripcion=:des, id_unidad=:uni WHERE id=:id_prod_fab");
+                $stmtInsertFabricado->bindParam(":id_prod_fab", $id_prod_fab, PDO::PARAM_STR);
+                $stmtInsertFabricado->bindParam(":des", $des, PDO::PARAM_STR);
+                $stmtInsertFabricado->bindParam(":uni", $uni, PDO::PARAM_INT);
+                $stmtInsertFabricado->execute();
+
+
+                $stmtSalida = $conexion->prepare("UPDATE tblsalidas SET retorno=:cantidad WHERE id_producto=:id");
+                $stmtSalida->bindParam(':id', $id_prod_fab, PDO::PARAM_INT);
+                $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_STR);
+                // $stmtSalida->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+                $stmtSalida->execute();
+
+                self::relacionarProductoConInsumosUpdate($conexion, $id_prod_fab, $id_boleta, $insumos);
+            }
+
+            if (!empty($img)) {
+                self::guardarImagenesSalida($conexion, $id_boleta, $img);
+            }
+
+            $conexion->commit();
+
+            return array(
+                'status' => 'success',
+                'm' => 'La fabricación se registró correctamente.'
+            );
+        } catch (PDOException $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => 'Error al registrar la fabricación: ' . $e->getMessage()
+            );
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'danger',
+                'm' => $e->getMessage()
+            );
+        }
+    }
+
     private static function relacionarProductoConInsumos($conexion, $idProductoFabricado, $idBoleta, $insumos)
     {
         $stmtSalidaInsumo = $conexion->prepare(
             "INSERT INTO tblsalidas(id_boleta, cantidad_salida, id_producto, id_producto_fab) 
-             VALUES(:id_boleta, :cantidad, :id_producto, :id_producto_fab)"
+            VALUES(:id_boleta, :cantidad, :id_producto, :id_producto_fab)"
         );
 
         foreach ($insumos as $insumo) {
@@ -302,21 +276,17 @@ class ModeloRegistro
         }
     }
 
-
-    // private static function insertarFabricacion($conexion, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo)
-    // {
-    //     $stmt = $conexion->prepare("INSERT INTO tblfabricacion (orden, fecha, nro_guia, conductor, despachado, responsable, motivo) VALUES (:orden, :fecha, :nro_guia, :conductor, :despachado, :responsable, :motivo) RETURNING id");
-    //     $stmt->bindParam(':orden', $orden);
-    //     $stmt->bindParam(':fecha', $fecha);
-    //     $stmt->bindParam(':nro_guia', $nro_guia);
-    //     $stmt->bindParam(':conductor', $conductor);
-    //     $stmt->bindParam(':despachado', $despachado);
-    //     $stmt->bindParam(':responsable', $responsable);
-    //     $stmt->bindParam(':motivo', $motivo);
-    //     $stmt->execute();
-    //     return $stmt->fetchColumn();
-    // }
-
+    private static function relacionarProductoConInsumosUpdate($conexion, $idProductoFabricado, $idBoleta, $insumos)
+    {
+        $stmtSalidaInsumo = $conexion->prepare("UPDATE tblsalidas SET id_boleta=:id_boleta, cantidad_salida=:cantidad, id_producto_fab=:id_producto_fab WHERE id_producto=:id_producto");
+        foreach ($insumos as $insumo) {
+            $stmtSalidaInsumo->bindParam(':id_boleta', $idBoleta, PDO::PARAM_INT);
+            $stmtSalidaInsumo->bindParam(':cantidad', $insumo['cantidad'], PDO::PARAM_INT);
+            $stmtSalidaInsumo->bindParam(':id_producto', $insumo['codigo'], PDO::PARAM_INT);
+            $stmtSalidaInsumo->bindParam(':id_producto_fab', $idProductoFabricado, PDO::PARAM_INT);
+            $stmtSalidaInsumo->execute();
+        }
+    }
 
     static private function guardarImagenesSalida($conexion, $id_boleta, $imagenes)
     {
@@ -544,6 +514,35 @@ class ModeloRegistro
     //         }
     //     }
     // }
+
+    static private function actualizarBoleta($conexion, $id_boleta, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo)
+    {
+        $fechaHora = $fecha . ' ' . date('H:i:s');
+        $sql = "UPDATE tblboleta SET 
+                    fecha = :fecha, 
+                    id_orden = :orden, 
+                    nro_guia = :nro_guia, 
+                    id_conductor = :conductor, 
+                    id_despachado = :despachado, 
+                    id_responsable = :responsable, 
+                    motivo = :motivo
+                WHERE id = :id_boleta";
+
+        $stmtB = $conexion->prepare($sql);
+        $stmtB->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
+        $stmtB->bindParam(':orden', $id_orden, PDO::PARAM_INT);
+        $stmtB->bindParam(':nro_guia', $nro_guia, PDO::PARAM_STR);
+        $stmtB->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+        // $stmtB->bindValue(':fabricacion', $fab, PDO::PARAM_BOOL);
+        $stmtB->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+
+        // Asignar valores o NULL según corresponda
+        $stmtB->bindValue(':conductor', $conductor ?: null, $conductor ? PDO::PARAM_INT : PDO::PARAM_NULL);
+        $stmtB->bindValue(':despachado', $despachado ?: null, $despachado ? PDO::PARAM_INT : PDO::PARAM_NULL);
+        $stmtB->bindValue(':responsable', $responsable ?: null, $responsable ? PDO::PARAM_INT : PDO::PARAM_NULL);
+
+        return $stmtB->execute();
+    }
 
     static private function insertarBoleta($conexion, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, $fab = false)
     {

@@ -45,19 +45,6 @@ class ControladorOrden
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-
-
-    // public function editarOrden()
-    // {
-
-
-
-
-    //     $data = ModeloOrden::mdlEditarOrden($this->id, $this->nombres, $this->id_cliente, $this->orden, $this->estado);
-    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    // }
-
-
     public function editarOrden()
     {
         $existingPdf = ModeloOrden::mdlIsPdfOrden($this->id);
@@ -97,7 +84,6 @@ class ControladorOrden
     private function generateUniqueFilePath($filePath, $full)
     {
         $pathInfo = pathinfo($filePath);
-        // $baseName = $pathInfo['filename'];
         $extension = $pathInfo['extension'];
         $directory = $pathInfo['dirname'];
         $counter = 1;

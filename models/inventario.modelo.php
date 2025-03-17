@@ -30,7 +30,7 @@ class ModeloInventario
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT s.id, s.cantidad_salida,  u.nombre as unidad,
             i.descripcion, 
-            to_char(s.fecha_fab, 'DD/MM/YYYY HH24:MI') AS fecha_fab, i.codigo, COALESCE(s.retorno::text, '-') AS retorno,COALESCE(s.diferencia::text, '-') as utilizado
+            to_char(s.fecha_fab, 'DD/MM/YYYY HH24:MI') AS fecha_fab, i.codigo, COALESCE(s.retorno::text, '-') AS retorno,COALESCE(s.diferencia::text, '-') as utilizado, i.id as id_producto
             FROM tblsalidas s
             JOIN tblinventario i ON i.id = s.id_producto
             JOIN tblunidad u ON u.id = i.id_unidad
