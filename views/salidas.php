@@ -124,14 +124,6 @@
         },
         rowGroup: {
             dataSrc: [4],
-            // startRender: function(rows, group) {
-            //     var collapsed = !!collapsedGroups[group];
-
-            //     rows.nodes().each(function(r) {
-            //         $(r).toggleClass('collapsedrow', !collapsed);
-
-            //     });
-
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
 
@@ -470,14 +462,12 @@
                 setChange(cboConductor, conductor)
                 nro_guia.value = guia;
                 tblDetalleSalida.ajax.reload(null, false);
-
             }
             fecha.value = fecha_id;
             motivo.value = motivo_text;
             radio.value = isfabValue;
             radio.checked = true;
             radio.dispatchEvent(new Event('change'));
-
             cancelar.style.display = 'block'
             first_control.click();
 

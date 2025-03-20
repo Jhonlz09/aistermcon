@@ -196,9 +196,6 @@
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
 
-                // rows.nodes().each(function(r) {
-                //     r.style.visibility = collapsed ? '' : 'collapse';
-                // });
                 rows.nodes().each(function(r) {
                     $(r).toggleClass('collapsedrow', !collapsed);
                 });
@@ -235,7 +232,7 @@
                     if (data === null) {
                         return '-';
                     } else {
-                        return `<span style="font-size:1.1rem" class="text-danger font-weight-bold">${data}</span>`;
+                        return `<span class="text-danger font-weight-bold">${data}</span>`;
                     }
                 }
             },
@@ -246,7 +243,7 @@
                     if (data === null) {
                         return '-';
                     } else {
-                        return `<span style="font-size:1.1rem" class="text-success font-weight-bold">${data}</span>`;
+                        return `<span class="text-success font-weight-bold">${data}</span>`;
                     }
                 }
             },
@@ -259,14 +256,11 @@
 
     $('#tblInforme tbody').on('click', 'tr.dtrg-start', function() {
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
-            // var windowScrollTop = $(window).scrollTop();
             let scrollPosition = $(window).scrollTop();
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
             tabla.draw(false);
             $(window).scrollTop(scrollPosition);
-            // $(window).scrollTop(windowScrollTop);
-            // $('#tblInforme_wrapper').scrollTop(tableScrollTop);
         }
     });
 
