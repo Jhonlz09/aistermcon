@@ -56,7 +56,6 @@ class ModeloRegistro
         try {
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
-
             // Validar el stock disponible para cada producto
             foreach ($arr as $data) {
                 list($idProducto, $cantidad) = explode(',', $data);
@@ -75,9 +74,6 @@ class ModeloRegistro
                 }
             }
 
-            // Insertar orden si es necesario
-            // $id_orden = self::insertarOrden($conexion, $orden, $cliente, $responsable, $fecha);
-
             // Insertar boleta
             $id_boleta = self::insertarBoleta($conexion, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo);
 
@@ -87,6 +83,8 @@ class ModeloRegistro
             if (!empty($img)) {
                 self::guardarImagenesSalida($conexion, $id_boleta, $img);
             }
+
+            self::mdlCambioEstadoOrden($conexion, $orden, $fecha);
 
             $conexion->commit();
 
@@ -108,6 +106,77 @@ class ModeloRegistro
             );
         }
     }
+
+    private static function mdlCambioEstadoOrden($conexion, $orden, $fecha)
+    {
+        // Verificamos si el campo fecha_ini es NULL
+        $stmt = $conexion->prepare("SELECT fecha_ini FROM tblorden WHERE id = :orden");
+        $stmt->bindParam(':orden', $orden, PDO::PARAM_INT);
+        $stmt->execute();
+    
+        // Recuperamos el valor de fecha_ini
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        // Si fecha_ini es NULL, procedemos a actualizar
+        if ($resultado['fecha_ini'] === null) {
+            $hora = date('H:i:s');
+            $fechaHora = $fecha . ' ' . $hora;
+    
+            // Actualizamos el estado y la fecha_ini
+            $stmt = $conexion->prepare("UPDATE tblorden SET estado_obra = 1, fecha_ini = :fecha WHERE id = :orden");
+            $stmt->bindParam(':orden', $orden, PDO::PARAM_INT);
+            $stmt->bindParam(":fecha", $fechaHora, PDO::PARAM_STR);
+        } else {
+            // Solo actualizamos el estado si fecha_ini no es NULL
+            $stmt = $conexion->prepare("UPDATE tblorden SET estado_obra = 1 WHERE id = :orden");
+            $stmt->bindParam(':orden', $orden, PDO::PARAM_INT);
+        }
+    
+        // Ejecutamos la consulta
+        $stmt->execute();
+    }
+    
+
+    // public static function mdlCambiarEstado($id, $estado, $fecha, $nota)
+    // {
+    //     try {
+    //         $hora = date('H:i:s');
+    //         $fechaHora = $fecha . ' ' . $hora;
+
+    //         $fechas = array(
+    //             '0' => 'fecha',
+    //             '1' => 'fecha_ini',
+    //             '2' => 'fecha_fin',
+    //             '3' => 'fecha_fac',
+    //             '4' => 'fecha_gar'
+    //         );
+
+    //         $consulta = "UPDATE tblorden SET estado_obra=:estado, nota=:nota ";
+    //         $consulta .= "," . $fechas[$estado] . " =:fecha ";
+    //         $consulta .= "WHERE id=:id";
+
+
+    //         $e = Conexion::ConexionDB()->prepare($consulta);
+    //         $e->bindParam(":id", $id, PDO::PARAM_INT);
+    //         if ($nota === '') {
+    //             $e->bindValue(":nota", null, PDO::PARAM_NULL);
+    //         } else {
+    //             $e->bindParam(":nota", $nota, PDO::PARAM_STR);
+    //         }
+    //         $e->bindParam(":estado", $estado, PDO::PARAM_INT);
+    //         $e->bindParam(":fecha", $fechaHora, PDO::PARAM_STR);
+    //         $e->execute();
+    //         return array(
+    //             'status' => 'success',
+    //             'm' => 'Se actualizó el estado de la orden de trabajo corectamente.'
+    //         );
+    //     } catch (PDOException $e) {
+    //         return array(
+    //             'status' => 'danger',
+    //             'm' => 'No se pudo actualizar el estado de la orden de trabajo: ' . $e->getMessage()
+    //         );
+    //     }
+    // }
 
     static public function mdlRegistrarFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img)
     {
@@ -156,6 +225,7 @@ class ModeloRegistro
                 // Insertar salidas
 
                 self::relacionarProductoConInsumos($conexion, $id_producto_fab, $id_boleta, $insumos);
+                self::mdlCambioEstadoOrden($conexion, $orden, $fecha);
             }
 
             if (!empty($img)) {
@@ -205,9 +275,6 @@ class ModeloRegistro
                     // $codigoInsumo = $insumo['codigo'];
                     $cantidadUtilizada = $insumo['cantidad'];
                     $id_producto_util = $insumo['id_producto'];
-
-
-
                     $stmtStock = $conexion->prepare("SELECT stock, descripcion FROM tblinventario WHERE id = :insumo");
                     $stmtStock->bindParam(':insumo', $id_producto_util, PDO::PARAM_INT);
                     $stmtStock->execute();
@@ -233,6 +300,8 @@ class ModeloRegistro
                 $stmtSalida->execute();
 
                 self::relacionarProductoConInsumosUpdate($conexion, $id_prod_fab, $id_boleta, $insumos);
+           
+                // self::cambiarEstadoOrden($conexion, $id_boleta);
             }
 
             if (!empty($img)) {
@@ -243,7 +312,7 @@ class ModeloRegistro
 
             return array(
                 'status' => 'success',
-                'm' => 'La fabricación se registró correctamente.'
+                'm' => 'La fabricación se editó correctamente.'
             );
         } catch (PDOException $e) {
             $conexion->rollBack();
@@ -278,10 +347,10 @@ class ModeloRegistro
 
     private static function relacionarProductoConInsumosUpdate($conexion, $idProductoFabricado, $idBoleta, $insumos)
     {
-        $stmtSalidaInsumo = $conexion->prepare("UPDATE tblsalidas SET id_boleta=:id_boleta, cantidad_salida=:cantidad, id_producto_fab=:id_producto_fab WHERE id_producto=:id_producto");
+        $stmtSalidaInsumo = $conexion->prepare("UPDATE tblsalidas SET id_boleta=:id_boleta, cantidad_salida=:cantidad, id_producto_fab=:id_producto_fab WHERE id=:id_producto");
         foreach ($insumos as $insumo) {
             $stmtSalidaInsumo->bindParam(':id_boleta', $idBoleta, PDO::PARAM_INT);
-            $stmtSalidaInsumo->bindParam(':cantidad', $insumo['cantidad'], PDO::PARAM_INT);
+            $stmtSalidaInsumo->bindParam(':cantidad', $insumo['cantidad'], PDO::PARAM_STR);
             $stmtSalidaInsumo->bindParam(':id_producto', $insumo['codigo'], PDO::PARAM_INT);
             $stmtSalidaInsumo->bindParam(':id_producto_fab', $idProductoFabricado, PDO::PARAM_INT);
             $stmtSalidaInsumo->execute();

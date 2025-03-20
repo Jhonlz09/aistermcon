@@ -850,15 +850,15 @@
                 cargarCombo('Unidad', '', 1, true).then(datos_ => {
                     datos_uni = datos_;
                 });
-                // cargarCombo('Clientes', '', 1, true).then(datos_ => {
-                //     datos_cliente = datos_;
-                //     $(cboClienteEntrada).select2({
-                //         placeholder: 'SELECCIONE',
-                //         width: '100%',
-                //         data: datos_cliente
-                //     })
-                //     setChange(cboClienteEntrada, 0)
-                // });
+                cargarCombo('Clientes', '', 1, true).then(datos_ => {
+                    datos_cliente = datos_;
+                    // $(cboClienteEntrada).select2({
+                    //     placeholder: 'SELECCIONE',
+                    //     width: '100%',
+                    //     data: datos_cliente
+                    // })
+                    // setChange(cboClienteEntrada, 0)
+                });
 
 
                 cargarCombo('Conductor', conductorPorDefecto, 2);
@@ -1715,6 +1715,12 @@
                                 dropzone.removeAllFiles(false);
                                 form_guia.classList.remove('was-validated');
                                 limpiar();
+                                cargarAutocompletado(function(items) {
+                                    items_orden = items;
+                                    $('#nro_orden').autocomplete("option", "source", items);
+                                    $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                                    $('#nro_ordenFab').autocomplete("option", "source", items);
+                                }, null, 'orden', 6)
                             }
                         });
                     } else if (selectedTab === '3') {
@@ -1743,6 +1749,12 @@
                             if (r) {
                                 dropzone.removeAllFiles(false);
                                 limpiar();
+                                cargarAutocompletado(function(items) {
+                                    items_orden = items;
+                                    $('#nro_orden').autocomplete("option", "source", items);
+                                    $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                                    $('#nro_ordenFab').autocomplete("option", "source", items);
+                                }, null, 'orden', 6)
                             }
                         });
                     } else if (selectedTab === '4') {
@@ -1932,6 +1944,12 @@
                                     tabla ? tabla.ajax.reload(null, false) : ''
                                     cargarAutocompletado();
                                     limpiar();
+                                    cargarAutocompletado(function(items) {
+                                        items_orden = items;
+                                        $('#nro_orden').autocomplete("option", "source", items);
+                                        $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                                        $('#nro_ordenFab').autocomplete("option", "source", items);
+                                    }, null, 'orden', 6)
                                 }
                             }
                         });
@@ -2322,7 +2340,7 @@
                                                     tablaUnica.draw(false);
 
                                                     mostrarToast(res.status, "Completado", "fa-solid fa-check fa-lg", res.m)
-                                                } else{
+                                                } else {
                                                     mostrarToast('danger', "Error", "fa-solid fa-xmark fa-lg", res.m)
 
                                                 }

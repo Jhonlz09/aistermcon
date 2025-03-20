@@ -17,10 +17,14 @@ require('../models/inventario.modelo.php');
 
 
 
-$id_orden = $_POST['id_orden'];
+$id_orden = $_POST['id_orden'] ?? $_GET['id_orden'] ?? null;
+
+if (!$id_orden) {
+    die("Error: ID de orden no recibido.");
+}
 $info_error = 'NRO. DE ORDEN';
 $datos_fecha = ModeloInforme::mdlInformeDetalleOrden($id_orden);
-$datos_guias = ModeloInforme::mdlInformeFechaOrden($id_orden);
+$datos_guias = ModeloInforme::mdlInformeFechaOrden($id_orden, false);
 if ($datos_fecha != null) {
     $cliente = $datos_fecha[0]['cliente'];
     $orden = $datos_fecha[0]['orden_nro'];
@@ -232,7 +236,7 @@ if ($datos_guias == null) {
     $pdf->Ln(50);
     $pdf->Image('../assets/img/logo_pdf.jpeg', 42, null, 128, 25);
     $pdf->SetFont('Arial', 'B', 22);
-    $pdf->MultiCell(0, 10, 'INFORME DE MOVIMIENTOS DE HERRAMIENTAS' . "\n" . 'Y MATERIALES', 0, 'C', 0);
+    $pdf->MultiCell(0, 10, 'INFORME DE TRASLADO DE HERRAMIENTAS' . "\n" . 'Y MATERIALES', 0, 'C', 0);
     $pdf->SetFont('Arial', 'B', 16);
     $pdf->Ln();
     $pdf->SetX(20);
@@ -259,10 +263,10 @@ if ($datos_guias == null) {
     $pdf->SetXY(106, 210);
     $pdf->activarEncabezado();
     $pdf->AddPage();
-    $pdf->SetAutoPageBreak(true, 50);
+    $pdf->SetAutoPageBreak(true, 20);
     $pdf->SetY(25);
     $pdf->SetFont('Arial', 'B', 18);
-    $pdf->SetMargins(12, 0, 12);
+    $pdf->SetMargins(12, 12, 12);
     $pdf->SetWidths(array(27, 80, 18, 21, 21, 21));
     $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C'));
     $pdf->SetX(12);
@@ -273,17 +277,16 @@ if ($datos_guias == null) {
         } else {
             $encargado = $row["responsable"];
         }
+
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de salida: ' . $row["fecha_emision"]), 0, 0, 'L');
+        $pdf->SetTextColor(200, 0, 0);
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Nro. de Guía: ' . $row["nro_guia"]), 0, 1, 'R');
+        $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de entrada: ' . $row["fecha_retorno"]), 0, 1, 'L');
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Conductor: ' . $row["conductor"] . ' ' . $row["placa"]), 0, 0, 'L');
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Responsable: ' . $encargado), 0, 1, 'R');
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Motivo: ' . $row["motivo"]), 0, 1, 'L');
-        
-        
-        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'GUÍA DE FABRICACION ' . $row["motivo"]), 0, 1, 'L');
-
         $pdf->Ln(10);
         $id_guia = $row["id_guia"];
         $pdf->SetFont('Arial', 'B', 11);
@@ -293,15 +296,11 @@ if ($datos_guias == null) {
         foreach ($data as $fill) {
             $pdf->SetStartY(20);
             $pdf->SetFont('Arial', '', 10);
-            // $resaño = substr($fill["year"], -2);
             $salida = $fill["cantidad_salida"];
             $entrada = $fill["retorno"];
             $util = $fill["utilizado"];
             $fab_pro = $fill['fabricado'];
             $id_producto = $fill['id_producto'];
-            // if ($fab_pro == true) {
-            //     // $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fabricado: ' . $fill["descripcion"]), 0, 0, 'L');
-            // }else{
             $pdf->Row(array(
                 iconv('UTF-8', 'windows-1252', $fill["codigo"]),
                 iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
@@ -311,29 +310,29 @@ if ($datos_guias == null) {
                 iconv('UTF-8', 'windows-1252', $util)
             ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
         // }
-            if ($fab_pro == true) {
-                $data_fab = ModeloInventario::mdlListarProductoFab($id_producto);
-                foreach ($data_fab as $fab) {
-                    $pdf->Row(array(
-                        iconv('UTF-8', 'windows-1252', $fab["codigo"]),
-                        iconv('UTF-8', 'windows-1252', $fab["descripcion"]),
-                        iconv('UTF-8', 'windows-1252', $fab["unidad"]),
-                        iconv('UTF-8', 'windows-1252', $fab["cantidad_salida"]),
-                        iconv('UTF-8', 'windows-1252', $fab["retorno"]),
-                        iconv('UTF-8', 'windows-1252', $fab["utilizado"])
-                    ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
-                }
-            }
+            // if ($fab_pro == true) {
+            //     $data_fab = ModeloInventario::mdlListarProductoFab($id_producto);
+            //     foreach ($data_fab as $fab) {
+            //         $pdf->Row(array(
+            //             iconv('UTF-8', 'windows-1252', $fab["codigo"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["descripcion"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["unidad"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["cantidad_salida"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["retorno"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["utilizado"])
+            //         ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
+            //     }
+            // }
         }
         $pdf->Ln();
     }
     $pdf->SetFont('Arial', 'B', 12);
-    $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Resumen de fabricacion: '), 0, 1, 'L');
+    $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'RESUMEN: '), 0, 1, 'L');
     $pdf->Ln(3);
     $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.');
     $pdf->SetWidths(array(24, 70, 18, 24, 28, 24));
     $pdf->Row($header_resumen, array(12, 12, 12, 12, 12, 12), 'B');
-    $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden);
+    $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden, false);
     foreach ($data_resumen as $fill) {
         $pdf->SetStartY(20);
         $pdf->SetFont('Arial', '', 10);
@@ -351,19 +350,6 @@ if ($datos_guias == null) {
             iconv('UTF-8', 'windows-1252', $entrada),
             iconv('UTF-8', 'windows-1252', $util)
         ), array(10, 10, 10, 10, 10, 10), '', 6, [true, true, true, true, true, true]);
-        if ($fab_pro == true) {
-            $data_fab = ModeloInforme::mdlInformeOrdenResumenFab($id_producto);
-            foreach ($data_fab as $fab) {
-                $pdf->Row(array(
-                    iconv('UTF-8', 'windows-1252', $fab["codigo"]),
-                    iconv('UTF-8', 'windows-1252', $fab["descripcion"]),
-                    iconv('UTF-8', 'windows-1252', $fab["unidad"]),
-                    iconv('UTF-8', 'windows-1252', $fab["cantidad_salida"]),
-                    iconv('UTF-8', 'windows-1252', $fab["retorno"]),
-                    iconv('UTF-8', 'windows-1252', $fab["utilizado"])
-                ), array(10, 10, 10, 10, 10, 10), '', 6, [true, true, true, true, true, true]);
-            }
-        }
     }
 }
 // Configurar cabeceras para indicar el tipo de contenido y el nombre de descarga

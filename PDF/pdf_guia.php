@@ -102,15 +102,12 @@ class PDF extends FPDF
     function Header()
     {
         $data_detalle = ModeloSalidas::mdlBuscarDetalleBoleta($this->id_boleta);
-
         if (empty($data_detalle)) {
             // Establecer la fuente y color
             $this->SetFont('Arial', 'B', 14);
             $this->SetTextColor(220, 0, 0);
-    
             // Añadir un mensaje al PDF
             $this->Cell(0, 30, 'Por favor, configura las preferencias en el modulo de configuracion.', 0, 1, 'C');
-    
             // Detener la ejecución del script
             $this->Output();
             exit;
@@ -119,6 +116,7 @@ class PDF extends FPDF
         $row = $data_detalle[0];
         $this->orden = $row['orden'];
         $this->cliente = $row['cliente'];
+        $guia_fab = $row['fab'];
         // // Arial bold 15
         $this->SetFont('Arial', '', 11);
         $this->SetTextColor(10, 0, 0);
@@ -132,41 +130,17 @@ class PDF extends FPDF
         $this->Cell(0, 6, '', 0, 1, 'R', true);
         $this->SetX(41);
         $this->SetFont('Arial', 'B', 12);
-        $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'GUIA DE BODEGA'), 0, 0, 'C');
+        $texto = 'GUIA DE BODEGA';
+        if ($guia_fab) {
+            $texto = '     GUIA DE FABRICACIÓN';
+        }
+        $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', $texto), 0, 0, 'C');
         $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'No.002-001-' . $row["id_boleta"]), 0, 1, 'R');
 
         $this->SetFont('Arial', 'B', 11);
         $this->SetX(100);
         $this->SetFillColor(235, 235, 235); // Por ejemplo, un gris claro con valores R, G y B iguales
 
-        // $this->MultiCell(0, 12, iconv('UTF-8', 'windows-1252', "  Número de Autorización:"), 0, 'L', 1);
-        // $this->SetXY(100, 25);
-        // $this->SetFont('Arial', '', 10);
-        // $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  "), 0, 'L', 1);
-        // $this->SetFont('Arial', 'B', 11);
-        // $this->SetX(100);
-        // $this->MultiCell(0, 12, iconv('UTF-8', 'windows-1252', "  Fecha y hora de Autorización: "), 0, 'L', 1);
-        // $this->SetXY(100, 38);
-        // $this->SetFont('Arial', '', 10);
-        // $this->MultiCell(0, 4, iconv('UTF-8', 'windows-1252', "  "), 0, 'L', 1);
-
-        // $this->SetFont('Arial', 'B', 11);
-        // $this->SetXY(100, 42);
-        // $this->Cell(0, 12, iconv('UTF-8', 'windows-1252', '  Ambiente:'), 0, 0, 'L', true);
-        // $this->SetFont('Arial', '', 10);
-        // $this->SetX(120);
-        // $this->Cell(0, 12, iconv('UTF-8', 'windows-1252', '  PRODUCCION'), 0, 1, 'L');
-
-        // $this->SetFont('Arial', 'B', 11);
-        // $this->SetXY(100, 50);
-        // $this->Cell(0, 6, iconv('UTF-8', 'windows-1252', '  Emisión:'), 0, 0, 'L', true);
-        // $this->SetFont('Arial', '', 10);
-        // $this->SetX(120);
-        // $this->Cell(0, 6, iconv('UTF-8', 'windows-1252', '  NORMAL'), 0, 1, 'L');
-
-        // $this->SetFont('Arial', 'B', 11);
-        // $this->SetXY(100, 56);
-        // $this->Cell(0, 4, iconv('UTF-8', 'windows-1252', '  Clave de Acceso:'), 0, 1, 'L', true);
         $this->SetX(100);
         $this->Cell(0, 3, iconv('UTF-8', 'windows-1252', '  '), 0, 0, 'L', true);
 
@@ -597,10 +571,14 @@ $pdf->SetY($pdf->currentY);
 foreach ($data_boleta as $fill) {
     $cantidad_salida = floatval($fill["cantidad_salida"]);
     $pdf->SetAligns(array('L', 'L', 'C', 'C'));
+    $salida =  $fill["cantidad_salida"];
+    if ($salida == '0.00') {
+        $salida = $fill["retorno"];
+    }
     $pdf->Row(array(
         iconv('UTF-8', 'windows-1252', '  ' . $fill["codigo"]),
         iconv('UTF-8', 'windows-1252', ' ' . $fill["descripcion"]),
-        iconv('UTF-8', 'windows-1252', $fill["cantidad_salida"]),
+        iconv('UTF-8', 'windows-1252', $salida),
         iconv('UTF-8', 'windows-1252', $fill["unidad"]),
     ), array(9, 9, 9, 9), '', 5, array(247, 247, 245));
 

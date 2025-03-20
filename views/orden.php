@@ -113,7 +113,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                            <div class="col-md-3 form-group mb-4" id="div_fecha_new">
+                                <div class="col-md-3 form-group mb-4" id="div_fecha_new">
                                     <label class="combo" style="line-height:1.2;font-size: 1.15rem;" for="fecha_">
                                         <i class="fas fa-calendar"></i> Fecha de creación</label>
                                     <input id="fecha_new" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
@@ -304,19 +304,19 @@
                 render: function(data, type, row, full, meta) {
                     let estado = row.estado_obra;
                     let fecha_cre = row.fecha;
-                    let fecha_ini = row.fecha_ini  === '' ? ' -' : row.fecha_ini;
-                    let fecha_fin = row.fecha_fin  === '' ? ' -' : row.fecha_fin;
+                    let fecha_ini = row.fecha_ini === '' ? ' -' : row.fecha_ini;
+                    let fecha_fin = row.fecha_fin === '' ? ' -' : row.fecha_fin;
                     let fecha_fac = row.fecha_fac === '' ? ' -' : row.fecha_fac;
                     let fecha_gar = row.fecha_gar === '' ? ' -' : row.fecha_gar;
-                    let nota = row.nota ?? ' -';  // Asigna '-' si la nota está vacía
-                    
+                    let nota = row.nota ?? ' -'; // Asigna '-' si la nota está vacía
+
                     const tooltipText = {
                         0: 'Fecha de creacion: ' + fecha_cre,
                         1: 'Fecha de operación: ' + fecha_ini,
                         2: 'Fecha de finalización: ' + fecha_fin,
                         3: 'Fecha de facturación: ' + fecha_fac,
                         4: 'Fecha de garantía: ' + fecha_gar,
-                        5: `<strong>NOTA:</strong> ${nota}`  // Agrega "NOTA:" en negrita seguido del contenido de `nota`
+                        5: `<strong>NOTA:</strong> ${nota}` // Agrega "NOTA:" en negrita seguido del contenido de `nota`
                     };
 
                     let concatenatedTooltipText = Object.values(tooltipText).join('<br>');
@@ -361,7 +361,7 @@
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
                         (ruta !== '' ?
-                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta)  + "&route=uploads" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
+                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=uploads" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
                             " <i class='fas fa-file-pdf'></i>" +
                             "</a>" :
                             " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +
@@ -491,6 +491,8 @@
             data: datos_cliente
         })
 
+        console.log(datos_cliente)
+
 
         $(cboOrdenEstadoFilter).select2({
             width: '100%',
@@ -594,7 +596,7 @@
 
         formDate.addEventListener("submit", function(e) {
             e.preventDefault();
-            let estado_obra = radios[0].checked ? 0 : radios[1].checked ? 1 : radios[2].checked ? 2 :  radios[3].checked ? 3 : 4;
+            let estado_obra = radios[0].checked ? 0 : radios[1].checked ? 1 : radios[2].checked ? 2 : radios[3].checked ? 3 : 4;
             const fecha_estado = estado_obra === 0 ? fecha_cre : estado_obra === 1 ? fecha_ini : estado_obra === 2 ? fecha_fin : estado_obra === 3 ? fecha_fac : fecha_gar;
 
             if (!fecha_estado.checkValidity()) {
@@ -630,13 +632,13 @@
                     'Advertencia',
                     'fa-triangle-exclamation',
                     'El archivo insertado no es valido, por favor inserta un archivo .pdf', 3000
-                )  
+                )
                 return;
             } else if (file && file.type == "application/pdf") {
                 datos.append('fileOrden', file);
             }
 
-                nombre.disabled = nombre.value === '';
+            nombre.disabled = nombre.value === '';
 
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
@@ -646,12 +648,26 @@
 
             if (accion == 2) {
                 confirmarAccion(datos, 'orden', tabla, modal, function(r) {
+                    // cargarAutocompletado();
+                    cargarAutocompletado(function(items) {
+                        items_orden = items;
+                        $('#nro_orden').autocomplete("option", "source", items);
+                        $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                        $('#nro_ordenFab').autocomplete("option", "source", items);
+                    }, null, 'orden', 6)
                 });
             } else {
                 fetchOrderId(datos.get('orden'), function(response) {
                     console.log(response);
                     if (response[0] != null) {
                         confirmarAccion(datos, 'orden', tabla, modal, function(r) {
+                            // cargarAutocompletado();
+                            cargarAutocompletado(function(items) {
+                                items_orden = items;
+                                $('#nro_orden').autocomplete("option", "source", items);
+                                $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                                $('#nro_ordenFab').autocomplete("option", "source", items);
+                            }, null, 'orden', 6)
                         });
                     } else {
                         mostrarConfirmacionExistente(datos);

@@ -91,7 +91,15 @@
     <div class="modal-dialog modal-sm">
         <div class="modal-content modal-nuevo">
             <div class="modal-header bg-gradient-green">
-                <h4 class="modal-title"><i class="fas fa-file-lines"> </i> Generar Informe</h4>
+                <div class="row">
+                    <div class="col-auto" style="padding-block:.2rem">
+                        <h4 class="modal-title text-wrap"><i class="fas fa-file-lines"></i> Generar Informe</h4>
+                    </div>
+                    <div class="col">
+                        <select id="cboAnioOrden" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                        </select>
+                    </div>
+                </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -103,7 +111,7 @@
 
                     <div class="container-fluid">
                         <!-- Selección de Año -->
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group mb-4">
                                     <label id="lblP" class="mb-0 combo"><i class="fas fa-calendar"></i> Año</label>
@@ -116,7 +124,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- Orden de Trabajo -->
                         <div class="row">
                             <div class="col-md-12">
@@ -125,12 +133,12 @@
                                         <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px">
                                             <i class="fas fa-ticket"></i> Orden de trabajo
                                         </div>
-                                        <div class="d-flex align-items-center" style="font-size: 60%;">
-                                            <label for="isEntradaEdit" class="col-form-label text-nowrap" style="cursor:pointer; padding-block: .5rem; color: #616c7a; font-size: 140%;">
+                                        <div class="d-flex flex-wrap align-items-center" style="font-size: 70%;">
+                                            <label for="isPdfFab" class="col-form-label text-nowrap" style="cursor:pointer; padding-block: .5rem; color: #616c7a; font-size: 140%;">
                                                 Generar fabricación
                                             </label>
-                                            <label class="switch-2 ml-2" for="isEntradaEdit" style="font-size: 115%;">
-                                                <input class="switch__input" type="checkbox" id="isEntradaEdit" onkeydown="toggleWithEnter(event, this)">
+                                            <label class="switch-2 ml-2" for="isPdfFab" style="font-size: 112%;">
+                                                <input class="switch__input" type="checkbox" id="isPdfFab" onkeydown="toggleWithEnter(event, this)" checked>
                                                 <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                     <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11"></polyline>
                                                 </svg>
@@ -150,7 +158,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div> <!-- Fin container-fluid -->
                 </div>
 
@@ -168,7 +175,6 @@
 <!-- /.Modal Date-->
 
 <script src="assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js"></script>
-
 
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar7"] || $_SESSION["eliminar7"] ?>';
@@ -267,16 +273,36 @@
     $(document).ready(function() {
         let anio = year;
         let mes = month;
-        // console.log(da)
-
+        const isPdfFab = document.getElementById('isPdfFab');
+        const cboOrden_i = document.getElementById('cboOrden_i');
+        let fabValue = null;
 
         $(cboOrden_i).select2({
             placeholder: 'SELECCIONA UNA ORDEN',
             width: '100%',
         })
 
-        cargarCombo('Orden_i', '', 3, false, anio);
-
+        cargarCombo('Orden_i', '', 3, false, anio).then(datos_ => {
+            $(cboOrden_i).empty();
+            $(cboOrden_i).select2({
+                data: datos_,
+                escapeMarkup: function(markup) {
+                    return markup; // Permitir que se renderice HTML
+                },
+                templateResult: function(data) {
+                    if (!data.id) {
+                        return data.text;
+                    }
+                    return data.html; // Usamos el HTML personalizado
+                },
+                templateSelection: function(data) {
+                    if (!data.id) {
+                        return data.text;
+                    }
+                    return data.html; // Usamos el HTML también en la selección
+                }
+            });
+        });
 
         $(cboAnio).select2({
             width: '110%',
@@ -285,10 +311,11 @@
         });
 
         $(cboAnioOrden).select2({
-            width: '100%',
+            width: '110%',
             data: datos_anio,
             minimumResultsForSearch: -1,
         })
+
         setChange(cboAnioOrden, anio);
         setChange(cboAnio, anio);
 
@@ -324,53 +351,21 @@
                 }
             });
         }
-        // let accion = 0;
-        // const modal = document.querySelector('.modal'),
-        //     span = document.querySelector('.modal-title span'),
-        //     elements = document.querySelectorAll('.modal .bg-gradient-green'),
-        const form = document.getElementById('formInforme');
 
-        const row_date = document.getElementById('row_date');
-        const col_group = document.getElementById('col_group');
-        const groupOrden = document.getElementById('groupOrden');
-        const groupCliente = document.getElementById('groupCliente');
+        const form = document.getElementById('formInforme');
         const btnGuardar = document.getElementById('btnGuardar');
-        const tabsIn = document.querySelectorAll('.tabs .rd-i');
-        let tabSelecteds = '1';
+       
 
         btnGuardar.addEventListener('click', function(event) {
-            // Evita que el formulario se envíe
             event.preventDefault();
-            // Cambia el action del formulario
-            if (tabSelecteds === '1') {
-                form.action = 'PDF/pdf_informe_orden.php';
-            } else if (tabSelecteds === '2') {
-                form.action = 'PDF/pdf_informe_cliente.php';
-            } else if (tabSelecteds === '3') {
-                form.action = 'PDF/pdf_informe_fecha.php';
+
+            let idOrden = cboOrden_i.value; // Obtener el valor del campo id_orden
+            if (isPdfFab.checked && idOrden && fabValue) {
+                window.open(`PDF/pdf_informe_orden_fab.php?id_orden=${idOrden}`, '_blank');
             }
-
-            // Envía el formulario manualmente
+            // Enviar el formulario con la acción final
+            form.action = 'PDF/pdf_informe_orden.php';
             form.submit();
-        });
-        // console.log(tabsIn);
-        tabsIn.forEach(tab => {
-            tab.addEventListener('change', function() {
-                tabSelecteds = this.value;
-
-                form.classList.remove('was-validated');
-
-                if (tabSelecteds === '1') {
-                    cboOrden_i.required = true
-                    cboCliente_i.required = false
-                    desde.required = false
-                    hasta.required = false
-                    row_date.style.display = 'none';
-                    groupOrden.style.display = 'block';
-                    groupCliente.style.display = 'none';
-                    col_group.style.display = 'block';
-                }
-            });
         });
 
         $(cboAnio).on("change", function() {
@@ -393,7 +388,33 @@
                 return;
             }
             anio = a
-            cargarCombo('Orden_i', '', 3, false, anio);
+            cargarCombo('Orden_i', '', 3, false, anio).then(datos_ => {
+                $(cboOrden_i).empty();
+                $(cboOrden_i).select2({
+                    data: datos_,
+                    escapeMarkup: function(markup) {
+                        return markup; // Permitir HTML
+                    },
+                    templateResult: function(data) {
+                        if (!data.id) {
+                            return data.text;
+                        }
+
+                        let $option = $(`<div data-valor="${data.fab}">
+                            ${data.html}
+                        </div>`);
+
+                        return $option;
+                    },
+                    templateSelection: function(data) {
+                        if (!data.id) {
+                            return data.text;
+                        }
+
+                        return data.html; // Mantener el HTML en la selección
+                    }
+                });
+            });
         });
 
         $(cboMeses).on("change", function() {
@@ -408,6 +429,10 @@
             }
             anio = cboAnio.options[cboAnio.selectedIndex].text;
             tabla.ajax.reload();
+        });
+
+        $(cboOrden_i).on("select2:select", function(e) {
+            fabValue = e.params.data.fab; // Obtener la propiedad 'fab' directamente del objeto de datos
         });
 
         $('#tblInforme').on('submit', '.form_pdf', function(event) {

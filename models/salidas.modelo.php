@@ -360,7 +360,7 @@ class ModeloSalidas
             c.telefono AS cliente_telefono,b.motivo,e_despachado.nombre AS despachado,
             e_responsable.nombre AS responsable,e.apellido || ' ' || e.nombre AS conductor,
             e.cedula AS cedula_conductor,e.telefono AS telefono_conductor,p.nombre AS placa,
-            LPAD(b.nro_guia::TEXT, 9, '0') AS id_boleta
+            LPAD(b.nro_guia::TEXT, 9, '0') AS id_boleta, b.fab
                 FROM tblboleta b
                 JOIN tblorden o ON b.id_orden = o.id
                 JOIN tblclientes c ON c.id = o.id_cliente

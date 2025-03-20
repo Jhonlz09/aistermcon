@@ -391,10 +391,11 @@
                     if (row.estado_anu) {
                         return '<span class="btn" style="font-size:1.2rem;padding:3px 4px;cursor:not-allowed;color:#721c24;"><i class="fas fa-ban"></i></span>';
                     }
+                    let color = (!row.subtotal || row.subtotal == '$0.00' || row.subtotal == '') ? '#a3161f' : '#155724';
                     // Normal si no está anulado
                     return data === false ?
                         '<span style="padding:.375rem .75rem;border-radius:.25rem;font-size:1.4rem;cursor:no-drop;color:darkgrey"><i class="fas fa-file-xmark"></i></span>' :
-                        `<span style="padding:.375rem .75rem;font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" onclick="window.open('${getUrl}', '_blank');"><i class="fas fa-file-check"></i></span>`;
+                        `<span style="padding:.375rem .75rem;font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:${color}" onclick="window.open('${getUrl}', '_blank');"><i class="fas fa-file-check"></i></span>`;
                 }
             },
             {
@@ -406,6 +407,7 @@
                         return '<span class="btn" style="font-size:1.2rem;padding:3px 4px;cursor:not-allowed;color:#721c24;"><i class="fas fa-ban"></i></span>';
                     }
                     // Normal si no está anulado
+                    // let color = (!row.subtotal || row.subtotal == '0' || row.subtotal == '') ? 'red' : '#155724';
                     return data ?
                         `<a style="font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" href="/aistermcon/utils/show.php?file=${encodeURIComponent(data)}&route=presupuesto_proveedor" target="_blank" class="btn btnDescargar" title="PDF de proveedor">
                 <i class="fas fa-file-check"></i>
@@ -562,7 +564,6 @@
             createdRow: function(row, data, dataIndex) {
                 const selectElement = $(row).find('.id_unidad');
                 cargarOpcionesSelect(selectElement, data.id_unidad);
-
             },
             buttons: [{
                 text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",

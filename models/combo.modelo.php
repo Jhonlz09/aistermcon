@@ -57,13 +57,18 @@ class ModeloCombos
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT o.id, 
-                o.nombre || ' | ' || c.nombre as nombre 
-                FROM tblorden o
+            o.nombre || ' | ' || c.nombre AS nombre,COALESCE(b.tiene_boleta_fab, false) AS tiene_boleta_fab
+            FROM tblorden o
                 JOIN tblclientes c ON c.id = o.id_cliente
-                WHERE o.estado = true 
+                LEFT JOIN (
+                    SELECT DISTINCT id_orden, true AS tiene_boleta_fab
+                    FROM tblboleta
+                    WHERE fab = true
+                ) b ON b.id_orden = o.id
+                WHERE o.estado = true
                 AND EXTRACT(YEAR FROM o.fecha) = :anio
-                ORDER BY o.id DESC");
-                
+                ORDER BY o.id DESC;");
+
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             $l->execute();
             return $l->fetchAll();
@@ -71,7 +76,7 @@ class ModeloCombos
             return "Error en la consulta: " . $e->getMessage();
         }
     }
-    
+
 
     static public function mdlListarClientesActivos()
     {

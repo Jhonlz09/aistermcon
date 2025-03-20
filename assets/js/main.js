@@ -117,8 +117,8 @@ function limpiar(btn = false) {
     radio.dispatchEvent(new Event("change"));
     btn.style.display = "none";
   }
+  
 }
-
 
 function cargarOpcionesSelect(selectElement, value, size = '110%') {
   selectElement.select2({
@@ -147,25 +147,29 @@ function cargarCombo(id, s, a = 1, isDataCbo = false, anio = null) {
       },
       success: function (respuesta) {
         let dataCbo = [];
-        var options = "";
-
+        let options = "";
         for (let index = 0; index < respuesta.length; index++) {
           options += `<option value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
           if (anio !== null) {
-            let text;
+            let text = respuesta[index][1]; // Nombre del elemento
             if (respuesta[index][2]) {
-              text = respuesta[index][1] + '<span class="alert alert-default-primary" style="color:#fff">FAB</span>';
+              text += ' <span class="alert alert-default-dark mb-0"><i class="fas fa-hammer-crash"></i> FAB</span>';
             }
-            dataCbo.push({ id: respuesta[index][0], text: '<div style="color:green"> '+ text +' </div>' });
-          }else if(isDataCbo){
+            dataCbo.push({
+              id: respuesta[index][0],
+              text: respuesta[index][1], // Guardamos el texto limpio
+              fab: respuesta[index][2], // Guardamos si es fabricado
+              html: `<div style="display:flex;justify-content:space-between;align-items:center;height:1.6rem;overflow:hidden;white-space:nowrap;width:auto;text-overflow:ellipsis">${text}</div>` // HTML personalizado
+            });
+          } else if (isDataCbo) {
             dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
           }
         }
         $(cbo).html(options);
-        $(cbo)
-          .val(s !== "" ? s : 0)
-          .trigger("change");
+        $(cbo).val(s !== "" ? s : 0).trigger("change");
         if (isDataCbo) {
+          resolve(dataCbo);
+        } else if (anio !== null) {
           resolve(dataCbo);
         }
       },
@@ -197,22 +201,6 @@ function cargarComboFabricado(s = 0) {
     },
   });
 }
-
-// function formatInputOrden(input, cbo, isformart = true) {
-//   let value = input.value.replace(/\D/g, "");
-
-//   // Refactorización: Uso de una expresión regular para insertar espacios
-//   value = value.replace(/(\d{2})(\d{3})?(\d+)?/, (match, p1, p2, p3) => {
-//     return p1 + (p2 ? " " + p2 : "") + (p3 ? " " + p3 : "");
-//   });
-
-//   input.value = value;
-
-
-
-// }
-
-
 
 function formatInputOrden(input) {
   let value = input.value;
@@ -421,14 +409,6 @@ function addPadding(b, s, w) {
   }
 }
 
-// function debounce(func, wait) {
-//   let timeout;
-//   return function(...args) {
-//       clearTimeout(timeout);
-//       timeout = setTimeout(() => func.apply(this, args), wait);
-//   };
-// }
-
 function handleScroll(b, s, w) {
   if (!scroll && s > w) {
     scroll = true;
@@ -472,14 +452,10 @@ function convertirArray(arr) {
 function validarNumber(input, regex, ten = false, decimal = 2) {
   input.value = input.value.replace(regex, "");
   if (ten) {
-    // $(".ten").toggle(!(input.value.length === 10 || input.value.length === 0));
-    // let padreTelefono = input.closest(".input-data");
-    // let mensajeTen = padreTelefono.querySelector(".ten");
     var mensajeTen = input.parentNode.querySelector(".ten");
     mensajeTen.style.display =
       input.value.length !== 10 && input.value.length !== 0 ? "block" : "none";
 
-    // mensajeTen.toggle(!(input.value.length === 10 || input.value.length === 0));
   } else {
     if ((input.value.match(/\./g) || []).length > 1) {
       input.value = input.value.slice(0, -1);
@@ -593,14 +569,20 @@ function validarClave(input, sub) {
 }
 
 async function updateAll(element) {
-  console.log("Iniciando updateAll");
+  // console.log("Iniciando updateAll");
 
   // Deshabilitar el botón (usando pointer-events) y cambiar el fondo a gris
   $(element).css({
     'pointer-events': 'none',  // Deshabilitar clics
     'background-color': '#d3d3d3'  // Cambiar el fondo a gris
   });
-
+  
+  cargarAutocompletado(function (items) {
+    items_orden = items;
+    $('#nro_orden').autocomplete("option", "source", items);
+    $('#nro_ordenEntrada').autocomplete("option", "source", items);
+    $('#nro_ordenFab').autocomplete("option", "source", items);
+  }, null, 'orden', 6)
   // Ejecutar la recarga de la tabla
   try {
     console.log("Recargando tabla");
