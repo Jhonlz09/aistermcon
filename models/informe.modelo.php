@@ -201,8 +201,9 @@ class ModeloInforme
                     o.id = :id_orden";
             if ($fab !== null) {
                 $sql .= " AND b.fab = :fab";
-            }else if ($fab === false) {
-                $sql .= " AND i.fabricado = true";
+            }
+            if ($fab === true) {
+                $sql .= " AND i.fabricado = false";
             }
 
             $sql .= " GROUP BY s.id_producto, i.codigo, i.descripcion, u.nombre, i.id, i.fabricado
