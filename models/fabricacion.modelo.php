@@ -79,8 +79,6 @@ class ModeloFabricacion
         try {
             $conexion = Conexion::ConexionDB();
             $a = $conexion->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),'',1,1, true)");
-
-
             if ($a->execute()) {
                 $id_producto_fab = $conexion->lastInsertId('tblinventario_id_seq');
                 $stmtSalida = $conexion->prepare("INSERT INTO tblsalidas(id_boleta, retorno, id_producto, fabricado) VALUES(:id_boleta, 1, :id, true)");
@@ -89,18 +87,10 @@ class ModeloFabricacion
                 $stmtSalida->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
                 $stmtSalida->execute();
             };
-
-            // $a = $conexion->prepare("INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,:sto,:uni, true)");
-            // $a->bindParam(":des", $des, PDO::PARAM_STR);
-            // $a->bindParam(":uni", $uni, PDO::PARAM_INT);
-            // $a->bindParam(":sto", $sto, PDO::PARAM_INT);
-            // $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
-
-
             return array(
                 'status' => 'success',
                 'm' => 'El producto se agregó correctamente',
-                'id' => $conexion->lastInsertId()
+                'id' => $id_producto_fab
             );
         } catch (PDOException $e) {
             if ($e->getCode() == '23505') {

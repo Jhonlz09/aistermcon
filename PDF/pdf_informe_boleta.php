@@ -315,18 +315,7 @@ $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'FECHA DE EMISION: ' . $pdf->fecha_emision), 0, 0, 'L');
 $pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'FECHA DE RETORNO: ' . $pdf->fecha_retorno), 0, 1, 'R');
 $pdf->SetY(47);
-
-// $pdf->MultiCell(0, 5, iconv('UTF-8', 'windows-1252', "FECHA DE EMISION: $pdf->fecha_emision            FECHA DE RETORNO:  $pdf->fecha_retorno"), 0, 'L', 0);
-
 $pdf->MultiCell(0, 5, iconv('UTF-8', 'windows-1252', "NRO. ORDEN:  $pdf->orden        CLIENTE: $pdf->cliente"), 0, 'L', 0);
-
-// $pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'CLIENTE: '. $pdf->cliente), 0, 0, 'L');
-
-// $pdf->SetFont('Arial', 'B', 12);
-// $pdf->Row(array('Cantidad', 'Unidad', 'Descripcion'), array(12, 12, 12), 'B', 7);
-// $rowsPrinted = 0;
-// $totalRowsPrinted = 0;
-
     $pdf->SetFont('Arial', 'B', 12);   
     $pdf->Ln(10);
     $pdf->SetFont('Arial', 'B', 11);

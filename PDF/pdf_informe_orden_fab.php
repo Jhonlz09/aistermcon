@@ -272,7 +272,7 @@ if ($datos_guias == null) {
     // $pdf->SetY(10);
     $pdf->SetFont('Arial', 'B', 18);
     $pdf->SetMargins(12, 0, 12);
-    $pdf->SetWidths(array(27, 80, 18, 21));
+    $pdf->SetWidths(array(27, 88, 18, 16));
     $pdf->SetAligns(array('L', 'L', 'C', 'C'));
     $pdf->SetX(12);
     $pdf->SetY(25);
@@ -282,7 +282,6 @@ if ($datos_guias == null) {
         } else {
             $encargado = $row["responsable"];
         }
-
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->checkNewPage($pdf, 6);
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de salida: ' . $row["fecha_emision"]), 0, 0, 'L');
@@ -299,15 +298,17 @@ if ($datos_guias == null) {
         $pdf->Ln(10);
         $id_guia = $row["id_guia"];
 
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->checkNewPage($pdf, 6);
-        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Produto fabricado:'), 0, 1, 'L');
-        $header_fab = array('Codigo', 'Descripcion', 'Unidad', 'Cantidad Fab.');
-        $header_start = true;
-        $prod_fab_des = null;
-        $header = array('Codigo', 'Descripcion', 'Unidad', 'Usado');
-        $data = ModeloInforme::mdlInformeOrden($id_orden, $id_guia);
+        $data = ModeloInforme::mdlInformeOrdenFab($id_orden, $id_guia);
         foreach ($data as $fill) {
+
+            $pdf->SetFont('Arial', 'B', 11);
+            $pdf->checkNewPage($pdf, 6);
+            $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Produto fabricado:'), 0, 1, 'L');
+            $header_fab = array('Codigo', 'Descripcion', 'Unidad', 'Cantidad Fab.');
+            $header_start = true;
+            $prod_fab_des = null;
+            $header = array('Codigo', 'Descripcion', 'Unidad', 'Usado');
+
             $pdf->SetStartY(20);
             $pdf->SetFont('Arial', '', 10);
             $salida = $fill["cantidad_salida"];
@@ -315,43 +316,57 @@ if ($datos_guias == null) {
             $util = $fill["utilizado"];
             $fab_pro = $fill['fabricado'];
             $id_producto = $fill['id_producto'];
-            if ($fill['fabricado']) {
-                $pdf->SetMargins(12, 0, 12);
-                $pdf->SetWidths(array(27, 98, 18, 45));
-                $pdf->SetAligns(array('L', 'L', 'C', 'C'));
-                $pdf->Row($header_fab, array(12, 12, 12, 12), 'B');
-                $pdf->Row(array(
-                    iconv('UTF-8', 'windows-1252', $fill["codigo"]),
-                    iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
-                    iconv('UTF-8', 'windows-1252', $fill["unidad"]),
-                    iconv('UTF-8', 'windows-1252', $entrada),
-                ), array(10, 10, 10, 10), '', 7, [true, true, true, true]);
-                $prod_fab_des = $fill["descripcion"];
-                continue;
-            }
-            $pdf->SetWidths(array(27, 80, 18, 21));
+            // $list_prod_util = ModeloInforme::mdlInformeOrdenFabUtil($id_producto);
+            $pdf->SetMargins(12, 0, 12);
+            $pdf->SetWidths(array(27, 113, 18, 30));
             $pdf->SetAligns(array('L', 'L', 'C', 'C'));
-            if ($header_start) {
-                $pdf->SetMargins(25, 0, 12);
+            $pdf->Row($header_fab, array(12, 12, 12, 12), 'B');
+            $pdf->Row(array(
+                iconv('UTF-8', 'windows-1252', $fill["codigo"]),
+                iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
+                iconv('UTF-8', 'windows-1252', $fill["unidad"]),
+                iconv('UTF-8', 'windows-1252', $entrada),
+            ), array(10, 10, 10, 10), '', 7, [true, true, true, true]);
+            $prod_fab_des = $fill["descripcion"];
+            // $pdf->Ln();
+            $list_prod_util = ModeloInforme::mdlInformeOrdenFabUtil($id_producto);
 
+            if (!empty($list_prod_util) && is_array($list_prod_util)) { 
+                $pdf->SetWidths(array(27, 109, 18, 21));
+                $pdf->SetAligns(array('L', 'L', 'C', 'C'));
+                
+                $pdf->SetMargins(25, 0, 12);
                 $pdf->Ln();
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->checkNewPage($pdf, 6);
                 $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Materiales usados en : ' . $prod_fab_des . ''), 0, 1, 'L');
                 $pdf->Row($header, array(12, 12, 12, 12), 'B');
             }
-            $header_start = false;
-            $pdf->Row(array(
-                iconv('UTF-8', 'windows-1252', $fill["codigo"]),
-                iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
-                iconv('UTF-8', 'windows-1252', $fill["unidad"]),
-                iconv('UTF-8', 'windows-1252', $salida),
+            // $pdf->SetWidths(array(27, 80, 18, 21));
+            // $pdf->SetAligns(array('L', 'L', 'C', 'C'));
+            // // if ($header_start) {
+            // $pdf->SetMargins(25, 0, 12);
+            // $pdf->Ln();
+            // $pdf->SetFont('Arial', 'B', 11);
+            // $pdf->checkNewPage($pdf, 6);
+            // $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Materiales usados en : ' . $prod_fab_des . ''), 0, 1, 'L');
+            // $pdf->Row($header, array(12, 12, 12, 12), 'B');
+ 
+            foreach ($list_prod_util as $list) {
+                $pdf->Row(array(
+                    iconv('UTF-8', 'windows-1252', $list["codigo"]),
+                    iconv('UTF-8', 'windows-1252', $list["descripcion"]),
+                    iconv('UTF-8', 'windows-1252', $list["unidad"]),
+                    iconv('UTF-8', 'windows-1252', $list["cantidad_salida"]),
+                ), array(10, 10, 10, 10), '', 7, [true, true, true, true]);
+            }
+            $pdf->Ln();
+            $pdf->SetMargins(12, 0, 12);
+            $pdf->SetX(12);
 
-            ), array(10, 10, 10, 10), '', 7, [true, true, true, true]);
         }
-        $pdf->Ln();
         $pdf->SetMargins(12, 0, 12);
-        $pdf->SetX(12);
+        // $pdf->SetX(12);
     }
     $pdf->SetFont('Arial', 'B', 12);
     $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'RESUMEN DE FABRICACION: '), 0, 1, 'L');
@@ -373,7 +388,7 @@ if ($datos_guias == null) {
         if ($util == null || $util == '') {
             $util = $salida;
         }
-    
+
         $pdf->Row(array(
             iconv('UTF-8', 'windows-1252', $fill["codigo"]),
             iconv('UTF-8', 'windows-1252', $fill["descripcion"]),

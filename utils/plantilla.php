@@ -326,12 +326,10 @@
                     if (isDropdown) {
                         return;
                     }
-
                     // Remover la clase 'active' de todos los elementos setA
                     setA.forEach((a) => a.classList.remove('active'));
                     // Agregar la clase 'active' al elemento clickeado
                     this.classList.add('active');
-
                     // Si no es desplegable, remover la clase 'active' de todos los elementos setB
                     if (!isDropdown) {
                         const setB = document.querySelectorAll('.setB');
@@ -339,10 +337,6 @@
                     }
 
                     if (body.classList.contains('control-sidebar-slide-open')) {
-                        // second_control.click();
-                        // body.classList.remove('control-sidebar-slide-open');
-                        // body.classList.remove('overflow-body');
-                        // html.classList.remove('overflow-body');
                         control.forEach((e) => {
                             // e.style.display = 'none'
                             if (e.classList.contains('active')) {
@@ -2048,7 +2042,7 @@
                 tabs.forEach(tab => {
                     tab.addEventListener('change', function() {
                         selectedTab = this.value;
-                        console.log(selectedTab)
+                        // console.log(selectedTab)
                         form_guia.classList.remove('was-validated');
                         const selectedForm = document.getElementById(`form-${selectedTab}`);
                         const formContainers = document.querySelectorAll('.form-container');

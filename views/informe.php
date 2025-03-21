@@ -279,6 +279,7 @@
         cargarCombo('Orden_i', '', 3, false, anio).then(datos_ => {
             $(cboOrden_i).empty();
             $(cboOrden_i).select2({
+                placeholder: 'SELECCIONA UNA ORDEN',
                 data: datos_,
                 escapeMarkup: function(markup) {
                     return markup; // Permitir que se renderice HTML
@@ -296,6 +297,7 @@
                     return data.html; // Usamos el HTML también en la selección
                 }
             });
+            setChange(cboOrden_i, 0);
         });
 
         $(cboAnio).select2({
@@ -385,6 +387,7 @@
             cargarCombo('Orden_i', '', 3, false, anio).then(datos_ => {
                 $(cboOrden_i).empty();
                 $(cboOrden_i).select2({
+                    placeholder: 'SELECCIONA UNA ORDEN',
                     data: datos_,
                     escapeMarkup: function(markup) {
                         return markup; // Permitir HTML
@@ -408,6 +411,7 @@
                         return data.html; // Mantener el HTML en la selección
                     }
                 });
+                setChange(cboOrden_i, 0);
             });
         });
 
@@ -427,6 +431,13 @@
 
         $(cboOrden_i).on("select2:select", function(e) {
             fabValue = e.params.data.fab; // Obtener la propiedad 'fab' directamente del objeto de datos
+            if(fabValue){
+                isPdfFab.checked = true;
+                isPdfFab.disabled = false;
+            }else{
+                isPdfFab.checked = false;
+                isPdfFab.disabled = true;
+            }
         });
 
         $('#tblInforme').on('submit', '.form_pdf', function(event) {
@@ -448,49 +459,7 @@
             console.log(input_pdf.val());
             this.submit(); // Envía el formulario actual
         });
-
-        // if (btnNuevo) {
-        //     btnNuevo.addEventListener('click', () => {
-        //         accion = 1;
-        //         // const salida = document.getElementById('radio-2');
-        //         // control.click();
-        //         // salida.click();
-        //     });
-        // }
-
-        // $('#tblInforme').on('click', '#editS', function() {
-        //     id_boleta = tabla.row($(this).closest('tr').next()).data()[7];
-        //     const orden_id = tabla.row($(this).closest('tr').next()).data()[8];
-        //     const conductor = tabla.row($(this).closest('tr').next()).data()[11];
-        //     const entrega = tabla.row($(this).closest('tr').next()).data()[12];
-        //     const fecha_id = tabla.row($(this).closest('tr').next()).data()[10];
-        //     const salida_radio = document.getElementById('radio-2');
-        //     setChange(cboOrden, orden_id)
-        //     setChange(cboConductor, conductor)
-        //     setChange(cboEmpleado, entrega)
-        //     fecha.value = fecha_id;
-        //     salida_radio.value = '4';
-        //     salida_radio.checked = true;
-        //     salida_radio.dispatchEvent(new Event('change'));
-        //     control.click();
-        //     tblDetalle.ajax.reload(null, false);
-        //     salida_radio.value = '2';
-        // });
-
-        // $('#tblInforme').on('click', '#editR', function() {
-        //     id_boleta = tabla.row($(this).closest('tr').next()).data()[7];
-        //     let orden_id = tabla.row($(this).closest('tr').next()).data()[8];
-        //     let cliente = tabla.row($(this).closest('tr').next()).data()[9];
-        //     let fecha_id = tabla.row($(this).closest('tr').next()).data()[10];
-        //     const retorno = document.getElementById('radio-3');
-        //     setChange(cboOrdenActivas, orden_id)
-        //     setChange(cboClientesActivos, cliente)
-        //     fecha.value = fecha_id;
-        //     control.click();
-        //     retorno.click();
-        //     tblReturn.ajax.reload(null, false);
-        // });
-
+        
         $('#tblInforme').on('click', '#eliS', function() {
             let boleta = tabla.row($(this).closest('tr').next()).data()[7];
             let src = new FormData();

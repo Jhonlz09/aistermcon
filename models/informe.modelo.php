@@ -39,7 +39,7 @@ class ModeloInforme
         }
     }
 
-    static public function mdlInformeFechaOrden($id_orden, $fab = null) 
+    static public function mdlInformeFechaOrden($id_orden, $fab = null)
     {
         try {
             $sql = "SELECT 
@@ -63,29 +63,29 @@ class ModeloInforme
                 LEFT JOIN tblplaca p ON p.id = e_conductor.id_placa
             WHERE 
                 o.id = :id_orden";
-    
+
             // Agregamos la condición de b.fab solo si $fab no es null
             if ($fab !== null) {
                 $sql .= " AND b.fab = :fab";
             }
-    
+
             $sql .= " ORDER BY DATE(b.fecha);";
-    
+
             $a = Conexion::ConexionDB()->prepare($sql);
             $a->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
-    
+
             // Si $fab no es null, vinculamos el parámetro
             if ($fab !== null) {
                 $a->bindParam(":fab", $fab, PDO::PARAM_BOOL);
             }
-    
+
             $a->execute();
             return $a->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
         }
     }
-    
+
 
     static public function mdlInformeDetalleOrden($id_orden)
     {
@@ -137,6 +137,49 @@ class ModeloInforme
             return "Error en la consulta: " . $e->getMessage();
         }
     }
+
+    static public function mdlInformeOrdenFab($id_orden, $id_guia)
+    {
+        try {
+            $u = Conexion::ConexionDB()->prepare("SELECT i.id as id_producto, i.codigo, 
+            s.cantidad_salida, u.nombre AS unidad, i.descripcion, i.fabricado,
+            COALESCE(s.retorno::text, '-') AS retorno,
+            COALESCE(s.diferencia::text, '-') as utilizado
+        FROM 
+            tblsalidas s
+            JOIN tblinventario i ON s.id_producto = i.id
+            JOIN tblboleta b ON s.id_boleta = b.id 
+			JOIN tblorden o ON b.id_orden = o.id 
+            JOIN tblunidad u ON i.id_unidad = u.id
+			WHERE 
+				o.id = :id_orden
+				AND b.id = :id_guia AND i.fabricado;");
+            $u->bindParam(":id_guia", $id_guia, PDO::PARAM_INT);
+            $u->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
+            $u->execute();
+            return $u->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlInformeOrdenFabUtil($id_producto_fab)
+    {
+        try {
+            $u = Conexion::ConexionDB()->prepare("SELECT s.id, s.cantidad_salida,  u.nombre as unidad,
+            i.descripcion, i.codigo, COALESCE(s.retorno::text, '-') AS retorno
+            FROM tblsalidas s
+            JOIN tblinventario i ON i.id = s.id_producto
+            JOIN tblunidad u ON u.id = i.id_unidad
+            WHERE s.id_producto_fab = :id_producto_fab");
+            $u->bindParam(":id_producto_fab", $id_producto_fab, PDO::PARAM_INT);
+            $u->execute();
+            return $u->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
 
     static public function mdlInformeOrdenResumen($id_orden, $fab = null)
     {

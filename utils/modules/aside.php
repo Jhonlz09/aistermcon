@@ -51,7 +51,6 @@
                                     </div>
                                     <div class="col-md-6">
                                         <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
-
                                             <div id="div_orden" style="display:none;line-height:1">
                                             <?php else : ?>
                                                 <div id="div_orden" style="display:block;line-height:1">
@@ -65,12 +64,6 @@
                                                         <div class="ten invalid-feedback">*Campo obligatorio.</div>
                                                         <!-- <div class="ten">*Seleccione.</div> -->
                                                     </div>
-                                                    <!-- <div class=" col-sm-8 form-group">
-                                                        <label id="lblP" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
-                                                        <select id="cboClientes" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                                        </select>
-                                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                    </div> -->
                                                 </div>
                                                 </div>
                                                 <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
@@ -146,7 +139,6 @@
                                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                                         </div>
                                                         </div>
-                                                        <!-- <form action="" id="form_salida"> -->
                                                         <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                             <div class="col-sm-4" id="div_nroguia" style="display:none;margin-bottom:1.8rem">
                                                             <?php else : ?>
@@ -206,7 +198,7 @@
                                                                     </div>
                                                                     <div id="div_prod_fab" class="mb-2" style="display:none;">
                                                                         <div class='row'>
-                                                                            <div class="col-auto" >
+                                                                            <div class="col-auto">
                                                                                 <label class="mb-0" for="fab-1" style="font-weight:bold;text-wrap:nowrap;font-size:1.15rem;"><i class="fas fa-hammer-crash"></i> Productos fabricado</label>
                                                                             </div>
                                                                             <div class="col">
@@ -537,18 +529,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="col-sm-4">
-                            <div class="form-group">
-                                <label class="mb-0 combo"><i class="fas fa-ticket"></i> Nro. de orden</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select name="c" id="cboOrdenFab" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                        </select>
-                                        <div class="invalid-feedback">*Campo obligatorio</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -596,46 +576,6 @@
     });
 
     Dropzone.autoDiscover = false;
-
-    // Inicializar Dropzone manualmente
-    // var dropzone = new Dropzone(".dropzone", {
-    //     url: "/ruta/para/subir/archivo", // Esta URL será usada manualmente cuando lo decidas
-    //     autoProcessQueue: false,
-    //     previewsContainer: null,
-    //     acceptedFiles: ".jpg,.png,.jpeg,.webp", // Tipos de archivos permitidos
-    //     addRemoveLinks: true,
-    //     dictDefaultMessage: "Arrastra tus imagenes aquí o haz clic para subir",
-    //     init: function() {
-    //         const dzInstance = this;
-    //         // Evento para manejar errores
-    //         dzInstance.on("error", function(file, errorMessage) {
-    //             console.error("Error al subir el archivo:", errorMessage);
-    //         });
-
-    //         // Evento para éxito
-    //         dzInstance.on("success", function(file, response) {
-    //             console.log("Archivo subido exitosamente:", response);
-    //         });
-
-    //         dzInstance.on("removedfile", function(file) {
-    //             // Verificar si la imagen existe en el servidor antes de eliminarla
-    //             if (file.isExisting) {
-    //                 $.ajax({
-    //                     url: 'controllers/salidas.controlador.php', // Ruta de tu controlador
-    //                     type: 'POST',
-    //                     data: {
-    //                         accion: 9,
-    //                         nombre_imagen: file.name // Verificar por nombre de la imagen
-    //                     },
-    //                     success: function(response) {
-    //                     }
-    //                 });
-    //             } else {
-    //                 console.log("Imagen no existente en el servidor, eliminada solo en el cliente.");
-    //             }
-    //         });
-    //     },
-    // });
 
     var dropzone = new Dropzone(".dropzone", {
         url: "/ruta/para/subir/archivo",

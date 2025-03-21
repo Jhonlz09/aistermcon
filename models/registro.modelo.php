@@ -635,7 +635,7 @@ class ModeloRegistro
         $stmtB->bindValue(':responsable', $responsable ?: null, $responsable ? PDO::PARAM_INT : PDO::PARAM_NULL);
 
         $stmtB->execute();
-        return $conexion->lastInsertId();
+        return $conexion->lastInsertId('tblboleta_id_seq');
     }
 
 
