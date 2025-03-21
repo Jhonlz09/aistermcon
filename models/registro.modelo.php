@@ -262,7 +262,8 @@ class ModeloRegistro
             if (!$productos) {
                 throw new Exception("Los datos de productos son inválidos.");
             }
-            $id_boleta = self::actualizarBoleta($conexion, $id_boleta, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, true);
+            
+            self::actualizarBoleta($conexion, $id_boleta, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, true);
 
             foreach ($productos as $producto) {
                 $id_prod_fab = $producto['id'];
@@ -270,7 +271,6 @@ class ModeloRegistro
                 $des = $producto['descripcion'];
                 $uni = $producto['unidad'];
                 $insumos = $producto['productos'];
-
                 foreach ($insumos as $insumo) {
                     // $codigoInsumo = $insumo['codigo'];
                     $cantidadUtilizada = $insumo['cantidad'];
@@ -293,10 +293,10 @@ class ModeloRegistro
                 $stmtInsertFabricado->execute();
 
 
-                $stmtSalida = $conexion->prepare("UPDATE tblsalidas SET retorno=:cantidad WHERE id_producto=:id");
+                $stmtSalida = $conexion->prepare("UPDATE tblsalidas SET retorno=:cantidad WHERE id_producto=:id AND id_boleta=:id_boleta");
                 $stmtSalida->bindParam(':id', $id_prod_fab, PDO::PARAM_INT);
                 $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_STR);
-                // $stmtSalida->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+                $stmtSalida->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
                 $stmtSalida->execute();
 
                 self::relacionarProductoConInsumosUpdate($conexion, $id_prod_fab, $id_boleta, $insumos);
