@@ -1255,6 +1255,7 @@
                                 dom: "t",
                                 "ordering": false,
                                 "autoWidth": false,
+                                paging: false,
                                 data: null,
                                 columnDefs: [{
                                         targets: 0,
@@ -1369,6 +1370,7 @@
 
                             let dataTable = $(tablaId).DataTable({
                                 dom: "t",
+                                paging: false,
                                 ordering: false,
                                 autoWidth: false,
                                 destroy: true, // Asegura que la tabla se reinicializa correctamente 
