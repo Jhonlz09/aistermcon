@@ -366,7 +366,6 @@ if ($datos_guias == null) {
 
         }
         $pdf->SetMargins(12, 0, 12);
-        // $pdf->SetX(12);
     }
     $pdf->SetFont('Arial', 'B', 12);
     $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'RESUMEN DE FABRICACION: '), 0, 1, 'L');

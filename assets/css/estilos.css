@@ -420,13 +420,18 @@ font-size: 1rem;
     background-color: var(--label-new);
 }
 
-#radio-7:checked~.glider {
-    /* --radio-color: #01626b; */
+.tabs:has(#radio-1) #radio-7:checked ~ .glider {
     transform: translateX(300%);
     background-color: var(--label-new);
+
 }
 
+/* Caso 2: Si NO existe #radio-1, #radio-7 se mueve solo 100% */
+.tabs:not(:has(#radio-1)) #radio-7:checked ~ .glider {
+    transform: translateX(200%);
+    background-color: var(--label-new);
 
+}
 
 .dark-mode input[type="date"] {
     color-scheme: dark;

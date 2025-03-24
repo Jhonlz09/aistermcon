@@ -21,7 +21,7 @@
                                                 <label class="tab" for="radio-2">Salida</label>
                                                 <input type="radio" id="radio-3" name="tabs" value="3" />
                                                 <label class="tab" for="radio-3">Entrada</label>
-                                                <input type="radio" id="radio-4" name="tabs" value="7" />
+                                                <input type="radio" id="radio-7" name="tabs" value="7" />
                                                 <label class="tab" for="radio-7">Fabricacion</label>
                                                 <span style="width:33.3%;" class="glider"></span>
                                             <?php endif; ?>

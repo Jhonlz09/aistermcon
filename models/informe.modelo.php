@@ -232,8 +232,8 @@ class ModeloInforme
             JOIN tblinventario i ON i.id = s.id_producto
             JOIN tblunidad u ON u.id = i.id_unidad
             WHERE s.id_producto_fab = :id_fab
-		GROUP BY s.id_producto,i.codigo, i.descripcion, u.nombre,i.id,i.fabricado
-		    ORDER BY s.id_producto;");
+		        GROUP BY s.id_producto,i.codigo, i.descripcion, u.nombre,i.id,i.fabricado
+		            ORDER BY s.id_producto;");
             $u->bindParam(":id_fab", $id_fab, PDO::PARAM_INT);
             $u->execute();
             return $u->fetchAll();
