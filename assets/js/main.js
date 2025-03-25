@@ -582,10 +582,9 @@ async function updateAll(element) {
     $('#nro_orden').autocomplete("option", "source", items);
     $('#nro_ordenEntrada').autocomplete("option", "source", items);
     $('#nro_ordenFab').autocomplete("option", "source", items);
-  }, null, 'orden', 6)
+  }, null, 'orden', 6);
   // Ejecutar la recarga de la tabla
   try {
-    console.log("Recargando tabla");
     tabla.ajax.reload(null, false);
     // Usar Promise.all para esperar todas las promesas
     await cargarDatos();
@@ -594,7 +593,7 @@ async function updateAll(element) {
     console.error("Error en la ejecución de alguna de las promesas:", error);
   } finally {
     // Este bloque se ejecuta siempre
-    console.log("Todos los procesos han terminado.");
+    // console.log("Todos los procesos han terminado.");
     // Restaurar el fondo y habilitar los clics nuevamente
     $(element).css({
       'pointer-events': 'auto',  // Reactivar el enlace
@@ -649,7 +648,6 @@ function cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'i
 
 function evitarEnvio(event) {
   if (event.keyCode === 13) {
-    // 13 es el código de la tecla "Enter"
     event.preventDefault(); // Evita que el formulario se envíe
     return false; // Evita el envío del formulario
   }

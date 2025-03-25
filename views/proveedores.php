@@ -152,7 +152,7 @@
 
     configuracionTable = {
         "responsive": true,
-        "dom": 'pt',
+        "dom": '<"row"<"col-md-6"B><"col-md-6"p>>t',
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
@@ -195,6 +195,111 @@
                 },
             },
         ],
+        buttons: [{
+                extend: "excelHtml5",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied",
+                },
+                text: "<i class='fa-regular fa-file-xls fa-xl'style='color: #0a8f00'></i>",
+                titleAttr: "Exportar a Excel",
+                title: "LISTADO DE PROVEEDORES",
+                className: "btn btn-light",
+            },
+            {
+                extend: "pdfHtml5",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied",
+                },
+                text: "<i class='fa-regular fa-file-pdf fa-xl' style='color: #bd0000'></i>",
+                titleAttr: "Exportar a PDF",
+                className: "btn btn-light",
+                title: "LISTADO DE PROVEEDORES",
+                customize: function(doc) {
+                    var now = new Date();
+                    var jsDate = now.getDate() + "/" + (now.getMonth() + 1) + "/" + now.getFullYear();
+                    doc.content.splice(0, 1);
+                    doc.pageMargins = [40, 90, 40, 50];
+                    doc["header"] = function() {
+                        return {
+                            columns: [{
+                                    alignment: "left",
+                                    text: "LISTADO DE PROVEEDORES",
+                                    fontSize: 14,
+                                    margin: [20, 25],
+                                },
+                                {
+                                    alignment: "right",
+                                    margin: [20, 0],
+                                    text: ["Creado el: ", {
+                                        text: jsDate.toString()
+                                    }],
+                                },
+
+                            ],
+                            margin: 20,
+                        };
+                    };
+
+                    var objLayout = {};
+                    objLayout["hLineWidth"] = function(i) {
+                        return 1;
+                    };
+                    objLayout["vLineWidth"] = function(i) {
+                        return 0.5;
+                    };
+                    objLayout["hLineColor"] = function(i) {
+                        return "#aaa";
+                    };
+                    objLayout["vLineColor"] = function(i) {
+                        return "#aaa";
+                    };
+                    doc.content[0].layout = objLayout;
+                    doc["footer"] = function(page, pages) {
+                        return {
+                            columns: [{
+                                alignment: "right",
+                                text: [
+                                    "pag ",
+                                    {
+                                        text: page.toString()
+                                    },
+                                    " de ",
+                                    {
+                                        text: pages.toString()
+                                    },
+                                ],
+                            }, ],
+                            margin: [20, 10, 40, 10],
+                        };
+                    };
+                },
+            },
+            {
+                extend: "print",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied"
+                },
+                oSelectorOpts: {
+                    filter: "applied",
+                    order: "current"
+                },
+                text: "<i class='fa fa-print fa-xl'</i>",
+                titleAttr: "Imprimir",
+                className: "btn btn-light",
+                title: "LISTADO DE PROVEEDORES",
+            },
+            {
+                extend: "colvis",
+                className: "btn btn-light font-weight-bold",
+                columns: [0, 1, 2, 3, 4, 5],
+            }
+        ]
     }
 
     $(document).ready(function() {

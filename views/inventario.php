@@ -262,7 +262,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body " style="padding-block:1rem .5rem;">
+            <div class="modal-body " style="padding-block:0rem .5rem;">
                 <!-- <div class="row mb-3">
                     <div class="col-md-9">
                         <label for="descripcionProducto" class="font-weight-bold">Descripción:</label>
@@ -286,7 +286,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                         </div>
                     </div>
                 </div> -->
-                <div class="row mb-3">
+                <div class="row sticky-content">
                     <div class="col-12 d-flex flex-column flex-md-row justify-content-between">
                         <div class="mb-2 mb-md-0">
                             <label for="stockInicial" class="font-weight-bold">Stock Inicial:</label>
@@ -631,7 +631,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             });
         }
 
-
         tblHistorial = $("#tblHistorial").DataTable({
             "ajax": {
                 "url": "controllers/inventario.controlador.php",
@@ -651,12 +650,17 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             "autoWidth": false,
             columnDefs: [
                 {
+                    targets: 2,
+                    render: function(data, type, row) {
+                        let resultado = row.producto_util ? '<span class="alert alert-default-dark mb-0"><i class="fas fa-hammer-crash"></i> FAB</span>' : '';
+                        return `<div style="display:flex;justify-content:space-between;align-items:center">${data + resultado} </div>`;
+                    }
+                },
+                {
                     targets: 3,
                     className: 'text-center',
                     render: function(data, type, row) {
                         let resultado = row.salida ?? '-';
-                        // let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
-
                         let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-danger" font-weight-bold">${formatR} </span>`;
                     }
@@ -665,8 +669,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     className: 'text-center',
                     render: function(data, type, row) {
                         let resultado = row.entrada ?? '-';
-                        // let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
-
                         let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-success" font-weight-bold">${formatR} </span>`;
                     }
@@ -675,20 +677,17 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     targets: 5,
                     className: 'text-center',
                     render: function(data, type, row) {
-                        let resultado = row.compras ?? '-'; // let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
-
+                        let resultado = row.compras ?? '-'; 
                         let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-success" font-weight-bold">${formatR} </span>`;
                     }
                 },
                 {
-                    targets: 6,
+                    targets: 6, 
                     className: 'text-center',
                     responsivePriority: 3,
                     render: function(data, type, row) {
                         let resultado = row.stock ?? 0;
-                        // let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
-
                         let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-info" font-weight-bold">${formatR} </span>`;
                     }

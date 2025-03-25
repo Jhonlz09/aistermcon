@@ -501,6 +501,14 @@ input[type="number"] {
     color: var(--select-border-bottom)
 }
 
+.sticky-content{
+    position: sticky;
+    top: 0;
+    background-color: #dfdfdf;
+    padding-block: 1rem 0.5rem;
+    z-index: 2;
+}
+
 .sticky-col {
     left: 0;
     position: sticky;

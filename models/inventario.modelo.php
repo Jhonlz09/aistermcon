@@ -372,7 +372,7 @@ class ModeloInventario
         try {
             $e = Conexion::ConexionDB()->prepare("SELECT stock_ini
                     FROM tblstock_inicial  
-                    WHERE id_producto = :id_producto AND anio = :anio;"); 
+                    WHERE id_producto = :id_producto AND anio = :anio;");
             $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
             $e->bindParam(':anio', $anio, PDO::PARAM_INT);
             $e->execute();
@@ -390,73 +390,109 @@ class ModeloInventario
     {
         try {
             $e = Conexion::ConexionDB()->prepare("WITH combined_data AS (
-        -- Salidas
-        SELECT 
-            b.fecha::date AS fecha_raw, TO_CHAR(b.fecha, 'DD/MM/YYYY') AS fecha,
-            o.id AS id_orden, o.nombre AS orden_trabajo, c.nombre AS empresa,
-            s.cantidad_salida AS salida, NULL::numeric AS entrada, NULL::numeric AS compras
-        FROM 
-            tblsalidas s
-        JOIN 
-            tblboleta b ON s.id_boleta = b.id
-        JOIN 
-            tblorden o ON b.id_orden = o.id
-        JOIN 
-            tblclientes c ON o.id_cliente = c.id
-        WHERE 
-            s.id_producto = :id_producto
-            AND EXTRACT(YEAR FROM b.fecha) = :anio
-        UNION ALL
-        -- Retornos
-        SELECT 
-            b.fecha_retorno::date AS fecha_raw, TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') AS fecha,
-            o.id AS id_orden, o.nombre AS orden_trabajo, c.nombre AS empresa, NULL AS salida,
-            s.retorno AS entrada, NULL::numeric AS compras
-        FROM 
-            tblsalidas s
-        JOIN 
-            tblboleta b ON s.id_boleta = b.id
-        JOIN 
-            tblorden o ON b.id_orden = o.id
-        JOIN 
-            tblclientes c ON o.id_cliente = c.id
-        WHERE 
-            s.id_producto = :id_producto
-            AND s.retorno <> 0
-            AND EXTRACT(YEAR FROM b.fecha_retorno) = :anio
-        UNION ALL
-        -- Compras
-        SELECT f.fecha::date AS fecha_raw, TO_CHAR(f.fecha, 'DD/MM/YYYY') AS fecha,
-            NULL AS id_orden, NULL AS orden_trabajo, pr.nombre AS empresa, NULL AS salida,
-            NULL AS entrada, e.cantidad_entrada AS compras
-        FROM tblentradas e
-        LEFT JOIN tblfactura f ON e.id_factura = f.id
-        JOIN tblproveedores pr ON f.id_proveedor = pr.id
-        WHERE e.id_producto = :id_producto
-            AND EXTRACT(YEAR FROM f.fecha) = :anio),
-        aggregated_data AS (
-        -- Agregar stock inicial y calcular acumulado
-        SELECT cd.fecha_raw, cd.fecha, cd.id_orden, cd.orden_trabajo,
-        cd.empresa,SUM(COALESCE(cd.salida, NULL)) AS salida,
-            SUM(COALESCE(cd.entrada, NULL)) AS entrada,
-            SUM(COALESCE(cd.compras, NULL)) AS compras,
-            COALESCE(si.stock_ini, NULL) AS stock_inicial
-        FROM combined_data cd
-        LEFT JOIN tblstock_inicial si ON si.id_producto = :id_producto AND si.anio = :anio
-        GROUP BY 
-            cd.fecha_raw, cd.fecha, cd.id_orden, cd.orden_trabajo, 
-            cd.empresa, si.stock_ini),
-        final_data AS (
-        SELECT 
-            ad.fecha_raw, ad.fecha, ad.orden_trabajo, ad.empresa, ad.salida, ad.entrada,
-            ad.compras, ad.stock_inicial, SUM(COALESCE(-ad.salida, 0) + COALESCE(ad.entrada, 0) 
-            + COALESCE(ad.compras, 0)) 
-                OVER (ORDER BY ad.fecha_raw ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) + 
-                ad.stock_inicial AS stock 
-        FROM aggregated_data ad)
-        SELECT fecha, orden_trabajo, empresa, salida, entrada, compras, stock 
-        FROM final_data
-        ORDER BY fecha_raw;");
+    -- Salidas
+    SELECT 
+        b.fecha::date AS fecha_raw, 
+        TO_CHAR(b.fecha, 'DD/MM/YYYY') AS fecha,
+        o.id AS id_orden, 
+        o.nombre AS orden_trabajo, 
+        c.nombre AS empresa,
+        s.cantidad_salida AS salida, 
+        NULL::numeric AS entrada, 
+        NULL::numeric AS compras,
+        s.id_producto_fab -- Se agrega para determinar si es utilizado
+    FROM tblsalidas s
+    JOIN tblboleta b ON s.id_boleta = b.id
+    JOIN tblorden o ON b.id_orden = o.id
+    JOIN tblclientes c ON o.id_cliente = c.id
+    WHERE s.id_producto = :id_producto
+        AND EXTRACT(YEAR FROM b.fecha) = :anio
+    UNION ALL
+    -- Retornos
+    SELECT 
+        b.fecha_retorno::date AS fecha_raw, 
+        TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') AS fecha,
+        o.id AS id_orden, 
+        o.nombre AS orden_trabajo, 
+        c.nombre AS empresa, 
+        NULL AS salida,
+        s.retorno AS entrada, 
+        NULL::numeric AS compras,
+        s.id_producto_fab -- Se agrega para determinar si es utilizado
+    FROM tblsalidas s
+    JOIN tblboleta b ON s.id_boleta = b.id
+    JOIN tblorden o ON b.id_orden = o.id
+    JOIN tblclientes c ON o.id_cliente = c.id
+    WHERE s.id_producto = :id_producto
+        AND s.retorno <> 0
+        AND EXTRACT(YEAR FROM b.fecha_retorno) = :anio
+    UNION ALL
+    -- Compras
+    SELECT 
+        f.fecha::date AS fecha_raw, 
+        TO_CHAR(f.fecha, 'DD/MM/YYYY') AS fecha,
+        NULL AS id_orden, 
+        NULL AS orden_trabajo, 
+        pr.nombre AS empresa, 
+        NULL AS salida,
+        NULL AS entrada, 
+        e.cantidad_entrada AS compras,
+        NULL AS id_producto_fab -- No aplica para compras
+    FROM tblentradas e
+    LEFT JOIN tblfactura f ON e.id_factura = f.id
+    JOIN tblproveedores pr ON f.id_proveedor = pr.id
+    WHERE e.id_producto = :id_producto
+        AND EXTRACT(YEAR FROM f.fecha) = :anio
+),
+aggregated_data AS (
+    -- Agregar stock inicial y calcular acumulado
+    SELECT 
+        cd.fecha_raw, 
+        cd.fecha, 
+        cd.id_orden, 
+        cd.orden_trabajo,
+        cd.empresa,
+        SUM(COALESCE(cd.salida, NULL)) AS salida,
+        SUM(COALESCE(cd.entrada, NULL)) AS entrada,
+        SUM(COALESCE(cd.compras, NULL)) AS compras,
+        COALESCE(si.stock_ini, NULL) AS stock_inicial,
+        MAX(cd.id_producto_fab) AS id_producto_fab -- Mantener si existe en algún registro
+    FROM combined_data cd
+    LEFT JOIN tblstock_inicial si ON si.id_producto = :id_producto AND si.anio = :anio
+    GROUP BY 
+        cd.fecha_raw, cd.fecha, cd.id_orden, cd.orden_trabajo, 
+        cd.empresa, si.stock_ini
+),
+final_data AS (
+    SELECT 
+        ad.fecha_raw, 
+        ad.fecha, 
+        ad.orden_trabajo, 
+        ad.empresa, 
+        ad.salida, 
+        ad.entrada,
+        ad.compras, 
+        ad.stock_inicial, 
+        SUM(COALESCE(-ad.salida, 0) + COALESCE(ad.entrada, 0) + COALESCE(ad.compras, 0)) 
+            OVER (ORDER BY ad.fecha_raw ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) + 
+            ad.stock_inicial AS stock,
+        CASE 
+            WHEN ad.id_producto_fab IS NOT NULL THEN TRUE 
+            ELSE FALSE 
+        END AS producto_util -- Nueva columna booleana
+    FROM aggregated_data ad
+)
+SELECT 
+    fecha, 
+    orden_trabajo, 
+    empresa, 
+    salida, 
+    entrada, 
+    compras, 
+    stock, 
+    producto_util
+FROM final_data
+ORDER BY fecha_raw;");
             $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
             $e->bindParam(':anio', $anio, PDO::PARAM_INT);
             $e->execute();
