@@ -206,6 +206,25 @@
                 titleAttr: "Exportar a Excel",
                 title: "LISTADO DE PROVEEDORES",
                 className: "btn btn-light",
+                customize: function(xlsx) {
+                    var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                    let firstRow = true;
+                    $('row c[r^="B"]', sheet).each(function() {
+                        if (firstRow) {
+                            firstRow = false;
+                        } else {
+                            $(this).attr('s', '50'); // '50' is for left-aligned text and 52 for -right , 51 - center
+                        }
+                    });
+                    firstRow = true;
+                    $('row c[r^="D"]', sheet).each(function() {
+                        if (firstRow) {
+                            firstRow = false;
+                        } else {
+                            $(this).attr('s', '50'); // '50' is for left-aligned text and 52 for -right , 51 - center
+                        }
+                    });
+                }
             },
             {
                 extend: "pdfHtml5",

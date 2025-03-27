@@ -1335,13 +1335,6 @@
                         if (!tr.hasClass('loaded')) {
                             row.child(format(idUnico)).show();
                             tr.addClass('loaded');
-
-                            // Agregar campo de búsqueda si no existe
-                            // if (!$(`#search-${idUnico}`).length) {
-                            //     $(`<input type="text" id="search-${idUnico}" class="form-control search-box" placeholder="Buscar producto...">`)
-                            //         .insertBefore($(tablaId));
-                            // }
-
                             let searchBox = $(`#search-${idUnico}`);
 
                             // Evitar reinicialización del autocompletado
@@ -1381,8 +1374,25 @@
                                     data: function(d) {
                                         d.accion = 11;
                                         d.id_producto_fab = id_prod_fab;
+                                    },
+                                    dataSrc: function(json) {
+                                        console.log("✅ Datos cargados:", json);
+                                        $(tablaId).data('originalData', json); // Guardamos los datos originales
+                                        // console.log($(tablaId).data('originalData'));
+
+                                        return json;
                                     }
+                                    // success: function(data) {
+                                    //     // Guardar los datos originales
+                                    //     // $(tablaId).data('originalData', data); // Guardamos los datos originales
+                                    // }
                                 },
+                                // xhr: function(settings, json) {
+                                //     console.log("✅ Datos originales guardados:", json);
+                                //     $(tablaId).data('originalData', json); // Guardamos los datos originales
+                                //     console.log($(tablaId).data('originalData'));
+
+                                // },
                                 columns: [{
                                         title: "N°",
                                         data: null,
@@ -1971,11 +1981,19 @@
                         });
 
                         // Ahora obtenemos los datos
-                        let datosPrincipales = [];
+                        // let datosPrincipales = [];
+                        let datosModificados = [];
+
+
+                        // Recorre cada fila de la tabla principal (tblDetalleFab)
                         tblDetalleFab.rows().every(function() {
-                            let rowData = this.data();
-                            let idUnico = rowData[0];
+                            let row = this;
+                            let tr = $(row.node());
+                            let rowData = row.data();
+                            let idUnico = rowData[0]; // Asumimos que el ID está en la primera columna
                             let tablaSecundariaId = `#tbl${idUnico}`;
+
+                            // Crear el objeto principal para cada fila
                             let filaPrincipal = {
                                 id: idUnico,
                                 cantidad: $(this.node()).find('.cantidad').val(),
@@ -1984,23 +2002,63 @@
                                 productos: [],
                             };
 
+                            // Obtener los datos originales de la tabla secundaria
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
+                                let datosOriginales = $(tablaSecundariaId).data('originalData'); // Datos originales de la tabla secundaria
+                                console.log('datosOriginales', datosOriginales)
                                 tablaSecundaria.rows().every(function() {
                                     let secData = this.data();
                                     let id_prod = secData["id_producto"];
-                                    let cantidad = $(this.node()).find('.cantidad').val();
-                                    filaPrincipal.productos.push({
-                                        codigo: secData[0],
-                                        cantidad: cantidad,
-                                        id_producto: id_prod
-                                    });
+                                    let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val());
+                                    let cantidadOriginal = parseFloat(datosOriginales.find(item => item.id_producto === id_prod).cantidad_salida);
+                                   
+                                   console.log('cantidadOriginal', cantidadOriginal, 'cantidadModificada', cantidadModificada)
+                                   
+                                    // Comparar si la cantidad ha cambiado
+                                    if (cantidadOriginal !== cantidadModificada) {
+                                        filaPrincipal.productos.push({
+                                            codigo: secData[0],
+                                            cantidad: cantidadModificada,
+                                            id_producto: id_prod
+                                        });
+                                    }
+                                    // Agregar los productos a la fila principal
                                 });
                             }
-                            datosPrincipales.push(filaPrincipal);
+                            datosModificados.push(filaPrincipal);
+                            console.log(datosModificados)
                         });
 
-                        formData.append('datos', JSON.stringify(datosPrincipales));
+                        // tblDetalleFab.rows().every(function() {
+                        //     let rowData = this.data();
+                        //     let idUnico = rowData[0];
+                        //     let tablaSecundariaId = `#tbl${idUnico}`;
+                        //     let filaPrincipal = {
+                        //         id: idUnico,
+                        //         cantidad: $(this.node()).find('.cantidad').val(),
+                        //         unidad: $(this.node()).find('.id_unidad').val(),
+                        //         descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
+                        //         productos: [],
+                        //     };
+
+                        //     if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
+                        //         let tablaSecundaria = $(tablaSecundariaId).DataTable();
+                        //         tablaSecundaria.rows().every(function() {
+                        //             let secData = this.data();
+                        //             let id_prod = secData["id_producto"];
+                        //             let cantidad = $(this.node()).find('.cantidad').val();
+                        //             filaPrincipal.productos.push({
+                        //                 codigo: secData[0],
+                        //                 cantidad: cantidad,
+                        //                 id_producto: id_prod
+                        //             });
+                        //         });
+                        //     }
+                        //     datosPrincipales.push(filaPrincipal);
+                        // });
+
+                        formData.append('datos', JSON.stringify(datosModificados));
                         formData.append('orden', id_orden_guia_fab);
                         formData.append('id_boleta', id_boleta_fab);
                         formData.append('nro_guia', nro_guiaFab.value);
