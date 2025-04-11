@@ -130,10 +130,10 @@
                             <div class="col-md-12">
                                 <div class="mb-3" id="groupOrden">
                                     <label for="none" class="mb-0 combo d-flex justify-content-between align-items-center flex-wrap w-100">
-                                        <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px">
+                                        <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
                                             <i class="fas fa-ticket"></i> Orden de trabajo
-                                        </div>
-                                        <div class="d-flex flex-wrap align-items-center" style="font-size: 70%;">
+                                        <!-- </div> -->
+                                        <!-- <div class="d-flex flex-wrap align-items-center" style="font-size: 70%;">
                                             <label for="isPdfFab" class="col-form-label text-nowrap" style="cursor:pointer; padding-block: .5rem; color: #616c7a; font-size: 140%;">
                                                 Generar fabricación
                                             </label>
@@ -143,9 +143,8 @@
                                                     <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11"></polyline>
                                                 </svg>
                                             </label>
-                                        </div>
+                                        </div> -->
                                     </label>
-
                                     <!-- Selector de Orden -->
                                     <div class="row">
                                         <div class="col">
@@ -154,19 +153,16 @@
                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </div> <!-- Fin container-fluid -->
                 </div>
-
                 <div class="modal-footer justify-content-between">
                     <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-file-lines"> </i><span class="button-text"> </span>Generar informe</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
-
         </div>
         <!-- /.modal-content -->
     </div>
@@ -267,14 +263,13 @@
     $(document).ready(function() {
         let anio = year;
         let mes = month;
-        const isPdfFab = document.getElementById('isPdfFab');
         const cboOrden_i = document.getElementById('cboOrden_i');
         let fabValue = null;
 
         $(cboOrden_i).select2({
             placeholder: 'SELECCIONA UNA ORDEN',
             width: '100%',
-        })
+        });
 
         cargarCombo('Orden_i', '', 3, false, anio).then(datos_ => {
             $(cboOrden_i).empty();
@@ -323,7 +318,7 @@
 
         setChange(cboMeses, mes);
 
-        if (!$.fn.DataTable.isDataTable('#tblInforme')) {
+        if(!$.fn.DataTable.isDataTable('#tblInforme')) {
             tabla = $("#tblInforme").DataTable({
                 "ajax": {
                     "url": "controllers/informe.controlador.php",
@@ -350,16 +345,10 @@
 
         const form = document.getElementById('formInforme');
         const btnGuardar = document.getElementById('btnGuardar');
-       
 
-        btnGuardar.addEventListener('click', function(event) {
-            event.preventDefault();
-
-            let idOrden = cboOrden_i.value; // Obtener el valor del campo id_orden
-            if (isPdfFab.checked && idOrden && fabValue) {
-                window.open(`PDF/pdf_informe_orden_fab.php?id_orden=${idOrden}`, '_blank');
-            }
-            // Enviar el formulario con la acción final
+        btnGuardar.addEventListener('click', function(e) {
+            e.preventDefault();
+            let idOrden = cboOrden_i.value; 
             form.action = 'PDF/pdf_informe_orden.php';
             form.submit();
         });
@@ -431,23 +420,20 @@
 
         $(cboOrden_i).on("select2:select", function(e) {
             fabValue = e.params.data.fab; // Obtener la propiedad 'fab' directamente del objeto de datos
-            if(fabValue){
-                isPdfFab.checked = true;
-                isPdfFab.disabled = false;
-            }else{
-                isPdfFab.checked = false;
-                isPdfFab.disabled = true;
-            }
+            // if(fabValue){
+            //     isPdfFab.checked = true;
+            //     isPdfFab.disabled = false;
+            // }else{
+            //     isPdfFab.checked = false;
+            //     isPdfFab.disabled = true;
+            // }
         });
 
         $('#tblInforme').on('submit', '.form_pdf', function(event) {
             event.preventDefault(); // Evita el envío predeterminado del formulario
             let id_orden = tabla.row($(this).closest('tr').next()).data()[11];
-
             let input_pdf = $(this).find('.input_boleta');
             input_pdf.val(id_orden);
-            // console.log(input_pdf.val());
-
             this.submit(); // Envía el formulario actual
         });
 
@@ -471,18 +457,5 @@
                 }
             })
         });
-
-        // $('#tblInforme tbody').on('click', '.btnEliminar', function() {
-
-        // });
-
-        // document.addEventListener('keydown', function(e) {
-        //     if (e.key === "Escape") {
-        //         const activeModal = document.querySelector('.modal.show');
-        //         if (activeModal) {
-        //             $(activeModal).modal('hide');
-        //         }
-        //     }
-        // });
     })
 </script>

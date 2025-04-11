@@ -140,7 +140,7 @@ class ModeloFabricacion
             return array(
                 'status' => 'success',
                 'm' => 'El producto se agregó correctamente',
-                'id' => $conexion->lastInsertId()
+                'id' => $conexion->lastInsertId('tblsalidas_id_seq')
             );
         } catch (Exception $e) {
             $conexion->rollBack(); // Revertir la transacción en caso de error

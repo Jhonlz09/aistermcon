@@ -379,7 +379,7 @@
                     // Normal si no está anulado
                     return data === false ?
                         '<span style="padding:.375rem .75rem;border-radius:.25rem;font-size:1.4rem;cursor:no-drop;color:#721c24;"><i class="fa-solid fa-file-xmark"></i></span>' :
-                        `<span style="padding:.375rem .75rem;font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" onclick="window.open('${getUrl}', '_blank');"><i class="fas fa-file-check"></i></span>`;
+                        `<span title="solicitud de cotizacion PDF" style="padding:.375rem .75rem;font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:#155724" onclick="window.open('${getUrl}', '_blank');"><i class="fas fa-file-check"></i></span>`;
                 }
             },
             {
@@ -395,7 +395,7 @@
                     // Normal si no está anulado
                     return data === false ?
                         '<span style="padding:.375rem .75rem;border-radius:.25rem;font-size:1.4rem;cursor:no-drop;color:darkgrey"><i class="fas fa-file-xmark"></i></span>' :
-                        `<span style="padding:.375rem .75rem;font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:${color}" onclick="window.open('${getUrl}', '_blank');"><i class="fas fa-file-check"></i></span>`;
+                        `<span title="Orden de compra PDF" style="padding:.375rem .75rem;font-size:1.4rem;cursor:pointer;border-radius:.25rem;color:${color}" onclick="window.open('${getUrl}', '_blank');"><i class="fas fa-file-check"></i></span>`;
                 }
             },
             {

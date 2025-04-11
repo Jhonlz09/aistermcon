@@ -96,7 +96,7 @@
                                                                 <div class="col-sm ui-front" style="margin-bottom:1.8rem">
                                                                     <label class="col-form-label combo" for="nro_ordenFab">
                                                                         <i class="fas fas fa-ticket"></i> Orden de trabajo</label>
-                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_ordenFab" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
+                                                                    <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_ordenFab" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente" required>
                                                                     <button class="clear-btn" type="button" id="clearButtonFab" style="display:none">&times;</button>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
@@ -121,6 +121,26 @@
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
+                                                <div id="card_nro_guiaFab" style="display:none;" class="col-sm form-group">
+                                                    <label for="none" class="mb-0 combo d-flex justify-content-between align-items-center flex-wrap w-100" for="nro_guiaFab">
+                                                        <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px">
+                                                            <i class="fas fa-ticket"></i> Nro. guia
+                                                        </div>
+                                                        <div class="d-flex flex-wrap align-items-center" style="font-size: 60%;">
+                                                            <label for="isTrasFab" class="col-form-label text-nowrap" style="cursor:pointer;color:#616c7a; font-size: 140%;">
+                                                                <i class="fa-solid fa-truck-ramp-box"></i> Traslado de fabricación
+                                                            </label>
+                                                            <label class="switch-2 ml-2" for="isTrasFab" style="font-size: 112%;">
+                                                                <input class="switch__input" type="checkbox" id="isTrasFab" onkeydown="toggleWithEnter(event, this)" checked>
+                                                                <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                                    <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11"></polyline>
+                                                                </svg>
+                                                            </label>
+                                                        </div>
+                                                    </label>
+                                                    <input id="nro_guiaFab" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia" required>
+                                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                </div>
                                                 <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                     <div class="col" id="div_nrofac" style="display:block;margin-bottom:1.8rem">
                                                     <?php else : ?>
@@ -132,12 +152,6 @@
                                                             <input id="nro_fac" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" placeholder="Ingrese el nro. de factura" required>
                                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                                         </div>
-                                                        <div id="card_nro_guiaFab" style="display:none;" class="form-group mb-0">
-                                                            <label class="col-form-label combo" for="nro_guiaFab">
-                                                                <i class="fas fa-list-ol"></i> Nro. Guia</label>
-                                                            <input id="nro_guiaFab" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia" required>
-                                                            <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                        </div>
                                                         </div>
                                                         <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
                                                             <div class="col-sm-4" id="div_nroguia" style="display:none;margin-bottom:1.8rem">
@@ -147,10 +161,9 @@
                                                                 <div id="card_nro_guia" class="form-group mb-0">
                                                                     <label class="col-form-label combo" for="nro_guia">
                                                                         <i class="fas fa-list-ol"></i> Nro. Guia</label>
-                                                                    <input id="nro_guia" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia" required>
-                                                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                    <input id="nro_guia" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia">
                                                                 </div>
-                                                                <div style="display: none;" id="card_nro_guiaE" class="form-group mb-0">
+                                                                <div style="display:none;" id="card_nro_guiaE" class="form-group mb-0">
                                                                     <label class="col-form-label combo" for="nro_guia">
                                                                         <i class="fas fa-list-ol"></i> Nro. Guia</label>
                                                                     <input id="nro_guiaEntrada" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia">
@@ -185,7 +198,6 @@
                                                                                 <input style="border-bottom: 2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="codProducto" placeholder="Ingrese el nombre del producto">
                                                                             </div>
                                                                             <div class="col-md-9">
-
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-lg-4">
@@ -206,7 +218,6 @@
                                                                                     <i class="fas fa-plus-circle"></i> Agregar
                                                                                 </span>
                                                                             </div>
-
                                                                         </div>
                                                                     </div>
                                                             </div>
@@ -353,6 +364,23 @@
                                                                                                 <th class="text-center">UNIDAD</th>
                                                                                                 <th class="text-nowrap">PRODUCTO FABRICADO</th>
                                                                                                 <th class="text-center">ACCIONES</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div id="form-9" class="form-container">
+                                                                                <div class="table-responsive">
+                                                                                    <table id="tblDetalleFabEntrada" class="table table-bordered w-100 table-striped">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>Nº</th>
+                                                                                                <th class="text-nowrap">PRODUCTO FABRICADO</th>
+                                                                                                <th class="text-center">UNIDAD</th>
+                                                                                                <th class="text-center">SALIDA</th>
+                                                                                                <th class="text-center">ENTRADA</th>
                                                                                             </tr>
                                                                                         </thead>
                                                                                         <tbody>

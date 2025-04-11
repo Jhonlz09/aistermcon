@@ -50,7 +50,6 @@
     <script defer src='assets/plugins/select2/js/select2.full.min.js'></script>
     <!-- overlayScrollbars -->
     <script src='assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js'></script>
-
     <script defer src="assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
     <script defer src="assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
     <script defer src="assets/plugins/jszip/jszip.min.js"></script>
@@ -69,7 +68,7 @@
 <?php if (isset($_SESSION['s_usuario'])) {
 ?>
     <script>
-        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblFab, tblProdFab, tblDetalleFab;
+        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblFab, tblProdFab, tblDetalleFab, tblDetalleFabEntrada;
         var configuracionTable = {};
         let items = [];
         let id_boleta = 0;
@@ -83,7 +82,6 @@
         let id_orden_guia_salida;
         let id_orden_guia_entrada;
         let id_orden_guia_fab;
-        // let valid_orden = false;
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
@@ -208,8 +206,6 @@
                 html = document.querySelector('html'),
                 navbar = body.querySelector('.navbar'),
                 sidebar = body.querySelector('.main-sidebar'),
-                // modeSwitch = body.querySelector('.mode'),
-                // modeText = body.querySelector('.mode-text'),
                 controlSide = body.getElementsByClassName('control-sidebar')[0],
                 control = body.querySelectorAll('.ctrl-side'),
                 first_control = body.querySelector('#first_control'),
@@ -218,9 +214,7 @@
                 setA = body.querySelectorAll('.setA'),
                 setB = body.querySelectorAll('.setB'),
                 inputauto = body.querySelector('#codProducto'),
-                // inputOrden = body.querySelector('#nro_orden'),
                 inputBarras = body.querySelector('#codBarras');
-
             // const configu = {
             //     selector: "#autoComplete",
             //     placeHolder: "Search for numero de orden...",
@@ -266,10 +260,10 @@
 
             const card_fab = document.getElementById('card_fab');
 
+            let nro_sec_cotiz = <?php echo ($_SESSION["sc_cot"] == null) ? 0 : $_SESSION["sc_cot"]; ?>;
             let iva_config = <?php echo $_SESSION["iva"]; ?>;
             const isEntrada = <?php echo ($_SESSION["entrada_mul"]) ? 1 : 0; ?>;
             const isSuperAdmin = <?php echo ($_SESSION["s_usuario"]->id_perfil == 1) ? 1 : 0; ?>;
-            let nro_sec_cotiz = <?php echo ($_SESSION["sc_cot"] == null) ? 0 : $_SESSION["sc_cot"]; ?>;
             const bodegueroPorDefecto = <?php echo ($_SESSION["bodeguero"] == null) ? 0 : $_SESSION["bodeguero"]; ?>;
             const conductorPorDefecto = <?php echo ($_SESSION["conductor"] == null) ? 0 : $_SESSION["conductor"]; ?>;
 
@@ -309,19 +303,11 @@
 
             // Verificar el estado de la sesión cada 5 minutos (300000 milisegundos)
             checkSessionInterval = setInterval(checkSession, 300000);
-            // btnSide.addEventListener("click", () => {
-            //     setTimeout(() => {
-            //         tabla.columns.adjust().responsive.recalc();
-            //     }, 250);
-            // });
 
             setA.forEach((e) => {
                 e.addEventListener('click', function() {
-                    // const ul = this.nextElementSibling;
-                    // if (!ul) {
                     // Verificar si el elemento clickeado es desplegable
                     const isDropdown = this.nextElementSibling && this.nextElementSibling.classList.contains('nav-treeview');
-
                     // Si es desplegable, no hacer nada
                     if (isDropdown) {
                         return;
@@ -338,13 +324,10 @@
 
                     if (body.classList.contains('control-sidebar-slide-open')) {
                         control.forEach((e) => {
-                            // e.style.display = 'none'
                             if (e.classList.contains('active')) {
                                 e.click();
                             }
                         })
-
-
                     }
                 });
             });
@@ -383,9 +366,6 @@
             function cargarContenido(contenedor, contenido, id = '') {
                 let tbl = 'tbl' + id;
                 let ruta = id.toLowerCase();
-                // setTimeout(() => {
-                //     tabla.columns.adjust().responsive.recalc();
-                // }, 150);
                 var tablaData = localStorage.getItem(ruta);
                 accion_inv = 0;
                 scroll = false;
@@ -428,9 +408,7 @@
             let activeControl = null;
             control.forEach((e) => {
                 e.addEventListener('click', () => {
-
                     const clickedControlIsActive = e === activeControl;
-
                     // Desactivar el control-sidebar activo anteriormente, si existe y no es el mismo que el clic actual
                     if (activeControl && !clickedControlIsActive) {
                         activeControl.classList.remove('active');
@@ -695,7 +673,7 @@
                 }
 
 
-            })
+            });
 
             $('#tblDetalleCompra').on('draw.dt', function() {
                 if (id_boleta != 0) {
@@ -762,10 +740,8 @@
                     });
                 }
 
-            })
+            });
 
-            // const cboClienteEntrada = document.getElementById('cboClienteEntrada'),
-            // cboClientes = document.getElementById('cboClientes'),
             const cboOrdenActivas = document.getElementById('cboPorOrden'),
                 fecha = document.getElementById('fecha'),
                 fecha_retorno = document.getElementById('fecha_retorno'),
@@ -789,13 +765,12 @@
                     cboResponsable = document.getElementById('cboResponsable'),
                     btnGuia = document.getElementById('btnGuardarGuia');
                 const audio = document.getElementById("scanner");
-
                 const addProFab = document.getElementById("addProFab")
+                const isTrasFab = document.getElementById('isTrasFab');
 
-                // $(cboClientes).select2({
-                //     placeholder: 'SELECCIONE',
-                //     width: '100%',
-                // })
+                isTrasFab.addEventListener('click', function() {
+                    nro_guiaFab.disabled = !isTrasFab.checked;
+                });
 
                 $(cboOrdenActivas).select2({
                     placeholder: 'SELECCIONE',
@@ -854,7 +829,6 @@
                     // setChange(cboClienteEntrada, 0)
                 });
 
-
                 cargarCombo('Conductor', conductorPorDefecto, 2);
                 cargarCombo('ConductorEntrada', conductorPorDefecto, 2);
 
@@ -881,9 +855,6 @@
                         data: datos_
                     })
                 })
-
-                // cargarCombo('Cli', '', 4)
-                // cargarCombo('PorOrden', '', 5)
 
                 tblCompra = $('#tblCompra').DataTable({
                     "dom": '<"row"<"col-sm-6"B><"col-sm-6"p>>t',
@@ -1182,13 +1153,74 @@
                     },
                 });
 
-
+                tblDetalleFabEntrada = $('#tblDetalleFabEntrada').DataTable({
+                    "dom": 'pt',
+                    "lengthChange": false,
+                    "ordering": false,
+                    "autoWidth": false,
+                    "paging": false,
+                    "ajax": {
+                        "url": "controllers/salidas.controlador.php",
+                        "type": "POST",
+                        dataSrc: "",
+                        "datatype": 'json',
+                        "data": function(d) {
+                            d.accion = 10;
+                            d.boleta = id_boleta_fab
+                        }
+                    },
+                    columnDefs: [{
+                            targets: 0,
+                            data: null,
+                            className: 'dt-control',
+                            orderable: false,
+                            defaultContent: '',
+                            render: function(data, type, row, meta) {
+                                if (type === 'display') {
+                                    return meta.row + 1;
+                                }
+                                return meta.row;
+                            }
+                        },
+                        {
+                            targets: 1,
+                            data: 'descripcion',
+                        },
+                        {
+                            targets: 2,
+                            className: "text-center ",
+                            data: 'unidad',
+                        },
+                        {
+                            targets: 3,
+                            className: "text-center ",
+                            data: 'salidas',
+                        },
+                        {
+                            targets: 4,
+                            data: 'retorno',
+                            className: "text-center ",
+                            render: function(data, type, row) {
+                                // Definir el valor del input
+                                let value = (data === null) ? '' : row.retorno;
+                                // Definir el HTML del input
+                                let inputHTML = '<input value="' + value + '" type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline retorno" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" >';
+                                // Condicional para id_perfil_sistema
+                                if (isEntrada || isSuperAdmin) {
+                                    return inputHTML;
+                                } else {
+                                    return row.isentrada ? row.retorno : inputHTML;
+                                }
+                            }
+                        },
+                    ],
+                });
                 addProFab.addEventListener('click', function() {
                     agregarFilaFab();
                 });
 
+
                 function agregarFilaFab() {
-                    // let tablaAdd;
                     if (selectedTab == '8') {
                         $.ajax({
                             url: "controllers/fabricacion.controlador.php",
@@ -1214,29 +1246,29 @@
                     }
                 }
 
-                function format(rowData) {
-                    return `<div class="mb-4 ui-front" style="padding-left:8%">
-                        <label class="col-form-label combo" for="search-${rowData}">
-                            <i class="fas fa-arrow-up-a-z"></i> Productos
-                        </label>
-                        <input style="border-bottom: 2px solid var(--select-border-bottom);" 
-                    type="search" 
-                    class="form-control form-control-sm searchFab" 
-                    id="search-${rowData}" 
-                    placeholder="Escriba para agregar...">
-                    </div>
-                    <table class="table table-hover" id="tbl${rowData}" cellpadding="5" cellspacing="0" border="0" style="padding-left:8%; width:100%">
-                    </table>`;
+                function format(rowData, isEntrada = false) {
+                    let textLabel = `<div class="mb-4 ui-front" style="padding-left:8%;">
+                    <label class="col-form-label combo" for="search-${rowData}">
+                        <i class="fas fa-arrow-up-a-z"></i> Productos
+                    </label>
+                    <input style="border-bottom: 2px solid var(--select-border-bottom);" 
+                        type="search" 
+                        class="form-control form-control-sm searchFab" 
+                        id="search-${rowData}" 
+                        placeholder="Escriba para agregar...">
+                    </div>`;
+                    let tableHtml = `<table class="table table-hover" id="tbl${rowData}" cellpadding="5" cellspacing="0" border="0" style="padding-left:8%; width:100%;padding-bottom:2%">
+                        </table>`;
+                    // Concatenar dependiendo de si esEntrada es true o false
+                    return (isEntrada ? '' : textLabel) + tableHtml;
                 }
 
                 $('#tblProdFab tbody').on('click', 'td.dt-control', function() {
                     let tr = $(this).closest('tr'); // Encuentra la fila más cercana
                     let row = tblProdFab.row(tr); // Obtiene la fila de DataTable
                     let rowData = row.data(); // Obtiene los datos de la fila
-
                     let idUnico = rowData[0]; // Identificador único
                     let tablaId = `#tbl${idUnico}`; // ID correcto basado en format()
-
                     if (row.child.isShown()) {
                         row.child.hide();
                         tr.removeClass('shown');
@@ -1248,7 +1280,6 @@
                         } else {
                             row.child.show();
                         }
-
                         // Verificar si la DataTable ya existe antes de inicializarla
                         if (!$.fn.dataTable.isDataTable(tablaId)) {
                             $(tablaId).DataTable({
@@ -1327,7 +1358,6 @@
                     let idUnico = rowData[0]; // Se asume que el ID del producto está en la segunda columna
                     let tablaId = `#tbl${idUnico}`;
                     id_prod_fab = idUnico;
-
                     if (row.child.isShown()) {
                         row.child.hide();
                         tr.removeClass('shown');
@@ -1336,7 +1366,6 @@
                             row.child(format(idUnico)).show();
                             tr.addClass('loaded');
                             let searchBox = $(`#search-${idUnico}`);
-
                             // Evitar reinicialización del autocompletado
                             if (!searchBox.data("ui-autocomplete")) {
                                 cargarAutocompletado(function(items) {
@@ -1359,8 +1388,6 @@
                                     };
                                 });
                             }
-
-
                             let dataTable = $(tablaId).DataTable({
                                 dom: "t",
                                 paging: false,
@@ -1450,6 +1477,122 @@
                     }
                 });
 
+                $('#tblDetalleFabEntrada tbody').on('click', 'td.dt-control', function() {
+                    let tr = $(this).closest('tr');
+                    let row = tblDetalleFabEntrada.row(tr);
+                    let rowData = row.data();
+                    let idUnico = rowData[9]; // Se asume que el ID del producto está en la segunda columna
+                    let tablaId = `#tbl${idUnico}`;
+                    id_prod_fab = idUnico;
+                    if (row.child.isShown()) {
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    } else {
+                        if (!tr.hasClass('loaded')) {
+                            row.child(format(idUnico, true)).show();
+                            tr.addClass('loaded');
+                            // let searchBox = $(`#search-${idUnico}`);
+                            // Evitar reinicialización del autocompletado
+                            // if (!searchBox.data("ui-autocomplete")) {
+                            //     cargarAutocompletado(function(items) {
+                            //         searchBox.autocomplete({
+                            //             source: items,
+                            //             minLength: 3,
+                            //             autoFocus: true,
+                            //             focus: function() {
+                            //                 return false;
+                            //             },
+                            //             select: function(event, ui) {
+                            //                 CargarProductos(ui.item.cod, null, $(tablaId).DataTable(), id_prod_fab);
+                            //                 return false;
+                            //             }
+                            //         }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                            //             let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                            //             return $("<li>").append(
+                            //                 `<div>${item.label} <strong class='large-text'>CANTIDAD: ${res}</strong></div>`
+                            //             ).appendTo(ul);
+                            //         };
+                            //     });
+                            // }
+                            let dataTable = $(tablaId).DataTable({
+                                dom: "t",
+                                paging: false,
+                                ordering: false,
+                                autoWidth: false,
+                                destroy: true, // Asegura que la tabla se reinicializa correctamente 
+                                ajax: {
+                                    url: "controllers/inventario.controlador.php",
+                                    dataSrc: "",
+                                    type: "POST",
+                                    data: function(d) {
+                                        d.accion = 11;
+                                        d.id_producto_fab = id_prod_fab;
+                                    },
+                                    dataSrc: function(json) {
+                                        console.log("✅ Datos cargados:", json);
+                                        $(tablaId).data('originalData', json); // Guardamos los datos originales
+                                        // console.log($(tablaId).data('originalData'));
+
+                                        return json;
+                                    }
+                                    // success: function(data) {
+                                    //     // Guardar los datos originales
+                                    //     // $(tablaId).data('originalData', data); // Guardamos los datos originales
+                                    // }
+                                },
+                                // xhr: function(settings, json) {
+                                //     console.log("✅ Datos originales guardados:", json);
+                                //     $(tablaId).data('originalData', json); // Guardamos los datos originales
+                                //     console.log($(tablaId).data('originalData'));
+
+                                // },
+                                columns: [{
+                                        title: "N°",
+                                        data: null,
+                                        render: function(data, type, row, meta) {
+                                            return meta.row + 1;
+                                        }
+                                    },
+                                    {
+                                        title: "CODIGO",
+                                        data: "codigo",
+                                        visible: false
+                                    },
+                                    {
+                                        title: "DESCRIPCION",
+                                        data: "descripcion"
+                                    },
+                                    {
+                                        title: "UND",
+                                        data: "unidad",
+                                        className: "text-center"
+                                    },
+                                    {
+                                        title: "SALIDA",
+                                        data: "cantidad_salida",
+                                        className: "text-center",
+                                    },
+                                    {
+                                        title: "ENTRADA",
+                                        data: "retorno",
+                                        className: "text-center",
+                                        render: function(data, type, row) {
+                                            data = (data === '-') ? '' : data;
+                                            return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
+                                            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                                            oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
+                                        }
+                                    },
+                                ],
+                            });
+                        } else {
+                            row.child.show();
+                        }
+                        tr.addClass('shown');
+                    }
+                });
+
                 $('#tblOut').on('keydown', 'input.cantidad', moveFocusOnTab);
 
                 $(document).on('click', '.btnEliminaRow', function() {
@@ -1483,20 +1626,23 @@
                     let tablaUni = $(this).closest('table').DataTable(); // Obtener la DataTable correspondiente
                     const e = obtenerFila(this, tablaUni)
                     const row = $(this);
-                    const id = e[0];
+                    const id_row_d = e['id'];
+                    console.log('id', e);
+                    console.log('id', id_row_d);
+                    // if(id_row_d == undefined) {
+                    //     tablaUni.row($(this).closest('tr')).remove().draw();
+                    //     return;
+                    // }
                     let src = new FormData();
                     src.append('accion', 4);
-                    src.append('id', id);
+                    src.append('id', id_row_d);
                     confirmarEliminar('este', 'producto utilizado', function(res) {
                         if (res) {
                             confirmarAccion(src, 'fabricacion', null, '', function(res) {
                                 if (res) {
                                     cargarAutocompletado();
-                                    // console.log('datos', 'eliminando ...');
                                     tablaUni.row(row.closest('tr')).remove().draw();
                                 }
-                                // Eliminar la fila seleccionada
-
                             })
                         }
                     });
@@ -1628,7 +1774,6 @@
                         ).appendTo(ul);
                     };
                 }, null, 'orden', 6)
-                // cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'inventario', action = 7)
 
                 let action;
                 const tabs = document.querySelectorAll('.tabs input'),
@@ -1832,7 +1977,6 @@
                         formData.append('nro_factura', nro_factura.value);
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 5);
-
                         $.ajax({
                             url: "controllers/registro.controlador.php",
                             method: "POST",
@@ -1847,7 +1991,6 @@
                                     isSuccess ? "Completado" : "Error",
                                     isSuccess ? "fa-check" : "fa-xmark",
                                     r.m);
-
                                 if (isSuccess) {
                                     tblDetalleSalida.clear().draw();
                                     tabla ? tabla.ajax.reload(null, false) : ''
@@ -1870,7 +2013,6 @@
                         let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
-                            // console.log(elemento);
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
@@ -1879,7 +2021,6 @@
                         if (!isValid) {
                             return;
                         }
-
                         tblProdFab.rows().every(function() {
                             let row = this;
                             let tr = $(row.node());
@@ -1887,8 +2028,7 @@
                             let idUnico = rowData[0];
                             row.child.show(); // Simplemente la mostramos si ya fue cargada
                         });
-
-                        // Ahora obtenemos los datos
+                        // Ahoa obtenemos los datos
                         let datosPrincipales = [];
                         tblProdFab.rows().every(function() {
                             let rowData = this.data();
@@ -1901,7 +2041,6 @@
                                 descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
                                 productos: []
                             };
-
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
                                 tablaSecundaria.rows().every(function() {
@@ -1915,11 +2054,10 @@
                             }
                             datosPrincipales.push(filaPrincipal);
                         });
-
-                        // console.log(datosPrincipales)
                         formData.append('datos', JSON.stringify(datosPrincipales));
                         formData.append('orden', id_orden_guia_fab);
                         formData.append('nro_guia', nro_guiaFab.value);
+                        formData.append('tras', isTrasFab.checked);
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
@@ -1931,7 +2069,6 @@
                                 formData.append(`imagenes[${index}]`, file, file.name);
                             }
                         });
-
                         $.ajax({
                             url: "controllers/registro.controlador.php",
                             method: "POST",
@@ -1980,11 +2117,8 @@
                             row.child.show();
                         });
 
-                        // Ahora obtenemos los datos
                         // let datosPrincipales = [];
                         let datosModificados = [];
-
-
                         // Recorre cada fila de la tabla principal (tblDetalleFab)
                         tblDetalleFab.rows().every(function() {
                             let row = this;
@@ -2009,58 +2143,28 @@
                                 console.log('datosOriginales', datosOriginales)
                                 tablaSecundaria.rows().every(function() {
                                     let secData = this.data();
+                                    console.log('secData', secData);
                                     let id_prod = secData["id_producto"];
                                     let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val());
-                                    let cantidadOriginal = parseFloat(datosOriginales.find(item => item.id_producto === id_prod).cantidad_salida);
-                                   
-                                   console.log('cantidadOriginal', cantidadOriginal, 'cantidadModificada', cantidadModificada)
-                                   
+                                    let cantidadOriginal = parseFloat(datosOriginales.find(item => item.id_producto === id_prod)?.cantidad_salida ?? 0);
+                                    // console.log('cantidadOriginal', cantidadOriginal, 'cantidadModificada', cantidadModificada)
                                     // Comparar si la cantidad ha cambiado
                                     if (cantidadOriginal !== cantidadModificada) {
                                         filaPrincipal.productos.push({
-                                            codigo: secData[0],
+                                            codigo: secData['id'],
                                             cantidad: cantidadModificada,
                                             id_producto: id_prod
                                         });
                                     }
-                                    // Agregar los productos a la fila principal
                                 });
                             }
                             datosModificados.push(filaPrincipal);
-                            console.log(datosModificados)
                         });
-
-                        // tblDetalleFab.rows().every(function() {
-                        //     let rowData = this.data();
-                        //     let idUnico = rowData[0];
-                        //     let tablaSecundariaId = `#tbl${idUnico}`;
-                        //     let filaPrincipal = {
-                        //         id: idUnico,
-                        //         cantidad: $(this.node()).find('.cantidad').val(),
-                        //         unidad: $(this.node()).find('.id_unidad').val(),
-                        //         descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
-                        //         productos: [],
-                        //     };
-
-                        //     if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
-                        //         let tablaSecundaria = $(tablaSecundariaId).DataTable();
-                        //         tablaSecundaria.rows().every(function() {
-                        //             let secData = this.data();
-                        //             let id_prod = secData["id_producto"];
-                        //             let cantidad = $(this.node()).find('.cantidad').val();
-                        //             filaPrincipal.productos.push({
-                        //                 codigo: secData[0],
-                        //                 cantidad: cantidad,
-                        //                 id_producto: id_prod
-                        //             });
-                        //         });
-                        //     }
-                        //     datosPrincipales.push(filaPrincipal);
-                        // });
-
+                        // console.log('DATOS MODIFICADOS ENVIADOS', datosModificados)
                         formData.append('datos', JSON.stringify(datosModificados));
                         formData.append('orden', id_orden_guia_fab);
                         formData.append('id_boleta', id_boleta_fab);
+                        formData.append('tras', isTrasFab.checked);
                         formData.append('nro_guia', nro_guiaFab.value);
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
@@ -2096,13 +2200,129 @@
                                 }
                             }
                         });
+                    }else if (selectedTab === '9') {
+                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
+                        let isValid = true;
+                        elementosAValidar.forEach(function(elemento) {
+                            if (!elemento.checkValidity()) {
+                                isValid = false;
+                                form_guia.classList.add('was-validated');
+                            }
+                        });
+                        if (!isValid) {
+                            return;
+                        }
+                        let hasError = false;
+                        tblDetalleFabEntrada.rows().every(function() {
+                            let row = this;
+                            let tr = $(row.node());
+                            let rowData = row.data();
+                            let idUnico = rowData[0];
+                            row.child.show();
+                        });
+
+                        let datosPrincipales = [];
+                        // Recorre cada fila de la tabla principal (tblDetalleFab)
+                        tblDetalleFabEntrada.rows().every(function() {
+                            if(hasError) return false;
+                            let row = this;
+                            let tr = $(row.node());
+                            let rowData = row.data();
+                            let id_salida = rowData[0]; // Asumimos que el ID está en la primera columna
+                            let idUnico = rowData[9]; // Asumimos que el ID está en la primera columna
+                            let tablaSecundariaId = `#tbl${idUnico}`;
+                            console.log('rowdata', rowData)
+                            let cantidad_entrada_fab = parseFloat($(this.node()).find('.retorno').val())
+                            let cantidad_salida_fab = parseFloat(rowData[3]);
+
+                            console.log('cantidad_entrada_fab', cantidad_entrada_fab, 'cantidad_salida_fab', cantidad_salida_fab)
+                            if(cantidad_entrada_fab > cantidad_salida_fab){
+                                hasError = true;
+                                mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida');
+                                return false;
+                            }
+
+                            let filaPrincipal = {
+                                id: id_salida,
+                                cantidad: cantidad_entrada_fab,
+                                productos: []
+                            };
+
+                            // if (hasError) return false;
+
+
+                            if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
+                                let tablaSecundaria = $(tablaSecundariaId).DataTable();
+                                tablaSecundaria.rows().every(function() {
+                                    if (hasError) return false;
+                                    let secData = this.data();
+                                    let cantidad_salida = parseFloat(secData[1]);
+                                    let cantidad_entrada = parseFloat($(this.node()).find('.cantidad').val())
+
+                                    if(cantidad_entrada > cantidad_salida){
+                                        hasError = true;
+                                        mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto utilizado');
+                                        return false;
+                                    }
+                                        // cantidad = cantidad_salida - cantidad;
+                                    filaPrincipal.productos.push({
+                                        codigo: secData[0],
+                                        cantidad: cantidad_entrada
+                                    });
+                                    console.log('filaPrincipal', secData)
+                                });
+                            }
+                            // Obtener los datos originales de la tabla secundaria
+                        
+                            datosPrincipales.push(filaPrincipal);
+                        });
+                        if (hasError) return;
+
+                        console.log('DATOS MODIFICADOS ENVIADOS', datosPrincipales)
+                        formData.append('datos', JSON.stringify(datosPrincipales));
+                        // formData.append('orden', id_orden_guia_fab);
+                        // formData.append('id_boleta', id_boleta_fab);
+                        // formData.append('tras', isTrasFab.checked);
+                        // formData.append('nro_guia', nro_guiaFab.value);
+                        // formData.append('conductor', cboConductor.value);
+                        // formData.append('despachado', cboDespachado.value);
+                        // formData.append('responsable', cboResponsable.value);
+                        // formData.append('fecha', fecha.value);
+                        // formData.append('motivo', motivo.value.trim().toUpperCase());
+                        formData.append('accion', 13);
+                        dropzone.getAcceptedFiles().forEach((file, index) => {
+                            if (!file.isExisting) {
+                                formData.append(`imagenes[${index}]`, file, file.name);
+                            }
+                        });
+                        $.ajax({
+                            url: "controllers/registro.controlador.php",
+                            method: "POST",
+                            data: formData,
+                            cache: false,
+                            dataType: "json",
+                            contentType: false,
+                            processData: false,
+                            success: function(r) {
+                                let isSuccess = r.status === "success";
+                                mostrarToast(r.status,
+                                    isSuccess ? "Completado" : "Error",
+                                    isSuccess ? "fa-check" : "fa-xmark",
+                                    r.m);
+                                if (isSuccess) {
+                                    tblDetalleFab.clear().draw();
+                                    tabla ? tabla.ajax.reload(null, false) : '';
+                                    cargarAutocompletado();
+                                    limpiar();
+                                }
+                            }
+                        });
                     }
                 });
 
                 tabs.forEach(tab => {
                     tab.addEventListener('change', function() {
                         selectedTab = this.value;
-                        // console.log(selectedTab)
                         form_guia.classList.remove('was-validated');
                         const selectedForm = document.getElementById(`form-${selectedTab}`);
                         const formContainers = document.querySelectorAll('.form-container');
@@ -2156,6 +2376,7 @@
                             card_conductorEntrada.style.display = 'none';
                             card_nro_guiaFab.style.display = 'none';
                             div_prod_fab.style.display = 'none';
+                            // div_check_fab.style.display = 'none';
 
                             if (selectedTab === '2') {
                                 btnCancelarTrans.style.display = 'none'
@@ -2177,6 +2398,8 @@
                             div_conductor.style.display = 'block';
                             card_nro_guiaFab.style.display = 'none';
                             div_prod_fab.style.display = 'none';
+                            // div_check_fab.style.display = 'none';
+                            // div_nroguia.style.display = 'none';
                             if (selectedTab === '3') {
                                 btnCancelarTrans.style.display = 'none';
                                 div_fecha.style.display = 'block';
@@ -2190,12 +2413,13 @@
                                 div_nroguia.style.display = 'block';
                                 div_fecha.style.display = 'none';
                             }
-                        } else if (selectedTab === '7' || selectedTab === '8') {
+                        } else if (selectedTab === '7' || selectedTab === '8' || selectedTab === '9') {
                             div_orden.style.display = 'none';
+                            div_fecha.style.display = 'block';
                             div_proveedor.style.display = 'none';
                             div_return.style.display = 'none';
                             div_nroguia.style.display = 'none';
-                            div_nrofactura.style.display = 'block';
+                            div_nrofactura.style.display = 'none';
                             div_person.style.display = 'block';
                             div_retorno.style.display = 'none';
                             card_nro_guia.style.display = 'none';
@@ -2207,7 +2431,8 @@
                             card_nro_fac.style.display = 'none';
                             card_nro_guiaFab.style.display = 'block';
                             div_prod_fab.style.display = 'block';
-                            if (selectedTab === '8') {
+                            // div_check_fab.style.display = 'block';
+                            if (selectedTab === '8' || selectedTab === '9') {
                                 btnCancelarTrans.style.display = 'block';
                             } else {
                                 btnCancelarTrans.style.display = 'none';
@@ -2381,6 +2606,7 @@
                                             dataType: 'json',
                                             success: function(res) {
                                                 if (res.status === 'success') {
+                                                    console.log(res)
                                                     let nuevaFila = {
                                                         id: res.id,
                                                         codigo: respuesta['codigo'],
@@ -2412,24 +2638,18 @@
                 $('#tblCompra').on('input keydown', '.cantidad, .precio', function() {
                     // Encuentra la fila del input cambiado
                     let $row = $(this).closest('tr');
-
                     // Obtiene los valores de cantidad y precio
                     let cantidad = parseFloat($row.find('.cantidad').val()) || 0;
                     let precio = parseFloat($row.find('.precio').val()) || 0;
-
                     // Calcula el total
                     let precio_total = cantidad * precio;
                     let iva = precio_total * iva_config / 100
                     let precio_final = precio_total + iva;
-
                     // Actualiza la columna del total
                     $row.find('.total').text('$' + precio_total.toFixed(2));
                     $row.find('.iva').text('$' + iva.toFixed(2));
                     $row.find('.precio_final').text('$' + precio_final.toFixed(2));
-
                 });
-
-
                 inputBarras.addEventListener("input", function(event) {
                     event.preventDefault();
                     let codigo = this.value;
@@ -2448,7 +2668,6 @@
                     var arr = [];
                     Swal.fire({
                         title: "¿Estás seguro que deseas guardar los datos?",
-                        // text: "Una vez eliminado no podrá recuperarlo",
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonText: "Sí, Guardar",

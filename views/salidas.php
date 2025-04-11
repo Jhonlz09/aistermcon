@@ -130,10 +130,13 @@
                 rows.nodes().each(function(r) {
                     $(r).toggleClass('collapsedrow', !collapsed);
                 });
-
                 let fabricacion = rows.data().pluck('fab')[0];
+                let traslado = rows.data().pluck('tras')[0];
+                let textReturn = traslado && fabricacion || !fabricacion ?  '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '';
+                
+                let texto = traslado ? 'Fabricado' : 'No trasladado';
                 let fabricacionSpan = fabricacion ?
-                    '<span class="badge bg-fab mr-2">Fabricado</span>' :
+                    '<span class="badge bg-fab mr-2">'+texto+'</span>' :
                     '';
                 var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer">' +
                     '<strong class="pl-2">' + fabricacionSpan + group + '  (' + rows.count() + ')</strong>' +
@@ -141,7 +144,7 @@
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button>' +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf_img"><i class="fas fa-file-image"></i></button>' +
                     (editar ? '<button id="editS" class="btn btn-row pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button>' : '') +
-                    (crear ? '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') +
+                    (crear ?  textReturn : '') +
                     (eliminar ? '<button id="eliS" class="btn btn-row pt-0 pb-0"><i class="fas fa-trash-can"></i></button>' : '') +
                     '</div></div>';
                 return $('<tr/>')
@@ -349,16 +352,13 @@
             form.method = 'POST';
             form.autocomplete = 'off';
             form.target = '_blank';
-
             // Crear el input oculto para la boleta
             var inputBoleta = document.createElement('input');
             inputBoleta.type = 'hidden';
             inputBoleta.name = 'id_boleta';
             inputBoleta.value = boleta;
-
             // Añadir el input al formulario
             form.appendChild(inputBoleta);
-
             // Añadir el formulario al DOM (se añade al body)
             document.body.appendChild(form);
             // Enviar el formulario
@@ -376,7 +376,6 @@
                 dropzone.removeAllFilesWithoutServer();
                 dropzone.enable();
                 drop_element.classList.remove("dropzone-disabled");
-
             });
         }
 
@@ -399,11 +398,9 @@
                                 item.retorno, // Cantidad
                                 item.id_unidad, // Unidad
                                 item.descripcion, // Descripción
-                                '' // Espacio para eliminar
-                            ];
+                                ''];
                             tblDetalleFab.row.add(nuevaFila).draw(false);
                         });
-
                         console.log('Datos obtenidos:', response);
                     } else {
                         console.error('No se encontraron datos para el id_boleta:', id_boleta);
@@ -414,7 +411,7 @@
                 }
             });
         }
-        
+
         $('#tblSalidas').on('click', '#editS', function() {
             let row = tabla.row($(this).closest('tr').next()).data()
             id_boleta = row[10];
@@ -432,9 +429,7 @@
             const isfabValue = fab ? '8' : '4';
             const radio = document.getElementById('radio-' + isfab);
             const cancelar = document.getElementById('Cancelar');
-
             let selectedItem = items_orden.find(item => item.cod === id_orden);
-            
             if (fab) {
                 if (selectedItem) {
                     // Asignamos el valor al input de autocompletado
@@ -447,6 +442,10 @@
                         });
                 }
                 nro_guiaFab.value = guia;
+                isTrasFab.checked = row[22];
+                isTrasFab.dispatchEvent(new Event('click'));
+
+                console.log(row[22])
                 obtenerDatosProdFab(id_boleta);
             } else {
                 if (selectedItem) {
@@ -463,6 +462,7 @@
                 nro_guia.value = guia;
                 tblDetalleSalida.ajax.reload(null, false);
             }
+            setChange(cboResponsable, entrega)
             fecha.value = fecha_id;
             motivo.value = motivo_text;
             radio.value = isfabValue;
@@ -470,7 +470,6 @@
             radio.dispatchEvent(new Event('change'));
             cancelar.style.display = 'block'
             first_control.click();
-
             cargarImagenesDropzone(id_boleta);
             dropzone.enable();
             if (eliminar) {
@@ -514,7 +513,7 @@
         $('#tblSalidas').on('click', '#editR', function() {
             row = tabla.row($(this).closest('tr').next()).data()
             id_boleta = row[10];
-    
+            id_boleta_fab = id_boleta;
             const id_orden = row[11],
                 id_cliente = row[12],
                 fecha_id = row[13],
@@ -522,44 +521,56 @@
                 despachado_id = row[15],
                 entrega = row[16],
                 guia = row[17],
-                retorno = document.getElementById('radio-3');
+                fab = row[21],
+                isfab = fab ? '7' : '3',
+                isfabValue = fab ? '9' : '6';
+            // retorno = document.getElementById('radio-3');
+            const radio = document.getElementById('radio-' + isfab);
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
 
-
             let selectedItem = items_orden.find(item => item.cod === id_orden);
-            // console.log(selectedItem)
-            if (selectedItem) {
-                // Asignamos el valor al input de autocompletado
-                $(nro_ordenEntrada).val(selectedItem.label);
 
-                // Simulamos la selección del ítem en el autocompletado
-                $(nro_ordenEntrada)
-                    .autocomplete("instance")
-                    ._trigger("select", null, {
-                        item: selectedItem
-                    });
+            if (fab) {
+                if (selectedItem) {
+                    // Asignamos el valor al input de autocompletado
+                    $(nro_ordenFab).val(selectedItem.label);
+                    // Simulamos la selección del ítem en el autocompletado
+                    $(nro_ordenFab)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: selectedItem
+                        });
+                }
+                nro_guiaFab.value = guia;
+                tblDetalleFabEntrada.ajax.reload(null, false);
+            } else {
+                if (selectedItem) {
+                    // Asignamos el valor al input de autocompletado
+                    $(nro_ordenEntrada).val(selectedItem.label);
+                    // Simulamos la selección del ítem en el autocompletado
+                    $(nro_ordenEntrada)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: selectedItem
+                        });
+                }
+                setChange(cboConductor, conductor)
+                nro_guiaEntrada.value = guia;
+                fecha_retorno.value = fecha_hoy;
+                tblReturn.ajax.reload(null, false);
+                cargarImagenesDropzone(id_boleta)
+                dropzone.disable();
+                document.querySelector(".dropzone").classList.add("dropzone-disabled");
+
             }
-
-            setChange(cboConductor, conductor)
-            // cboConductor.disabled = true;
             setChange(cboDespachado, despachado_id)
-            // cboDespachado.disabled = true;
             setChange(cboResponsable, entrega)
-            // cboResponsable.disabled = true;
-            fecha_retorno.value = fecha_hoy;
 
-            nro_guiaEntrada.value = guia;
             motivo.value = motivo_text;
-            // motivo.disabled = true;
-            // retorno.click();
-            retorno.value = '6';
-            retorno.checked = true;
-            retorno.dispatchEvent(new Event('change'));
+            radio.value = isfabValue;
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change'));
             first_control.click();
-            tblReturn.ajax.reload(null, false);
-            cargarImagenesDropzone(id_boleta)
-            dropzone.disable();
-            document.querySelector(".dropzone").classList.add("dropzone-disabled");
         });
 
         $('#tblSalidas').on('click', '#eliS', function() {

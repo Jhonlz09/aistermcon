@@ -1298,7 +1298,7 @@ svg {
 }
 
 .switch__input:disabled:before {
-    background-color: #ffffff4d;
+    background-color: #ffffff4e;
 }
 
 .switch__input:disabled+svg .switch__check-line {

@@ -100,7 +100,7 @@ function limpiar(btn = false) {
     entrada_radio.dispatchEvent(new Event("change"));
     btn.style.display = "none";
 
-  } else if (selectedTab === "7" || selectedTab === "8") {
+  } else if (selectedTab === "7" || selectedTab === "8" || selectedTab === "9") {
     const radio = document.getElementById("radio-7");
     const nro_gui = document.getElementById('nro_guiaFab');
 
@@ -117,7 +117,6 @@ function limpiar(btn = false) {
     radio.dispatchEvent(new Event("change"));
     btn.style.display = "none";
   }
-  
 }
 
 function cargarOpcionesSelect(selectElement, value, size = '110%') {

@@ -360,7 +360,6 @@
         }
     });
 
-
     var mostrarCol = '<?php echo $_SESSION["editar3"] || $_SESSION["eliminar3"] ?>';
     var editar = '<?php echo $_SESSION["editar3"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar3"] ?>';
@@ -564,7 +563,6 @@
     function openModalImage(element) {
         // Obtener la URL de la imagen desde el atributo data-img-src
         const imgSrc = element.src;
-
         // Asignar la URL al src de la imagen dentro del modal
         const modalImage = document.getElementById('modalImage');
         modalImage.src = imgSrc;
