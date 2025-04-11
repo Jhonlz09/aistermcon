@@ -126,12 +126,26 @@
                             </div>
                         </div> -->
                         <!-- Orden de Trabajo -->
+                        <label for="none" class=" combo">
+                            <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
+                            <i class="fas fa-file-pdf"></i> Seleccione un tipo de informe</label>
                         <div class="row">
+                            <div class="col d-flex" style="padding-bottom:.75rem;">
+                                <div style="background-color:var(--primary-color-light)" class="tabs">
+                                    <input type="radio" class="rd-i" id="radio-orden" name="tabs" value="1" checked />
+                                    <label class="tab" for="radio-orden"> Translado</label>
+                                    <input type="radio" class="rd-i" id="radio-cliente" name="tabs" value="2" />
+                                    <label class="tab" for="radio-cliente">Fabricacion</label>
+                                    <input type="radio" class="rd-i" id="radio-fecha" name="tabs" value="3" />
+                                    <label class="tab" for="radio-fecha">Resumen total</label>
+                                    <span class="glider"></span>
+                                </div>
+                            </div>
                             <div class="col-md-12">
                                 <div class="mb-3" id="groupOrden">
-                                    <label for="none" class="mb-0 combo d-flex justify-content-between align-items-center flex-wrap w-100">
+                                    <label for="none" class="mb-0 combo">
                                         <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
-                                            <i class="fas fa-ticket"></i> Orden de trabajo
+                                        <i class="fas fa-ticket"></i> Orden de trabajo
                                         <!-- </div> -->
                                         <!-- <div class="d-flex flex-wrap align-items-center" style="font-size: 70%;">
                                             <label for="isPdfFab" class="col-form-label text-nowrap" style="cursor:pointer; padding-block: .5rem; color: #616c7a; font-size: 140%;">
@@ -318,7 +332,7 @@
 
         setChange(cboMeses, mes);
 
-        if(!$.fn.DataTable.isDataTable('#tblInforme')) {
+        if (!$.fn.DataTable.isDataTable('#tblInforme')) {
             tabla = $("#tblInforme").DataTable({
                 "ajax": {
                     "url": "controllers/informe.controlador.php",
@@ -345,11 +359,31 @@
 
         const form = document.getElementById('formInforme');
         const btnGuardar = document.getElementById('btnGuardar');
+        const tabsIn = document.querySelectorAll('.tabs .rd-i');
+        let tabSelectedIn= '1';
+
+
+        tabsIn.forEach(tab => {
+            tab.addEventListener('change', function() {
+                tabSelectedIn = this.value;
+            });
+        });
+
 
         btnGuardar.addEventListener('click', function(e) {
             e.preventDefault();
-            let idOrden = cboOrden_i.value; 
-            form.action = 'PDF/pdf_informe_orden.php';
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+            let idOrden = cboOrden_i.value;
+            if (tabSelectedIn === '1') {
+                form.action = 'PDF/pdf_informe_orden.php';
+            } else if (tabSelectedIn === '2') {
+                form.action = 'PDF/pdf_informe_orden_fab.php';
+            } else if (tabSelectedIn === '3') {
+                form.action = 'PDF/pdf_informe_orden_resumen.php';
+            }
             form.submit();
         });
 
@@ -445,7 +479,7 @@
             console.log(input_pdf.val());
             this.submit(); // Envía el formulario actual
         });
-        
+
         $('#tblInforme').on('click', '#eliS', function() {
             let boleta = tabla.row($(this).closest('tr').next()).data()[7];
             let src = new FormData();

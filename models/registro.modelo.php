@@ -242,15 +242,8 @@ class ModeloRegistro
                     $stmtStock->bindParam(':cantidad', $cantidadUtilizada, PDO::PARAM_STR);
                     $stmtStock->execute();
                 }
-
             }
-
-            // if (!empty($img)) {
-            //     self::guardarImagenesSalida($conexion, $id_boleta, $img);
-            // }
-
             $conexion->commit();
-
             return array(
                 'status' => 'success',
                 'm' => 'La entrada de la fabricación se registró correctamente.'
@@ -269,7 +262,6 @@ class ModeloRegistro
             );
         }
     }
-
 
     static public function mdlActualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $tras, $img)
     {
@@ -626,7 +618,6 @@ class ModeloRegistro
 
         return $stmtB->execute();
     }
-
 
     static private function insertarBoleta($conexion, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, $fab = false, $tras = false)
     {

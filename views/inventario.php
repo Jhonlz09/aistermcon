@@ -924,7 +924,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             e.preventDefault();
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
-                console.log('no valido')
+                // console.log('no valido')
                 return;
             }
 
