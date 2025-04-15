@@ -27,7 +27,7 @@ if ($datos_fecha != null) {
     $cliente = $datos_fecha[0]['cliente'];
     $orden = $datos_fecha[0]['orden_nro'];
     $descripcion = $datos_fecha[0]['descripcion'];
-    $filename = $orden . ' ' . $cliente;
+    $filename = 'RESUMEN '. $orden . ' ' . $cliente;
     $info_header = $info_error . ': ' . $orden . "         " . 'CLIENTE: ' . $cliente;
     $info = 'CLIENTE: ' . $cliente . "\n" . 'NRO. ORDEN: ' . $orden;
 }
@@ -38,7 +38,6 @@ class PDF extends FPDF
     private $aligns;
     private $y0;
     private $startY;
-    private $LineHeight; // nueva variable de clase 
     private $encabezado = true;
     // Propiedad para almacenar el ID de la boleta
 
@@ -49,12 +48,7 @@ class PDF extends FPDF
 
         $this->Cell(376, 25, '' . $this->PageNo() . ' / {nb}', 0, 0, 'C');
         if ($this->encabezado) {
-
             global $info_header;
-            // // Arial bold 15
-
-            // Movernos a la derecha
-            // $this->Cell(80);
             $this->SetFont('Arial', '', 10);
             $this->SetXY(15, 13);
             $this->MultiCell(0, 0, iconv('UTF-8', 'windows-1252', $info_header), 0, 'L', 0);
@@ -274,14 +268,14 @@ if ($datos_guias == null) {
     $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.');
     $pdf->SetWidths(array(24, 70, 18, 24, 28, 24));
     $pdf->Row($header_resumen, array(12, 12, 12, 12, 12, 12), 'B', 5, [true, true, true, true, true, true]);
-    $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden, true);
+    $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden, null, true);
     foreach ($data_resumen as $fill) {
         // $pdf->SetStartY(20);
         $pdf->SetFont('Arial', '', 10);
         $salida = $fill["cantidad_salida"];
         $entrada = $fill["retorno"];
         $util = $fill["utilizado"];
-        $fab_pro = $fill['fabricado'];
+        $fab_pro = $fill['fabricado']; 
         $id_producto = $fill['id_producto'];
         $pdf->Row(array(
             iconv('UTF-8', 'windows-1252', $fill["codigo"]),
@@ -297,44 +291,3 @@ if ($datos_guias == null) {
 
 // Generar el PDF y almacenarlo temporalmente
 $pdf->Output('I', $filename);
-
-
-// $pdf->SetFont('Arial', 'B', 12);
-// $pdf->Row(array('Cantidad', 'Unidad', 'Descripcion'), array(12, 12, 12), 'B', 7);
-// $rowsPrinted = 0;
-// $totalRowsPrinted = 0;
-
-// foreach ($data_boleta as $fill) {
-//     // Verificar si se alcanzó el límite de filas por página
-//     if ($rowsPrinted >= 24) {
-//         // Si se alcanza el límite, dibujar la fila adicional y reiniciar el contador de filas
-//         $pdf->SetWidths(array(194));
-//         $pdf->SetAligns(array('C'));
-
-//         $pdf->Row(array(''. "\n" . ' RECIBIDO POR                                                                              ENTREGADO POR',), array(9), '', 16);
-//         $rowsPrinted = 0;
-
-//         // Agregar una nueva página si es necesario
-//         if ($pdf->GetY() + 40 > $pdf->GetPageHeight() - 10) {
-//             $pdf->AddPage();
-//             // Dibujar encabezado de tabla en la nueva página
-//             $pdf->SetY($pdf->GetY() + 4);
-//             $pdf->SetWidths(array(30, 20, 144));
-//             $pdf->SetAligns(array('C', 'C', 'C'));
-//             $pdf->Row(array('Cantidad', 'Unidad', 'Descripcion'), array(12, 12, 12), 'B', 7);
-//             $totalRowsPrinted = 0; // Reiniciar el contador total de filas impresas para la nueva página
-//         }
-//     }
-
-//     // Dibujar fila de datos
-//     $pdf->SetAligns(array('C', 'C', 'L'));
-//     $pdf->Row(array(
-//         iconv('UTF-8', 'windows-1252', $fill["cantidad_salida"]),
-//         iconv('UTF-8', 'windows-1252', $fill["unidad"]),
-//         iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
-//     ), array(8, 8, 8), '', 6);
-
-//     // Incrementar el contador de filas
-//     $rowsPrinted++;
-//     $totalRowsPrinted++;
-// }

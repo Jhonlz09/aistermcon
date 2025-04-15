@@ -181,7 +181,7 @@ class ModeloInforme
     }
 
 
-    static public function mdlInformeOrdenResumen($id_orden, $fab = null)
+    static public function mdlInformeOrdenResumen($id_orden, $fab = null, $tipo = null)
     {
         try {
             $sql = "SELECT i.id as id_producto, i.fabricado, 
@@ -204,6 +204,9 @@ class ModeloInforme
             }
             if ($fab === true) {
                 $sql .= " AND i.fabricado = false";
+            }
+            if ($tipo === true) {
+                $sql .= "  AND i.fabricado = false";
             }
 
             $sql .= " GROUP BY s.id_producto, i.codigo, i.descripcion, u.nombre, i.id, i.fabricado

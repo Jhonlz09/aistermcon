@@ -241,7 +241,7 @@
             "#FA80724D",
             "#6A5ACD4D"
         ];
-        
+
         let cat = 2;
         let barChartData, barChartCanvas, barChartOptions, chartCanvas;
         let donutData, donutChartCanvas, donutOptions, donutCanvas;
@@ -249,11 +249,11 @@
         let mes = month;
         let mesGrafico = mes;
         let todo_mes = [{
-            id: 0,
-            text: 'TODO'
-        },
-        ...datos_meses
-    ]
+                id: 0,
+                text: 'TODO'
+            },
+            ...datos_meses
+        ]
 
         cargarCombo('Categoria', cat);
 
@@ -525,7 +525,7 @@
 
         $(cboAnio).on("change", function() {
             let a = this.options[this.selectedIndex].text
-            if(a == anio){
+            if (a == anio) {
                 return;
             }
             anio = a
@@ -544,7 +544,7 @@
 
         $(cboMeses).on("change", function() {
             let m = this.value
-            if(m == mes){
+            if (m == mes) {
                 return;
             }
             // console.log(mes);
@@ -566,7 +566,7 @@
 
         $(cboCategoria).on("change", function() {
             let c = this.value;
-            if(c == cat){
+            if (c == cat) {
                 return;
             }
             cat = c
@@ -597,7 +597,7 @@
                     //Actualiza las etiquetas
                     chartData.labels = clientes;
                     chartData.datasets[0].data = salidas;
-                    if(max){
+                    if (max) {
                         chart.config.options.scales.y.suggestedMax = Math.max(...salidas) + 1;
                     }
                     chart.update();
@@ -638,6 +638,9 @@
                 lengthChange: false,
                 autoWidth: false,
                 dom: "t",
+                scrollY: "500px", // Altura del scroll vertical
+                scrollX: true, // Habilita scroll horizontal
+                // scrollCollapse: true, // Para que se colapse si no hay muchos datos
                 columnDefs: colums
             });
             return dataTable;
