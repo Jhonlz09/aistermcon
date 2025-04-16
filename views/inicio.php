@@ -116,19 +116,19 @@
                         </div>
                     </div>
                     <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table" id="tblTop">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">CÓDIGO</th>
-                                        <th>DESCRIPCION</th>
-                                        <th style="font-size:18px!important" class="text-center">TOTAL</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
+                        <!-- <div class="table-responsive"> -->
+                        <table class="table" id="tblTop">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">CÓDIGO</th>
+                                    <th>DESCRIPCION</th>
+                                    <th style="font-size:18px!important" class="text-center">TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <!-- </div> -->
                     </div> <!-- ./ end card-body -->
                 </div>
             </div>
@@ -530,8 +530,6 @@
             }
             anio = a
             mes = cboMeses.value;
-            // console.log(mes)
-            // console.log(anio)
             tarjetasInfo(anio);
             let src = new FormData();
             src.append('accion', 1);
@@ -593,7 +591,6 @@
                         clientes.push(i['cliente']);
                         salidas.push(i['salidas']);
                     });
-
                     //Actualiza las etiquetas
                     chartData.labels = clientes;
                     chartData.datasets[0].data = salidas;
@@ -621,7 +618,7 @@
                 }
             });
         }
-
+        
         function iniciarTabla(tabla, accion, colums) {
             var dataTable = $(tabla).DataTable({
                 ajax: {
@@ -634,18 +631,22 @@
                         d.mes = mes;
                     }
                 },
+                // responsive: true,
                 ordering: false,
                 lengthChange: false,
                 autoWidth: false,
                 dom: "t",
-                scrollY: "500px", // Altura del scroll vertical
-                scrollX: true, // Habilita scroll horizontal
-                // scrollCollapse: true, // Para que se colapse si no hay muchos datos
+                scrollY: "492px", // Altura del scroll vertical
+                scrollX: false, // Habilita scroll horizontal
+                scrollCollapse: true, // Para que se colapse si no hay muchos datos
                 columnDefs: colums
             });
+            // Ajustar columnas al redimensionar ventana
+            // $(window).on('resize', function() {
+            //     dataTable.columns.adjust().draw();
+            // });
             return dataTable;
         }
-
         // function graficoTheme() {
         //     if (document.body.classList.contains('dark-mode')) {
         //         Chart.defaults.color = '#fff';

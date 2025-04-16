@@ -312,7 +312,7 @@ if ($datos_guias == null) {
             $pdf->SetStartY(20);
             $pdf->SetFont('Arial', '', 10);
             $salida = $fill["cantidad_salida"];
-            $entrada = $fill["retorno"];
+            $entrada = ($fill["retorno"] == '-') ? $fill["cantidad_salida"] : $fill["retorno"];
             $util = $fill["utilizado"];
             $fab_pro = $fill['fabricado'];
             $id_producto = $fill['id_producto'];
@@ -387,7 +387,6 @@ if ($datos_guias == null) {
         if ($util == null || $util == '') {
             $util = $salida;
         }
-
         $pdf->Row(array(
             iconv('UTF-8', 'windows-1252', $fill["codigo"]),
             iconv('UTF-8', 'windows-1252', $fill["descripcion"]),

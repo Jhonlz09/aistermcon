@@ -117,7 +117,7 @@ class ModeloInicio
         try {
             $e = Conexion::ConexionDB()->prepare("SELECT codigo, descripcion, stock_min, (stock- stock_mal)as disponible
             FROM tblinventario
-            WHERE stock < stock_min AND estado=true;");
+            WHERE stock < stock_min AND estado=true AND fabricado = false;");
             $e->execute();
 
             return $e->fetchAll();

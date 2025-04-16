@@ -264,13 +264,11 @@ if ($datos_guias == null) {
     $pdf->SetX(12);
     $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Resumen total de uso de materiales y herramientas'), 0, 1, 'L');
     $pdf->Ln(10);
-
     $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.');
     $pdf->SetWidths(array(24, 70, 18, 24, 28, 24));
     $pdf->Row($header_resumen, array(12, 12, 12, 12, 12, 12), 'B', 5, [true, true, true, true, true, true]);
     $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden, null, true);
     foreach ($data_resumen as $fill) {
-        // $pdf->SetStartY(20);
         $pdf->SetFont('Arial', '', 10);
         $salida = $fill["cantidad_salida"];
         $entrada = $fill["retorno"];
@@ -288,6 +286,4 @@ if ($datos_guias == null) {
     }
 }
 // Configurar cabeceras para indicar el tipo de contenido y el nombre de descarga
-
-// Generar el PDF y almacenarlo temporalmente
 $pdf->Output('I', $filename);
