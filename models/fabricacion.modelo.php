@@ -129,7 +129,7 @@ class ModeloFabricacion
 
             // Si hay stock disponible, proceder con la inserción
             $a = $conexion->prepare("INSERT INTO tblsalidas(id_boleta, cantidad_salida, id_producto, id_producto_fab) 
-                                    VALUES(:id_boleta, 1, :id_producto, :id_producto_fab)");
+                                    VALUES(:id_boleta, 0, :id_producto, :id_producto_fab)");
             $a->bindParam(':id_producto_fab', $id_producto_fab, PDO::PARAM_INT);
             $a->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
             $a->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);

@@ -1149,7 +1149,7 @@
                     ],
                     createdRow: function(row, data, dataIndex) {
                         const selectElement = $(row).find('.id_unidad');
-                        cargarOpcionesSelect(selectElement, data.id_unidad, '100%');
+                        cargarOpcionesSelect(selectElement, data[2], '100%');
                     },
                 });
 

@@ -98,9 +98,6 @@
                 </div>
             </div>
         </div>
-
-
-
         <div class="row" style="align-items:flex-start">
             <div class="col-md-6">
                 <div class="card">
@@ -132,7 +129,6 @@
                     </div> <!-- ./ end card-body -->
                 </div>
             </div>
-
             <div class="col-md-6">
                 <!-- DONUT CHART -->
                 <div class="card ">
@@ -154,7 +150,6 @@
                 </div>
                 <!-- /.card -->
             </div>
-
         </div>
         <div class="card">
             <div class="card-header" style="display:block;padding-block:.8rem">
@@ -287,8 +282,6 @@
 
         Chart.register(ChartDataLabels);
         Chart.defaults.font.family = "Poppins-Regular";
-
-        // setChange(cboCategoria, cat);
         /* =======================================================
         SOLICITUD AJAX TARJETAS INFORMATIVAS
         =======================================================*/
@@ -559,7 +552,6 @@
             mes = this.value;
             anio = cboAnio.options[cboAnio.selectedIndex].text;
             tablaTop.ajax.reload();
-            // console.log("si me ejecuto sapo")
         });
 
         $(cboCategoria).on("change", function() {
@@ -586,7 +578,6 @@
                 success: function(respuesta) {
                     var clientes = [];
                     var salidas = [];
-
                     respuesta.forEach(i => {
                         clientes.push(i['cliente']);
                         salidas.push(i['salidas']);
@@ -618,7 +609,7 @@
                 }
             });
         }
-        
+
         function iniciarTabla(tabla, accion, colums) {
             var dataTable = $(tabla).DataTable({
                 ajax: {
@@ -641,12 +632,10 @@
                 scrollCollapse: true, // Para que se colapse si no hay muchos datos
                 columnDefs: colums
             });
-            // Ajustar columnas al redimensionar ventana
-            // $(window).on('resize', function() {
-            //     dataTable.columns.adjust().draw();
-            // });
+
             return dataTable;
         }
+
         // function graficoTheme() {
         //     if (document.body.classList.contains('dark-mode')) {
         //         Chart.defaults.color = '#fff';

@@ -133,7 +133,6 @@
                 let fabricacion = rows.data().pluck('fab')[0];
                 let traslado = rows.data().pluck('tras')[0];
                 let textReturn = traslado && fabricacion || !fabricacion ?  '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '';
-                
                 let texto = traslado ? 'Fabricado' : 'No trasladado';
                 let fabricacionSpan = fabricacion ?
                     '<span class="badge bg-fab mr-2">'+texto+'</span>' :
@@ -141,6 +140,7 @@
                 var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer">' +
                     '<strong class="pl-2">' + fabricacionSpan + group + '  (' + rows.count() + ')</strong>' +
                     '<div class="txt-wrap-sm">' +
+                    // btnTraslado +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button>' +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf_img"><i class="fas fa-file-image"></i></button>' +
                     (editar ? '<button id="editS" class="btn btn-row pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button>' : '') +
@@ -585,10 +585,6 @@
                 }
             })
         });
-
-        // $('#tblSalidas tbody').on('click', '.btnEliminar', function() {
-
-        // });
 
         // document.addEventListener('keydown', function(e) {
         //     if (e.key === "Escape") {

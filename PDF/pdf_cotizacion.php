@@ -186,8 +186,6 @@ class PDF extends FPDF
         return $textHeight;
     }
 
-
-
     // Función auxiliar para obtener el alto real del texto en una celda
     // function getStringHeight($cellWidth, $text, $fontSize)
     // {
@@ -263,44 +261,7 @@ class PDF extends FPDF
         }
         return $nl;
     }
-
-
-    // function CustomMultiCell($firstLineWidth, $subsequentLineWidth, $h, $text, $firstLineX, $subsequentLineX)
-    // {
-    //     // Split the text into lines using the improved WordWrap function
-    //     $lines = $this->WordWrap($text, $firstLineWidth, $subsequentLineWidth);
-
-    //     // Save the original Y position
-    //     $originalY = $this->GetY();
-
-    //     // Print each line
-    //     foreach ($lines as $i => $line) {
-    //         if ($i == 0) {
-    //             // First line starts at the original X position (firstLineX)
-    //             $this->SetX($firstLineX);
-    //             $width = $firstLineWidth;
-    //         } else {
-    //             // Subsequent lines start at X position subsequentLineX with adjusted width
-    //             $this->SetX($subsequentLineX);
-    //             $width = $subsequentLineWidth;
-
-    //             // Get current position
-    //             $x = $this->GetX();
-    //             $y = $this->GetY();
-
-    //             // Draw the left and right fill rectangles for subsequent lines
-    //             // $this->Rect($x - $leftFillWidth, $y, $leftFillWidth, $h, 'F'); // Left fill
-    //             // $this->Rect($x + $width, $y, $rightFillWidth, $h, 'F'); // Right fill
-    //         }
-
-    //         // Print the text
-    //         $this->MultiCell($width, $h, iconv('UTF-8', 'windows-1252', $line), 1, 'L');
-    //     }
-
-    //     // Restore Y position
-    //     $this->SetY($originalY + count($lines) * $h);
-    // }
-
+    
     function CustomMultiCell($firstLineWidth, $subsequentLineWidth, $h, $firstLineX, $subsequentLineX, $border = true, $lines, $totalHeight)
     {
         // Split the text into lines using the improved WordWrap function

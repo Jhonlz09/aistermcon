@@ -33,7 +33,6 @@
                                                 <label class="tab" for="radio-1"> Compra</label>
                                                 <span style="width: 100%;transform:translate(0)" class="glider"></span>
                                             <?php endif; ?>
-
                                             <?php if ($_SESSION["crear9"] && $_SESSION["crear4"]) : ?>
                                                 <input type="radio" id="radio-2" name="tabs" value="2" checked />
                                                 <label class="tab" for="radio-2">Salida</label>
@@ -43,7 +42,7 @@
                                                 <label class="tab" for="radio-1"> Compra</label>
                                                 <input type="radio" id="radio-7" name="tabs" value="7" />
                                                 <label class="tab" for="radio-7">Fabricacion</label>
-                                                <span style="width:25%;" class="glider"></span>
+                                                <span style="width:25%" class="glider"></span>
                                             <?php endif; ?>
 
                                             <!-- <span class="glider"></span> -->
@@ -432,7 +431,7 @@
                                                                     <div class="form-group">
                                                                         <label class="col-form-label combo" for="inpMotivo">
                                                                             <i class="fas fa-clipboard-question"></i> Motivo</label>
-                                                                        <input style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas">
+                                                                        <textarea style="border-bottom: 2px solid var(--select-border-bottom);background-color:#f6f6f6" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas"></textarea>
                                                                     </div>
                                                                     <div class="form-group" style="margin-bottom:.8rem;">
                                                                         <label class="col-form-label combo mb-2" for="inp">

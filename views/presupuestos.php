@@ -109,8 +109,6 @@
 </div>
 
 <script>
-   
-
     // configuracionTable = {
     //     "responsive": true,
     //     "dom": 'pt',
@@ -184,7 +182,6 @@
 
     //     const id = document.getElementById('id'),
     //         nombre = document.getElementById('nombre');
-
     //     $(modal).on("shown.bs.modal", () => {
     //         nombre.focus();
     //     });
