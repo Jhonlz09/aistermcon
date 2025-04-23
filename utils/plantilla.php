@@ -1215,10 +1215,10 @@
                         },
                     ],
                 });
+
                 addProFab.addEventListener('click', function() {
                     agregarFilaFab();
                 });
-
 
                 function agregarFilaFab() {
                     if (selectedTab == '8') {
@@ -1240,7 +1240,6 @@
                         });
                     } else {
                         let idUnico = Date.now();
-                        // Define la nueva fila con el ID en la primera celda
                         let nuevaFila = [idUnico, '1', '', '', ''];
                         let rowNode = tblProdFab.row.add(nuevaFila).draw(false).node();
                     }

@@ -1255,14 +1255,20 @@ svg {
     transform: rotate(180deg);
     transition: transform var(--trans-dur) var(--trans-timing);
     z-index: 1;
-    box-shadow: -1px 1px 2px inset rgb(0 0 0 / 30%);
+    box-shadow: -1px 1px 2px inset rgba(0, 0, 0, 0.318);
     border-radius: 50%;
 }
+.row-selected{
+    background-color: rgba(88, 140, 45, 0.373) !important; /* Fondo amarillo */
+}
+
+/* #tblEmpleadoH tbody tr:hover {
+    background-color: rgba(88, 140, 45, 0.195);
+} */
 
 .switch__check-line {
     transform: translate(0, 0);
-    transition:
-        stroke var(--trans-dur) var(--trans-timing),
+    transition: stroke var(--trans-dur) var(--trans-timing),
         stroke-dashoffset var(--trans-dur) var(--trans-timing),
         transform var(--trans-dur) var(--trans-timing);
     stroke: var(--stroke);

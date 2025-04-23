@@ -379,7 +379,7 @@
             });
         }
 
-        function obtenerDatosProdFab(id_boleta) {
+        function obtenerDatosProdFab(id_boleta, tras) {
             // Aquí deberías hacer una llamada AJAX para obtener los datos relacionados con id_boleta
             $.ajax({
                 url: 'controllers/salidas.controlador.php', // Cambiar por la URL de tu backend
@@ -393,13 +393,15 @@
                     if (response) {
                         tblDetalleFab.clear().draw();
                         response.forEach(item => {
+                            let cantidad = tras ? item.salidas : item.retorno;
                             let nuevaFila = [
                                 item.id_fab, // ID único de la fila
-                                item.retorno, // Cantidad
+                                cantidad, // Cantidad
                                 item.id_unidad, // Unidad
                                 item.descripcion, // Descripción
                                 ''];
                             tblDetalleFab.row.add(nuevaFila).draw(false);
+                            console.log('Fila añadida:', item.retorno);
                         });
                         console.log('Datos obtenidos:', response);
                     } else {
@@ -423,6 +425,7 @@
                 despachado_id = row[15],
                 entrega = row[16],
                 fab = row[21],
+                tras = row[22],
                 guia = row[17];
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
             const isfab = fab ? '7' : '2';
@@ -442,11 +445,11 @@
                         });
                 }
                 nro_guiaFab.value = guia;
-                isTrasFab.checked = row[22];
+                isTrasFab.checked = tras;
                 isTrasFab.dispatchEvent(new Event('click'));
 
-                console.log(row[22])
-                obtenerDatosProdFab(id_boleta);
+                // console.log(row[22])
+                obtenerDatosProdFab(id_boleta, tras);
             } else {
                 if (selectedItem) {
                     // Asignamos el valor al input de autocompletado

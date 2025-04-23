@@ -223,7 +223,7 @@
 <!-- Modal -->
 
 <div class="modal fade" id="modal_personal">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fas fa-calendar-circle-user"></i><span> Selecciona el personal</span></h4>
@@ -238,7 +238,7 @@
                         <table id="tblEmpleadoH" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>N</th>
+                                    <th>N<input type="checkbox" id="select-all"></th>
                                     <th>NOMBRES Y APELLIDOS</th>
                                 </tr>
                             </thead>
@@ -258,7 +258,6 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-
 
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
@@ -391,7 +390,6 @@
             "autoWidth": false,
         });
 
-
         tblEmpleadoH = $("#tblEmpleadoH").DataTable({
             "ajax": {
                 "url": "controllers/combo.controlador.php",
@@ -402,9 +400,6 @@
                 }
             },
             "dom": 'ft',
-            select: {
-                selector: 'td:first-child'
-            },
             "lengthChange": false,
             "ordering": false,
             "autoWidth": false,
@@ -417,9 +412,27 @@
                     "data": "nombre"
                 },
             ],
+
+            select: {
+                style: 'multi',
+                selector: 'td'
+            },
             "pageLength": 100,
         });
 
+
+        $('#select-all').on('click', function() {
+            if (this.checked) {
+                tblEmpleadoH.rows().select();
+            } else {
+                tblEmpleadoH.rows().deselect();
+            }
+        });
+
+        // Deselecciona el checkbox del header si se deselecciona alguno manualmente
+        tblEmpleadoH.on('deselect', function() {
+            $('#select-all').prop('checked', false);
+        });
 
         // tabla.on('responsive-resize', function(e, datatable, columns) {
         //     // Encontrar el índice de la última columna visible
@@ -438,7 +451,19 @@
         //         }
         //     });
         // });
+        $('#tblEmpleadoH tbody').on('click', 'tr', function(e) {
+            // if ($(e.target).is('input[type="checkbox"]')) return; // No hacer nada si clic fue directamente sobre el checkbox
+            // const checkbox = $(this).find('input[type="checkbox"]')[0];
+            // if (checkbox) {
+            //     checkbox.click(); // Dispara el evento "change"
+            // }
+        });
 
+        // Clic en el checkbox → cambia la clase de la fila
+        // $('#tblEmpleadoH tbody').on('change', 'input[type="checkbox"]', function() {
+        //     const row = $(this).closest('tr');
+        //     row.toggleClass('row-selected', this.checked);
+        // });
 
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
