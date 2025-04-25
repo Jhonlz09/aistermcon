@@ -96,6 +96,7 @@
         let datos_orden = [];
         let datos_prove = [];
         let datos_anio = [];
+        let datos_person = [];
         let selectedTab = '2';
         // let datos_und = [];
         for (let i = 2024; i <= year; i++) {
@@ -809,9 +810,9 @@
                     placeholder: 'SELECCIONE',
                 });
 
-                $(cboResponsable).select2({
-                    placeholder: 'SELECCIONE',
-                });
+                // $(cboResponsable).select2({
+                //     placeholder: 'SELECCIONE',
+                // });
 
                 cargarCombo('Proveedores', '', 1, true).then(datos_ => {
                     datos_prove = datos_;
@@ -845,8 +846,14 @@
                 // });
 
                 cargarCombo('Despachado', bodegueroPorDefecto, 6);
-                cargarCombo('Responsable', '', 7);
-
+                cargarCombo('Responsable', '', 7, true).then(datos_ => {
+                    datos_person = datos_;
+                    $(cboResponsable).select2({
+                        placeholder: 'SELECCIONE',
+                        width: 'auto',
+                        data: datos_person
+                    })
+                });
 
                 cargarCombo('Unidad', '', 1, true).then(datos_ => {
                     $('#cboUnidad_fab').select2({
@@ -1647,9 +1654,9 @@
                     });
                 });
 
-                const clearButton = document.getElementById("clearButton"),
-                    clearButtonFab = document.getElementById("clearButtonFab"),
-                    clearButtonEntrada = document.getElementById("clearButtonEntrada");
+                // const clearButton = document.getElementById("clearButton"),
+                //     clearButtonFab = document.getElementById("clearButtonFab"),
+                //     clearButtonEntrada = document.getElementById("clearButtonEntrada");
                 // nro_orden.addEventListener("mouseenter", function() {
                 //     if (nro_orden.readOnly) {
                 //         clearButton.style.display = "block";
@@ -1660,27 +1667,26 @@
                 // nro_orden.addEventListener("mouseleave", function() {
                 //     clearButton.style.display = "none";
                 // });
-                clearButton.addEventListener("click", function() {
-                    // Borra el contenido
-                    nro_orden.readOnly = false; // Desbloquea el input
-                    nro_orden.value = "";
-                    nro_orden.focus();
-                    clearButton.style.display = "none"; // Oculta la X
-                });
+                // clearButton.addEventListener("click", function() {
+                //     nro_orden.readOnly = false; // Desbloquea el input
+                //     nro_orden.value = "";
+                //     nro_orden.focus();
+                //     clearButton.style.display = "none"; // Oculta la X
+                // });
 
-                clearButtonEntrada.addEventListener("click", function() {
-                    nro_ordenEntrada.readOnly = false; // Desbloquea el input
-                    nro_ordenEntrada.value = "";
-                    nro_ordenEntrada.focus()
-                    clearButtonEntrada.style.display = "none"; // Oculta la X
-                });
+                // clearButtonEntrada.addEventListener("click", function() {
+                //     nro_ordenEntrada.readOnly = false; // Desbloquea el input
+                //     nro_ordenEntrada.value = "";
+                //     nro_ordenEntrada.focus()
+                //     clearButtonEntrada.style.display = "none"; // Oculta la X
+                // });
 
-                clearButtonFab.addEventListener("click", function() {
-                    nro_ordenFab.readOnly = false; // Desbloquea el input
-                    nro_ordenFab.value = "";
-                    nro_ordenFab.focus()
-                    clearButtonFab.style.display = "none"; // Oculta la X
-                });
+                // clearButtonFab.addEventListener("click", function() {
+                //     nro_ordenFab.readOnly = false; // Desbloquea el input
+                //     nro_ordenFab.value = "";
+                //     nro_ordenFab.focus()
+                //     clearButtonFab.style.display = "none"; // Oculta la X
+                // });
 
                 cargarAutocompletado(function(items) {
 
@@ -1717,7 +1723,6 @@
                         select: function(event, ui) {
                             nro_orden.readOnly = true;
                             id_orden_guia_salida = ui.item.cod;
-
                             nro_orden.parentNode.querySelector(".ten").style.display = "none";
                             clearButton.style.display = "block";
                             nro_orden.focus();

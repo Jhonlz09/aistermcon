@@ -568,8 +568,6 @@ function validarClave(input, sub) {
 }
 
 async function updateAll(element) {
-  // console.log("Iniciando updateAll");
-
   // Deshabilitar el botón (usando pointer-events) y cambiar el fondo a gris
   $(element).css({
     'pointer-events': 'none',  // Deshabilitar clics
@@ -581,6 +579,7 @@ async function updateAll(element) {
     $('#nro_orden').autocomplete("option", "source", items);
     $('#nro_ordenEntrada').autocomplete("option", "source", items);
     $('#nro_ordenFab').autocomplete("option", "source", items);
+    $('#nro_ordenHorario').autocomplete("option", "source", items);
   }, null, 'orden', 6);
   // Ejecutar la recarga de la tabla
   try {
@@ -591,9 +590,7 @@ async function updateAll(element) {
   } catch (error) {
     console.error("Error en la ejecución de alguna de las promesas:", error);
   } finally {
-    // Este bloque se ejecuta siempre
-    // console.log("Todos los procesos han terminado.");
-    // Restaurar el fondo y habilitar los clics nuevamente
+
     $(element).css({
       'pointer-events': 'auto',  // Reactivar el enlace
       'background-color': ''  // Restaurar el color original
@@ -644,6 +641,18 @@ function cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'i
     },
   });
 }
+
+function clearInput(inputId, btn) {
+  const input = document.getElementById(inputId);
+  // const button = document.getElementById(buttonId);
+  if (input && btn) {
+      input.readOnly = false;
+      input.value = "";
+      input.focus();
+      btn.style.display = "none";
+  }
+}
+
 
 function evitarEnvio(event) {
   if (event.keyCode === 13) {

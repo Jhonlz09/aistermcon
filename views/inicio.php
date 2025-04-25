@@ -112,7 +112,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body p-0">
+                    <div id='div-top' class="card-body p-0">
                         <!-- <div class="table-responsive"> -->
                         <table class="table" id="tblTop">
                             <thead>
@@ -159,8 +159,8 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
+            <div id="div-poco" class="card-body p-0">
+                <!-- <div  class="table-responsive"> -->
                     <table class="table" id="tblPoco">
                         <thead>
                             <tr>
@@ -173,7 +173,7 @@
                         <tbody>
                         </tbody>
                     </table>
-                </div>
+                <!-- </div> -->
             </div> <!-- ./ end card-body -->
         </div>
     </div>
@@ -635,6 +635,20 @@
 
             return dataTable;
         }
+
+        const container = document.getElementById('div-top'); // el div padre de tu tabla
+        const container2 = document.getElementById('div-poco'); // el div padre de tu tabla
+
+        const observer = new ResizeObserver(() => {
+            tablaTop.columns.adjust();
+        });
+
+        const observer2 = new ResizeObserver(() => {
+            tablaPoco.columns.adjust();
+        });
+
+        observer.observe(container);
+        observer2.observe(container2);
 
         // function graficoTheme() {
         //     if (document.body.classList.contains('dark-mode')) {

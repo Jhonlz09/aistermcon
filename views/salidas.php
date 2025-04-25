@@ -132,10 +132,10 @@
                 });
                 let fabricacion = rows.data().pluck('fab')[0];
                 let traslado = rows.data().pluck('tras')[0];
-                let textReturn = traslado && fabricacion || !fabricacion ?  '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '';
+                let textReturn = traslado && fabricacion || !fabricacion ? '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '';
                 let texto = traslado ? 'Fabricado' : 'No trasladado';
                 let fabricacionSpan = fabricacion ?
-                    '<span class="badge bg-fab mr-2">'+texto+'</span>' :
+                    '<span class="badge bg-fab mr-2">' + texto + '</span>' :
                     '';
                 var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer">' +
                     '<strong class="pl-2">' + fabricacionSpan + group + '  (' + rows.count() + ')</strong>' +
@@ -144,7 +144,7 @@
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button>' +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf_img"><i class="fas fa-file-image"></i></button>' +
                     (editar ? '<button id="editS" class="btn btn-row pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button>' : '') +
-                    (crear ?  textReturn : '') +
+                    (crear ? textReturn : '') +
                     (eliminar ? '<button id="eliS" class="btn btn-row pt-0 pb-0"><i class="fas fa-trash-can"></i></button>' : '') +
                     '</div></div>';
                 return $('<tr/>')
@@ -399,7 +399,8 @@
                                 cantidad, // Cantidad
                                 item.id_unidad, // Unidad
                                 item.descripcion, // Descripción
-                                ''];
+                                ''
+                            ];
                             tblDetalleFab.row.add(nuevaFila).draw(false);
                             console.log('Fila añadida:', item.retorno);
                         });
@@ -426,6 +427,8 @@
                 entrega = row[16],
                 fab = row[21],
                 tras = row[22],
+                orden = row[7],
+                cliente = row[8],
                 guia = row[17];
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
             const isfab = fab ? '7' : '2';
@@ -443,6 +446,21 @@
                         ._trigger("select", null, {
                             item: selectedItem
                         });
+                } else {
+                    // Crear un nuevo item con los datos disponibles
+                    let nuevoItem = {
+                        cod: id_orden,
+                        label: `${orden}  ${cliente}`,
+                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                    };
+                    $(nro_ordenFab).val(nuevoItem.label);
+
+                    // Simular la selección del nuevo item en el autocompletado
+                    $(nro_ordenFab)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: nuevoItem
+                        });
                 }
                 nro_guiaFab.value = guia;
                 isTrasFab.checked = tras;
@@ -459,6 +477,26 @@
                         .autocomplete("instance")
                         ._trigger("select", null, {
                             item: selectedItem
+                        });
+                } else {
+                    // Crear un nuevo item con los datos disponibles
+                    let nuevoItem = {
+                        cod: id_orden,
+                        label: `${orden}  ${cliente}`,
+                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                    };
+
+                    // Agregar el nuevo item a la lista de items del autocomplete
+                    // items_orden.push(nuevoItem);
+
+                    // Asignar el valor al input
+                    $(nro_orden).val(nuevoItem.label);
+
+                    // Simular la selección del nuevo item en el autocompletado
+                    $(nro_orden)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: nuevoItem
                         });
                 }
                 setChange(cboConductor, conductor)

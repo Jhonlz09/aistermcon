@@ -2,7 +2,8 @@
 
 require_once "../models/combo.modelo.php";
 
-class ControladorCombos{
+class ControladorCombos
+{
     public $tabla;
     public $anio;
     public function listar()
@@ -11,72 +12,81 @@ class ControladorCombos{
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function listarConductor(){
+    public function listarConductor()
+    {
 
         $data = ModeloCombos::mdlListarConductor();
-        
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function listarNumOrden(){
+    public function listarNumOrden()
+    {
 
         $data = ModeloCombos::mdlListarOrden($this->anio);
-        
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function listarClientesActivos(){
+    public function listarClientesActivos()
+    {
 
         $data = ModeloCombos::mdlListarClientesActivos();
-        
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    
+
     // public function listarOrdenActivas(){
 
     //     $data = ModeloCombos::mdlListarOrdenActivas();
-        
+
     //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     // }
 
-    public function listarDespachado(){
+    public function listarDespachado()
+    {
 
         $data = ModeloCombos::mdlListarDespachado();
-        
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function listarResponsable(){
+    public function listarResponsable($lastName = false)
+    {
 
-        $data = ModeloCombos::mdlListarResponsable();
-        
+        $data = ModeloCombos::mdlListarResponsable($lastName);
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function listarProductoFab(){
+    public function listarProductoFab()
+    {
 
         $data = ModeloCombos::mdlListarProductosFab();
-        
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    public function listarProductoFabCon(){
+    public function listarProductoFabCon()
+    {
 
         $data = ModeloCombos::mdlListarProductosFabCon();
-        
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function listarEmpresaFilter(){
+    public function listarEmpresaFilter()
+    {
 
         $data = ModeloCombos::mdlListarEmpresaFilter();
-        
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function listarOrdenEstadoFilter(){
+    public function listarOrdenEstadoFilter()
+    {
 
         $data = ModeloCombos::mdlListarOrdenEstadoFilter();
-        
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
@@ -85,32 +95,33 @@ if (isset($_POST['accion']) && $_POST['accion'] == 1) {
     $data = new ControladorCombos();
     $data->tabla = $_POST["tabla"];
     $data->listar();
-}else if(isset($_POST['accion']) && $_POST['accion'] == 2){
+} else if (isset($_POST['accion']) && $_POST['accion'] == 2) {
     $data = new ControladorCombos();
     $data->listarConductor();
-}else if(isset($_POST['accion']) && $_POST['accion'] == 3){
+} else if (isset($_POST['accion']) && $_POST['accion'] == 3) {
     $data = new ControladorCombos();
     $data->anio = $_POST["anio"];
     $data->listarNumOrden();
-}else if(isset($_POST['accion']) && $_POST['accion'] == 4){
+} else if (isset($_POST['accion']) && $_POST['accion'] == 4) {
     $data = new ControladorCombos();
     $data->listarClientesActivos();
-}else if(isset($_POST['accion']) && $_POST['accion'] == 6){
+} else if (isset($_POST['accion']) && $_POST['accion'] == 6) {
     $data = new ControladorCombos();
     $data->listarDespachado();
-}else if(isset($_POST['accion']) && $_POST['accion'] == 7){
+} else if (isset($_POST['accion']) && $_POST['accion'] == 7) {
+    $formatoInvertido = isset($_POST['invertido']) ? filter_var($_POST['invertido'], FILTER_VALIDATE_BOOLEAN) : false;
     $data = new ControladorCombos();
-    $data->listarResponsable();
-}else if(isset($_POST['accion']) && $_POST['accion'] == 8){
+    $data->listarResponsable($formatoInvertido);
+} else if (isset($_POST['accion']) && $_POST['accion'] == 8) {
     $data = new ControladorCombos();
     $data->listarProductoFab();
-}else if(isset($_POST['accion']) && $_POST['accion'] == 9){
+} else if (isset($_POST['accion']) && $_POST['accion'] == 9) {
     $data = new ControladorCombos();
     $data->listarProductoFabCon();
-}else if(isset($_POST['accion']) && $_POST['accion'] == 10){
+} else if (isset($_POST['accion']) && $_POST['accion'] == 10) {
     $data = new ControladorCombos();
     $data->listarEmpresaFilter();
-}else if(isset($_POST['accion']) && $_POST['accion'] == 11){
+} else if (isset($_POST['accion']) && $_POST['accion'] == 11) {
     $data = new ControladorCombos();
     $data->listarOrdenEstadoFilter();
 }

@@ -59,7 +59,7 @@
                                                         <label class="col-form-label combo" for="nro_orden">
                                                             <i class="fas fa-ticket"></i> Orden de trabajo</label>
                                                         <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_orden" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente" required>
-                                                        <button class="clear-btn" type="button" id="clearButton" style="display:none">&times;</button>
+                                                        <button class="clear-btn" type="button" id="clearButton" style="display:none" onclick="clearInput('nro_orden', this)">&times;</button>
                                                         <div class="ten invalid-feedback">*Campo obligatorio.</div>
                                                         <!-- <div class="ten">*Seleccione.</div> -->
                                                     </div>
@@ -85,7 +85,7 @@
                                                                     <label class="col-form-label combo" for="nro_ordenEntrada">
                                                                         <i class="fas fas fa-ticket"></i> Orden de trabajo</label>
                                                                     <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_ordenEntrada" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
-                                                                    <button class="clear-btn" type="button" id="clearButtonEntrada" style="display:none">&times;</button>
+                                                                    <button class="clear-btn" type="button" id="clearButtonEntrada" style="display:none" onclick="clearInput('nro_ordenEntrada', this)">&times;</button>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                             </div>
@@ -96,7 +96,7 @@
                                                                     <label class="col-form-label combo" for="nro_ordenFab">
                                                                         <i class="fas fas fa-ticket"></i> Orden de trabajo</label>
                                                                     <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_ordenFab" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente" required>
-                                                                    <button class="clear-btn" type="button" id="clearButtonFab" style="display:none">&times;</button>
+                                                                    <button class="clear-btn" type="button" id="clearButtonFab" style="display:none" onclick="clearInput('nro_ordenFab', this)">&times;</button>
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                             </div>

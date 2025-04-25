@@ -148,6 +148,15 @@ input[type=file]::file-selector-button {
     display: none;
 }
 
+.odd .dtfc-fixed-left {
+    background-color: #f2f2f2;
+}
+
+.even .dtfc-fixed-left {
+    background-color: #ffffff;
+}
+
+
 .loader {
     display: flex;
     align-items: center;
@@ -532,7 +541,10 @@ input[type="number"] {
     background-color: #ac7600ab;
     color: #fff;
 }
-
+.table-header thead tr th {
+    background-color: #fafffaab;
+    /* color: #fff; */
+}
 .dark-mode .modal-change .selected-bor {
     --select-border-bottom: var(--label-new) !important;
 }
@@ -1258,8 +1270,37 @@ svg {
     box-shadow: -1px 1px 2px inset rgba(0, 0, 0, 0.318);
     border-radius: 50%;
 }
+
 .row-selected{
     background-color: rgba(88, 140, 45, 0.373) !important; /* Fondo amarillo */
+}
+
+#select-all {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--gray);
+    border-radius: 6px;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+    /* transition: var(--transition); */
+}
+
+#select-all:checked::after{
+    content: "✓";
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+}
+
+#select-all:checked{
+    border-color:#1a4d3c;
+    background-color:#1a4d3c;
 }
 
 /* #tblEmpleadoH tbody tr:hover {

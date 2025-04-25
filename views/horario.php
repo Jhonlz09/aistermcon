@@ -2,6 +2,12 @@
 
 <head>
     <title>Ingreso personal</title>
+    <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <!-- <link href="assets/plugins/datatables-fixedcolumns/css/fixedColumns.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css" rel="stylesheet" integrity="sha384-b6V45oYHXYNRRbOBt+gMso4peE+V6GATcho1MZx7ELTjReHmjA8zW2Ap/w0D3+QX" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css" rel="stylesheet" integrity="sha384-fvFMooh85/CFhRcmgNLO/DEXj4/h8h4Fz2s0Wtq2hPU/s7z0rLzrk77ID2JS+YUg" crossorigin="anonymous"> -->
+
 </head>
 <!-- Contenido Header -->
 <section id="div_header" class="content-header">
@@ -48,7 +54,6 @@
                         <!-- <div class="table-responsive"> -->
                         <table id="tblHorario" cellspacing="0" class="table table-bordered table-striped">
                             <thead>
-
                                 <tr>
                                     <th class="text-center">Nº</th>
                                     <th>NOMBRES</th>
@@ -93,32 +98,50 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col mb-2">
+                            <!-- <div class="col-sm-3 col-md-4 mb-2">
                                 <label for="input1" class="m-0"><i class="fas fa-person-digging"></i> Obra</label>
-                                <input type="text" id="input1" class="form-control">
+                                <input type="text" id="nro_ordenHorario" class="form-control">
+                            </div> -->
+                            <div class="col-sm-3 col-md-4 mb-2 ui-front">
+                                <label class="col-form-label combo" for="nro_ordenHorario">
+                                    <i class="fas fa-person-digging"></i> Obra</label>
+                                <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control" id="nro_ordenHorario" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
+                                <button class="clear-btn" type="button" id="clearButtonObraH" style="display:none;top:42%;" onclick="clearInput('nro_ordenHorario', this)">&times;</button>
+
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
+                            </div>
+
+                            <div class="col-sm-3 mb-2">
+                                <label for="fechaH" class="m-0"><i class="fas fa-calendar"></i> Fecha</label>
+                                <input style="border-bottom: solid 2px #000;" type="date" id="fechaH" class="form-control" value="<?php echo date('Y-m-d'); ?>">
                             </div>
                             <div class="col-sm-3 mb-2">
-                                <label for="input2" class="m-0"><i class="fas fa-calendar"></i> Fecha</label>
-                                <input type="date" id="input2" class="form-control">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="input3" class="m-0 text-nowrap">
+                                        <i class="fas fa-user-helmet-safety"></i> Empleado
+                                    </label>
+                                    <span data-toggle="modal" data-target="#modal_personal"
+                                        class="form-control badge bg-gradient-dark"
+                                        style="width:1.6rem;height:1.6rem;font-size:0.75rem; display:flex; justify-content:center; align-items:center;">
+                                        <i class="fas fa-up-right-from-square"></i>
+                                    </span>
+                                </div>
+                                <span style="display:block;height:calc(2.25rem + 2px);line-height: calc(2.25rem + 2px);white-space:nowrap;"> <span id="selected-person">0</span> seleccionado(s)</span>
                             </div>
-                            <div class="col-sm-3 mb-2">
-                                <label for="input3" class="m-0 text-nowrap"><i class="fas fa-user-helmet-safety"></i> Persona</label>
-                                <!-- <input type="text" id="input3" class="form-control"> -->
-                                <span data-toggle="modal" data-target="#modal_personal" class="form-control badge bg-gradient-blue d-flex align-content-center align-items-center justify-content-center" style="width:3.5rem"><i class="fa-solid fa-up-right-from-square"></i></span>
+                            <div class="col-sm" style="text-align:end;">
+                                <button type="button" id="addRow" class="btn btn-sm bg-gradient-green">
+                                    <i class="fas fa-grid-2-plus"></i> Agregar
+                                </button>
                             </div>
-                            <div class="col-sm-3 mb-2">
+                            <!-- <div class="col-sm-3 mb-2">
                                 <div class="row">
                                     <div class="col-sm ">
                                         <label for="input3" class="m-0 text-nowrap"><i class="fas fa-table-rows"></i> Filas</label>
                                         <input type="text" id="input3" class="form-control">
                                     </div>
-                                    <div class="col-auto mt-2">
-                                        <button type="button" id="addRow" class="btn btn-sm bg-gradient-green">
-                                            Agregar
-                                        </button>
-                                    </div>
+                                   
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -135,18 +158,17 @@
                     <div class="card-body p-0">
                         <form id="formHorario">
                             <div class="table-responsive" style="padding:0;border:1px solid #ccc;border-radius: 4px;">
-                                <table id="tblPersonH" class="table table-bordered w-100 table-striped">
+                                <table id="tblPersonH" class="table table-bordered w-100 table-striped table-fix">
                                     <thead>
                                         <tr>
-                                            <th colspan="4"></th>
+                                            <!-- <th rowspan="2" class="th-orange"><input type="checkbox" id="select-allP"></th> -->
+                                            <th rowspan="2" class="th-orange">NOMBRES</th>
+                                            <th rowspan="2" class="th-orange">OBRA</th>
+                                            <th rowspan="2" class="th-orange">FECHA</th>
                                             <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
                                             <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
                                         </tr>
                                         <tr>
-                                            <th class="th-orange">NOMBRES</th>
-                                            <th class="th-orange">CLIENTE</th>
-                                            <th class="th-orange">Nº DE ORDEN</th>
-                                            <th class="th-orange">FECHA</th>
                                             <th class="th-green">HORARIO NORMAL</th>
                                             <th class="th-green">HORA SUPLEMENTARIA</th>
                                             <th class="th-green">HORA 100%</th>
@@ -232,25 +254,25 @@
                 </button>
             </div>
             <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body scroll-modal" style="padding-block:1rem .5rem">
+                <div id="div-empleado" class="modal-body " style="padding-block:1rem .5rem">
                     <input type="hidden" id="id" value="">
-                    <div class="table-responsive">
-                        <table id="tblEmpleadoH" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>N<input type="checkbox" id="select-all"></th>
-                                    <th>NOMBRES Y APELLIDOS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+                    <!-- <div class="table-responsive"> -->
+                    <table id="tblEmpleadoH" class="table table-bordered table-striped table-header">
+                        <thead>
+                            <tr>
+                                <th class="text-center"><input type="checkbox" id="select-all"></th>
+                                <th>NOMBRES Y APELLIDOS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <!-- </div> -->
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                <!-- <div class="modal-footer justify-content-between">
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-ballot-check"></i> </span>Seleccionar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
-                </div>
+                </div> -->
             </form>
 
         </div>
@@ -258,6 +280,12 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
+<script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
+<script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
+<script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script>
+<!-- <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/fixedColumns.dataTables.min.js" integrity="sha384-/LxS0b8zEK/HZxykvyTg3o2Ryk2vBESQvW6QMqiUsitINq/Xg5jB4X9KotjCCp3K" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/scroller/2.2.0/js/scroller.dataTables.min.js" integrity="sha384-cCDhK6VsxVGKfl0shwjJr2UXaCzEpxhSnd7C8Uan8yABW71pdY3iaz8aVBklw8uz" crossorigin="anonymous"></script> -->
 
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
@@ -281,6 +309,7 @@
                 }
             },
         },
+
         columnDefs: [{
                 targets: 0,
                 data: "acciones",
@@ -292,6 +321,7 @@
                     return meta.row; // Devuelve el índice de la fila
                 }
             },
+
             {
                 targets: 3,
             },
@@ -347,8 +377,11 @@
 
     $(document).ready(function() {
         let accion = 0;
+        const container = document.getElementById('div-empleado'); // el div padre de tu tabla
+        const nro_ordenHorario = document.getElementById('nro_ordenHorario');
+        const fechaH = document.getElementById('fechaH');
 
-
+        // const clearButtonObraH = document.getElementById('clearButtonObraH');
         if (!$.fn.DataTable.isDataTable('#tblHorario')) {
             tabla = $("#tblHorario").DataTable({
                 "ajax": {
@@ -383,12 +416,142 @@
                 }
             },
             "dom": 't',
-            "responsive": false,
-            "pageLength": 100,
+            // "responsive": false,
+            // "pageLength": 100,
             "lengthChange": false,
             "ordering": false,
-            "autoWidth": false,
+            // select: {
+            //     style: 'multi',
+            //     selector: ' td '
+            // },
+            // "autoWidth": false,
+            // fixedColumns: {
+            //     start: 5,
+            // },
+            paging: false,
+            // scrollCollapse: true,
+            // scrollX: true,
+            // scrollY: 300,
+            columnDefs: [{
+                    targets: 0,
+                    render: function(data, type, row, meta) {
+                        const timestamp = Date.now(); // milisegundos actuales
+                        const uniqueId = `empleado_${timestamp}`; // ID único
+
+                        return `<div class="ui-front" style="z-index:auto;position:relative"><input style="width:12rem" type="search" 
+                class="form-control empleado" 
+                id="${uniqueId}" 
+                oninput="formatInputOrden(this)" 
+                
+                autocomplete="off"
+                value="${row.nombre || ''}"> 
+                <button class="clear-btn" type="button" onclick="clearInput('${uniqueId}', this)" id="btn${uniqueId}" style="display:none;top:6%;right:2px">&times;</button>
+                <div class="invalid-feedback">*Campo obligatorio.</div>
+                </div>`;
+                    }
+                },
+                {
+                    targets: 1,
+                    render: function(data, type, row, meta) {
+                        const timestamp = Date.now(); // milisegundos actuales
+                        const uniqueId = `empleado_${timestamp}`; // ID único
+                        return `<div class="ui-front" style="z-index:auto;position:relative">
+                        <input style="width:12rem" 
+                        type="search"
+                        class="form-control obra" 
+                        id="inp${uniqueId}" 
+                        oninput="formatInputOrden(this)" 
+                        placeholder="Ingrese el nro. de orden o cliente" 
+                        autocomplete="off"
+                        value="${row.obra || ''}"> 
+                        <button class="clear-btn" type="button" id="btnO${uniqueId}" onclick="clearInput('inp${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button>
+                        <div class="invalid-feedback">*Campo obligatorio.</div></div>`;
+                    }
+                },
+                {
+                    targets: 2,
+                    data: "fecha",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            const uniqueId = meta.row + 1;
+                            return `<input 
+                        style="width:10rem"
+                        type="date" 
+                        id="fechaH${uniqueId}" 
+                        class="form-control" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                }
+            ],
+            createdRow: function(row, data, dataIndex) {
+                // Busca el input .obra dentro de la fila recién creada
+                let $input = $(row).find(".obra");
+
+                $input.autocomplete({
+                    source: items_orden,
+                    autoFocus: true,
+                    focus: function() {
+                        return false;
+                    },
+                    select: function(event, ui) {
+                        this.readOnly = true;
+                        $input.data("selected-id", ui.item.cod);
+                        let btn = this.parentElement.querySelector("button");
+                        if (btn) btn.style.display = "block";
+                    }
+                });
+                // Revisar si ya tiene un ID seleccionado (por ejemplo desde datos preexistentes)
+            if (id_orden_horario !== null) {
+                    const selectedItem = items_orden.find(item => item.cod === id_orden_horario);
+                    if (selectedItem) {
+                        $input.val(selectedItem.label);
+                        $input.autocomplete("instance")._trigger("select", null, {
+                            item: selectedItem
+                        });
+                    }
+                }
+            }
         });
+
+        // tblPerson.on('draw', function() {
+        //     // Inicializar autocomplete en cada input .obra
+        //     $(".obra").autocomplete({
+        //         source: items_orden,
+        //         autoFocus: true,
+        //         focus: function() {
+        //             return false;
+        //         },
+        //         select: function(event, ui) {
+        //             this.readOnly = true;
+        //             id_orden_horario = ui.item.cod;
+        //             let btn = this.parentElement.querySelector("button");
+        //             console.log(btn);
+        //             btn.style.display = "block";
+        //         },
+        //     });
+
+        //     // Si ya hay una obra seleccionada en nro_ordenHorario
+        //     if (id_orden_horario !== null) {
+        //         // Buscar el objeto completo del item seleccionado
+        //         const selectedItem = items_orden.find(item => item.cod === id_orden_horario);
+
+        //         // Aplicar el valor y simular la selección en cada .obra
+        //         if (selectedItem) {
+        //             $(".obra").each(function() {
+        //                 const $input = $(this);
+        //                 $input.val(selectedItem.label); // Muestra el label
+
+        //                 // Simula el evento de selección
+        //                 $input.autocomplete("instance")._trigger("select", null, {
+        //                     item: selectedItem
+        //                 });
+        //             });
+        //         }
+        //     }
+        // });
+
 
         tblEmpleadoH = $("#tblEmpleadoH").DataTable({
             "ajax": {
@@ -397,19 +560,25 @@
                 "dataSrc": '',
                 data: function(data) {
                     data.accion = 7;
+                    data.invertido = true;
                 }
             },
             "dom": 'ft',
             "lengthChange": false,
             "ordering": false,
+            "paging": false,
             "autoWidth": false,
+            scrollY: "50vh",
+            scrollX: false,
+            scrollCollapse: true,
             "columns": [{
                     "data": null,
                     "defaultContent": '',
-                    "className": 'select-checkbox',
+                    "className": 'select-checkbox text-center',
                 },
                 {
                     "data": "nombre"
+
                 },
             ],
 
@@ -417,7 +586,29 @@
                 style: 'multi',
                 selector: 'td'
             },
-            "pageLength": 100,
+        });
+
+        $("#addRow").on("click", function() {
+            let dateH = fechaH.value;
+            let selectedData = tblEmpleadoH.rows({
+                selected: true
+            }).data();
+
+            for (let i = 0; i < selectedData.length; i++) {
+                let persona = selectedData[i].nombre;
+                let partes = persona.trim().split(/\s+/);
+                let nombreReducido = `${partes[0] || ''} ${partes[2] || ''}`;
+
+                tblPerson.row.add({
+                    id: '',
+                    nombre: nombreReducido,
+                    fecha: dateH
+                }).draw(false);
+            }
+
+            tblEmpleadoH.rows().deselect();
+            $('#selected-person').text(0);
+            $('#select-all').prop('checked', false);
         });
 
 
@@ -429,10 +620,68 @@
             }
         });
 
+        let id_orden_horario = 0;
+
+        cargarAutocompletado(function(items) {
+            $(nro_ordenHorario).autocomplete({
+                source: items,
+                minLength: 1,
+                autoFocus: true,
+                focus: function() {
+                    return false;
+                },
+                select: function(event, ui) {
+                    nro_ordenHorario.readOnly = true;
+                    id_orden_horario = ui.item.cod;
+                    clearButtonObraH.style.display = "block";
+                },
+            }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                return $("<li>").append(
+                    "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
+                    item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
+                ).appendTo(ul);
+            };
+        }, null, 'orden', 6)
+
+        // $('#btnSelect').on('click', function(e) {
+        //     e.preventDefault(); // evitar que el formulario se envíe (si eso no es lo que deseas)
+
+        //     // Obtener la cantidad de filas seleccionadas
+        //     const selectedCount = tblEmpleadoH.rows({
+        //         selected: true
+        //     }).count();
+
+        //     // Actualizar el contenido del span
+        //     $('#selected-person').text(selectedCount);
+        // });
         // Deselecciona el checkbox del header si se deselecciona alguno manualmente
         tblEmpleadoH.on('deselect', function() {
             $('#select-all').prop('checked', false);
         });
+
+        tblEmpleadoH.on('select deselect', function() {
+            // Total de todas las filas (sin importar el filtro)
+            const totalRows = tblEmpleadoH.rows().count();
+
+            // Total de filas seleccionadas (sin importar el filtro)
+            const selectedRows = tblEmpleadoH.rows({
+                selected: true
+            }).count();
+
+            // Solo marcar el checkbox "select-all" si TODAS las filas (no solo las filtradas) están seleccionadas
+            $('#select-all').prop('checked', totalRows > 0 && selectedRows === totalRows);
+
+            // Actualiza el contador en el span (puedes decidir si quieres que este cuente todas o solo las filtradas)
+            $('#selected-person').text(selectedRows);
+        });
+
+
+        const observer = new ResizeObserver(() => {
+            tblEmpleadoH.columns.adjust();
+        });
+
+        observer.observe(container);
 
         // tabla.on('responsive-resize', function(e, datatable, columns) {
         //     // Encontrar el índice de la última columna visible
