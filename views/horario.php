@@ -483,11 +483,58 @@
                         }
                         return data;
                     }
-                }
+                },
+                {
+                    targets: 3,
+                    // data: "id",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<input 
+                        style="width:auto"
+                        type="text" 
+                        id="id${meta.row + 1}" 
+                        class="form-control" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 4,
+                    // data: "id",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<input 
+                        style="width:auto"
+                        type="text" 
+                        id="id${meta.row + 1}" 
+                        class="form-control" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 5,
+                    // data: "id",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<input 
+                        style="width:auto"
+                        type="text" 
+                        id="id${meta.row + 1}" 
+                        class="form-control" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
             ],
             createdRow: function(row, data, dataIndex) {
                 // Busca el input .obra dentro de la fila recién creada
-                let $input = $(row).find(".obra");
+                let $input1 = $(row).find(".empleado");
+
+                let $input2 = $(row).find(".obra");
 
                 $input.autocomplete({
                     source: items_orden,
@@ -503,7 +550,7 @@
                     }
                 });
                 // Revisar si ya tiene un ID seleccionado (por ejemplo desde datos preexistentes)
-            if (id_orden_horario !== null) {
+                if (id_orden_horario !== null) {
                     const selectedItem = items_orden.find(item => item.cod === id_orden_horario);
                     if (selectedItem) {
                         $input.val(selectedItem.label);
