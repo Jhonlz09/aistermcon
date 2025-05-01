@@ -220,6 +220,29 @@ class PDF extends FPDF
             $pdf->SetY(25); // Reiniciar en Y=25
         }
     }
+
+    function StyledWriteLine($title, $content, $titleFont = [], $contentFont = [])
+    {
+        // Guarda estilo actual
+        $savedFontFamily = $this->FontFamily;
+        $savedFontStyle  = $this->FontStyle;
+        $savedFontSize   = $this->FontSizePt;
+
+        // Título con su estilo
+        if (!empty($titleFont)) {
+            $this->SetFont($titleFont['family'], $titleFont['style'], $titleFont['size']);
+        }
+        $this->Write(6, iconv('UTF-8', 'windows-1252', $title));
+
+        // Contenido con otro estilo
+        if (!empty($contentFont)) {
+            $this->SetFont($contentFont['family'], $contentFont['style'], $contentFont['size']);
+        }
+        $this->Write(6, iconv('UTF-8', 'windows-1252', $content));
+
+        // Restaurar fuente original
+        $this->SetFont($savedFontFamily, $savedFontStyle, $savedFontSize);
+    }
 }
 
 // Creación del objeto de la clase heredada
@@ -294,8 +317,14 @@ if ($datos_guias == null) {
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Conductor: ' . $row["conductor"] . ' ' . $row["placa"]), 0, 0, 'L');
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Responsable: ' . $encargado), 0, 1, 'R');
         $pdf->checkNewPage($pdf, 6);
-        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Motivo: ' . $row["motivo"]), 0, 1, 'L');
-        $pdf->Ln(10);
+        $pdf->StyledWriteLine(
+            'Motivo: ',
+            $row['motivo'],
+            ['family'=>'Arial', 'style'=>'B', 'size'=>12],
+            ['family'=>'Arial', 'style'=>'I', 'size'=>12]
+        );
+        // $pdf->MultiCell(0, 6, iconv('UTF-8', 'windows-1252', 'Motivo: ' . $row["motivo"]), 0, 'L', 0);
+        $pdf->Ln(7);
         $id_guia = $row["id_guia"];
 
         $data = ModeloInforme::mdlInformeOrdenFab($id_orden, $id_guia);
@@ -331,10 +360,10 @@ if ($datos_guias == null) {
             // $pdf->Ln();
             $list_prod_util = ModeloInforme::mdlInformeOrdenFabUtil($id_producto);
 
-            if (!empty($list_prod_util) && is_array($list_prod_util)) { 
+            if (!empty($list_prod_util) && is_array($list_prod_util)) {
                 $pdf->SetWidths(array(27, 109, 18, 21));
                 $pdf->SetAligns(array('L', 'L', 'C', 'C'));
-                
+
                 $pdf->SetMargins(25, 0, 12);
                 $pdf->Ln();
                 $pdf->SetFont('Arial', 'B', 11);
@@ -351,7 +380,7 @@ if ($datos_guias == null) {
             // $pdf->checkNewPage($pdf, 6);
             // $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Materiales usados en : ' . $prod_fab_des . ''), 0, 1, 'L');
             // $pdf->Row($header, array(12, 12, 12, 12), 'B');
- 
+
             foreach ($list_prod_util as $list) {
                 $pdf->Row(array(
                     iconv('UTF-8', 'windows-1252', $list["codigo"]),
@@ -363,7 +392,6 @@ if ($datos_guias == null) {
             $pdf->Ln();
             $pdf->SetMargins(12, 0, 12);
             $pdf->SetX(12);
-
         }
         $pdf->SetMargins(12, 0, 12);
     }

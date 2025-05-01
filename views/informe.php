@@ -184,8 +184,6 @@
 </div>
 <!-- /.Modal Date-->
 
-<script src="assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js"></script>
-
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar7"] || $_SESSION["eliminar7"] ?>';
     var editar = '<?php echo $_SESSION["editar7"] ?>';

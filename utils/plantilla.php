@@ -19,6 +19,11 @@
     <link href='assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' rel='stylesheet' type='text/css' />
     <link href='assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' rel='stylesheet' type='text/css' />
     <link href='assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" href="assets/plugins/datatables-select/css/select.bootstrap4.min.css"
+        media="print" onload="this.media='all'" />
+    <noscript>
+        <link rel="stylesheet" href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" />
+    </noscript>
     <!-- SweetAlert2 -->
     <link rel='stylesheet' href='assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css'>
     <!-- Icono ventana -->
@@ -58,7 +63,11 @@
     <script defer src="assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script defer src="assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script defer src="assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-
+    <script defer src="assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js"></script>
+    <script defer src="assets/plugins/datatables-searchpanes/js/dataTables.searchPanes.min.js" type="text/javascript"></script>
+    <script defer src="assets/plugins/datatables-searchpanes/js/searchPanes.bootstrap4.min.js" type="text/javascript"></script>
+    <script defer src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
+    <script defer src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
     <!-- Tabledit -->
     <script defer src="assets/plugins/jquery-tabledit/tabledit.min.js"></script>
     <script defer src="assets/plugins/chart.js/Chart.min.js"></script>
@@ -853,6 +862,8 @@
                         width: 'auto',
                         data: datos_person
                     })
+                    console.log('Estos son los datos de las personadas', datos_person)
+
                 });
 
                 cargarCombo('Unidad', '', 1, true).then(datos_ => {
@@ -2204,7 +2215,7 @@
                                 }
                             }
                         });
-                    }else if (selectedTab === '9') {
+                    } else if (selectedTab === '9') {
                         let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
@@ -2228,23 +2239,27 @@
                         let datosPrincipales = [];
                         // Recorre cada fila de la tabla principal (tblDetalleFab)
                         tblDetalleFabEntrada.rows().every(function() {
-                            if(hasError) return false;
+                            if (hasError) return false;
                             let row = this;
-                            let tr = $(row.node());
+                            // let tr = $(row.node());
                             let rowData = row.data();
                             let id_salida = rowData[0]; // Asumimos que el ID está en la primera columna
                             let idUnico = rowData[9]; // Asumimos que el ID está en la primera columna
                             let tablaSecundariaId = `#tbl${idUnico}`;
-                            console.log('rowdata', rowData)
+                            let producto = rowData[1]
+                            // console.log('rowdata CONFIREM', rowData)
                             let cantidad_entrada_fab = parseFloat($(this.node()).find('.retorno').val())
                             let cantidad_salida_fab = parseFloat(rowData[3]);
 
-                            console.log('cantidad_entrada_fab', cantidad_entrada_fab, 'cantidad_salida_fab', cantidad_salida_fab)
-                            if(cantidad_entrada_fab > cantidad_salida_fab){
-                                hasError = true;
-                                mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida');
-                                return false;
+                            // console.log('cantidad_entrada_fab', cantidad_entrada_fab, 'cantidad_salida_fab', cantidad_salida_fab)
+                            if (isTrasFab.checked) {
+                                if (cantidad_entrada_fab > cantidad_salida_fab) {
+                                    hasError = true;
+                                    mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto ' + "'" + producto + "'");
+                                    return false;
+                                }
                             }
+
 
                             let filaPrincipal = {
                                 id: id_salida,
@@ -2262,27 +2277,27 @@
                                     let secData = this.data();
                                     let cantidad_salida = parseFloat(secData[1]);
                                     let cantidad_entrada = parseFloat($(this.node()).find('.cantidad').val())
-
-                                    if(cantidad_entrada > cantidad_salida){
+                                    let pro_uti = secData[3]
+                                    if (cantidad_entrada > cantidad_salida) {
                                         hasError = true;
-                                        mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto utilizado');
+                                        mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto utilizado ' + "'" + pro_uti + "'");
                                         return false;
                                     }
-                                        // cantidad = cantidad_salida - cantidad;
+                                    // cantidad = cantidad_salida - cantidad;
                                     filaPrincipal.productos.push({
                                         codigo: secData[0],
                                         cantidad: cantidad_entrada
                                     });
-                                    console.log('filaPrincipal', secData)
+                                    console.log('filaPrincipal secdat', secData)
                                 });
                             }
                             // Obtener los datos originales de la tabla secundaria
-                        
+
                             datosPrincipales.push(filaPrincipal);
                         });
                         if (hasError) return;
 
-                        console.log('DATOS MODIFICADOS ENVIADOS', datosPrincipales)
+                        // console.log('DATOS MODIFICADOS ENVIADOS', datosPrincipales)
                         formData.append('datos', JSON.stringify(datosPrincipales));
                         // formData.append('orden', id_orden_guia_fab);
                         // formData.append('id_boleta', id_boleta_fab);

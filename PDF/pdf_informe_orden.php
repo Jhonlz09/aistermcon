@@ -219,6 +219,29 @@ class PDF extends FPDF
         }
         return $nl;
     }
+
+    function StyledWriteLine($title, $content, $titleFont = [], $contentFont = [])
+    {
+        // Guarda estilo actual
+        $savedFontFamily = $this->FontFamily;
+        $savedFontStyle  = $this->FontStyle;
+        $savedFontSize   = $this->FontSizePt;
+
+        // Título con su estilo
+        if (!empty($titleFont)) {
+            $this->SetFont($titleFont['family'], $titleFont['style'], $titleFont['size']);
+        }
+        $this->Write(6, iconv('UTF-8', 'windows-1252', $title));
+
+        // Contenido con otro estilo
+        if (!empty($contentFont)) {
+            $this->SetFont($contentFont['family'], $contentFont['style'], $contentFont['size']);
+        }
+        $this->Write(6, iconv('UTF-8', 'windows-1252', $content));
+
+        // Restaurar fuente original
+        $this->SetFont($savedFontFamily, $savedFontStyle, $savedFontSize);
+    }
 }
 
 // Creación del objeto de la clase heredada
@@ -286,7 +309,12 @@ if ($datos_guias == null) {
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de entrada: ' . $row["fecha_retorno"]), 0, 1, 'L');
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Conductor: ' . $row["conductor"] . ' ' . $row["placa"]), 0, 0, 'L');
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Responsable: ' . $encargado), 0, 1, 'R');
-        $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Motivo: ' . $row["motivo"]), 0, 1, 'L');
+        $pdf->StyledWriteLine(
+            'Motivo: ',
+            $row['motivo'],
+            ['family' => 'Arial', 'style' => 'B', 'size' => 12],
+            ['family' => 'Arial', 'style' => 'I', 'size' => 12]
+        );
         $pdf->Ln(10);
         $id_guia = $row["id_guia"];
         $pdf->SetFont('Arial', 'B', 11);
@@ -309,7 +337,7 @@ if ($datos_guias == null) {
                 iconv('UTF-8', 'windows-1252', $entrada),
                 iconv('UTF-8', 'windows-1252', $util)
             ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
-        // }
+            // }
             // if ($fab_pro == true) {
             //     $data_fab = ModeloInventario::mdlListarProductoFab($id_producto);
             //     foreach ($data_fab as $fab) {

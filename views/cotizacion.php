@@ -1026,7 +1026,10 @@
             otros.readOnly = false;
             iva = row[12];
             ivaOriginal = iva; // subtotal = parseFloat((subtotal || '0').toString().replace(/[$,]/g, '')) || 0;
-           console.log('iva en editar', {iva, ivaOriginal})
+            console.log('iva en editar', {
+                iva,
+                ivaOriginal
+            })
             subtotalOriginal = parseFloat((row[10] || '0').toString().replace(/[$,]/g, '')) || 0;
             descuento = parseFloat((row[14] || '0').toString().replace(/[$,]/g, '')) || '';
             descOriginal = descuento;
@@ -1105,7 +1108,7 @@
                 let accion_cot = 9;
                 let formData = new FormData();
 
-                if(subtotal < 0){
+                if (subtotal < 0) {
                     mostrarToast('danger', 'Error', 'fa-xmark', 'El subtotal no puede ser menor a 0');
                     return;
                 }
@@ -1129,7 +1132,7 @@
                 realizarRegistroCotizacion(tblSolicitud, formData, clases);
 
             } else if (accion == 2) {
-                
+
                 let cambiosEnInputs = {
                     id_prove: compararValores(proveOriginal, cboProve.value),
                     comprador: compararValores(comOriginal, comprador.value),
@@ -1174,10 +1177,10 @@
                         data.append('filas', JSON.stringify(filasActualizadas));
                     }
                 }
-                if(subtotal< 0){
+                if (subtotal < 0) {
                     mostrarToast('danger', 'Error', 'fa-xmark', 'El subtotal no puede ser menor a 0');
                     return;
-                }else if(subtotal > 0){
+                } else if (subtotal > 0) {
                     data.append('estado_orden', true);
                 }
 

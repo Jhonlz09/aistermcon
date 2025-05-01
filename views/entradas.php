@@ -2,8 +2,6 @@
 
 <head>
     <title>Compras</title>
-    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 </head>
 
 <!-- Contenido Header -->
@@ -87,11 +85,6 @@
     <!-- /.container-fluid -->
 </section>
 <!-- /.Contenido -->
-<script src="assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js"></script>
-<script src="assets/plugins/datatables-searchpanes/js/dataTables.searchPanes.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-searchpanes/js/searchPanes.bootstrap4.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar9"] || $_SESSION["eliminar9"] ?>';
     var editar = '<?php echo $_SESSION["editar9"] ?>';

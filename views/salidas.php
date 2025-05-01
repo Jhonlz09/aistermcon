@@ -4,7 +4,7 @@
     <title>Movimientos</title>
     <!-- <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css"> -->
     <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <!-- <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
 </head>
 
 <!-- Contenido Header -->
@@ -88,11 +88,7 @@
 <!-- /.Contenido -->
 
 
-<script src="assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js"></script>
-<script src="assets/plugins/datatables-searchpanes/js/dataTables.searchPanes.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-searchpanes/js/searchPanes.bootstrap4.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
+
 <!-- <script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script> -->
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar4"] || $_SESSION["eliminar4"] ?>';
@@ -126,13 +122,12 @@
             dataSrc: [4],
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
-
                 rows.nodes().each(function(r) {
                     $(r).toggleClass('collapsedrow', !collapsed);
                 });
                 let fabricacion = rows.data().pluck('fab')[0];
                 let traslado = rows.data().pluck('tras')[0];
-                let textReturn = traslado && fabricacion || !fabricacion ? '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '';
+                let textReturn =  '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>';
                 let texto = traslado ? 'Fabricado' : 'No trasladado';
                 let fabricacionSpan = fabricacion ?
                     '<span class="badge bg-fab mr-2">' + texto + '</span>' :
@@ -437,6 +432,7 @@
             const cancelar = document.getElementById('Cancelar');
             let selectedItem = items_orden.find(item => item.cod === id_orden);
             if (fab) {
+                // isTrasFab.disabled = true;
                 if (selectedItem) {
                     // Asignamos el valor al input de autocompletado
                     $(nro_ordenFab).val(selectedItem.label);
@@ -446,6 +442,7 @@
                         ._trigger("select", null, {
                             item: selectedItem
                         });
+                       
                 } else {
                     // Crear un nuevo item con los datos disponibles
                     let nuevoItem = {
@@ -463,9 +460,9 @@
                         });
                 }
                 nro_guiaFab.value = guia;
+                isTrasFab.disabled = tras;
                 isTrasFab.checked = tras;
                 isTrasFab.dispatchEvent(new Event('click'));
-
                 // console.log(row[22])
                 obtenerDatosProdFab(id_boleta, tras);
             } else {
@@ -563,6 +560,7 @@
                 entrega = row[16],
                 guia = row[17],
                 fab = row[21],
+                tras = row[22],
                 isfab = fab ? '7' : '3',
                 isfabValue = fab ? '9' : '6';
             // retorno = document.getElementById('radio-3');
@@ -584,6 +582,9 @@
                 }
                 nro_guiaFab.value = guia;
                 tblDetalleFabEntrada.ajax.reload(null, false);
+                isTrasFab.checked = tras;
+                isTrasFab.dispatchEvent(new Event('click'));
+                isTrasFab.disabled = true;
             } else {
                 if (selectedItem) {
                     // Asignamos el valor al input de autocompletado

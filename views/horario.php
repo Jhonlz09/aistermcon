@@ -2,12 +2,11 @@
 
 <head>
     <title>Ingreso personal</title>
-    <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <!-- <link href="assets/plugins/datatables-fixedcolumns/css/fixedColumns.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="assets/plugins/datatables-fixedcolumns/css/fixedColumns.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
     <!-- <link href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css" rel="stylesheet" integrity="sha384-b6V45oYHXYNRRbOBt+gMso4peE+V6GATcho1MZx7ELTjReHmjA8zW2Ap/w0D3+QX" crossorigin="anonymous">
     <link href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css" rel="stylesheet" integrity="sha384-fvFMooh85/CFhRcmgNLO/DEXj4/h8h4Fz2s0Wtq2hPU/s7z0rLzrk77ID2JS+YUg" crossorigin="anonymous"> -->
-
+    <link href="assets/plugins/datatables-keytable/css/keyTable.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 </head>
 <!-- Contenido Header -->
 <section id="div_header" class="content-header">
@@ -155,89 +154,40 @@
         <div class="row" style="align-items:flex-start">
             <div class="col-xl-12">
                 <div class="card">
-                    <div class="card-body p-0">
+                    <div class="card-body p-0" id="card-hor">
                         <form id="formHorario">
-                            <div class="table-responsive" style="padding:0;border:1px solid #ccc;border-radius: 4px;">
-                                <table id="tblPersonH" class="table table-bordered w-100 table-striped table-fix">
-                                    <thead>
-                                        <tr>
-                                            <!-- <th rowspan="2" class="th-orange"><input type="checkbox" id="select-allP"></th> -->
-                                            <th rowspan="2" class="th-orange">NOMBRES</th>
-                                            <th rowspan="2" class="th-orange">OBRA</th>
-                                            <th rowspan="2" class="th-orange">FECHA</th>
-                                            <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
-                                            <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
-                                        </tr>
-                                        <tr>
-                                            <th class="th-green">HORARIO NORMAL</th>
-                                            <th class="th-green">HORA SUPLEMENTARIA</th>
-                                            <th class="th-green">HORA 100%</th>
-                                            <th class="th-green">TOTAL DE HORAS</th>
-                                            <th class="th-blue">MATERIAL</th>
-                                            <th class="th-blue">TRANSPORTE</th>
-                                            <th class="th-blue">ALIMENTACION</th>
-                                            <th class="th-blue">HOSPEDAJE</th>
-                                            <th class="th-blue">GUARDIANIA</th>
-                                            <th class="th-blue">AGUA</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <!-- <div class="table-responsive" style="padding:0;border:1px solid #ccc;border-radius: 4px;"> -->
+                            <table id="tblPersonH" class="table table-bordered w-100 table-striped table-fix">
+                                <thead>
+                                    <tr>
+                                        <!-- <th rowspan="2" class="th-orange"><input type="checkbox" id="select-allP"></th> -->
+                                        <th rowspan="2" class="th-orange">NOMBRES</th>
+                                        <th rowspan="2" class="th-orange">OBRA</th>
+                                        <th rowspan="2" class="th-orange">FECHA</th>
+                                        <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
+                                        <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="th-green">HORARIO NORMAL</th>
+                                        <th class="th-green">HORA SUPL.</th>
+                                        <th class="th-green">HORA 100%</th>
+                                        <th class="th-green">TOTAL HORAS</th>
+                                        <th class="th-blue">MATERIAL</th>
+                                        <th class="th-blue">TRANSP.</th>
+                                        <th class="th-blue">ALIM.</th>
+                                        <th class="th-blue">HOSP.</th>
+                                        <th class="th-blue">GUARD.</th>
+                                        <th class="th-blue">AGUA</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <!-- </div> -->
                         </form>
                     </div>
                 </div>
             </div>
-            <!-- <div class="col-xl-3" style="position:sticky;top:10%">
-                        <div class="card">
-                            <div class="card-body">
-                                <div>
-                                    <div class="d-flex justify-content-around">
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" type="radio" id="customRadio1" name="customRadio" data-tax="0" value="0">
-                                            <label for="customRadio1" class="custom-control-label">0%</label>
-                                        </div>
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" type="radio" id="customRadio2" name="customRadio" data-tax="5" value="05">
-                                            <label for="customRadio2" class="custom-control-label">5%</label>
-                                        </div>
-                                        <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" type="radio" id="customRadio3" name="customRadio" data-tax="<?php echo $_SESSION["iva"]; ?>" value="<?php echo $_SESSION["iva"]; ?>" checked>
-                                            <label for="customRadio3" class="custom-control-label">
-                                                <?php echo $_SESSION["iva"]; ?>%
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>Descuento:</span>
-                                        <span><input type="text" id="otros" readonly maxlength="6" class="form-control p-0 d-inline" autocomplete="off" spellcheck="false" placeholder="$0.00" oninput="validarNumber(this, /[^0-9.]/g)" style="background-color:#fff;border:none;width:100%;height:auto;max-width:4.8em;text-align:right"></span>
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <span>Subtotal:</span>
-                                        <span id="subtotal">$0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <span>(IVA <span id="tax"><?php echo $_SESSION["iva"] ?></span>%):</span>
-                                        <span id="can_tax">$0.00</span>
-                                    </div>
-
-                                    <hr>
-                                    <div class="d-flex justify-content-between font-weight-bold">
-                                        <span>Total:</span>
-                                        <span id="total">$0.00</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <button type="button" id="btnGuardarSoli" style="margin-bottom:.75rem;background:#3f6791 linear-gradient(180deg, #3f6791, #0b4395) repeat-x; color:#fff" class="btn w-100"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                                <button type="button" id="CerrarSoli" style="border-color:#d6d8df69" class="btn bg-gradient-light w-100"><i class="fas fa-right-from-bracket"></i><span class="button-text"> </span>Cancelar</button>
-                            </div>
-                        </div>
-                    </div> -->
         </div>
     </div>
     </div>
@@ -280,10 +230,12 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
+<script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script>
 <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script>
+
+<!-- <script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
+<script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
+<script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script> -->
 <!-- <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/fixedColumns.dataTables.min.js" integrity="sha384-/LxS0b8zEK/HZxykvyTg3o2Ryk2vBESQvW6QMqiUsitINq/Xg5jB4X9KotjCCp3K" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/scroller/2.2.0/js/scroller.dataTables.min.js" integrity="sha384-cCDhK6VsxVGKfl0shwjJr2UXaCzEpxhSnd7C8Uan8yABW71pdY3iaz8aVBklw8uz" crossorigin="anonymous"></script> -->
 
@@ -378,8 +330,19 @@
     $(document).ready(function() {
         let accion = 0;
         const container = document.getElementById('div-empleado'); // el div padre de tu tabla
+        const container2 = document.getElementById('card-hor'); // el div padre de tu tabla
         const nro_ordenHorario = document.getElementById('nro_ordenHorario');
         const fechaH = document.getElementById('fechaH');
+        let datos_em = datos_person.map(item => ({
+            label: item.text,
+            value: item.text,
+            cod: item.id
+        }));
+
+
+        // const observer = new ResizeObserver(() => {
+        //     tablaTop.columns.adjust();
+        // });
 
         // const clearButtonObraH = document.getElementById('clearButtonObraH');
         if (!$.fn.DataTable.isDataTable('#tblHorario')) {
@@ -405,95 +368,82 @@
         }
 
         tblPerson = $("#tblPersonH").DataTable({
-            "ajax": {
-                "url": "controllers/inventario.controlador.php",
-                "type": "POST",
-                "dataSrc": '',
-                data: function(data) {
-                    data.accion = 12;
-                    data.anio = 2025;
-                    data.id_producto = 0;
-                }
-            },
             "dom": 't',
-            // "responsive": false,
-            // "pageLength": 100,
             "lengthChange": false,
             "ordering": false,
-            // select: {
-            //     style: 'multi',
-            //     selector: ' td '
-            // },
-            // "autoWidth": false,
-            // fixedColumns: {
-            //     start: 5,
-            // },
+            fixedColumns: true,
+            keys: true,
             paging: false,
-            // scrollCollapse: true,
-            // scrollX: true,
-            // scrollY: 300,
+            scrollCollapse: true,
+            scrollX: true,
+            scrollY: '38vh',
             columnDefs: [{
                     targets: 0,
                     render: function(data, type, row, meta) {
                         const timestamp = Date.now(); // milisegundos actuales
                         const uniqueId = `empleado_${timestamp}`; // ID único
-
-                        return `<div class="ui-front" style="z-index:auto;position:relative"><input style="width:12rem" type="search" 
-                class="form-control empleado" 
-                id="${uniqueId}" 
-                oninput="formatInputOrden(this)" 
-                
-                autocomplete="off"
-                value="${row.nombre || ''}"> 
-                <button class="clear-btn" type="button" onclick="clearInput('${uniqueId}', this)" id="btn${uniqueId}" style="display:none;top:6%;right:2px">&times;</button>
-                <div class="invalid-feedback">*Campo obligatorio.</div>
-                </div>`;
+                        return `<div class="ui-front" style="z-index:99999;position:relative">
+                        <input style="width:12rem" 
+                        type="search" 
+                        class="form-control empleado" 
+                        id="${uniqueId}" 
+                        oninput="formatInputOrden(this)" 
+                        autocomplete="off"
+                        value="${data || ''}"> 
+                        <button class="clear-btn" type="button" onclick="clearInput('${uniqueId}', this)" id="btn${uniqueId}" style="display:none;top:6%;right:2px">&times;</button>
+                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                        </div>`;
                     }
                 },
                 {
                     targets: 1,
                     render: function(data, type, row, meta) {
                         const timestamp = Date.now(); // milisegundos actuales
-                        const uniqueId = `empleado_${timestamp}`; // ID único
-                        return `<div class="ui-front" style="z-index:auto;position:relative">
+                        const uniqueId = `obra_${timestamp}`; // ID único
+                        return `<div class="ui-front" style="z-index:inherit;position:relative">
                         <input style="width:12rem" 
                         type="search"
                         class="form-control obra" 
-                        id="inp${uniqueId}" 
+                        id="${uniqueId}" 
                         oninput="formatInputOrden(this)" 
                         placeholder="Ingrese el nro. de orden o cliente" 
                         autocomplete="off"
-                        value="${row.obra || ''}"> 
-                        <button class="clear-btn" type="button" id="btnO${uniqueId}" onclick="clearInput('inp${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button>
+                        value="${data || ''}"> 
+                        <button class="clear-btn" type="button" id="btnO${uniqueId}" onclick="clearInput('${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button>
                         <div class="invalid-feedback">*Campo obligatorio.</div></div>`;
                     }
                 },
                 {
                     targets: 2,
-                    data: "fecha",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
                             const uniqueId = meta.row + 1;
                             return `<input 
-                        style="width:10rem"
-                        type="date" 
-                        id="fechaH${uniqueId}" 
-                        class="form-control" 
-                        value="${data || ''}">`;
+                            style="width:10rem"
+                            type="date" 
+                            id="fechaH${uniqueId}" 
+                            class="form-control" 
+                            value="${data || ''}">`;
                         }
                         return data;
                     }
                 },
                 {
                     targets: 3,
-                    // data: "id",
+                    className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
                             return `<input 
-                        style="width:auto"
+                        style="width:5rem"
+                        autocomplete="off"
+                        spellcheck="false"
                         type="text" 
-                        id="id${meta.row + 1}" 
-                        class="form-control" 
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        
+                        inputmode="numeric"
+                        maxlength="4"
+                        class="form-control hn text-center" 
                         value="${data || ''}">`;
                         }
                         return data;
@@ -501,14 +451,21 @@
                 },
                 {
                     targets: 4,
-                    // data: "id",
+                    className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
                             return `<input 
-                        style="width:auto"
+                        style="width:5rem"
                         type="text" 
+                        autocomplete="off"
+                        spellcheck="false"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        
+                        inputmode="numeric"
+                        maxlength="4"
                         id="id${meta.row + 1}" 
-                        class="form-control" 
+                        class="form-control hs text-center" 
                         value="${data || ''}">`;
                         }
                         return data;
@@ -516,14 +473,114 @@
                 },
                 {
                     targets: 5,
-                    // data: "id",
+                    className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
                             return `<input 
-                        style="width:auto"
+                        style="width:5rem"
                         type="text" 
-                        id="id${meta.row + 1}" 
-                        class="form-control" 
+                        autocomplete="off"
+                        spellcheck="false"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        
+                        inputmode="numeric"
+                        maxlength="4"
+                        class="form-control h100 text-center" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 6,
+                    className: "text-center",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<span class="totalh" style="width:5rem">${data || '8'}</span>`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 7,
+                    className: "text-center",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<input 
+                        style="width:5rem"
+                        type="text" 
+                        class="form-control material text-center" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 8,
+                    className: "text-center",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<input 
+                        style="width:5rem"
+                        type="text" 
+                        class="form-control trans text-center" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 9,
+                    className: "text-center",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<input 
+                        style="width:5rem"
+                        type="text" 
+                        class="form-control ali text-center" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 10,
+                    className: "text-center",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<input 
+                        style="width:5rem"
+                        type="text" 
+                        class="form-control hosp text-center" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 11,
+                    className: "text-center",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<input 
+                        style="width:5rem"
+                        type="text" 
+                        class="form-control guard text-center" 
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 12,
+                    className: "text-center",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `<input 
+                        style="width:5rem"
+                        type="text" 
+                        class="form-control agua text-center" 
                         value="${data || ''}">`;
                         }
                         return data;
@@ -531,12 +588,36 @@
                 },
             ],
             createdRow: function(row, data, dataIndex) {
-                // Busca el input .obra dentro de la fila recién creada
                 let $input1 = $(row).find(".empleado");
+
+                $input1.autocomplete({
+                    source: datos_em,
+                    autoFocus: true,
+                    appendTo: "body",
+                    focus: function() {
+                        return false;
+                    },
+                    select: function(event, ui) {
+                        this.readOnly = true;
+                        let btn = this.parentElement.querySelector("button");
+                        if (btn) btn.style.display = "block";
+                    }
+                })
+
+                if (id_person_res !== null) {
+                    console.log('este es el id_person_res', id_person_res);
+                    const selectedItemP = datos_em.find(item => item.cod === id_person_res);
+                    if (selectedItemP) {
+                        $input1.val(selectedItemP.label);
+                        $input1.autocomplete("instance")._trigger("select", null, {
+                            item: selectedItemP
+                        });
+                    }
+                }
 
                 let $input2 = $(row).find(".obra");
 
-                $input.autocomplete({
+                $input2.autocomplete({
                     source: items_orden,
                     autoFocus: true,
                     focus: function() {
@@ -544,61 +625,296 @@
                     },
                     select: function(event, ui) {
                         this.readOnly = true;
-                        $input.data("selected-id", ui.item.cod);
+                        // this.data("selected-id", ui.item.cod);
                         let btn = this.parentElement.querySelector("button");
                         if (btn) btn.style.display = "block";
                     }
                 });
+
                 // Revisar si ya tiene un ID seleccionado (por ejemplo desde datos preexistentes)
                 if (id_orden_horario !== null) {
                     const selectedItem = items_orden.find(item => item.cod === id_orden_horario);
                     if (selectedItem) {
-                        $input.val(selectedItem.label);
-                        $input.autocomplete("instance")._trigger("select", null, {
+                        $input2.val(selectedItem.label);
+                        $input2.autocomplete("instance")._trigger("select", null, {
                             item: selectedItem
                         });
                     }
                 }
+
             }
         });
 
-        // tblPerson.on('draw', function() {
-        //     // Inicializar autocomplete en cada input .obra
-        //     $(".obra").autocomplete({
-        //         source: items_orden,
-        //         autoFocus: true,
-        //         focus: function() {
-        //             return false;
-        //         },
-        //         select: function(event, ui) {
-        //             this.readOnly = true;
-        //             id_orden_horario = ui.item.cod;
-        //             let btn = this.parentElement.querySelector("button");
-        //             console.log(btn);
-        //             btn.style.display = "block";
-        //         },
-        //     });
+        document.querySelector('#tblPersonH').addEventListener('keydown', function(event) {
+            const key = event.key;
+            const active = document.activeElement;
 
-        //     // Si ya hay una obra seleccionada en nro_ordenHorario
-        //     if (id_orden_horario !== null) {
-        //         // Buscar el objeto completo del item seleccionado
-        //         const selectedItem = items_orden.find(item => item.cod === id_orden_horario);
+            // Solo proceder si es un INPUT dentro de la tabla
+            if (!active || active.tagName !== 'INPUT') return;
 
-        //         // Aplicar el valor y simular la selección en cada .obra
-        //         if (selectedItem) {
-        //             $(".obra").each(function() {
-        //                 const $input = $(this);
-        //                 $input.val(selectedItem.label); // Muestra el label
+            const td = active.closest('td');
+            const tr = td?.parentElement;
+            if (!td || !tr) return;
 
-        //                 // Simula el evento de selección
-        //                 $input.autocomplete("instance")._trigger("select", null, {
-        //                     item: selectedItem
-        //                 });
-        //             });
+            const cellIndex = Array.from(tr.children).indexOf(td);
+            const rowIndex = Array.from(tr.parentElement.children).indexOf(tr);
+
+            const allRows = Array.from(document.querySelectorAll('#tblPersonH tbody tr'));
+            const maxRow = allRows.length - 1;
+            const maxCell = tr.children.length - 1;
+
+            let targetRowIndex = rowIndex;
+            let targetCellIndex = cellIndex;
+
+            switch (key) {
+                case 'ArrowRight':
+                    targetCellIndex = Math.min(cellIndex + 1, maxCell);
+                    break;
+                case 'ArrowLeft':
+                    targetCellIndex = Math.max(cellIndex - 1, 0);
+                    break;
+                case 'ArrowDown':
+                    targetRowIndex = Math.min(rowIndex + 1, maxRow);
+                    break;
+                case 'ArrowUp':
+                    targetRowIndex = Math.max(rowIndex - 1, 0);
+                    break;
+                default:
+                    return; // salir si no es una flecha
+            }
+
+            event.preventDefault();
+
+            const targetRow = allRows[targetRowIndex];
+            if (!targetRow) return;
+
+            const targetCell = targetRow.children[targetCellIndex];
+            if (!targetCell) return;
+
+            const targetInput = targetCell.querySelector('input');
+            if (targetInput) {
+                targetInput.focus();
+                targetInput.select();
+                targetInput.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'center'
+                });
+            } else {
+                // Si no hay input en la celda objetivo, buscar la siguiente celda con input en la dirección
+                buscarInputEnDireccion(key, targetRowIndex, targetCellIndex, allRows);
+            }
+        });
+
+        // Función auxiliar para buscar el siguiente input disponible en la dirección deseada
+        function buscarInputEnDireccion(key, startRow, startCell, allRows) {
+            let i = startRow;
+            let j = startCell;
+
+            while (i >= 0 && i < allRows.length) {
+                const row = allRows[i];
+                const cells = Array.from(row.children);
+                while (j >= 0 && j < cells.length) {
+                    const input = cells[j].querySelector('input');
+                    if (input) {
+                        input.focus();
+                        input.select();
+                        input.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center',
+                            inline: 'center'
+                        });
+                        return;
+                    }
+                    j += (key === 'ArrowRight') ? 1 : (key === 'ArrowLeft') ? -1 : 0;
+                }
+                i += (key === 'ArrowDown') ? 1 : (key === 'ArrowUp') ? -1 : 0;
+                j = startCell; // reiniciar columna si cambiamos de fila
+            }
+        }
+
+
+        // document.addEventListener('keydown', function(event) {
+        //     const key = event.key;
+        //     const active = document.activeElement;
+
+        //     if (!active || active.tagName !== 'INPUT') return;
+
+        //     // Encuentra la celda actual
+        //     const td = active.closest('td');
+        //     const tr = td?.parentElement;
+        //     if (!td || !tr) return;
+
+        //     const cellIndex = Array.from(tr.children).indexOf(td);
+        //     const rowIndex = Array.from(tr.parentElement.children).indexOf(tr);
+
+        //     // Encuentra todas las filas
+        //     const allRows = Array.from(document.querySelectorAll('#tblPersonH tbody tr'));
+
+        //     // Direcciones
+        //     let targetRowIndex = rowIndex;
+        //     let targetCellIndex = cellIndex;
+
+        //     switch (key) {
+        //         case 'ArrowRight':
+        //             targetCellIndex++;
+        //             break;
+        //         case 'ArrowLeft':
+        //             targetCellIndex--;
+        //             break;
+        //         case 'ArrowDown':
+        //             targetRowIndex++;
+        //             break;
+        //         case 'ArrowUp':
+        //             targetRowIndex--;
+        //             break;
+        //         default:
+        //             return;
+        //     }
+
+        //     event.preventDefault();
+
+        //     // Validación de índices
+        //     const targetRow = allRows[targetRowIndex];
+        //     if (!targetRow) return;
+
+        //     const targetCell = targetRow.children[targetCellIndex];
+        //     if (!targetCell) return;
+
+        //     const targetInput = targetCell.querySelector('input');
+        //     if (targetInput) {
+        //         targetInput.focus();
+        //         targetInput.select();
+
+        //         // Scroll suave si está fuera de vista
+        //         targetInput.scrollIntoView({
+        //             behavior: 'smooth',
+        //             block: 'center',
+        //             inline: 'center'
+        //         });
+        //     }
+        // });
+
+        // document.querySelector('#tblPersonH').addEventListener('keydown', function(event) {
+        //     if (event.target.tagName === 'INPUT') {
+        //         const input = event.target;
+        //         const cell = input.closest('td');
+        //         const row = cell.closest('tr');
+        //         const table = row.closest('table');
+
+        //         const rowIndex = row.rowIndex;
+        //         const cellIndex = cell.cellIndex;
+
+        //         switch (event.key) {
+        //             case 'ArrowRight':
+        //                 if (shouldMoveFocus(input, 'end')) {
+        //                     event.preventDefault();
+        //                     moveFocus(table, rowIndex, cellIndex + 1);
+        //                 }
+        //                 break;
+        //             case 'ArrowLeft':
+        //                 if (shouldMoveFocus(input, 'start')) {
+        //                     event.preventDefault();
+        //                     moveFocus(table, rowIndex, cellIndex - 1);
+        //                 }
+        //                 break;
+        //             case 'ArrowDown':
+        //                 event.preventDefault();
+        //                 moveFocus(table, rowIndex + 1, cellIndex);
+        //                 break;
+        //             case 'ArrowUp':
+        //                 event.preventDefault();
+        //                 moveFocus(table, rowIndex - 1, cellIndex);
+        //                 break;
         //         }
         //     }
         // });
 
+        // function shouldMoveFocus(input, position) {
+        //     const cursorPos = input.selectionStart;
+        //     const valueLength = input.value.length;
+        //     return (position === 'start' && cursorPos === 0) ||
+        //         (position === 'end' && cursorPos === valueLength);
+        // }
+
+        // function moveFocus(table, rowIndex, cellIndex) {
+        //     const rowCount = table.rows.length;
+        //     const cellCount = table.rows[0].cells.length;
+
+        //     while (rowIndex >= 0 && rowIndex < rowCount && cellIndex >= 0 && cellIndex < cellCount) {
+        //         const row = table.rows[rowIndex];
+        //         const cell = row.cells[cellIndex];
+        //         if (!cell) break;
+
+        //         const input = cell.querySelector('input[type="text"], input[type="search"], input[type="number"]');
+        //         if (input) {
+        //             input.focus();
+        //             return;
+        //         }
+
+        //         // Ajusta estos si deseas que se siga moviendo (ejemplo: hacia la derecha)
+        //         break; // o elimina el break para permitir salto continuo
+        //     }
+        // }
+
+
+
+
+        // document.addEventListener('keydown', function(event) {
+        //     const isInputOrSelect = event.target.tagName === 'INPUT' || $(event.target).hasClass('select2-selection');
+
+        //     if (isInputOrSelect && event.target.closest('table')) {
+        //         let currentElement = event.target.tagName === 'INPUT' ?
+        //             event.target :
+        //             $(event.target).closest('.select2-container').prev('select')[0]; // Referencia al select original
+
+        //         // Verificar si el menú Select2 está abierto
+        //         const select2Open = $(currentElement).data('select2')?.isOpen();
+
+        //         if (select2Open) {
+        //             // Prevenir movimiento con todas las flechas si el menú está abierto
+        //             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+        //                 event.stopPropagation();
+        //                 event.preventDefault();
+        //                 return;
+        //             }
+        //         }
+
+        //         let currentCell = currentElement.closest('td');
+        //         let currentRow = currentCell.closest('tr');
+        //         let currentTable = currentRow.closest('table');
+
+        //         let rowIndex = currentRow.rowIndex;
+        //         let cellIndex = currentCell.cellIndex;
+
+        //         switch (event.key) {
+        //             case 'ArrowRight':
+        //                 if (shouldMoveFocus(event, currentElement, 'end')) {
+        //                     event.preventDefault();
+        //                     moveFocus(currentTable, rowIndex, cellIndex + 1);
+        //                 }
+        //                 break;
+        //             case 'ArrowLeft':
+        //                 if (shouldMoveFocus(event, currentElement, 'start')) {
+        //                     event.preventDefault();
+        //                     moveFocus(currentTable, rowIndex, cellIndex - 1);
+        //                 }
+        //                 break;
+        //             case 'ArrowDown':
+        //                 if (!select2Open) {
+        //                     event.preventDefault();
+        //                     moveFocus(currentTable, rowIndex + 1, cellIndex);
+        //                 }
+        //                 break;
+        //             case 'ArrowUp':
+        //                 if (!select2Open) {
+        //                     event.preventDefault();
+        //                     moveFocus(currentTable, rowIndex - 1, cellIndex);
+        //                 }
+        //                 break;
+        //         }
+        //     }
+        // });
 
         tblEmpleadoH = $("#tblEmpleadoH").DataTable({
             "ajax": {
@@ -635,6 +951,34 @@
             },
         });
 
+        const observer = new ResizeObserver(() => {
+            tblEmpleadoH.columns.adjust();
+        });
+
+        observer.observe(container);
+
+        const observer2 = new ResizeObserver(() => {
+            tblPerson.columns.adjust();
+        });
+
+        observer2.observe(container2);
+
+
+
+        $('#tblPersonH').on('input keydown', '.hn, .hs, .h100', function() {
+            // Encuentra la fila del input cambiado
+            let $row = $(this).closest('tr');
+            // Obtiene los valores de cantidad y precio
+            let hn = parseFloat($row.find('.hn').val()) || 0;
+            let hs = parseFloat($row.find('.hs').val()) || 0;
+            let h100 = parseFloat($row.find('.h100').val()) || 0;
+
+            // Calcula el total
+            let total_horas = hn + hs + h100;
+
+            $row.find('.totalh').text(total_horas);
+        });
+
         $("#addRow").on("click", function() {
             let dateH = fechaH.value;
             let selectedData = tblEmpleadoH.rows({
@@ -642,22 +986,15 @@
             }).data();
 
             for (let i = 0; i < selectedData.length; i++) {
-                let persona = selectedData[i].nombre;
-                let partes = persona.trim().split(/\s+/);
-                let nombreReducido = `${partes[0] || ''} ${partes[2] || ''}`;
-
-                tblPerson.row.add({
-                    id: '',
-                    nombre: nombreReducido,
-                    fecha: dateH
-                }).draw(false);
+                // console.log(selectedData[i]);
+                id_person_res = selectedData[i].id;
+                tblPerson.row.add(['', '', dateH, 8, '', '', '', '', '', '', '', '', '']).draw(false);
             }
 
             tblEmpleadoH.rows().deselect();
             $('#selected-person').text(0);
             $('#select-all').prop('checked', false);
         });
-
 
         $('#select-all').on('click', function() {
             if (this.checked) {
@@ -668,6 +1005,7 @@
         });
 
         let id_orden_horario = 0;
+        let id_person_res = 0;
 
         cargarAutocompletado(function(items) {
             $(nro_ordenHorario).autocomplete({
@@ -724,11 +1062,7 @@
         });
 
 
-        const observer = new ResizeObserver(() => {
-            tblEmpleadoH.columns.adjust();
-        });
 
-        observer.observe(container);
 
         // tabla.on('responsive-resize', function(e, datatable, columns) {
         //     // Encontrar el índice de la última columna visible
@@ -793,9 +1127,9 @@
             }
         });
 
-        $(modal).on("shown.bs.modal", () => {
-            nombre.focus();
-        });
+        // $(modal).on("shown.bs.modal", () => {
+        //     nombre.focus();
+        // });
 
         $(modalS).on("shown.bs.modal", function() {
             inputContent.focus();

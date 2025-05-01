@@ -69,8 +69,8 @@ function limpiar(btn = false) {
 
     salida_radio.value = "2";
     salida_radio.dispatchEvent(new Event("change"));
-    btn.style.display = "none";
-  } else if (selectedTab === "6") {
+    btn ? btn.style.display = "none": null;
+    } else if (selectedTab === "6") {
     const retorno = document.getElementById("radio-3");
     setChange(cboConductor, conductorPorDefecto);
     cboConductor.disabled = false;
@@ -87,8 +87,7 @@ function limpiar(btn = false) {
     motivo.value = "";
     retorno.value = "3";
     retorno.dispatchEvent(new Event("change"));
-    btn.style.display = "none";
-
+    btn ? btn.style.display = "none": null;
   } else if (selectedTab === "5") {
     const entrada_radio = document.getElementById("radio-1");
     const nro_factura = document.getElementById('nro_fac');
@@ -98,8 +97,7 @@ function limpiar(btn = false) {
     nro_factura.value = "";
     entrada_radio.value = "1";
     entrada_radio.dispatchEvent(new Event("change"));
-    btn.style.display = "none";
-
+    btn ? btn.style.display = "none": null;
   } else if (selectedTab === "7" || selectedTab === "8" || selectedTab === "9") {
     const radio = document.getElementById("radio-7");
     const nro_gui = document.getElementById('nro_guiaFab');
@@ -115,7 +113,8 @@ function limpiar(btn = false) {
     nro_gui.value = "";
     radio.value = "7";
     radio.dispatchEvent(new Event("change"));
-    btn.style.display = "none";
+    btn ? btn.style.display = "none": null;
+    isTrasFab.disabled = false;
   }
 }
 
