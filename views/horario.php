@@ -715,7 +715,6 @@
                 if (!row) break;
 
                 let nextCell = row.children[nextCellIndex];
-
                 if (nextCellIndex < 0 || nextCellIndex > maxCell) break;
 
                 const input = nextCell.querySelector('input');

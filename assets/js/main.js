@@ -66,7 +66,6 @@ function limpiar(btn = false) {
     nro_orden.readOnly = false;
     clearButton.style.display = "none";
     motivo.value = "";
-
     salida_radio.value = "2";
     salida_radio.dispatchEvent(new Event("change"));
     btn ? btn.style.display = "none": null;
