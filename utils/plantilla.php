@@ -1629,14 +1629,13 @@
                             confirmarAccion(src, 'fabricacion', null, '', function(res) {
                                 if (res) {
                                     cargarAutocompletado();
-                                    console.log('datos', 'eliminando ...');
+                                    // console.log('datos', 'eliminando ...');
                                     tblDetalleFab.row(row.closest('tr')).remove().draw();
                                 }
                                 // Eliminar la fila seleccionada
-
                             })
                         }
-                    }, 2000);
+                    } );
                 });
 
                 $(document).on('click', '.btnEliminaRowServer', function() {

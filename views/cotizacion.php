@@ -633,7 +633,7 @@
             radios = document.querySelectorAll('input[name="customRadio"]'),
             radio = document.getElementById('customRadio3');
 
-
+            let scrollPos = 0;
         const nom_prove = document.getElementById('nombre_prove'),
             ruc_prove = document.getElementById('ruc_prove'),
             tel_prove = document.getElementById('telefono_prove'),
@@ -708,13 +708,12 @@
         });
 
         function ocultarFormulario() {
-
             document.getElementById("div_cot").style.display = "none";
             document.getElementById("div_content").style.display = "block";
             $('#tblCotizacion').DataTable().columns.adjust().draw(false);
             tblSolicitud.clear().draw();
             document.getElementById("div_header").style.display = "block";
-
+            window.scrollTo(0, scrollPos);
         }
 
         btnReturn.addEventListener('click', function() {
@@ -988,6 +987,8 @@
                 telefono.value = '';
                 subtotal = 0;
 
+                scrollPos = window.scrollY || document.documentElement.scrollTop;
+
                 document.getElementById("div_cot").style.display = "block";
                 document.getElementById("div_content").style.display = "table-column";
                 document.getElementById("div_header").style.display = "none";
@@ -1070,6 +1071,7 @@
             nro_cotiz = id_cotiz;
             tblSolicitud.ajax.reload(null, false);
 
+            scrollPos = window.scrollY || document.documentElement.scrollTop;
             document.getElementById("div_cot").style.display = "block";
             document.getElementById("div_content").style.display = "table-column";
             document.getElementById("div_header").style.display = "none";

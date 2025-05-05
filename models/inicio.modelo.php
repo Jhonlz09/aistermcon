@@ -86,7 +86,7 @@ class ModeloInicio
                     FROM tblsalidas s
                     JOIN tblinventario i ON s.id_producto = i.id
                     JOIN tblboleta b ON s.id_boleta = b.id
-                    WHERE EXTRACT(YEAR FROM b.fecha) = :anio";
+                    WHERE EXTRACT(YEAR FROM b.fecha) = :anio AND i.fabricado = false";
             // Agregar condición del mes si $mes no es 0
             if ($mes != 0) {
                 $sql .= " AND EXTRACT(MONTH FROM b.fecha) = :mes";

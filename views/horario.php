@@ -97,51 +97,57 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <!-- <div class="col-sm-3 col-md-4 mb-2">
-                                <label for="input1" class="m-0"><i class="fas fa-person-digging"></i> Obra</label>
-                                <input type="text" id="nro_ordenHorario" class="form-control">
-                            </div> -->
-                            <div class="col-sm-3 col-md-4 mb-2 ui-front">
-                                <label class="col-form-label combo" for="nro_ordenHorario">
-                                    <i class="fas fa-person-digging"></i> Obra</label>
-                                <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control" id="nro_ordenHorario" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
-                                <button class="clear-btn" type="button" id="clearButtonObraH" style="display:none;top:42%;" onclick="clearInput('nro_ordenHorario', this)">&times;</button>
+                            <!-- Elemento 1 -->
+                            <div class="col-sm col-md-4 mb-2">
+                                <label for="nro_ordenHorario" class="col-form-label combo">
+                                    <i class="fas fa-person-digging"></i> Obra
+                                </label>
+                                <!-- <div class="position-relative"> -->
+                                <input type="search" id="nro_ordenHorario" class="form-control ui-autocomplete-input" placeholder="Ingrese el nro. de orden o cliente" autocomplete="off" style="font-size:1.2rem; border-bottom:2px solid var(--select-border-bottom);" spellcheck="false" data-ms-editor="true">
+                                <button class="clear-btn" type="button" id="clearButtonObraH" onclick="clearInput('nro_ordenHorario', this)" style="display:none; position:absolute; right:10px; top:42%;">×</button>
+                                <!-- </div> -->
+
+                                <!-- <button class="clear-btn" type="button" id="btnO${uniqueId}" onclick="clearInput('${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button> -->
 
                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                             </div>
 
-                            <div class="col-sm-3 mb-2">
+                            <!-- Elemento 2 -->
+                            <div class="col-sm col-md-3  mb-2">
                                 <label for="fechaH" class="m-0"><i class="fas fa-calendar"></i> Fecha</label>
-                                <input style="border-bottom: solid 2px #000;" type="date" id="fechaH" class="form-control" value="<?php echo date('Y-m-d'); ?>">
+                                <input type="date" id="fechaH" class="form-control" value="2025-05-04" style="border-bottom: solid 2px #000;">
                             </div>
-                            <div class="col-sm-3 mb-2">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <label for="input3" class="m-0 text-nowrap">
+
+                            <!-- Elemento 3 -->
+                            <div class="col-sm col-lg mb-2">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label for="sp-e" class="m-0 text-nowrap" style="cursor:pointer;">
                                         <i class="fas fa-user-helmet-safety"></i> Empleado
                                     </label>
-                                    <span data-toggle="modal" data-target="#modal_personal"
-                                        class="form-control badge bg-gradient-dark"
-                                        style="width:1.6rem;height:1.6rem;font-size:0.75rem; display:flex; justify-content:center; align-items:center;">
+                                    <button id="sp-e" data-toggle="modal" data-target="#modal_personal" class="btn bg-gradient-dark" style="width:2rem;height:1.6rem;font-size:0.75rem; display:flex; justify-content:center; align-items:center;">
                                         <i class="fas fa-up-right-from-square"></i>
-                                    </span>
+                                    </button>
                                 </div>
-                                <span style="display:block;height:calc(2.25rem + 2px);line-height: calc(2.25rem + 2px);white-space:nowrap;"> <span id="selected-person">0</span> seleccionado(s)</span>
+                                <label class="font-weight-normal mb-0" for="sp-e" style="cursor:pointer;display:block;height:calc(2.25rem + 2px);line-height: calc(2.25rem + 2px); white-space:nowrap;">
+                                    <span class="font-weight-bold" id="selected-person">0</span> seleccionado(s)
+                                </label>
                             </div>
-                            <div class="col-sm" style="text-align:end;">
-                                <button type="button" id="addRow" class="btn btn-sm bg-gradient-green">
+
+                            <!-- Elemento 4 (botones) -->
+                            <div class="col-6 col-lg d-flex flex-column justify-content-between mb-1">
+                                <button type="button" id="editRow" style="display:none;" class="btn btn-sm bg-gradient-blue mb-1">
+                                    <i class="fas fa-pencil"></i> Editar
+                                </button>
+                                <button type="button" id="addRow" class="btn btn-sm bg-gradient-green mb-2">
                                     <i class="fas fa-grid-2-plus"></i> Agregar
                                 </button>
+                                <button type="button" id="eliRow" style="display:none;" class="btn btn-sm bg-gradient-danger">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
                             </div>
-                            <!-- <div class="col-sm-3 mb-2">
-                                <div class="row">
-                                    <div class="col-sm ">
-                                        <label for="input3" class="m-0 text-nowrap"><i class="fas fa-table-rows"></i> Filas</label>
-                                        <input type="text" id="input3" class="form-control">
-                                    </div>
-                                   
-                                </div>
-                            </div> -->
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -160,7 +166,7 @@
                             <table id="tblPersonH" class="table table-bordered w-100 table-striped table-fix">
                                 <thead>
                                     <tr>
-                                        <!-- <th rowspan="2" class="th-orange"><input type="checkbox" id="select-allP"></th> -->
+                                        <th rowspan="2" class="th-orange"><input type="checkbox" id="chkAllP" class="select-all"></th>
                                         <th rowspan="2" class="th-orange">NOMBRES</th>
                                         <th rowspan="2" class="th-orange">OBRA</th>
                                         <th rowspan="2" class="th-orange">FECHA</th>
@@ -210,7 +216,7 @@
                     <table id="tblEmpleadoH" class="table table-bordered table-striped table-header">
                         <thead>
                             <tr>
-                                <th class="text-center"><input type="checkbox" id="select-all"></th>
+                                <th class="text-center"><input type="checkbox" id="chkAll" class="select-all"></th>
                                 <th>NOMBRES Y APELLIDOS</th>
                             </tr>
                         </thead>
@@ -339,6 +345,9 @@
             cod: item.id
         }));
 
+        clearButtonObraH.addEventListener('click', function() {
+            id_orden_horario = null;
+        });
 
         // const observer = new ResizeObserver(() => {
         //     tablaTop.columns.adjust();
@@ -371,80 +380,72 @@
             "dom": 't',
             "lengthChange": false,
             "ordering": false,
-            fixedColumns: true,
-            keys: true,
+            // keys: true,
+            fixedColumns: {
+                leftColumns: 2,
+                rightColumns: 0
+            },
+            select: {
+                style: 'multi',
+                selector: 'td:first-child'
+            },
             paging: false,
             scrollCollapse: true,
             scrollX: true,
             scrollY: '38vh',
             columnDefs: [{
                     targets: 0,
+                    "data": null,
+                    "defaultContent": '',
+                    "className": 'select-checkbox text-center',
+                },
+                {
+                    targets: 1,
                     render: function(data, type, row, meta) {
                         const timestamp = Date.now(); // milisegundos actuales
                         const uniqueId = `empleado_${timestamp}`; // ID único
                         return `<div class="ui-front" style="z-index:99999;position:relative">
-                        <input style="width:12rem" 
-                        type="search" 
-                        class="form-control empleado" 
-                        id="${uniqueId}" 
-                        oninput="formatInputOrden(this)" 
+                        <input style="width:12rem"
+                        type="search"
+                        class="form-control empleado"
+                        id="${uniqueId}"
+                        oninput="formatInputOrden(this)"
                         autocomplete="off"
-                        value="${data || ''}"> 
+                        value="${data || ''}">
                         <button class="clear-btn" type="button" onclick="clearInput('${uniqueId}', this)" id="btn${uniqueId}" style="display:none;top:6%;right:2px">&times;</button>
                         <div class="invalid-feedback">*Campo obligatorio.</div>
                         </div>`;
                     }
                 },
                 {
-                    targets: 1,
+                    targets: 2,
                     render: function(data, type, row, meta) {
                         const timestamp = Date.now(); // milisegundos actuales
                         const uniqueId = `obra_${timestamp}`; // ID único
                         return `<div class="ui-front" style="z-index:inherit;position:relative">
-                        <input style="width:12rem" 
+                        <input style="width:12rem"
                         type="search"
-                        class="form-control obra" 
-                        id="${uniqueId}" 
-                        oninput="formatInputOrden(this)" 
-                        placeholder="Ingrese el nro. de orden o cliente" 
+                        class="form-control obra"
+                        id="${uniqueId}"
+                        oninput="formatInputOrden(this)"
+                        placeholder="Ingrese el nro. de orden o cliente"
                         autocomplete="off"
-                        value="${data || ''}"> 
+                        value="${data || ''}">
                         <button class="clear-btn" type="button" id="btnO${uniqueId}" onclick="clearInput('${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button>
                         <div class="invalid-feedback">*Campo obligatorio.</div></div>`;
                     }
                 },
                 {
-                    targets: 2,
+                    targets: 3,
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
                             const uniqueId = meta.row + 1;
-                            return `<input 
+                            return `<input
                             style="width:10rem"
-                            type="date" 
-                            id="fechaH${uniqueId}" 
-                            class="form-control" 
+                            type="date"
+                            id="fechaH${uniqueId}"
+                            class="form-control"
                             value="${data || ''}">`;
-                        }
-                        return data;
-                    }
-                },
-                {
-                    targets: 3,
-                    className: "text-center",
-                    render: function(data, type, row, meta) {
-                        if (type === 'display') {
-                            return `<input 
-                        style="width:5rem"
-                        autocomplete="off"
-                        spellcheck="false"
-                        type="text" 
-                        oninput="validarNumber(this,/[^0-9.]/g)"
-                        onpaste="validarPegado(this, event)"
-                        
-                        inputmode="numeric"
-                        maxlength="4"
-                        class="form-control hn text-center" 
-                        value="${data || ''}">`;
                         }
                         return data;
                     }
@@ -454,18 +455,17 @@
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input 
+                            return `<input
                         style="width:5rem"
-                        type="text" 
                         autocomplete="off"
                         spellcheck="false"
+                        type="text"
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
-                        
+
                         inputmode="numeric"
                         maxlength="4"
-                        id="id${meta.row + 1}" 
-                        class="form-control hs text-center" 
+                        class="form-control hn text-center"
                         value="${data || ''}">`;
                         }
                         return data;
@@ -476,17 +476,18 @@
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input 
+                            return `<input
                         style="width:5rem"
-                        type="text" 
+                        type="text"
                         autocomplete="off"
                         spellcheck="false"
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
-                        
+
                         inputmode="numeric"
                         maxlength="4"
-                        class="form-control h100 text-center" 
+                        id="id${meta.row + 1}"
+                        class="form-control hs text-center"
                         value="${data || ''}">`;
                         }
                         return data;
@@ -497,7 +498,17 @@
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<span class="totalh" style="width:5rem">${data || '8'}</span>`;
+                            return `<input
+                        style="width:5rem"
+                        type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        inputmode="numeric"
+                        maxlength="4"
+                        class="form-control h100 text-center"
+                        value="${data || ''}">`;
                         }
                         return data;
                     }
@@ -507,24 +518,20 @@
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input 
-                        style="width:5rem"
-                        type="text" 
-                        class="form-control material text-center" 
-                        value="${data || ''}">`;
+                            return `<span class="totalh" style="width:5rem">${data || '8'}</span>`;
                         }
                         return data;
                     }
                 },
                 {
                     targets: 8,
-                    className: "text-center",
+                    className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input 
+                            return `$<input
                         style="width:5rem"
-                        type="text" 
-                        class="form-control trans text-center" 
+                        type="text"
+                        class="form-control material text-center d-inline"
                         value="${data || ''}">`;
                         }
                         return data;
@@ -532,13 +539,13 @@
                 },
                 {
                     targets: 9,
-                    className: "text-center",
+                    className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input 
+                            return `$<input
                         style="width:5rem"
-                        type="text" 
-                        class="form-control ali text-center" 
+                        type="text"
+                        class="form-control trans text-center d-inline"
                         value="${data || ''}">`;
                         }
                         return data;
@@ -546,13 +553,13 @@
                 },
                 {
                     targets: 10,
-                    className: "text-center",
+                    className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input 
+                            return `$<input
                         style="width:5rem"
-                        type="text" 
-                        class="form-control hosp text-center" 
+                        type="text"
+                        class="form-control ali text-center d-inline"
                         value="${data || ''}">`;
                         }
                         return data;
@@ -560,13 +567,13 @@
                 },
                 {
                     targets: 11,
-                    className: "text-center",
+                    className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input 
+                            return `$<input
                         style="width:5rem"
-                        type="text" 
-                        class="form-control guard text-center" 
+                        type="text"
+                        class="form-control hosp text-center d-inline"
                         value="${data || ''}">`;
                         }
                         return data;
@@ -574,13 +581,27 @@
                 },
                 {
                     targets: 12,
-                    className: "text-center",
+                    className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input 
+                            return `$<input
                         style="width:5rem"
-                        type="text" 
-                        class="form-control agua text-center" 
+                        type="text"
+                        class="form-control guard text-center d-inline"
+                        value="${data || ''}">`;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    targets: 13,
+                    className: "text-center text-nowrap",
+                    render: function(data, type, row, meta) {
+                        if (type === 'display') {
+                            return `$<input
+                        style="width:5rem"
+                        type="text"
+                        class="form-control agua text-center d-inline"
                         value="${data || ''}">`;
                         }
                         return data;
@@ -605,7 +626,7 @@
                 })
 
                 if (id_person_res !== null) {
-                    console.log('este es el id_person_res', id_person_res);
+                    // console.log('este es el id_person_res', id_person_res);
                     const selectedItemP = datos_em.find(item => item.cod === id_person_res);
                     if (selectedItemP) {
                         $input1.val(selectedItemP.label);
@@ -649,8 +670,11 @@
             const key = event.key;
             const active = document.activeElement;
 
-            // Solo proceder si es un INPUT dentro de la tabla
             if (!active || active.tagName !== 'INPUT') return;
+
+            // Verificar si el autocomplete está abierto
+            const isAutocompleteOpen = $(".ui-menu:visible").length > 0;
+            if (isAutocompleteOpen) return;
 
             const td = active.closest('td');
             const tr = td?.parentElement;
@@ -663,258 +687,56 @@
             const maxRow = allRows.length - 1;
             const maxCell = tr.children.length - 1;
 
-            let targetRowIndex = rowIndex;
-            let targetCellIndex = cellIndex;
+            let nextRowIndex = rowIndex;
+            let nextCellIndex = cellIndex;
 
             switch (key) {
                 case 'ArrowRight':
-                    targetCellIndex = Math.min(cellIndex + 1, maxCell);
+                    nextCellIndex++;
                     break;
                 case 'ArrowLeft':
-                    targetCellIndex = Math.max(cellIndex - 1, 0);
+                    nextCellIndex--;
                     break;
                 case 'ArrowDown':
-                    targetRowIndex = Math.min(rowIndex + 1, maxRow);
+                    nextRowIndex++;
                     break;
                 case 'ArrowUp':
-                    targetRowIndex = Math.max(rowIndex - 1, 0);
+                    nextRowIndex--;
                     break;
                 default:
-                    return; // salir si no es una flecha
+                    return; // No hacer nada si no es una flecha
             }
 
             event.preventDefault();
 
-            const targetRow = allRows[targetRowIndex];
-            if (!targetRow) return;
+            // Bucle para buscar la siguiente celda válida con input
+            while (nextRowIndex >= 0 && nextRowIndex <= maxRow) {
+                const row = allRows[nextRowIndex];
+                if (!row) break;
 
-            const targetCell = targetRow.children[targetCellIndex];
-            if (!targetCell) return;
+                let nextCell = row.children[nextCellIndex];
 
-            const targetInput = targetCell.querySelector('input');
-            if (targetInput) {
-                targetInput.focus();
-                targetInput.select();
-                targetInput.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                    inline: 'center'
-                });
-            } else {
-                // Si no hay input en la celda objetivo, buscar la siguiente celda con input en la dirección
-                buscarInputEnDireccion(key, targetRowIndex, targetCellIndex, allRows);
+                if (nextCellIndex < 0 || nextCellIndex > maxCell) break;
+
+                const input = nextCell.querySelector('input');
+                if (input) {
+                    input.focus();
+                    input.select();
+                    input.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                        inline: 'center'
+                    });
+                    return;
+                }
+
+                // Si no encontró input, ajusta solo columnas (no avanza fila)
+                if (key === 'ArrowRight') nextCellIndex++;
+                else if (key === 'ArrowLeft') nextCellIndex--;
+                else if (key === 'ArrowDown' || key === 'ArrowUp') break;
             }
         });
 
-        // Función auxiliar para buscar el siguiente input disponible en la dirección deseada
-        function buscarInputEnDireccion(key, startRow, startCell, allRows) {
-            let i = startRow;
-            let j = startCell;
-
-            while (i >= 0 && i < allRows.length) {
-                const row = allRows[i];
-                const cells = Array.from(row.children);
-                while (j >= 0 && j < cells.length) {
-                    const input = cells[j].querySelector('input');
-                    if (input) {
-                        input.focus();
-                        input.select();
-                        input.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center',
-                            inline: 'center'
-                        });
-                        return;
-                    }
-                    j += (key === 'ArrowRight') ? 1 : (key === 'ArrowLeft') ? -1 : 0;
-                }
-                i += (key === 'ArrowDown') ? 1 : (key === 'ArrowUp') ? -1 : 0;
-                j = startCell; // reiniciar columna si cambiamos de fila
-            }
-        }
-
-
-        // document.addEventListener('keydown', function(event) {
-        //     const key = event.key;
-        //     const active = document.activeElement;
-
-        //     if (!active || active.tagName !== 'INPUT') return;
-
-        //     // Encuentra la celda actual
-        //     const td = active.closest('td');
-        //     const tr = td?.parentElement;
-        //     if (!td || !tr) return;
-
-        //     const cellIndex = Array.from(tr.children).indexOf(td);
-        //     const rowIndex = Array.from(tr.parentElement.children).indexOf(tr);
-
-        //     // Encuentra todas las filas
-        //     const allRows = Array.from(document.querySelectorAll('#tblPersonH tbody tr'));
-
-        //     // Direcciones
-        //     let targetRowIndex = rowIndex;
-        //     let targetCellIndex = cellIndex;
-
-        //     switch (key) {
-        //         case 'ArrowRight':
-        //             targetCellIndex++;
-        //             break;
-        //         case 'ArrowLeft':
-        //             targetCellIndex--;
-        //             break;
-        //         case 'ArrowDown':
-        //             targetRowIndex++;
-        //             break;
-        //         case 'ArrowUp':
-        //             targetRowIndex--;
-        //             break;
-        //         default:
-        //             return;
-        //     }
-
-        //     event.preventDefault();
-
-        //     // Validación de índices
-        //     const targetRow = allRows[targetRowIndex];
-        //     if (!targetRow) return;
-
-        //     const targetCell = targetRow.children[targetCellIndex];
-        //     if (!targetCell) return;
-
-        //     const targetInput = targetCell.querySelector('input');
-        //     if (targetInput) {
-        //         targetInput.focus();
-        //         targetInput.select();
-
-        //         // Scroll suave si está fuera de vista
-        //         targetInput.scrollIntoView({
-        //             behavior: 'smooth',
-        //             block: 'center',
-        //             inline: 'center'
-        //         });
-        //     }
-        // });
-
-        // document.querySelector('#tblPersonH').addEventListener('keydown', function(event) {
-        //     if (event.target.tagName === 'INPUT') {
-        //         const input = event.target;
-        //         const cell = input.closest('td');
-        //         const row = cell.closest('tr');
-        //         const table = row.closest('table');
-
-        //         const rowIndex = row.rowIndex;
-        //         const cellIndex = cell.cellIndex;
-
-        //         switch (event.key) {
-        //             case 'ArrowRight':
-        //                 if (shouldMoveFocus(input, 'end')) {
-        //                     event.preventDefault();
-        //                     moveFocus(table, rowIndex, cellIndex + 1);
-        //                 }
-        //                 break;
-        //             case 'ArrowLeft':
-        //                 if (shouldMoveFocus(input, 'start')) {
-        //                     event.preventDefault();
-        //                     moveFocus(table, rowIndex, cellIndex - 1);
-        //                 }
-        //                 break;
-        //             case 'ArrowDown':
-        //                 event.preventDefault();
-        //                 moveFocus(table, rowIndex + 1, cellIndex);
-        //                 break;
-        //             case 'ArrowUp':
-        //                 event.preventDefault();
-        //                 moveFocus(table, rowIndex - 1, cellIndex);
-        //                 break;
-        //         }
-        //     }
-        // });
-
-        // function shouldMoveFocus(input, position) {
-        //     const cursorPos = input.selectionStart;
-        //     const valueLength = input.value.length;
-        //     return (position === 'start' && cursorPos === 0) ||
-        //         (position === 'end' && cursorPos === valueLength);
-        // }
-
-        // function moveFocus(table, rowIndex, cellIndex) {
-        //     const rowCount = table.rows.length;
-        //     const cellCount = table.rows[0].cells.length;
-
-        //     while (rowIndex >= 0 && rowIndex < rowCount && cellIndex >= 0 && cellIndex < cellCount) {
-        //         const row = table.rows[rowIndex];
-        //         const cell = row.cells[cellIndex];
-        //         if (!cell) break;
-
-        //         const input = cell.querySelector('input[type="text"], input[type="search"], input[type="number"]');
-        //         if (input) {
-        //             input.focus();
-        //             return;
-        //         }
-
-        //         // Ajusta estos si deseas que se siga moviendo (ejemplo: hacia la derecha)
-        //         break; // o elimina el break para permitir salto continuo
-        //     }
-        // }
-
-
-
-
-        // document.addEventListener('keydown', function(event) {
-        //     const isInputOrSelect = event.target.tagName === 'INPUT' || $(event.target).hasClass('select2-selection');
-
-        //     if (isInputOrSelect && event.target.closest('table')) {
-        //         let currentElement = event.target.tagName === 'INPUT' ?
-        //             event.target :
-        //             $(event.target).closest('.select2-container').prev('select')[0]; // Referencia al select original
-
-        //         // Verificar si el menú Select2 está abierto
-        //         const select2Open = $(currentElement).data('select2')?.isOpen();
-
-        //         if (select2Open) {
-        //             // Prevenir movimiento con todas las flechas si el menú está abierto
-        //             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
-        //                 event.stopPropagation();
-        //                 event.preventDefault();
-        //                 return;
-        //             }
-        //         }
-
-        //         let currentCell = currentElement.closest('td');
-        //         let currentRow = currentCell.closest('tr');
-        //         let currentTable = currentRow.closest('table');
-
-        //         let rowIndex = currentRow.rowIndex;
-        //         let cellIndex = currentCell.cellIndex;
-
-        //         switch (event.key) {
-        //             case 'ArrowRight':
-        //                 if (shouldMoveFocus(event, currentElement, 'end')) {
-        //                     event.preventDefault();
-        //                     moveFocus(currentTable, rowIndex, cellIndex + 1);
-        //                 }
-        //                 break;
-        //             case 'ArrowLeft':
-        //                 if (shouldMoveFocus(event, currentElement, 'start')) {
-        //                     event.preventDefault();
-        //                     moveFocus(currentTable, rowIndex, cellIndex - 1);
-        //                 }
-        //                 break;
-        //             case 'ArrowDown':
-        //                 if (!select2Open) {
-        //                     event.preventDefault();
-        //                     moveFocus(currentTable, rowIndex + 1, cellIndex);
-        //                 }
-        //                 break;
-        //             case 'ArrowUp':
-        //                 if (!select2Open) {
-        //                     event.preventDefault();
-        //                     moveFocus(currentTable, rowIndex - 1, cellIndex);
-        //                 }
-        //                 break;
-        //         }
-        //     }
-        // });
 
         tblEmpleadoH = $("#tblEmpleadoH").DataTable({
             "ajax": {
@@ -963,6 +785,65 @@
 
         observer2.observe(container2);
 
+        let lastSelectedIndex = null;
+
+        // $('#tblPersonH tbody').on('click', 'td.select-checkbox', function(e) {
+        //     const row = $(this).closest('tr');
+        //     const index = tblPerson.row(row).index(); // índice real de DataTables
+
+        //     if (e.shiftKey && lastSelectedIndex !== null) {
+        //         // Selección múltiple
+        //         const currentIndex = index;
+        //         const [start, end] = [lastSelectedIndex, currentIndex].sort((a, b) => a - b);
+        //         for (let i = start; i <= end; i++) {
+        //             const tr = $(tblPerson.row(i).node());
+        //             // tr.addClass('selected');
+        //             tblPerson.row(i).select(); // si quieres que DataTables lo sepa
+        //         }
+        //     } else {
+        //         lastSelectedIndex = index;
+        //     }
+        // });
+
+        $('#tblPersonH tbody').on('click', 'td.select-checkbox', function(e) {
+            const row = $(this).closest('tr');
+            const currentIndex = tblPerson.row(row).index();
+
+            if (e.shiftKey && lastSelectedIndex !== null && lastSelectedIndex !== currentIndex) {
+                // Rango de selección con Shift
+                const [start, end] = currentIndex > lastSelectedIndex ?
+                    [lastSelectedIndex, currentIndex - 1] :
+                    [currentIndex, lastSelectedIndex - 1];
+
+                for (let i = start; i <= end; i++) {
+                    tblPerson.row(i).select();
+                }
+            }
+            lastSelectedIndex = currentIndex;
+        });
+
+        let lastSelectedIndexE = null;
+
+        // $('#tblEmpleadoH tbody').on('click', 'td.select-checkbox', function(e) {
+        //     const row = $(this).closest('tr');
+        //     const currentIndex = tblEmpleadoH.row(row).index();
+
+        //     if (e.shiftKey && lastSelectedIndex !== null && lastSelectedIndex !== currentIndex) {
+        //         // Rango de selección con Shift
+        //         const [start, end] = currentIndex > lastSelectedIndex ?
+        //             [lastSelectedIndex, currentIndex - 1] :
+        //             [currentIndex, lastSelectedIndex - 1];
+
+        //         for (let i = start; i <= end; i++) {
+        //             tblEmpleadoH.row(i).select();
+        //         }
+        //     }
+        //     lastSelectedIndexE = currentIndex;
+        // });
+
+
+
+
 
 
         $('#tblPersonH').on('input keydown', '.hn, .hs, .h100', function() {
@@ -988,21 +869,132 @@
             for (let i = 0; i < selectedData.length; i++) {
                 // console.log(selectedData[i]);
                 id_person_res = selectedData[i].id;
-                tblPerson.row.add(['', '', dateH, 8, '', '', '', '', '', '', '', '', '']).draw(false);
+                tblPerson.row.add(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']).draw(false);
             }
 
             tblEmpleadoH.rows().deselect();
             $('#selected-person').text(0);
-            $('#select-all').prop('checked', false);
+            $('#chkAll').prop('checked', false);
         });
 
-        $('#select-all').on('click', function() {
+
+        $('#editRow').on('click', function() {
+            const selectedRows = tblPerson.rows({
+                selected: true
+            });
+
+            const dateH = fechaH.value;
+            if (!dateH) {
+                alert('Debe seleccionar una fecha válida.');
+                return;
+            }
+
+            const selectedItem = items_orden.find(item => item.cod === id_orden_horario);
+
+            selectedRows.every(function() {
+                const $row = $(this.node());
+
+                // Actualizar campo fecha
+                $row.find('td:eq(3) input[type="date"]').val(dateH);
+
+                // Obtener elementos del campo obra
+                const $inputObra = $row.find('td:eq(2) input.obra');
+                const $btnClear = $row.find('td:eq(2) .clear-btn');
+
+                if (selectedItem) {
+                    $inputObra.val(selectedItem.label);
+                    $inputObra.autocomplete("instance")._trigger("select", null, {
+                        item: selectedItem
+                    });
+                } else {
+                    $inputObra.val('');
+                    $btnClear.trigger('click'); // limpia si no hay item válido
+                }
+                this.deselect();
+
+            });
+        });
+
+
+
+
+
+        $('#eliRow').on('click', function() {
+            // confirmarEliminar('esta(s)', 'filas', function(res) {
+            //     if (res) {
+            let selectedRows = tblPerson.rows({
+                selected: true
+            });
+            selectedRows.remove().draw(false); // Elimina y redibuja la tabla sin reiniciar la paginación
+        });
+
+        tblPerson.on('draw', function() {
+            let totalRows = tblPerson.rows().count();
+            let selectedCount = tblPerson.rows({
+                selected: true
+            }).count();
+
+            if (totalRows === 0) {
+                $('#addRow').show();
+                $('#editRow').hide();
+                $('#eliRow').hide();
+                $('#chkAllP').prop('checked', false);
+            }
+
+            if (selectedCount === 0) {
+                $('#editRow').hide();
+                $('#eliRow').hide();
+                $('#addRow').show();
+
+            }
+
+            // if (totalRows === 0) {
+            //     $('#addRow').show();
+            // } else {
+            //     $('#addRow').hide();
+            // }
+        });
+
+        $('#chkAll').on('click', function() {
             if (this.checked) {
                 tblEmpleadoH.rows().select();
             } else {
                 tblEmpleadoH.rows().deselect();
             }
         });
+
+        $('#chkAllP').on('click', function() {
+            if (this.checked) {
+                tblPerson.rows().select();
+            } else {
+                tblPerson.rows().deselect();
+            }
+        });
+
+        // Escuchar selección de filas
+        tblPerson.on('select deselect', function() {
+            const totalRows = tblPerson.rows().count();
+
+            // Total de filas seleccionadas (sin importar el filtro)
+            const selectedRows = tblPerson.rows({
+                selected: true
+            }).count();
+
+            // Solo marcar el checkbox "chkAll" si TODAS las filas (no solo las filtradas) están seleccionadas
+            $('#chkAllP').prop('checked', totalRows > 0 && selectedRows === totalRows);
+
+            if (selectedRows > 0) {
+                $('#editRow').show();
+                $('#eliRow').show();
+                $('#addRow').hide();
+            } else {
+                $('#editRow').hide();
+                $('#eliRow').hide();
+                $('#addRow').show();
+                $('#chkAllP').prop('checked', false);
+            }
+        });
+
 
         let id_orden_horario = 0;
         let id_person_res = 0;
@@ -1042,7 +1034,11 @@
         // });
         // Deselecciona el checkbox del header si se deselecciona alguno manualmente
         tblEmpleadoH.on('deselect', function() {
-            $('#select-all').prop('checked', false);
+            $('#chkAll').prop('checked', false);
+        });
+
+        tblPerson.on('deselect', function() {
+            $('#chkAllP').prop('checked', false);
         });
 
         tblEmpleadoH.on('select deselect', function() {
@@ -1054,8 +1050,8 @@
                 selected: true
             }).count();
 
-            // Solo marcar el checkbox "select-all" si TODAS las filas (no solo las filtradas) están seleccionadas
-            $('#select-all').prop('checked', totalRows > 0 && selectedRows === totalRows);
+            // Solo marcar el checkbox "chkAll" si TODAS las filas (no solo las filtradas) están seleccionadas
+            $('#chkAll').prop('checked', totalRows > 0 && selectedRows === totalRows);
 
             // Actualiza el contador en el span (puedes decidir si quieres que este cuente todas o solo las filtradas)
             $('#selected-person').text(selectedRows);

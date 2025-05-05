@@ -148,9 +148,19 @@ input[type=file]::file-selector-button {
     display: none;
 }
 
-.odd .dtfc-fixed-left {
+.odd .dtfc-fixed-left{
     background-color: #f2f2f2;
     z-index: 10;
+}
+
+.odd.selected .dtfc-fixed-left{
+    background-color: #cfdceb;
+    /* z-index: 10; */
+}
+
+.even.selected .dtfc-fixed-left{
+    background-color: #cfdceb;
+    /* z-index: 10; */
 }
 
 .even .dtfc-fixed-left {
@@ -158,7 +168,11 @@ input[type=file]::file-selector-button {
     z-index: 10;
 }
 
+table.table-fix tbody>tr.selected, table.table-fix tbody>tr>.selected{
+    background-color: #d9e5f3 !important;
+    color: #000!important;
 
+}
 
 .ui-autocomplete {
     z-index: 10000 !important;
@@ -549,8 +563,8 @@ input[type="number"] {
     color: #fff;
 }
 .table-header thead tr th {
-    background-color: #fafffaab;
-    /* color: #fff; */
+    background-color:#21492a;
+    color: #fff;
 }
 
 .table-header tbody>tr.selected,table.dataTable tbody>tr>.selected{
@@ -1288,7 +1302,7 @@ svg {
     background-color: rgba(88, 140, 45, 0.373) !important; /* Fondo amarillo */
 }
 
-#select-all {
+.select-all {
     appearance: none;
     width: 20px;
     height: 20px;
@@ -1300,20 +1314,20 @@ svg {
     /* transition: var(--transition); */
 }
 
-#select-all:checked::after{
+.select-all:checked::after{
     content: "✓";
     position: absolute;
     color: white;
-    font-size: 14px;
+    font-size: 1rem;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
 }
 
-#select-all:checked{
-    border-color:#1a4d3c;
-    background-color:#1a4d3c;
+.select-all:checked{
+    border-color:#4f4f4f00;
+    background-color:#000000a8;
 }
 
 /* #tblEmpleadoH tbody tr:hover {
