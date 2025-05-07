@@ -19,10 +19,13 @@
     <link href='assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' rel='stylesheet' type='text/css' />
     <link href='assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' rel='stylesheet' type='text/css' />
     <link href='assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' rel='stylesheet' type='text/css' />
-    <link rel="stylesheet" href="assets/plugins/datatables-select/css/select.bootstrap4.min.css"
-        media="print" onload="this.media='all'" />
+    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
     <noscript>
-        <link rel="stylesheet" href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" />
+    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="assets/plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css" type="text/css"/>
+        <!-- <link rel="stylesheet" href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" /> -->
     </noscript>
     <!-- SweetAlert2 -->
     <link rel='stylesheet' href='assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css'>
@@ -34,7 +37,7 @@
     <!-- overlayScrollbars -->
     <link rel='stylesheet' href='assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css'>
 
-    <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <!-- <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
     <script src='assets/js/main.js'></script>
     <!-- jQuery -->
     <script src='assets/plugins/jquery/jquery.min.js'></script>
@@ -49,6 +52,7 @@
     <script defer src='assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' type='text/javascript'></script>
     <script defer src='assets/plugins/datatables-responsive/js/dataTables.responsive.min.js' type='text/javascript'></script>
     <script defer src='assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' type='text/javascript'></script>
+    <script defer src='assets/plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js' type='text/javascript'></script>
     <!-- SweetAlert -->
     <script defer src='assets/plugins/sweetalert2/sweetalert2.min.js'></script>
     <!-- Select2 -->
@@ -380,7 +384,6 @@
                 accion_inv = 0;
                 scroll = false;
                 $('.' + contenedor).load(contenido, function() {
-
                     if (tablaData) {
                         // Restaurar los datos de la tabla desde localStorage
                         tabla = $("#" + tbl).DataTable({
@@ -398,6 +401,7 @@
                         });
 
                         $('#' + tbl).DataTable().clear().rows.add(JSON.parse(tablaData)).draw();
+                        // $('.dtfh-floatingparent').remove(); // Limpia headers flotantes colgados
 
                         tabla.settings()[0].ajax = {
                             "url": "controllers/" + ruta + ".controlador.php",
@@ -1405,6 +1409,7 @@
                                     };
                                 });
                             }
+
                             let dataTable = $(tablaId).DataTable({
                                 dom: "t",
                                 paging: false,
@@ -1420,7 +1425,7 @@
                                         d.id_producto_fab = id_prod_fab;
                                     },
                                     dataSrc: function(json) {
-                                        console.log("✅ Datos cargados:", json);
+                                        // console.log("✅ Datos cargados:", json);
                                         $(tablaId).data('originalData', json); // Guardamos los datos originales
                                         // console.log($(tablaId).data('originalData'));
 
