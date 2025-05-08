@@ -5,12 +5,7 @@ class ControladorFabricacion
     public $id;
     public $nombre, $cantidad, $descripcion,$unidad, $id_boleta, $id_producto_fab, $img;
 
-    static public function listarGuiaProdFab()
-    {
-        $data = ModeloFabricacion::mdlListarGuiaProdFab();
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    }
-
+   
     public function agregarProdFabricado()
     {
         $data = ModeloFabricacion::mdlAgregarProdFabricado($this->id);
@@ -34,6 +29,19 @@ class ControladorFabricacion
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
+    static public function listarGuiaProdFab()
+    {
+        $data = ModeloFabricacion::mdlListarGuiaProdFab();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function listarProdFabAndUtil()
+    {
+        $data = ModeloFabricacion::mdlListarProdFabAndUtil($this->id_boleta);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+
 }
 $data = new ControladorFabricacion();
 if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
@@ -53,5 +61,8 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
     } else if ($_POST["accion"] == 4) {
         $data->id = $_POST["id"];
         $data->eliminarProdUtil();
+    }else if ($_POST["accion"] == 5) {
+        $data->id_boleta = $_POST["id_boleta"];
+        $data->listarProdFabAndUtil();
     }
 }

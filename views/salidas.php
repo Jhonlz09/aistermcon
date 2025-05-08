@@ -86,8 +86,82 @@
     <!-- /.container-fluid -->
 </section>
 <!-- /.Contenido -->
+<!-- Modal -->
+<div class="modal fade" id="modalMateriales" tabindex="-1" role="dialog" aria-labelledby="modalMaterialesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-yellow d-flex justify-content-between align-items-center">
+                <!-- Título a la izquierda -->
+                <h5 class="modal-title mb-0 d-flex align-items-center" id="modalMaterialesLabel">
+                    <i class="fas fa-hammer-crash mr-2"></i>
+                    Productos fabricados
+                </h5>
+                <!-- Ícono y botón a la derecha -->
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-file-lines mr-3 fa-xl" style="transition: color 0.3s ease;cursor:pointer" title="Informe de productos fabricados"></i>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="accordionMateriales">
+                    <!-- Aquí se insertarán los acordeones -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-
+<!-- <script>
+    let productos = {
+        1: [{
+                nombre: "Grupo Tornillería",
+                cantidad: 2,
+                materiales: [{
+                        descripcion: "TORNILLO BCP",
+                        unidad: "UND",
+                        salida: 100,
+                        entrada: 50
+                    },
+                    {
+                        descripcion: "ARANDELA METÁLICA",
+                        unidad: "UND",
+                        salida: 40,
+                        entrada: 20
+                    }
+                ]
+            },
+            {
+                nombre: "Grupo Placas",
+                cantidad: 2,
+                materiales: [{
+                    descripcion: "PLACA METÁLICA",
+                    unidad: "UND",
+                    salida: 30,
+                    entrada: 15
+                }]
+            },
+            {
+                nombre: "Grupo Tornillería",
+                cantidad: 25,
+                materiales: [{
+                        descripcion: "TORNILLO BCP",
+                        unidad: "UND",
+                        salida: 100,
+                        entrada: 50
+                    },
+                    {
+                        descripcion: "ARANDELA METÁLICA",
+                        unidad: "UND",
+                        salida: 40,
+                        entrada: 20
+                    }
+                ]
+            },
+        ]
+    };
+</script> -->
 
 <!-- <script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script> -->
 <script>
@@ -96,8 +170,6 @@
     var editar = '<?php echo $_SESSION["editar4"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar4"] ?>';
     var collapsedGroups = {};
-    // var alturaDisponible = window.innerHeight - 300; // Ejemplo de cálculo
-    // var scrollPosition = 0;
 
     configuracionTable = {
         "responsive": true,
@@ -105,6 +177,10 @@
         "lengthChange": false,
         "pageLength": 100,
         "ordering": false,
+        // fixedHeader: {
+        //     header: true,
+        //     headerOffset: $('#navbar-fix').outerHeight()  // Calcula el alto del navbar dinámicamente
+        // },
         "autoWidth": false,
         "paging": true,
         searchPanes: {
@@ -125,21 +201,19 @@
                 rows.nodes().each(function(r) {
                     $(r).toggleClass('collapsedrow', !collapsed);
                 });
-                let fabricacion = rows.data().pluck('fab')[0];
-                let traslado = rows.data().pluck('tras')[0];
-                let textReturn =  '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>';
-                let texto = traslado ? 'Fabricado' : 'No trasladado';
-                let fabricacionSpan = fabricacion ?
-                    '<span class="badge bg-fab mr-2">' + texto + '</span>' :
-                    '';
-                var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer">' +
+                const fabricacion = rows.data().pluck('fab')[0];
+                const traslado = rows.data().pluck('tras')[0];
+                const texto = traslado ? 'Fabricado' : 'No trasladado';
+                const fabricacionSpan = fabricacion ? '<span class="badge bg-fab mr-2">' + texto + '</span>' : '';
+
+                const groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer">' +
                     '<strong class="pl-2">' + fabricacionSpan + group + '  (' + rows.count() + ')</strong>' +
                     '<div class="txt-wrap-sm">' +
-                    // btnTraslado +
+                    (fabricacion ? '<button class="btn btn-row pt-0 pb-0 btn_show"><i class="fas fa-eye"></i></button>' : '') +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button>' +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf_img"><i class="fas fa-file-image"></i></button>' +
                     (editar ? '<button id="editS" class="btn btn-row pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button>' : '') +
-                    (crear ? textReturn : '') +
+                    (crear ? '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') +
                     (eliminar ? '<button id="eliS" class="btn btn-row pt-0 pb-0"><i class="fas fa-trash-can"></i></button>' : '') +
                     '</div></div>';
                 return $('<tr/>')
@@ -198,9 +272,9 @@
                 targets: 9,
                 visible: false,
             },
-
         ],
     }
+
 
     $('#tblSalidas tbody').on('click', 'tr.dtrg-start', function() {
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
@@ -257,7 +331,8 @@
             width: '110%',
             data: datos_anio,
             minimumResultsForSearch: -1,
-        })
+        });
+
         setChange(cboAnio, anio);
 
         $(cboMeses).select2({
@@ -296,36 +371,6 @@
             tabla.ajax.reload();
         });
 
-
-        // $('#tblSalidas').on('click', '.btn_pdf', function(event) {
-        //     event.preventDefault(); // Evita la acción predeterminada
-        //     // Obtener la fila correspondiente
-        //     var rowData = tabla.row($(this).closest('tr').next()).data();
-        //     var boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
-        //     // console.log(boleta)
-        //     // Crear el formulario dinámicamente
-        //     var form = document.createElement('form');
-        //     form.action = 'PDF/pdf_guia.php';
-        //     form.method = 'POST';
-        //     form.autocomplete = 'off';
-        //     form.target = '_blank';
-        //     // Crear el input oculto para la boleta
-        //     var inputBoleta = document.createElement('input');
-        //     inputBoleta.type = 'hidden';
-        //     inputBoleta.name = 'id_boleta';
-        //     inputBoleta.value = boleta;
-        //     inputBoleta.classList.add('input_boleta');
-        //     // Añadir el input al formulario
-        //     form.appendChild(inputBoleta);
-
-        //     // Añadir el formulario al DOM (se añade al body)
-        //     document.body.appendChild(form);
-        //     // Enviar el formulario
-        //     form.submit();
-        //     // Eliminar el formulario del DOM después de enviarlo
-        //     document.body.removeChild(form);
-        // });
-
         $('#tblSalidas').on('click', '.btn_pdf', function(event) {
             event.preventDefault(); // Evita la acción predeterminada
             let rowData = tabla.row($(this).closest('tr').next()).data();
@@ -339,6 +384,184 @@
             let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
             enviarFormularioPDF('PDF/pdf_guia_img.php', boleta);
         });
+
+        $('#tblSalidas tbody').on('click', '.btn_show', function() {
+            const row = tabla.row($(this).closest('tr').next()).data();
+            const id_boleta_row = row[10];
+            // console.log(id_boleta_row);
+            $('#modalMateriales').modal('show');
+            cargarProductosFabricados(id_boleta_row);
+            // const grupos = productos[id] || [];
+            // const contenedor = document.getElementById("accordionMateriales");
+            // contenedor.innerHTML = "";
+
+            // grupos.forEach((grupo, index) => {
+            //     const collapseId = `collapseGrupo${id}_${index}`;
+            //     const headingId = `headingGrupo${id}_${index}`;
+
+            //     const filas = grupo.materiales.map((mat, i) => `
+            //         <tr>
+            //             <td>${i + 1}</td>
+            //             <td>${mat.descripcion}</td>
+            //             <td>${mat.unidad}</td>
+            //             <td>${mat.salida}</td>
+            //             <td>${mat.entrada}</td>
+            //         </tr>`).join("");
+
+            //     contenedor.innerHTML += `<div class="card">
+            //         <div class="card-header ${index !== 0 ? 'collapsed' : ''}" style='cursor:pointer;padding-block:.5rem'  id="${headingId}" data-toggle="collapse" data-target="#${collapseId}" aria-expanded="${index === 0}" aria-controls="${collapseId}">
+            //             <h5 class="mb-0 w-100">
+            //                 <div class="p-0 col-12 d-flex flex-column flex-md-row justify-content-between ">
+            //                     <div class="mb-2 mb-md-0 mr-3 text-nowrap align-items-center">
+            //                         <label class="font-weight-bold mb-0">Cantidad:</label>
+            //                         <span>${grupo.cantidad}</span>
+            //                     </div>
+            //                     <div>
+            //                         <span>${grupo.nombre}</span>
+            //                     </div>
+            //                 </div>
+            //             </h5>
+            //         </div>
+            //         <div id="${collapseId}" class="collapse show" aria-labelledby="${headingId}">
+            //             <div class="card-body p-1">
+            //                 <table class="table table-sm table-bordered  mb-0">
+            //                     <thead class="bg-gray-dark">
+            //                         <tr>
+            //                             <th>Nº</th>
+            //                             <th>Descripción</th>
+            //                             <th>Unidad</th>
+            //                             <th>Salida</th>
+            //                             <th>Entrada</th>
+            //                         </tr>
+            //                     </thead>
+            //                     <tbody>
+            //                     ${filas}
+            //                     </tbody>
+            //                 </table>
+            //             </div>
+            //         </div>
+            //     </div>`;
+            // });
+
+            // $('#modalMateriales').modal('show');
+        });
+
+        function cargarProductosFabricados(id_boleta_now) {
+            fetch('controllers/fabricacion.controlador.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        accion: 5,
+                        id_boleta: id_boleta_now,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    construirAcordeon(data);
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos:', error);
+                });
+        }
+
+        $('#modalMateriales').on('hidden.bs.modal', function() {
+            document.getElementById("accordionMateriales").innerHTML = '';
+        });
+
+        function construirAcordeon(data) {
+            const contenedor = document.getElementById("accordionMateriales");
+            // contenedor.innerHTML = "";
+
+            contenedor.classList.remove('accordion-animate');
+            void contenedor.offsetWidth; // Forzar reflow
+            contenedor.classList.add('accordion-animate');
+
+            // Agrupar productos fabricados con sus materiales utilizados
+            let grupos = [];
+            let grupoActual = null;
+
+            data.forEach(item => {
+                if (item.fabricado) {
+                    // Iniciar nuevo grupo
+                    grupoActual = {
+                        nombre: item.descripcion,
+                        cantidad: item.retorno ?? '-', // Mostrar retorno como cantidad fabricada
+                        materiales: []
+                    };
+                    grupos.push(grupoActual);
+                } else if (grupoActual) {
+                    // Añadir como material del último grupo
+                    grupoActual.materiales.push({
+                        descripcion: item.descripcion,
+                        unidad: item.unidad,
+                        salida: item.salidas,
+                        entrada: item.retorno ?? '-'
+                    });
+                }
+            });
+
+            // Construir el HTML del acordeón
+            grupos.forEach((grupo, index) => {
+                const collapseId = `collapseGrupo_${index}`;
+                const headingId = `headingGrupo_${index}`;
+
+                const filas = grupo.materiales.length > 0 ?
+                    grupo.materiales.map((mat, i) => `
+        <tr>
+            <td>${i + 1}</td>
+            <td>${mat.descripcion}</td>
+            <td>${mat.unidad}</td>
+            <td>${mat.salida}</td>
+            <td>${mat.entrada}</td>
+        </tr>`).join("") :
+                    `<tr><td colspan="5" class="text-center text-muted">No se encontraron materiales utilizados</td></tr>`;
+
+                contenedor.innerHTML += `
+            <div class="card">
+                <div class="card-header ${index !== 0 ? 'collapsed' : ''}" style='cursor:pointer;padding-block:.5rem'
+                    id="${headingId}" data-toggle="collapse" data-target="#${collapseId}"
+                    aria-expanded="${index === 0}" aria-controls="${collapseId}">
+                    <h5 class="mb-0 w-100">
+                        <div class="p-0 col-12 d-flex flex-column flex-md-row justify-content-between">
+                            <div class="mb-2 mb-md-0 mr-3 text-nowrap align-items-center">
+                                <label class="font-weight-bold mb-0">Cantidad:</label>
+                                <span>${grupo.cantidad}</span>
+                            </div>
+                            <div>
+                                <span class='font-weight-bold'>${grupo.nombre}</span>
+                            </div>
+                        </div>
+                    </h5>
+                </div>
+                <div id="${collapseId}" class="collapse ${index == 0 ? 'show' : ''}" aria-labelledby="${headingId}">
+                    <div class="card-body p-1">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="bg-gray-dark">
+                                <tr>
+                                    <th>Nº</th>
+                                    <th>Descripción</th>
+                                    <th>Unidad</th>
+                                    <th>Salida</th>
+                                    <th>Entrada</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filas}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+            });
+
+            const modalBody = document.querySelector('#modalMateriales .modal-body');
+            modalBody.classList.remove('animate-resize');
+            void modalBody.offsetWidth; // Forzar reflow
+            modalBody.classList.add('animate-resize');
+        }
 
         function enviarFormularioPDF(action, boleta) {
             // Crear el formulario dinámicamente
@@ -442,7 +665,7 @@
                         ._trigger("select", null, {
                             item: selectedItem
                         });
-                       
+
                 } else {
                     // Crear un nuevo item con los datos disponibles
                     let nuevoItem = {

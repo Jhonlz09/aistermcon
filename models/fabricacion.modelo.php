@@ -83,7 +83,6 @@ class ModeloFabricacion
                 $id_producto_fab = $conexion->lastInsertId('tblinventario_id_seq');
                 $stmtSalida = $conexion->prepare("INSERT INTO tblsalidas(id_boleta, retorno, id_producto, fabricado) VALUES(:id_boleta, 1, :id, true)");
                 $stmtSalida->bindParam(':id', $id_producto_fab, PDO::PARAM_INT);
-                // $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_INT);
                 $stmtSalida->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
                 $stmtSalida->execute();
             };
@@ -373,6 +372,38 @@ class ModeloFabricacion
                     WHERE id_producto = :id_producto AND anio = :anio;");
             $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
             $e->bindParam(':anio', $anio, PDO::PARAM_INT);
+            $e->execute();
+            return $e->fetchAll();
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlListarProdFabAndUtil($id_boleta)
+    {
+        try {
+            $e = Conexion::ConexionDB()->prepare("SELECT s.id, i.descripcion, u.nombre AS unidad,
+            s.cantidad_salida AS salidas, s.retorno, i.codigo, 
+            COALESCE(s.diferencia::text, '-') as utilizado,s.fabricado
+            FROM tblsalidas s
+                JOIN tblinventario i ON s.id_producto = i.id
+            JOIN tblboleta b ON s.id_boleta = b.id 
+            JOIN tblorden o ON b.id_orden = o.id
+            JOIN tblunidad u ON i.id_unidad = u.id
+            WHERE 
+                b.id = :id_boleta
+            ORDER BY 
+                CASE 
+                    WHEN s.fabricado THEN i.id
+                    ELSE s.id_producto_fab
+                END,
+                s.fabricado DESC,
+            	i.descripcion ASC,
+                s.id;");
+            $e->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
             $e->execute();
             return $e->fetchAll();
         } catch (PDOException $e) {

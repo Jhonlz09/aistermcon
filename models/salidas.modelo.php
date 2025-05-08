@@ -278,16 +278,16 @@ class ModeloSalidas
     static public function mdlBuscarBoletaFab($id_boleta)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT s.id, 
-            i.descripcion, u.nombre AS unidad, s.cantidad_salida as salidas, s.retorno, LPAD(b.id::TEXT, 7, '0') as id_boleta, 
+            $l = Conexion::ConexionDB()->prepare("SELECT s.id,i.descripcion, u.nombre AS unidad,
+            s.cantidad_salida as salidas, s.retorno, LPAD(b.id::TEXT, 7, '0') as id_boleta,
             i.codigo, s.isentrada, u.id as id_unidad, i.id as id_fab
-            FROM tblsalidas s
-            JOIN tblinventario i ON s.id_producto = i.id
-            JOIN tblboleta b ON s.id_boleta = b.id 
-            JOIN tblorden o ON b.id_orden = o.id
-            JOIN tblunidad u ON i.id_unidad = u.id
-                WHERE b.id=:id AND s.fabricado = true
-            ORDER BY b.fecha ASC, s.id");
+                FROM tblsalidas s
+                JOIN tblinventario i ON s.id_producto = i.id
+                JOIN tblboleta b ON s.id_boleta = b.id 
+                JOIN tblorden o ON b.id_orden = o.id
+                JOIN tblunidad u ON i.id_unidad = u.id
+                    WHERE b.id=:id AND s.fabricado = true
+                ORDER BY b.fecha ASC, s.id");
             $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
             $l->execute();
             return $l->fetchAll();

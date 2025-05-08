@@ -786,34 +786,14 @@
 
         let lastSelectedIndex = null;
 
-        // $('#tblPersonH tbody').on('click', 'td.select-checkbox', function(e) {
-        //     const row = $(this).closest('tr');
-        //     const index = tblPerson.row(row).index(); // índice real de DataTables
-
-        //     if (e.shiftKey && lastSelectedIndex !== null) {
-        //         // Selección múltiple
-        //         const currentIndex = index;
-        //         const [start, end] = [lastSelectedIndex, currentIndex].sort((a, b) => a - b);
-        //         for (let i = start; i <= end; i++) {
-        //             const tr = $(tblPerson.row(i).node());
-        //             // tr.addClass('selected');
-        //             tblPerson.row(i).select(); // si quieres que DataTables lo sepa
-        //         }
-        //     } else {
-        //         lastSelectedIndex = index;
-        //     }
-        // });
-
         $('#tblPersonH tbody').on('click', 'td.select-checkbox', function(e) {
             const row = $(this).closest('tr');
             const currentIndex = tblPerson.row(row).index();
 
             if (e.shiftKey && lastSelectedIndex !== null && lastSelectedIndex !== currentIndex) {
                 // Rango de selección con Shift
-                const [start, end] = currentIndex > lastSelectedIndex ?
-                    [lastSelectedIndex, currentIndex - 1] :
+                const [start, end] = currentIndex > lastSelectedIndex ? [lastSelectedIndex, currentIndex - 1] :
                     [currentIndex, lastSelectedIndex - 1];
-
                 for (let i = start; i <= end; i++) {
                     tblPerson.row(i).select();
                 }
@@ -823,28 +803,6 @@
 
         let lastSelectedIndexE = null;
 
-        // $('#tblEmpleadoH tbody').on('click', 'td.select-checkbox', function(e) {
-        //     const row = $(this).closest('tr');
-        //     const currentIndex = tblEmpleadoH.row(row).index();
-
-        //     if (e.shiftKey && lastSelectedIndex !== null && lastSelectedIndex !== currentIndex) {
-        //         // Rango de selección con Shift
-        //         const [start, end] = currentIndex > lastSelectedIndex ?
-        //             [lastSelectedIndex, currentIndex - 1] :
-        //             [currentIndex, lastSelectedIndex - 1];
-
-        //         for (let i = start; i <= end; i++) {
-        //             tblEmpleadoH.row(i).select();
-        //         }
-        //     }
-        //     lastSelectedIndexE = currentIndex;
-        // });
-
-
-
-
-
-
         $('#tblPersonH').on('input keydown', '.hn, .hs, .h100', function() {
             // Encuentra la fila del input cambiado
             let $row = $(this).closest('tr');
@@ -852,11 +810,10 @@
             let hn = parseFloat($row.find('.hn').val()) || 0;
             let hs = parseFloat($row.find('.hs').val()) || 0;
             let h100 = parseFloat($row.find('.h100').val()) || 0;
-
             // Calcula el total
             let total_horas = hn + hs + h100;
-
             $row.find('.totalh').text(total_horas);
+            
         });
 
         $("#addRow").on("click", function() {
