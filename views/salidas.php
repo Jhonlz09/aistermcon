@@ -425,6 +425,10 @@
             document.getElementById("accordionMateriales").innerHTML = '';
         });
 
+        function formatNumber(value) {
+            return parseFloat(value).toString(); // quita ceros innecesarios como '1.00' => '1'
+        }
+
         function construirAcordeon(data) {
             const contenedor = document.getElementById("accordionMateriales");
             // contenedor.innerHTML = "";
@@ -443,6 +447,7 @@
                     grupoActual = {
                         nombre: item.descripcion,
                         cantidad: item.retorno ?? item.salidas, // Mostrar retorno como cantidad fabricada
+                        unidad: item.unidad,
                         materiales: []
                     };
                     grupos.push(grupoActual);
@@ -451,8 +456,9 @@
                     grupoActual.materiales.push({
                         descripcion: item.descripcion,
                         unidad: item.unidad,
-                        salida: item.salidas,
-                        entrada: item.retorno ?? '-'
+                        salida: formatNumber(item.salidas),
+                        entrada: item.retorno != null ? formatNumber(item.retorno) : '-',
+                        usado: item.retorno == null ? formatNumber(item.salidas) : formatNumber(item.utilizado)
                     });
                 }
             });
@@ -470,9 +476,9 @@
             <td>${mat.unidad}</td>
             <td>${mat.salida}</td>
             <td>${mat.entrada}</td>
+            <td>${mat.usado}</td>
         </tr>`).join("") :
-                    `<tr><td colspan="5" class="text-center text-muted">No se encontraron materiales utilizados</td></tr>`;
-
+                    `<tr><td colspan="6" class="text-center text-muted">No se encontraron materiales utilizados</td></tr>`;
                 contenedor.innerHTML += `
             <div class="card">
                 <div class="card-header ${index !== 0 ? 'collapsed' : ''}" style='cursor:pointer;padding-block:.5rem'
@@ -482,7 +488,7 @@
                         <div class="p-0 col-12 d-flex flex-column flex-md-row justify-content-between">
                             <div class="mb-2 mb-md-0 mr-3 text-nowrap align-items-center">
                                 <label class="font-weight-bold mb-0">Cantidad:</label>
-                                <span>${grupo.cantidad}</span>
+                                <span>${parseFloat(grupo.cantidad).toString()} ${grupo.unidad}</span>
                             </div>
                             <div>
                                 <span class='font-weight-bold'>${grupo.nombre}</span>
@@ -500,6 +506,7 @@
                                     <th>Unidad</th>
                                     <th>Salida</th>
                                     <th>Entrada</th>
+                                    <th>Usado</th>
                                 </tr>
                             </thead>
                             <tbody>
