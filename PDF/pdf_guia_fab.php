@@ -291,7 +291,7 @@ if ($datos_guias == null) {
         ['family' => 'Arial', 'style' => 'B', 'size' => 12],
         ['family' => 'Arial', 'style' => 'I', 'size' => 12]
     );
-    $pdf->Ln(10);
+    $pdf->Ln(5);
     $pdf->SetFont('Arial', 'B', 11);
     $pdf->checkNewPage($pdf, 6);
     $header_fab = array('Codigo', 'Descripcion', 'Unidad', 'Cantidad Fab.');
