@@ -98,7 +98,7 @@
                 </h5>
                 <!-- Ícono y botón a la derecha -->
                 <div class="d-flex align-items-center">
-                    <i class="fas fa-file-lines mr-3 fa-xl" style="transition: color 0.3s ease;cursor:pointer" title="Informe de productos fabricados"></i>
+                    <i id="btn_pdf_fab" class="fas fa-file-lines mr-3 fa-xl" style="transition: color 0.3s ease;cursor:pointer" title="Informe de productos fabricados"></i>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -289,7 +289,7 @@
     $(document).ready(function() {
         let anio = year;
         let mes = month;
-
+        let id_boleta_pdf;
         if (!$.fn.DataTable.isDataTable('#tblSalidas')) {
             tabla = $("#tblSalidas").DataTable({
                 "ajax": {
@@ -325,7 +325,8 @@
             form = document.getElementById('formNuevo'),
             form_pdf = document.getElementById('form_pdf'),
             btnNuevo = document.getElementById('btnNuevo');
-        let input_pdf = document.getElementById('input_boleta');
+        const input_pdf = document.getElementById('input_boleta');
+        const btn_pdf_fab = document.getElementById('btn_pdf_fab');
 
         $(cboAnio).select2({
             width: '110%',
@@ -387,66 +388,19 @@
 
         $('#tblSalidas tbody').on('click', '.btn_show', function() {
             const row = tabla.row($(this).closest('tr').next()).data();
-            const id_boleta_row = row[10];
+            id_boleta_pdf = row[10];
             // console.log(id_boleta_row);
             $('#modalMateriales').modal('show');
-            cargarProductosFabricados(id_boleta_row);
-            // const grupos = productos[id] || [];
-            // const contenedor = document.getElementById("accordionMateriales");
-            // contenedor.innerHTML = "";
-
-            // grupos.forEach((grupo, index) => {
-            //     const collapseId = `collapseGrupo${id}_${index}`;
-            //     const headingId = `headingGrupo${id}_${index}`;
-
-            //     const filas = grupo.materiales.map((mat, i) => `
-            //         <tr>
-            //             <td>${i + 1}</td>
-            //             <td>${mat.descripcion}</td>
-            //             <td>${mat.unidad}</td>
-            //             <td>${mat.salida}</td>
-            //             <td>${mat.entrada}</td>
-            //         </tr>`).join("");
-
-            //     contenedor.innerHTML += `<div class="card">
-            //         <div class="card-header ${index !== 0 ? 'collapsed' : ''}" style='cursor:pointer;padding-block:.5rem'  id="${headingId}" data-toggle="collapse" data-target="#${collapseId}" aria-expanded="${index === 0}" aria-controls="${collapseId}">
-            //             <h5 class="mb-0 w-100">
-            //                 <div class="p-0 col-12 d-flex flex-column flex-md-row justify-content-between ">
-            //                     <div class="mb-2 mb-md-0 mr-3 text-nowrap align-items-center">
-            //                         <label class="font-weight-bold mb-0">Cantidad:</label>
-            //                         <span>${grupo.cantidad}</span>
-            //                     </div>
-            //                     <div>
-            //                         <span>${grupo.nombre}</span>
-            //                     </div>
-            //                 </div>
-            //             </h5>
-            //         </div>
-            //         <div id="${collapseId}" class="collapse show" aria-labelledby="${headingId}">
-            //             <div class="card-body p-1">
-            //                 <table class="table table-sm table-bordered  mb-0">
-            //                     <thead class="bg-gray-dark">
-            //                         <tr>
-            //                             <th>Nº</th>
-            //                             <th>Descripción</th>
-            //                             <th>Unidad</th>
-            //                             <th>Salida</th>
-            //                             <th>Entrada</th>
-            //                         </tr>
-            //                     </thead>
-            //                     <tbody>
-            //                     ${filas}
-            //                     </tbody>
-            //                 </table>
-            //             </div>
-            //         </div>
-            //     </div>`;
-            // });
-
-            // $('#modalMateriales').modal('show');
+            cargarProductosFabricados(id_boleta_pdf);
         });
 
-        function cargarProductosFabricados(id_boleta_now) {
+        btn_pdf_fab.addEventListener('click', function() {
+            console.log(id_boleta_pdf);
+            enviarFormularioPDF('PDF/pdf_guia_fab.php', id_boleta_pdf);
+        });
+
+
+        function cargarProductosFabricados(id_boleta) {
             fetch('controllers/fabricacion.controlador.php', {
                     method: 'POST',
                     headers: {
@@ -454,7 +408,7 @@
                     },
                     body: new URLSearchParams({
                         accion: 5,
-                        id_boleta: id_boleta_now,
+                        id_boleta: id_boleta,
                     }),
                 })
                 .then(response => response.json())
@@ -488,7 +442,7 @@
                     // Iniciar nuevo grupo
                     grupoActual = {
                         nombre: item.descripcion,
-                        cantidad: item.retorno ?? '-', // Mostrar retorno como cantidad fabricada
+                        cantidad: item.retorno ?? item.salidas, // Mostrar retorno como cantidad fabricada
                         materiales: []
                     };
                     grupos.push(grupoActual);
