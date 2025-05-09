@@ -33,6 +33,7 @@ class SesionModelo
                 $configuracion = self::mdlObtenerConfiguracion();
                 $_SESSION["empresa"] = $configuracion[0]->empresa;
                 $_SESSION["iva"] = $configuracion[0]->iva;
+                $_SESSION["sbu"] = $configuracion[0]->sbu;
                 $_SESSION["emisor"] = $configuracion[0]->emisor;
                 $_SESSION["ruc"] = $configuracion[0]->ruc;
                 $_SESSION["matriz"] = $configuracion[0]->matriz;
@@ -43,7 +44,6 @@ class SesionModelo
                 $_SESSION["bodeguero"] = $configuracion[0]->bodeguero;
                 $_SESSION["conductor"] = $configuracion[0]->conductor;
                 $_SESSION["sc_cot"] = $configuracion[0]->sc_cot;
-
                 return "success";
             } else {
                 return "invalid_password";
@@ -80,6 +80,7 @@ class SesionModelo
                         entradamultiple AS entrada, 
                         bodeguero, 
                         conductor, 
+                        sbu,
                 (SELECT last_value + increment_by FROM pg_sequences 
                     WHERE schemaname = 'public' AND sequencename = 'secuencia_cotizacion') AS sc_cot 
                     FROM tblconfiguracion;");

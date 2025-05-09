@@ -93,6 +93,44 @@ class ModeloConfiguracion
         }
     }
 
+     static public function mdlEditarConfigRRHH($sbu)
+    {
+        try {
+            // Conexión a la base de datos
+            $db = Conexion::ConexionDB();
+
+            // Iniciar transacción
+            $db->beginTransaction();
+
+            // Actualizar el IVA
+            $u = $db->prepare("UPDATE tblconfiguracion SET sbu = :sbu WHERE id = 1");
+            $u->bindParam(":sbu", $sbu, PDO::PARAM_INT);
+            $u->execute();
+
+            // Actualizar la secuencia con ALTER SEQUENCE (construcción dinámica)
+            $db->commit();
+
+            // Almacenar valores en variables de sesión
+            $_SESSION["sbu"] = $sbu;
+
+            return array(
+                'status' => 'success',
+                'm' => 'La configuración de RRHH se edito correctamente',
+                'sbu' => $_SESSION["sbu"]
+            );
+        } catch (PDOException $e) {
+            // Revertir transacción en caso de error
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo editar la configuración: ' . $e->getMessage()
+            );
+        }
+    }
+
     public static function mdlEditarConfigGuia($ruc, $emisor, $dir, $tel, $correo1)
     {
         try {
@@ -184,6 +222,8 @@ class ModeloConfiguracion
             );
         }
     }
+
+    
 
     public static function mdlObtenerCorreos()
     {

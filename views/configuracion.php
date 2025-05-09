@@ -31,7 +31,7 @@
                                     <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-movimiento-tab" data-toggle="pill" href="#vert-tabs-movimiento" role="tab" aria-controls="vert-tabs-movimiento" aria-selected="false"> <i class="tab-icon fas fa-person-dolly"></i> Movimientos</a>
                                     <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-compras-tab" data-toggle="pill" href="#vert-tabs-compras" role="tab" aria-controls="vert-tabs-compras" aria-selected="false"> <i class="tab-icon fas fa-cart-shopping"></i> Compras</a>
                                     <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-ope-tab" data-toggle="pill" href="#vert-tabs-ope" role="tab" aria-controls="vert-tabs-ope" aria-selected="false"> <i class="tab-icon fas fa-screwdriver-wrench"></i> Operaciones</a>
-
+                                    <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-rrhh-tab" data-toggle="pill" href="#vert-tabs-rrhh" role="tab" aria-controls="vert-tabs-rrhh" aria-selected="false"> <i class="nav-icon fas fa-people-group"></i> R.R.H.H</a>
                                     <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-profile-tab" data-toggle="pill" href="#vert-tabs-profile" role="tab" aria-controls="vert-tabs-profile" aria-selected="false"> <i class="tab-icon fas fa-clipboard"></i> Guía</a>
                                     <a class="nav-link w-100 txt-ellipsis" id="vert-tabs-messages-tab" data-toggle="pill" href="#vert-tabs-messages" role="tab" aria-controls="vert-tabs-messages" aria-selected="false"><i class="tab-icon fas fa-sliders-up"></i> Preferencias</a>
                                 </div>
@@ -54,31 +54,7 @@
                                                         <input class="form-control border-2" type="file" name="logo" id="logo" accept=".png, .jpg, .jpeg">
                                                     </div>
                                                 </div>
-                                                <!-- <div class="col-sm-6">
-                                                    <div class="form-group">
-                                                        <label for="inpE"><i class="fas fa-input-text"></i> Empresa</label>
-                                                        <input type="text" class="form-control border-2" id="nombre_empresa" name="inpInstitucion">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="logo"><i class="fas fa-icons"></i> Logo</label>
-                                                        <input class="form-control border-2" type="file" name="logo" id="logo" accept=".png, .jpg, .jpeg">
-                                                    </div>
-                                                </div> -->
-                                                <!-- <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label for="cboGrafico">Grafico de Inicio</label>
-                                                    <select name="cboGrafico" id="cboGrafico" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
-                                                        <option value="1">Documentos por mes</option>
-                                                        <option value="2">Documentos por tipo</option>
-                                                    </select>
-                                                </div>
-                                            </div> -->
                                                 <br>
-
-                                                <!-- <h3 class="card-title" style="width: 100%;padding:1.4rem 0rem 1rem">
-                                                <i class="fas fa-chart-pie" style="margin-right: 10px;margin-left:10px;"></i>Informe
-                                            </h3> -->
-
                                                 <div class="col-sm-12 p-0">
                                                     <button class="btn btn-primary btn-small w-100 text-center" id="btnGuardarD">
                                                         <i class="fa-solid fa-floppy-disk"></i> Guardar
@@ -99,32 +75,7 @@
                                                         </svg>
                                                     </label>
                                                 </div>
-
-                                                <!-- <div class="col-sm-6">
-                                                    <div class="form-group">
-                                                        <label for="inpE"><i class="fas fa-input-text"></i> Empresa</label>
-                                                        <input type="text" class="form-control border-2" id="nombre_empresa" name="inpInstitucion">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="logo"><i class="fas fa-icons"></i> Logo</label>
-                                                        <input class="form-control border-2" type="file" name="logo" id="logo" accept=".png, .jpg, .jpeg">
-                                                    </div>
-                                                </div> -->
-                                                <!-- <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label for="cboGrafico">Grafico de Inicio</label>
-                                                    <select name="cboGrafico" id="cboGrafico" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
-                                                        <option value="1">Documentos por mes</option>
-                                                        <option value="2">Documentos por tipo</option>
-                                                    </select>
-                                                </div>
-                                            </div> -->
                                                 <br>
-
-                                                <!-- <h3 class="card-title" style="width: 100%;padding:1.4rem 0rem 1rem">
-                                                <i class="fas fa-chart-pie" style="margin-right: 10px;margin-left:10px;"></i>Informe
-                                            </h3> -->
-
                                                 <div class="col-sm-12 p-0">
                                                     <button class="btn btn-primary btn-small w-100 text-center" id="btnGuardarM">
                                                         <i class="fa-solid fa-floppy-disk"></i> Guardar
@@ -138,7 +89,6 @@
                                     <div class="tab-pane fade" id="vert-tabs-compras" role="tabpanel" aria-labelledby="vert-tabs-compras-tab">
                                         <div class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
                                             <form id="formConfigC" autocomplete="off" class="form-horizontal needs-validation" style="align-items:flex-start" novalidate>
-
                                                 <div class="form-group row mb-3">
                                                     <!-- El label ocupa 6 columnas -->
                                                     <label for="inputIVA" class="col-sm-6 col-form-label d-flex align-items-center">
@@ -161,10 +111,9 @@
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
-
                                                 <div class="form-group row mb-3">
                                                     <!-- El label ocupa 6 columnas -->
-                                                    <label for="inputNroCompra" class="col-sm-6 col-form-label d-flex align-items-center">
+                                                    <label for="inputNroCompra" class="col-sm-6 col-form-label d-flex align-items-center text-wrap">
                                                         <i class="fas fa-arrow-up-9-1 mr-1"></i> Nº de orden de compra
                                                     </label>
                                                     <!-- El input está contenido en un div que ocupa el resto del espacio -->
@@ -222,11 +171,41 @@
                                             </form>
                                         </div>
                                     </div>
+                                    <div class="tab-pane fade" id="vert-tabs-rrhh" role="tabpanel" aria-labelledby="vert-tabs-rrhh-tab">
+                                        <div class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
+                                            <form id="formConfigRRHH" autocomplete="off" class="form-horizontal needs-validation" style="align-items:flex-start" novalidate>
+                                                <div class="form-group row mb-3 justify-content-between">
+                                                    <!-- El label ocupa 6 columnas -->
+                                                    <label for="inputSbu" class="col-sm-8 mb-2 col-form-label d-flex align-items-center text-wrap">
+                                                        <i class="fas fa-sack-dollar mr-2"></i> Sueldo basico unificado
+                                                    </label>
+                                                    <!-- El input está contenido en un div que ocupa el resto del espacio -->
+                                                    <div class="col-sm d-flex justify-content-between align-items-center mb-2">
+                                                        $ <input type="text" style="text-align:center"
+                                                            oninput="validarNumber(this, /[^0-9.]/g)"
+                                                            autocomplete="off"
+                                                            maxlength="8"
+                                                            value="<?php echo isset($_SESSION['sbu']) ? $_SESSION['sbu'] : ''; ?>"
+                                                            class="form-control border-2 w-100"
+                                                            id="inputSbu"
+                                                            placeholder="Sueldo basico unificado"
+                                                            spellcheck="false"
+                                                            required>
+                                                        <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="col-sm-12 p-0">
+                                                    <button class="btn btn-primary btn-small w-100 text-center" id="btnGuardarRRHH">
+                                                        <i class="fa-solid fa-floppy-disk"></i> Guardar
+                                                    </button>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                    </div>
                                     <div class="tab-pane fade" id="vert-tabs-profile" role="tabpanel" aria-labelledby="vert-tabs-profile-tab">
                                         <div class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
-                                            <!-- <div class="card-header p-0">
-                                                <label style="font-size:1.15rem;margin-bottom:.4rem; width:100%"><i class="fas fa-clipboard"></i> Guía de Remisión</label>
-                                            </div> -->
                                             <form id="formConfigG" autocomplete="off" class="form-horizontal needs-validation" style="align-items:flex-start" novalidate>
                                                 <div class="form-group row mb-3">
                                                     <label for="inputEmisor" style="padding-block:.5rem;max-width:8rem;" class="col-sm-3 col-form-label"><i class="fas fa-scroll"></i> Emisor</label>
@@ -247,7 +226,6 @@
                                                     <div class="col-sm">
                                                         <input type="text" autocomplete="off" value="<?php echo isset($_SESSION["matriz"]) ? $_SESSION["matriz"] : ''; ?>" class="form-control border-2" id="inputMatriz" placeholder="Matriz" spellcheck="false" data-ms-editor="true" required>
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
-
                                                     </div>
                                                 </div>
                                                 <div class="form-group row mb-3">
@@ -264,18 +242,14 @@
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
-
                                                 <br>
-
                                                 <div class="col-sm-12 p-0">
                                                     <button class="btn btn-primary btn-small w-100 text-center" id="btnGuardarG">
                                                         <i class="fa-solid fa-floppy-disk"></i> Guardar
                                                     </button>
                                                 </div>
-
                                             </form>
                                         </div>
-
                                     </div>
                                     <div class="tab-pane fade " id="vert-tabs-messages" role="tabpanel" aria-labelledby="vert-tabs-messages-tab">
                                         <div id="card_preferencia" class="card-body" style="padding:1rem 1.5rem 1.25rem 0.5rem">
@@ -307,17 +281,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
-
-                                                <!-- <div class="form-group row mb-3">
-                                                    <label style="cursor:pointer;padding-block:.5rem;max-width:max-content" for="isEntradaEdit" class="col-sm-3 col-form-label"> Activar alerta poco stock</label>
-                                                    <label class="switch-2 ml-3" for="isAlert">
-                                                        <input class="switch__input" type="checkbox" id="isAlert" onkeydown="toggleWithEnter(event, this)" <?php echo (isset($_SESSION["entrada_mul"]) && $_SESSION["entrada_mul"] == 1) ? 'checked' : ''; ?>>
-                                                        <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
-                                                            <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" />
-                                                        </svg>
-                                                    </label>
-                                                </div> -->
                                                 <br>
                                                 <div class="col-sm-12 p-0">
                                                     <button class="btn btn-primary btn-small w-100 text-center" id="btnGuardarC">
@@ -344,57 +307,7 @@
 </section>
 
 <script>
-    // var Toast = Swal.mixin({
-    //     toast: true,
-    //     position: 'top-end',
-    //     showConfirmButton: false,
-    //     timer: 3000
-    // });
-
-    // console.log(id_usuario);
-    // $(function() {
-    //     //Initialize Select2 Elements
-    //     $('.select2').select2({
-    //         width: '100%',
-    //         minimumResultsForSearch: -1,
-    //         dropdownAutoWidth: false
-
-    //     })
-    // })
-
-    // document.addEventListener('DOMContentLoaded', function() {
-    //         // Usar fetch para obtener los correos desde el backend
-
-    //     });
-
     $(document).ready(function() {
-
-
-        // fetch('controllers/configuracion.controlador.php')
-        //     .then(response => response.json())
-        //     .then(correos => {
-        //         console.log(correos); // Deberías ver un array aquí
-        //         if (Array.isArray(correos)) {
-        //             correos.forEach((correo, index) => {
-        //                 // Llenar los inputs con los correos
-        //                 const emailRow = document.createElement('div');
-        //                 emailRow.className = 'row mb-3';
-        //                 emailRow.innerHTML = `
-        //             <div class="col">
-        //                 <input type="email" value="${correo}" name="email[]" class="form-control border-2" required>
-        //             </div>
-        //             <div class="col-auto text-right">
-        //                 <button type="button" class="btn bg-gradient-danger removeEmailButton">
-        //                     <i class="fas fa-trash"></i>
-        //                 </button>
-        //             </div>
-        //         `;
-        //                 document.getElementById('emailContainer').appendChild(emailRow);
-        //             });
-        //         }
-        //     })
-        //     .catch(error => console.error('Error al cargar los correos:', error));
-
         fetch('controllers/configuracion.controlador.php')
             .then(response => response.json())
             .then(correos => {
@@ -481,6 +394,7 @@
             formConfigC = document.getElementById('formConfigC'),
             formConfigG = document.getElementById('formConfigG'),
             formConfigOpe = document.getElementById('formConfigOpe'),
+            formConfigRRHH = document.getElementById('formConfigRRHH'),
             formConfigP = document.getElementById('formConfigP');
 
         const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -541,6 +455,19 @@
                     {
                         key: 'accion',
                         value: 2
+                    }
+                ]
+            },
+            {
+                form: formConfigRRHH,
+                fields: [{
+                        id: 'inputSbu',
+                        key: 'sbu',
+                        transform: (element) => element.value.trim()
+                    },
+                    {
+                        key: 'accion',
+                        value: 7
                     }
                 ]
             },
@@ -629,37 +556,13 @@
                     if (r && form == formConfigC) {
                         iva_config = r.iva;
                         nro_sec_cotiz = r.sc;
+                    }else if (r && form == formConfigRRHH) {
+                        sbu_config = r.sbu;
                     }
                 });
             });
         });
 
-
-        // formConfigOpe.addEventListener("submit", function(e) {
-        //     e.preventDefault(); // Evitar envío por defecto del formulario
-
-        //     // Obtén los inputs de email una sola vez
-        //     const emailInputs = formConfigOpe.querySelectorAll('input[name="email[]"]');
-
-        //     // Valida los correos
-        //     const {
-        //         correos,
-        //         correosInvalidos
-        //     } = validarCorreos(emailInputs, regexCorreo);
-
-        //     if (correosInvalidos.length > 0) {
-        //         // alert(`Correos inválidos: ${correosInvalidos.join(', ')}`);
-        //         const mensaje = correosInvalidos.length === 1 ?
-        //             `El correo '${correosInvalidos[0]}' no es válido.` :
-        //             `Los correos '${correosInvalidos.join(', ')}' no son válidos.`;
-
-        //         mostrarToast('danger', 'Error', 'fa-xmark', mensaje, 8000)
-        //         return;
-        //     }
-
-        //     // Aquí puedes continuar con el flujo si todos los correos son válidos
-
-        // });
 
         formConfigOpe.addEventListener("submit", function(e) {
             e.preventDefault();
@@ -713,50 +616,5 @@
                 correosInvalidos
             };
         }
-
-        // formConfigD.addEventListener("submit", function(e) {
-        //     e.preventDefault();
-        //     const nom = document.getElementById('inputEmpresa').value.trim().toUpperCase();
-        //     const logo = 0;
-
-        //     if (!this.checkValidity()) {
-        //         this.classList.add('was-validated');
-        //         return;
-        //     }
-        //     let datos = new FormData();
-        //     datos.append('empresa', nom);
-        //     datos.append('accion', 1);
-        //     confirmarAccion(datos, 'configuracion', null)
-        // });
-
-        // formConfigC.addEventListener("submit", function(e) {
-        //     e.preventDefault();
-        //     const iva = document.getElementById('inputIVA').value.trim();
-
-        //     if (!this.checkValidity()) {
-        //         this.classList.add('was-validated');
-        //         return;
-        //     }
-        //     let datos = new FormData();
-        //     datos.append('iva', iva);
-        //     datos.append('accion', 3);
-        //     confirmarAccion(datos, 'configuracion', null)
-        // });
-
-        // formConfigM.addEventListener("submit", function(e) {
-        //     e.preventDefault();
-        //     const ismultientrada = document.getElementById('isEntradaEdit').checked;
-
-        //     if (!this.checkValidity()) {
-        //         this.classList.add('was-validated');
-        //         return;
-        //     }
-        //     let datos = new FormData();
-        //     datos.append('isentrada', ismultientrada);
-        //     datos.append('accion', 2);
-        //     confirmarAccion(datos, 'configuracion', null)
-        // });
-
-
     });
 </script>

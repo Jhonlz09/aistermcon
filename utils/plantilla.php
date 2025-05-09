@@ -36,8 +36,7 @@
     <link rel='stylesheet' href='assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css'>
     <!-- overlayScrollbars -->
     <link rel='stylesheet' href='assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css'>
-
-    <!-- <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
+    <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" />
     <script src='assets/js/main.js'></script>
     <!-- jQuery -->
     <script src='assets/plugins/jquery/jquery.min.js'></script>
@@ -273,9 +272,9 @@
             // });
 
             const card_fab = document.getElementById('card_fab');
-
             let nro_sec_cotiz = <?php echo ($_SESSION["sc_cot"] == null) ? 0 : $_SESSION["sc_cot"]; ?>;
             let iva_config = <?php echo $_SESSION["iva"]; ?>;
+            let sbu_config = <?php echo $_SESSION["sbu"]; ?>;
             const isEntrada = <?php echo ($_SESSION["entrada_mul"]) ? 1 : 0; ?>;
             const isSuperAdmin = <?php echo ($_SESSION["s_usuario"]->id_perfil == 1) ? 1 : 0; ?>;
             const bodegueroPorDefecto = <?php echo ($_SESSION["bodeguero"] == null) ? 0 : $_SESSION["bodeguero"]; ?>;

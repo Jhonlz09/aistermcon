@@ -446,7 +446,7 @@
                     // Iniciar nuevo grupo
                     grupoActual = {
                         nombre: item.descripcion,
-                        cantidad: item.retorno ?? item.salidas, // Mostrar retorno como cantidad fabricada
+                        cantidad: parseFloat(item.tras ? item.salidas : item.retorno) || 0, // Mostrar retorno como cantidad fabricada
                         unidad: item.unidad,
                         materiales: []
                     };

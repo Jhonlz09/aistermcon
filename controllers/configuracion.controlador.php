@@ -3,7 +3,7 @@ require_once "../models/configuracion.modelo.php";
 
 class ControladorConfiguracion
 {
-    public $iva, $sc, $nombre, $logo, $emisor, $correo1, $correo2, $tel, $dir, $ruc, $isentrada;
+    public $iva, $sbu, $sc, $nombre, $logo, $emisor, $correo1, $correo2, $tel, $dir, $ruc, $isentrada;
 
     public function editarConfigDatos()
     {
@@ -36,6 +36,12 @@ class ControladorConfiguracion
     public function editarConfigOpe()
     {
         $data = ModeloConfiguracion::mdlEditarConfigOpe($this->correo1);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function editarConfigRRHH()
+    {
+        $data = ModeloConfiguracion::mdlEditarConfigRRHH($this->sbu);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -72,6 +78,9 @@ if (isset($_POST["accion"])) {
     }else if ($_POST["accion"] == 6) {
         $data->correo1 = $_POST["correos"];
         $data->editarConfigOpe();
+    }else if ($_POST["accion"] == 7) {
+        $data->sbu = $_POST["sbu"];
+        $data->editarConfigRRHH();
     }
 }else{
     $data = new ControladorConfiguracion();

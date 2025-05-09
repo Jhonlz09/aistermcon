@@ -6,7 +6,7 @@
     <!-- <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
     <!-- <link href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css" rel="stylesheet" integrity="sha384-b6V45oYHXYNRRbOBt+gMso4peE+V6GATcho1MZx7ELTjReHmjA8zW2Ap/w0D3+QX" crossorigin="anonymous">
     <link href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css" rel="stylesheet" integrity="sha384-fvFMooh85/CFhRcmgNLO/DEXj4/h8h4Fz2s0Wtq2hPU/s7z0rLzrk77ID2JS+YUg" crossorigin="anonymous"> -->
-    <link href="assets/plugins/datatables-keytable/css/keyTable.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <!-- <link href="assets/plugins/datatables-keytable/css/keyTable.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
 </head>
 <!-- Contenido Header -->
 <section id="div_header" class="content-header">
@@ -81,11 +81,15 @@
 
 <section id="div_hor_header" style="display:none" class="content-header">
     <div class="container-fluid">
-        <div class="row">
+        <div class="row justify-content-between">
             <div class="col-auto">
                 <h4>
                     <i id="btnReturn" style="cursor:pointer" class="fa-regular fa-circle-arrow-left"></i><span id="text_accion"> Nuevo horario</span>
                 </h4>
+            </div>
+            <div class="col-auto">
+                <button id="btnGuardar" class="btn bg-gradient-navy mb-1" style="width:12rem;">
+                    <i class="fas fa-floppy-disk"></i> Guardar</button>
             </div>
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -135,19 +139,17 @@
 
                             <!-- Elemento 4 (botones) -->
                             <div class="col-6 col-lg d-flex flex-column justify-content-between mb-1">
-                                <button type="button" id="editRow" style="display:none;" class="btn btn-sm bg-gradient-blue mb-1">
+                                <button type="button" id="editRow" style="display:none;" class="btn border-2 btn-sm btn-block btn-outline-primary mb-1">
                                     <i class="fas fa-pencil"></i> Editar
                                 </button>
-                                <button type="button" id="addRow" class="btn btn-sm bg-gradient-green mb-2">
+                                <button type="button" id="addRow" class="btn btn-sm border-2 btn-block btn-outline-success mb-2">
                                     <i class="fas fa-grid-2-plus"></i> Agregar
                                 </button>
-                                <button type="button" id="eliRow" style="display:none;" class="btn btn-sm bg-gradient-danger">
+                                <button type="button" id="eliRow" style="display:none;" class="m-0 border-2 btn btn-sm btn-block btn-outline-danger">
                                     <i class="fas fa-trash"></i> Eliminar
                                 </button>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>
@@ -236,7 +238,7 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script>
+<!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
 <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
 
 <!-- <script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
@@ -267,7 +269,6 @@
                 }
             },
         },
-
         columnDefs: [{
                 targets: 0,
                 data: "acciones",
@@ -278,10 +279,6 @@
                     }
                     return meta.row; // Devuelve el índice de la fila
                 }
-            },
-
-            {
-                targets: 3,
             },
             {
                 targets: 5,
@@ -300,37 +297,9 @@
                             "</button>" : "") +
                         " </center>"
                     );
-                },
-            },
-        ],
-        // initComplete: function() {
-        //     var api = this.api();
-        //     $('.filterhead', api.table().header()).each(function(i) {
-        //         var column = api.column(i);
-        //         if (i === 0 || i === api.columns().count() - 1) {
-        //             // No agregar ningún elemento en la columna 0 y la última columna
-        //             $(this).empty();
-        //             return;
-        //         }
-
-        //         var inputType = 'text';
-        //         if (i === 4) { // Columna de fecha
-        //             inputType = 'date';
-        //         }
-
-        //         var input = $('<input style="border-bottom-width:2px;padding:0" class="form-control responsive-input" type="' + inputType + '" placeholder="Buscar" />')
-        //             .appendTo($(this).empty())
-        //             .on('input', function() {
-        //                 var val = $.fn.dataTable.util.escapeRegex(
-        //                     $(this).val()
-        //                 );
-
-        //                 column
-        //                     .search(val ? '^' + val + '$' : '', true, false)
-        //                     .draw();
-        //             });
-        //     });
-        // }
+                }
+            }
+        ]
     }
 
     $(document).ready(function() {
@@ -344,6 +313,9 @@
             value: item.text,
             cod: item.id
         }));
+
+        let selectedItemOrden;
+        // let selectedItemPerson;
 
         clearButtonObraH.addEventListener('click', function() {
             id_orden_horario = null;
@@ -405,7 +377,7 @@
                         const timestamp = Date.now(); // milisegundos actuales
                         const uniqueId = `empleado_${timestamp}`; // ID único
                         return `<div class="ui-front" style="z-index:99999;position:relative">
-                        <input style="width:12rem"
+                        <input style="width:12em"
                         type="search"
                         class="form-control empleado"
                         id="${uniqueId}"
@@ -462,7 +434,6 @@
                         type="text"
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
-
                         inputmode="numeric"
                         maxlength="4"
                         class="form-control hn text-center"
@@ -483,7 +454,6 @@
                         spellcheck="false"
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
-
                         inputmode="numeric"
                         maxlength="4"
                         id="id${meta.row + 1}"
@@ -531,6 +501,12 @@
                             return `$<input
                         style="width:5rem"
                         type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        inputmode="numeric"
+                        maxlength="4"
                         class="form-control material text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -545,6 +521,12 @@
                             return `$<input
                         style="width:5rem"
                         type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        inputmode="numeric"
+                        maxlength="4"
                         class="form-control trans text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -559,6 +541,12 @@
                             return `$<input
                         style="width:5rem"
                         type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        inputmode="numeric"
+                        maxlength="4"
                         class="form-control ali text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -573,6 +561,12 @@
                             return `$<input
                         style="width:5rem"
                         type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        inputmode="numeric"
+                        maxlength="4"
                         class="form-control hosp text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -587,6 +581,12 @@
                             return `$<input
                         style="width:5rem"
                         type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        inputmode="numeric"
+                        maxlength="4"
                         class="form-control guard text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -601,6 +601,12 @@
                             return `$<input
                         style="width:5rem"
                         type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        onpaste="validarPegado(this, event)"
+                        inputmode="numeric"
+                        maxlength="4"
                         class="form-control agua text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -610,7 +616,6 @@
             ],
             createdRow: function(row, data, dataIndex) {
                 let $input1 = $(row).find(".empleado");
-
                 $input1.autocomplete({
                     source: datos_em,
                     autoFocus: true,
@@ -627,17 +632,16 @@
 
                 if (id_person_res !== null) {
                     // console.log('este es el id_person_res', id_person_res);
-                    const selectedItemP = datos_em.find(item => item.cod === id_person_res);
-                    if (selectedItemP) {
-                        $input1.val(selectedItemP.label);
+                    const selectedItemPerson = datos_em.find(item => item.cod === id_person_res);
+                    if (selectedItemPerson) {
+                        $input1.val(selectedItemPerson.label);
                         $input1.autocomplete("instance")._trigger("select", null, {
-                            item: selectedItemP
+                            item: selectedItemPerson
                         });
                     }
                 }
 
                 let $input2 = $(row).find(".obra");
-
                 $input2.autocomplete({
                     source: items_orden,
                     autoFocus: true,
@@ -654,11 +658,10 @@
 
                 // Revisar si ya tiene un ID seleccionado (por ejemplo desde datos preexistentes)
                 if (id_orden_horario !== null) {
-                    const selectedItem = items_orden.find(item => item.cod === id_orden_horario);
-                    if (selectedItem) {
-                        $input2.val(selectedItem.label);
+                    if (selectedItemOrden) {
+                        $input2.val(selectedItemOrden.label);
                         $input2.autocomplete("instance")._trigger("select", null, {
-                            item: selectedItem
+                            item: selectedItemOrden
                         });
                     }
                 }
@@ -736,7 +739,6 @@
             }
         });
 
-
         tblEmpleadoH = $("#tblEmpleadoH").DataTable({
             "ajax": {
                 "url": "controllers/combo.controlador.php",
@@ -792,8 +794,7 @@
 
             if (e.shiftKey && lastSelectedIndex !== null && lastSelectedIndex !== currentIndex) {
                 // Rango de selección con Shift
-                const [start, end] = currentIndex > lastSelectedIndex ? [lastSelectedIndex, currentIndex - 1] :
-                    [currentIndex, lastSelectedIndex - 1];
+                const [start, end] = currentIndex > lastSelectedIndex ? [lastSelectedIndex, currentIndex - 1] : [currentIndex, lastSelectedIndex - 1];
                 for (let i = start; i <= end; i++) {
                     tblPerson.row(i).select();
                 }
@@ -813,7 +814,7 @@
             // Calcula el total
             let total_horas = hn + hs + h100;
             $row.find('.totalh').text(total_horas);
-            
+
         });
 
         $("#addRow").on("click", function() {
@@ -821,13 +822,12 @@
             let selectedData = tblEmpleadoH.rows({
                 selected: true
             }).data();
-
+            selectedItemOrden = items_orden.find(item => item.cod === id_orden_horario);
             for (let i = 0; i < selectedData.length; i++) {
                 // console.log(selectedData[i]);
                 id_person_res = selectedData[i].id;
                 tblPerson.row.add(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']).draw(false);
             }
-
             tblEmpleadoH.rows().deselect();
             $('#selected-person').text(0);
             $('#chkAll').prop('checked', false);

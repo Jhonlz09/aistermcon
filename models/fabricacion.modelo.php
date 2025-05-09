@@ -387,12 +387,12 @@ class ModeloFabricacion
         try {
             $e = Conexion::ConexionDB()->prepare("SELECT s.id, i.descripcion, u.nombre AS unidad,
             s.cantidad_salida AS salidas, s.retorno, i.codigo, 
-            COALESCE(s.diferencia::text, '-') as utilizado,s.fabricado
+            COALESCE(s.diferencia::text, '-') as utilizado, s.fabricado, b.tras
             FROM tblsalidas s
                 JOIN tblinventario i ON s.id_producto = i.id
-            JOIN tblboleta b ON s.id_boleta = b.id 
-            JOIN tblorden o ON b.id_orden = o.id
-            JOIN tblunidad u ON i.id_unidad = u.id
+                JOIN tblboleta b ON s.id_boleta = b.id 
+                JOIN tblorden o ON b.id_orden = o.id
+                JOIN tblunidad u ON i.id_unidad = u.id
             WHERE 
                 b.id = :id_boleta
             ORDER BY 
