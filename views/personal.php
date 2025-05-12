@@ -121,13 +121,31 @@
                                                 <div class="ten">*Debe contener 10 dígitos</div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="input-data">
+
+                                        <div class="col-sm-6 form-group">
+                                            <label class="combo mb-0 d-flex justify-content-between" for="sueldo">
+                                                <span><i class="fas fa-sack-dollar"></i> Sueldo</span>
+
+                                                <label class="d-flex align-items-center mb-0" for="isSbu" style="color:#5b5b5b;gap:.3rem;font-size:.9rem;"> SBU
+                                                    <label class="switch-2" style="font-size:.8rem">
+                                                        <input id="isSbu" class="switch__input" type="checkbox" onkeydown="toggleWithEnter(event, this)">
+                                                        <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                                            <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11"></polyline>
+                                                        </svg>
+                                                    </label>
+                                                </label>
+
+                                            </label>
+                                            <input id="sueldo" type="text" autocomplete="off" value="" style="height:38px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
+
+                                            <!-- <div class="input-data">
                                                 <input autocomplete="off" id="sueldo" inputmode="numeric" class="input-nuevo" type="text" oninput="validarNumber(this,/[^0-9.]/g)" maxlength="10">
                                                 <div class="line underline"></div>
                                                 <label for="sueldo" class="label">
-                                                    <i class="fas fa-sack-dollar"></i> Sueldo</label>
-                                            </div>
+                                                    <i class="fas fa-sack-dollar"></i> Sueldo </label>
+
+
+                                            </div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -136,12 +154,12 @@
                                         <div class="col-sm-6 form-group">
                                             <label class="combo" style="line-height:.8" for="fecha_ini">
                                                 <i class="fas fa-calendar"></i> Fecha de inicio</label>
-                                            <input id="fecha_ini" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
+                                            <input id="fecha_ini" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:36px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
                                         </div>
                                         <div class="col-sm-6 form-group">
                                             <label class="combo" style="line-height:.8" for="fecha_cor">
                                                 <i class="fas fa-calendar"></i> Fecha de corte</label>
-                                            <input id="fecha_cor" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
+                                            <input id="fecha_cor" type="date" autocomplete="off" value="" style="height:36px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
                                         </div>
                                     </div>
                                 </div>
