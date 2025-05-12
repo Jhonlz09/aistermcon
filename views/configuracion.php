@@ -557,7 +557,7 @@
                         iva_config = r.iva;
                         nro_sec_cotiz = r.sc;
                     }else if (r && form == formConfigRRHH) {
-                        sbu_config = r.sbu;
+                        sbu_config = parseFloat(r.sbu);
                     }
                 });
             });

@@ -46,11 +46,16 @@ class ModeloCombos
     {
         try {
             if ($lastName) {
-                $sql = "SELECT id, apellido || ' ' || nombre as nombre FROM tblempleado WHERE id_empresa=1 AND estado=true ORDER BY nombre ASC";
+                $sql = "SELECT id, apellido || ' ' || nombre as nombre, CASE 
+                        WHEN id_rol = 3 THEN 1
+                        WHEN id_rol = 4 THEN 2
+                        ELSE 3
+                        END AS rol 
+                    FROM tblempleado WHERE id_empresa=1 AND estado=true ORDER BY nombre ASC";
             } else {
                 $sql = "SELECT id, split_part(apellido, ' ', 1) || ' ' ||  split_part(nombre, ' ', 1) as nombre FROM tblempleado WHERE id_empresa=1 AND estado=true ORDER BY nombre ASC";
             }
-    
+
             $l = Conexion::ConexionDB()->prepare($sql);
             $l->execute();
             return $l->fetchAll();

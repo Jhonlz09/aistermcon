@@ -528,6 +528,15 @@ input[type="number"] {
 .dark-mode .modal-change {
     --label-new: #186df5;
 }
+#tblEmpleadoH_filter input[type="search"] {
+    background-color: #e9e9e9!important;
+    border-radius: 0.5rem!important;
+}
+
+#tblEmpleadoH_filter input[type="search"]:focus {
+    border-color: #035906!important;
+}
+
 
 .selected-bor {
     --select-border-bottom: #007904;

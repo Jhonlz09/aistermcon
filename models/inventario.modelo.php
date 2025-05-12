@@ -353,9 +353,9 @@ class ModeloInventario
         try {
 
             $e = Conexion::ConexionDB()->prepare("SELECT i.codigo, i.codigo || ' - ' || i.descripcion AS descripcion, 
-            (i.stock - i.stock_mal) AS cantidad, '' as a
+            (i.stock - i.stock_mal) AS cantidad, null as a
                 FROM tblinventario i WHERE i.estado = true 
-                AND NOT (i.fabricado = true AND i.stock = 0)
+                AND i.fabricado = false
                 ORDER BY i.descripcion;");
             $e->execute();
             return $e->fetchAll();

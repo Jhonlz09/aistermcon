@@ -214,12 +214,25 @@
             <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
                 <div id="div-empleado" class="modal-body " style="padding-block:1rem .5rem">
                     <input type="hidden" id="id" value="">
+                    <div id="filtrosRoles" class="row ">
+                        <div class="col d-flex flex-wrap justify-content-between align-items-center">
+                            <label><input type="checkbox" class="select-all" value="1"> Técnico</label>
+                            <!-- </div> -->
+                            <!-- <div class="col-sm-4"> -->
+                            <label><input type="checkbox" class="select-all" value="2"> Supervisor</label>
+                            <!-- </div> -->
+                            <!-- <div class="col-sm-4"> -->
+                            <label><input type="checkbox" class="select-all" value="3"> Administrativo</label>
+                        </div>
+
+                    </div>
                     <!-- <div class="table-responsive"> -->
                     <table id="tblEmpleadoH" class="table table-bordered table-striped table-header">
                         <thead>
                             <tr>
                                 <th class="text-center"><input type="checkbox" id="chkAll" class="select-all"></th>
                                 <th>NOMBRES Y APELLIDOS</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -766,6 +779,9 @@
                     "data": "nombre"
 
                 },
+                {
+                    visible: false,
+                }
             ],
 
             select: {

@@ -123,7 +123,7 @@
                                         </div>
 
                                         <div class="col-sm-6 form-group">
-                                            <label class="combo mb-0 d-flex justify-content-between" for="sueldo">
+                                            <label id="lblSueldo" class="combo mb-0 d-flex justify-content-between" for="sueldo">
                                                 <span><i class="fas fa-sack-dollar"></i> Sueldo</span>
 
                                                 <label class="d-flex align-items-center mb-0" for="isSbu" style="color:#5b5b5b;gap:.3rem;font-size:.9rem;"> SBU
@@ -136,16 +136,8 @@
                                                 </label>
 
                                             </label>
-                                            <input id="sueldo" type="text" autocomplete="off" value="" style="height:38px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
+                                            <input id="sueldo" type="text" oninput="validarNumber(this,/[^0-9.]/g)" maxlength="8" autocomplete="off" value="" style="height:38px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
 
-                                            <!-- <div class="input-data">
-                                                <input autocomplete="off" id="sueldo" inputmode="numeric" class="input-nuevo" type="text" oninput="validarNumber(this,/[^0-9.]/g)" maxlength="10">
-                                                <div class="line underline"></div>
-                                                <label for="sueldo" class="label">
-                                                    <i class="fas fa-sack-dollar"></i> Sueldo </label>
-
-
-                                            </div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -484,6 +476,30 @@
             if (scroll) {
                 $(body).addClass('modal-open');
                 $(body).css('padding-right', '6px');
+            }
+        });
+
+        isSbu.addEventListener('change', function() {
+            // const sueldoInput = document.getElementById('sueldo');
+            if (this.checked) {
+                sueldo.value = sbu_config;
+                sueldo.setAttribute('readonly', true);
+            } else {
+                sueldo.removeAttribute('readonly');
+                sueldo.value = ''; // Opcional: elimina esta línea si quieres conservar el valor anterior
+            }
+        });
+
+        sueldo.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            // console.log(value);
+            // console.log(sbu_config);
+            if (value === sbu_config) {
+                isSbu.checked = true;
+                this.setAttribute('readonly', true);
+            } else {
+                isSbu.checked = false;
+                this.removeAttribute('readonly');
             }
         });
 
