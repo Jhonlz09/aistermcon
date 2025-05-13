@@ -1129,18 +1129,15 @@
                 formData.append('proveedor', cboProve.value);
                 formData.append('comprador', comprador.value);
                 formData.append('fecha', fecha_sol.value);
-                // formData.append('motivo', motivo);
                 formData.append('accion', accion_cot);
                 realizarRegistroCotizacion(tblSolicitud, formData, clases);
 
             } else if (accion == 2) {
-
                 let cambiosEnInputs = {
                     id_prove: compararValores(proveOriginal, cboProve.value),
                     comprador: compararValores(comOriginal, comprador.value),
                     fecha: compararValores(fechaOriginal, fecha_sol.value),
                 };
-
                 let hayCambiosEnInputs = Object.values(cambiosEnInputs).some(cambio => cambio);
                 console.log(hayCambiosEnInputs);
                 // Verificar cambios en las filas de la tabla
@@ -1149,12 +1146,6 @@
                 // console.log('Cambios en las filas:', {iva, ivaOriginal});
                 let cambioIva = compararValores(iva, ivaOriginal);
                 let cambioDescuento = compararValores(descOriginal, otros.value);
-                // console.log('No hay cambios:', {
-                //     filasActualizadas,
-                //     cambiosEnFilas,
-                //     hayCambiosEnInputs, 
-                //     cambioIva,
-                // });
                 if (!hayCambiosEnInputs && !cambiosEnFilas && !cambioIva && !cambioDescuento) {
                     mostrarToast('info', 'Sin cambios', 'fa-info', 'No hay cambios para guardar.');
                     console.log('cambios:', {

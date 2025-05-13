@@ -88,7 +88,7 @@
                 </h4>
             </div>
             <div class="col-auto">
-                <button id="btnGuardar" class="btn bg-gradient-navy mb-1" style="width:12rem;">
+                <button id="btnGuardarHorario" class="btn bg-gradient-navy mb-1" style="width:12rem;">
                     <i class="fas fa-floppy-disk"></i> Guardar</button>
             </div>
         </div><!-- /.row -->
@@ -174,6 +174,7 @@
                                         <th rowspan="2" class="th-orange">FECHA</th>
                                         <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
                                         <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
+                                        <th rowspan="2" class="th-yellow">JUSTIFICACIÓN</th>
                                     </tr>
                                     <tr>
                                         <th class="th-green">HORARIO NORMAL</th>
@@ -216,13 +217,11 @@
                     <input type="hidden" id="id" value="">
                     <div id="filtrosRoles" class="row ">
                         <div class="col d-flex flex-wrap justify-content-between align-items-center">
-                            <label><input type="checkbox" class="select-all" value="1"> Técnico</label>
-                            <!-- </div> -->
-                            <!-- <div class="col-sm-4"> -->
-                            <label><input type="checkbox" class="select-all" value="2"> Supervisor</label>
-                            <!-- </div> -->
-                            <!-- <div class="col-sm-4"> -->
-                            <label><input type="checkbox" class="select-all" value="3"> Administrativo</label>
+                            <label><input type="checkbox" class="select-all fil-rol" value="1"> Técnico</label>
+
+                            <label><input type="checkbox" class="select-all fil-rol" value="2"> Supervisor</label>
+
+                            <label><input type="checkbox" class="select-all fil-rol" value="3"> Administrativo</label>
                         </div>
 
                     </div>
@@ -251,6 +250,8 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+
+
 <!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
 <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
 
@@ -326,7 +327,6 @@
             value: item.text,
             cod: item.id
         }));
-
         let selectedItemOrden;
         // let selectedItemPerson;
 
@@ -365,7 +365,6 @@
             "dom": 't',
             "lengthChange": false,
             "ordering": false,
-            // keys: true,
             fixedColumns: {
                 leftColumns: 2,
                 rightColumns: 0
@@ -626,6 +625,26 @@
                         return data;
                     }
                 },
+                {
+                    targets: 14,
+                    className: "text-center",
+                    data: null,
+                    defaultContent: `
+                        <div class="row">
+                            <div class="col-12">
+                                <select id="cboJust" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
+                                    <option value="0">N/A</option>
+                                    <option value="1">LIBRE</option>
+                                    <option value="2">FALTA</option>
+                                    <option value="3">IESS</option>
+                                    <option value="4">VACACIONES</option>
+                                    <option value="5">FERIADO</option>
+                                    <option value="6">SAB</option>
+                                    <option value="7">DOM</option>
+                                </select>
+                            </div>
+                        </div>`,
+                }
             ],
             createdRow: function(row, data, dataIndex) {
                 let $input1 = $(row).find(".empleado");
@@ -638,6 +657,7 @@
                     },
                     select: function(event, ui) {
                         this.readOnly = true;
+                        $(this).attr("data-id", ui.item.cod); // ← Guarda el ID real
                         let btn = this.parentElement.querySelector("button");
                         if (btn) btn.style.display = "block";
                     }
@@ -658,18 +678,18 @@
                 $input2.autocomplete({
                     source: items_orden,
                     autoFocus: true,
+                    appendTo: "body",
                     focus: function() {
                         return false;
                     },
                     select: function(event, ui) {
                         this.readOnly = true;
-                        // this.data("selected-id", ui.item.cod);
+                        $(this).attr("data-id", ui.item.cod); // ← Guarda el ID real de la obra
                         let btn = this.parentElement.querySelector("button");
                         if (btn) btn.style.display = "block";
                     }
                 });
 
-                // Revisar si ya tiene un ID seleccionado (por ejemplo desde datos preexistentes)
                 if (id_orden_horario !== null) {
                     if (selectedItemOrden) {
                         $input2.val(selectedItemOrden.label);
@@ -678,7 +698,18 @@
                         });
                     }
                 }
+            }
+        });
 
+
+        $('#tblPersonH').on('change', '.cbo', function() {
+            const valorSeleccionado = $(this).val();
+            const fila = $(this).closest('tr');
+
+            if (valorSeleccionado !== '0') {
+                fila.css('background-color', '#ffeeba'); // Color de fondo personalizado
+            } else {
+                fila.css('background-color', ''); // Restablece si vuelve a N/A
             }
         });
 
@@ -783,7 +814,6 @@
                     visible: false,
                 }
             ],
-
             select: {
                 style: 'multi',
                 selector: 'td'
@@ -820,6 +850,23 @@
 
         let lastSelectedIndexE = null;
 
+        $('.select-all').on('change', function() {
+            const rolSeleccionado = $(this).val();
+            const checked = $(this).is(':checked');
+            // Recorre todas las filas de la tabla
+            tblEmpleadoH.rows().every(function() {
+                const data = this.data();
+
+                if (data.rol == rolSeleccionado) {
+                    if (checked) {
+                        this.select();
+                    } else {
+                        this.deselect();
+                    }
+                }
+            });
+        });
+
         $('#tblPersonH').on('input keydown', '.hn, .hs, .h100', function() {
             // Encuentra la fila del input cambiado
             let $row = $(this).closest('tr');
@@ -839,12 +886,18 @@
                 selected: true
             }).data();
             selectedItemOrden = items_orden.find(item => item.cod === id_orden_horario);
-            for (let i = 0; i < selectedData.length; i++) {
-                // console.log(selectedData[i]);
-                id_person_res = selectedData[i].id;
+            if (selectedData.length > 0) {
+                for (let i = 0; i < selectedData.length; i++) {
+                    // console.log(selectedData[i]);
+                    id_person_res = selectedData[i].id;
+                    tblPerson.row.add(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']).draw(false);
+                }
+            } else {
                 tblPerson.row.add(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']).draw(false);
             }
+
             tblEmpleadoH.rows().deselect();
+            $('.fil-rol').prop('checked', false);
             $('#selected-person').text(0);
             $('#chkAll').prop('checked', false);
         });
@@ -886,10 +939,6 @@
 
             });
         });
-
-
-
-
 
         $('#eliRow').on('click', function() {
             // confirmarEliminar('esta(s)', 'filas', function(res) {
@@ -967,7 +1016,6 @@
             }
         });
 
-
         let id_orden_horario = 0;
         let id_person_res = 0;
 
@@ -991,20 +1039,8 @@
                     item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
                 ).appendTo(ul);
             };
-        }, null, 'orden', 6)
+        }, null, 'orden', 6);
 
-        // $('#btnSelect').on('click', function(e) {
-        //     e.preventDefault(); // evitar que el formulario se envíe (si eso no es lo que deseas)
-
-        //     // Obtener la cantidad de filas seleccionadas
-        //     const selectedCount = tblEmpleadoH.rows({
-        //         selected: true
-        //     }).count();
-
-        //     // Actualizar el contenido del span
-        //     $('#selected-person').text(selectedCount);
-        // });
-        // Deselecciona el checkbox del header si se deselecciona alguno manualmente
         tblEmpleadoH.on('deselect', function() {
             $('#chkAll').prop('checked', false);
         });
@@ -1029,26 +1065,6 @@
             $('#selected-person').text(selectedRows);
         });
 
-
-
-
-        // tabla.on('responsive-resize', function(e, datatable, columns) {
-        //     // Encontrar el índice de la última columna visible
-        //     let lastVisibleColumnIndex = columns.reduce((lastIndex, col, index) => {
-        //         return col.responsiveHidden ? lastIndex : index;
-        //     }, -1);
-
-        //     // Iterar sobre todas las columnas del encabezado
-        //     $('#tblHorario thead tr:first-child th').each(function(index) {
-        //         // Si es la última columna visible, asegurarse de que no tenga la clase 'd-none'
-        //         // Si no lo es, no hacer nada (para no ocultar las otras columnas)
-        //         if (index === lastVisibleColumnIndex) {
-        //             $(this).removeClass('d-none');
-        //         } else {
-        //             $(this).addClass('d-none');
-        //         }
-        //     });
-        // });
         $('#tblEmpleadoH tbody').on('click', 'tr', function(e) {
             // if ($(e.target).is('input[type="checkbox"]')) return; // No hacer nada si clic fue directamente sobre el checkbox
             // const checkbox = $(this).find('input[type="checkbox"]')[0];
@@ -1056,12 +1072,6 @@
             //     checkbox.click(); // Dispara el evento "change"
             // }
         });
-
-        // Clic en el checkbox → cambia la clase de la fila
-        // $('#tblEmpleadoH tbody').on('change', 'input[type="checkbox"]', function() {
-        //     const row = $(this).closest('tr');
-        //     row.toggleClass('row-selected', this.checked);
-        // });
 
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
@@ -1177,65 +1187,359 @@
         });
 
         $('#tblHorario tbody').on('click', '.btnEditar', function() {
-            let row = obtenerFila(this, tabla);
-            accion = 2;
-            const icon = document.querySelector('.modal-title i');
-            cambiarModal(span, ' Editar Horario', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
-            select.forEach(function(s) {
-                s.classList.remove('select2-success');
-                s.classList.add('select2-warning');
-            });
-            id.value = row["id"];
-            nombre.value = row["nombre"];
-            cedula.value = row["cedula"];
-            apellido.value = row["apellido"];
-            celular.value = row["telefono"];
-            setChange(cboEmpresa, row["id_empresa"])
-            setChange(cboRol, row["id_rol"])
-            let arr = convertirArray(row["id_placa"])
-            $(cboPlaca).val(arr).trigger('change');
+            // let row = obtenerFila(this, tabla);
+            // accion = 2;
+            // const icon = document.querySelector('.modal-title i');
+            // cambiarModal(span, ' Editar Horario', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            // select.forEach(function(s) {
+            //     s.classList.remove('select2-success');
+            //     s.classList.add('select2-warning');
+            // });
+            // id.value = row["id"];
+            // nombre.value = row["nombre"];
+            // cedula.value = row["cedula"];
+            // apellido.value = row["apellido"];
+            // celular.value = row["telefono"];
+            // setChange(cboEmpresa, row["id_empresa"])
+            // setChange(cboRol, row["id_rol"])
+            // let arr = convertirArray(row["id_placa"])
+            // $(cboPlaca).val(arr).trigger('change');
         });
 
-        form.addEventListener("submit", function(e) {
-            e.preventDefault();
-            $('.ten').hide();
-            const ced = cedula.value.trim(),
-                nom = nombre.value.trim().toUpperCase(),
-                ape = apellido.value.trim().toUpperCase(),
-                tel = celular.value.trim(),
-                emp = cboEmpresa.value,
-                rol = cboRol.value,
-                pla = $(cboPlaca).val();
+        // btnGuardarHorario.addEventListener("click", function(e) {
+        //     e.preventDefault();
+        //     let elementosAValidar = [fecha_sol, comprador, cboProve];
+        //     let isValid = true;
+        //     let isCotizacion = false;
 
+        //     elementosAValidar.forEach(function(elemento) {
+        //         if (!elemento.checkValidity()) {
+        //             isValid = false;
+        //             form_cotizacion.classList.add('was-validated');
+        //         }
+        //     });
+        //     if (!isValid) {
+        //         return;
+        //     }
+        //     if (accion == 1) {
+        //         let clases = ['cantidad', 'id_unidad', 'descripcion'];
+        //         let accion_cot = 9;
+        //         let formData = new FormData();
 
-            if (!this.checkValidity() || ced.length < 10 || tel.length < 10) {
-                this.classList.add('was-validated');
-                if (ced.length > 0 && ced.length < 10) {
-                    cedula.parentNode.querySelector(".ten").style.display = "block";
+        //         if (subtotal < 0) {
+        //             mostrarToast('danger', 'Error', 'fa-xmark', 'El subtotal no puede ser menor a 0');
+        //             return;
+        //         }
+
+        //         if (subtotal !== 0) {
+        //             console.log('subtotal en solic compra', subtotal)
+        //             clases.push('precio_final');
+        //             formData.append('subtotal', subtotal);
+        //             formData.append('iva', iva);
+        //             formData.append('impuesto', impuestos);
+        //             formData.append('total', total);
+        //             formData.append('descuento', descuento);
+        //             accion_cot = 10;
+        //         }
+
+        //         formData.append('proveedor', cboProve.value);
+        //         formData.append('comprador', comprador.value);
+        //         formData.append('fecha', fecha_sol.value);
+        //         formData.append('accion', accion_cot);
+        //         realizarRegistroCotizacion(tblSolicitud, formData, clases);
+
+        //     } else if (accion == 2) {
+        //         let cambiosEnInputs = {
+        //             id_prove: compararValores(proveOriginal, cboProve.value),
+        //             comprador: compararValores(comOriginal, comprador.value),
+        //             fecha: compararValores(fechaOriginal, fecha_sol.value),
+        //         };
+        //         let hayCambiosEnInputs = Object.values(cambiosEnInputs).some(cambio => cambio);
+        //         console.log(hayCambiosEnInputs);
+        //         // Verificar cambios en las filas de la tabla
+        //         let filasActualizadas = verificarCambiosEnFilas(tblSolicitud);
+        //         let cambiosEnFilas = filasActualizadas.length > 0;
+        //         // console.log('Cambios en las filas:', {iva, ivaOriginal});
+        //         let cambioIva = compararValores(iva, ivaOriginal);
+        //         let cambioDescuento = compararValores(descOriginal, otros.value);
+        //         if (!hayCambiosEnInputs && !cambiosEnFilas && !cambioIva && !cambioDescuento) {
+        //             mostrarToast('info', 'Sin cambios', 'fa-info', 'No hay cambios para guardar.');
+        //             console.log('cambios:', {
+        //                 filasActualizadas
+        //             });
+        //             return;
+        //         }
+
+        //         // Crear los datos a enviar
+        //         let data = new FormData();
+
+        //         // Agregar cambios en los inputs
+        //         if (hayCambiosEnInputs) {
+        //             data.append('id_prove', cboProve.value);
+        //             data.append('comprador', comprador.value);
+        //             data.append('fecha', fecha_sol.value);
+        //         }
+
+        //         // Agregar cambios en las filas
+        //         if (cambiosEnFilas) {
+        //             if (filasActualizadas.length > 0) {
+        //                 data.append('filas', JSON.stringify(filasActualizadas));
+        //             }
+        //         }
+        //         if (subtotal < 0) {
+        //             mostrarToast('danger', 'Error', 'fa-xmark', 'El subtotal no puede ser menor a 0');
+        //             return;
+        //         } else if (subtotal > 0) {
+        //             data.append('estado_orden', true);
+        //         }
+
+        //         if (cambioDescuento || cambiosEnFilas || cambioIva) {
+        //             data.append('desc', otros.value);
+        //             data.append('subtotal', subtotal);
+        //             data.append('iva', iva);
+        //             data.append('impuesto', impuestos);
+        //             data.append('total', total);
+        //         }
+        //         console.log('data de cambio de descuento:', cambioDescuento);
+
+        //         data.append('id_cotizacion', id_cotiz);
+        //         data.append('isFilas', cambiosEnFilas);
+        //         data.append('isInputs', hayCambiosEnInputs);
+        //         data.append('isIva', cambioIva);
+        //         data.append('accion', !cambioDescuento && !cambiosEnFilas && !cambioIva ? 11 : 6);
+        //         confirmarAccion(data, 'cotizacion', tabla, '', function(r) {
+        //             ocultarFormulario();
+        //         });
+        //     }
+
+        //     function compararValores(original, nuevo, esNumerico = false) {
+        //         console.log('Original: ' + original + ' nuevo: ' + nuevo);
+        //         return (original || '').toString().trim() !== (nuevo || '').toString().trim();
+        //     }
+
+        //     function verificarCambiosEnFilas(tbl) {
+        //         let filasActualizadas = [];
+        //         // let filasNuevas = [];
+
+        //         tbl.rows().every(function(index) {
+        //             let row = tbl.row(index);
+        //             let originalData = $(row.node()).data('original') ? JSON.parse($(row.node()).data('original')) : null;
+        //             let nuevaData = {};
+
+        //             // Obtén los valores actuales de las clases editables
+        //             ['cantidad', 'id_unidad', 'descripcion', 'precio_final'].forEach(clase => {
+        //                 let input = row.node().querySelector('.' + clase);
+        //                 nuevaData[clase] = input ? input.value.trim() : '';
+        //             });
+
+        //             if (originalData) {
+        //                 // Comparar datos
+        //                 let haCambiado = Object.keys(nuevaData).some(key => {
+        //                     return compararValores(originalData[key], nuevaData[key], key === 'precio_final' || key === 'cantidad');
+        //                 });
+
+        //                 if (haCambiado) {
+        //                     nuevaData.id = originalData.id; // Incluye el ID único de la fila
+        //                     filasActualizadas.push(nuevaData);
+        //                 }
+        //             }
+        //         });
+
+        //         return filasActualizadas;
+        //     }
+
+        //     function realizarRegistroCotizacion(table, formData, clases, header = 'productos') {
+        //         let count = table.rows().count(); // Obtener el número total de filas
+        //         let valid = true; // Flag para verificar si todas las filas son válidas
+        //         let mensajeMostrado = false; // Bandera para asegurarse que el mensaje solo se muestre una vez
+
+        //         // Verificar si hay filas en la tabla
+        //         if (count === 0) {
+        //             mostrarToast('danger', "Error", "fa-xmark", 'No hay ' + header + ' en el listado');
+        //             return;
+        //         }
+
+        //         // Validar que todas las filas tengan el campo 'descrip' no vacío
+        //         table.rows().eq(0).each(function(index) {
+        //             let row = table.row(index); // Obtener la fila actual
+        //             let descripcion = row.node().querySelector('.descripcion'); // Obtener el campo 'descrip'
+
+        //             // Si la descripción está vacía, marcar como inválido y detener la iteración
+        //             if (!descripcion || descripcion.value.trim() === '') {
+        //                 valid = false;
+
+        //                 // Mostrar el mensaje solo una vez
+        //                 if (!mensajeMostrado) {
+        //                     mostrarToast('danger', "Error", "fa-xmark", 'La descripción esta vacía en la fila ' + (index + 1));
+        //                     mensajeMostrado = true; // Cambiar la bandera para evitar que se muestre más de una vez
+        //                 }
+        //                 return false; // Detener la iteración
+        //             }
+        //         });
+        //         if (!valid) {
+        //             return; // Detener la ejecución de la función
+        //         }
+        //         // Si alguna fila no es válida, no proceder con el registro
+        //         Swal.fire({
+        //             title: "¿Estás seguro que deseas guardar los datos?",
+        //             icon: "warning",
+        //             showCancelButton: true,
+        //             confirmButtonText: "Sí, Guardar",
+        //             cancelButtonText: "Cancelar",
+        //             timer: 5000,
+        //             timerProgressBar: true,
+        //         }).then((result) => {
+        //             if (result.value) {
+        //                 let arr = []; // Arreglo para almacenar los valores de las filas
+        //                 // Recorrer todas las filas y agregar los datos a 'arr'
+        //                 table.rows().eq(0).each(function(index) {
+        //                     let row = table.row(index);
+        //                     let valores = clases.reduce((obj, clase) => {
+        //                         let inputElement = row.node().querySelector('.' + clase);
+        //                         obj[clase] = inputElement ? inputElement.value : '';
+        //                         return obj;
+        //                     }, {});
+        //                     arr.push(valores);
+        //                 });
+        //                 formData.append('arr', JSON.stringify(arr));
+        //                 // Enviar los datos con AJAX
+        //                 $.ajax({
+        //                     url: "controllers/registro.controlador.php",
+        //                     method: "POST",
+        //                     data: formData,
+        //                     cache: false,
+        //                     dataType: "json",
+        //                     contentType: false,
+        //                     processData: false,
+        //                     success: function(response) {
+        //                         let isSuccess = response.status === "success";
+        //                         mostrarToast(response.status,
+        //                             isSuccess ? "Completado" : "Error",
+        //                             isSuccess ? "fa-check" : "fa-xmark",
+        //                             response.m);
+        //                         if (isSuccess) {
+        //                             ocultarFormulario();
+        //                             sc = response.sc;
+        //                         }
+        //                         if (tabla) {
+        //                             tabla.ajax.reload(null, false); // Recargar tabla si es necesario
+        //                         }
+        //                     }
+        //                 });
+        //             }
+        //         });
+        //     }
+        // });
+
+        $('#btnGuardarHorario').on('click', function() {
+            const rows = tblPerson.rows().nodes();
+            const datos = [];
+
+            $(rows).each(function() {
+                const $row = $(this);
+
+                // Obtener los IDs reales
+                const id_empleado = $row.find('.empleado').attr('data-id');
+                const id_obra = $row.find('.obra').attr('data-id');
+
+                const fecha = $row.find('input[type="date"]').val()?.trim() || '';
+
+                const hn = parseFloat($row.find('.hn').val()?.trim()) || 0;
+                const hs = parseFloat($row.find('.hs').val()?.trim()) || 0;
+                const he = parseFloat($row.find('.h100').val()?.trim()) || 0;
+
+                const material = parseFloat($row.find('.material').val()?.trim()) || 0;
+                const trans = parseFloat($row.find('.trans').val()?.trim()) || 0;
+                const ali = parseFloat($row.find('.ali').val()?.trim()) || 0;
+                const hosp = parseFloat($row.find('.hosp').val()?.trim()) || 0;
+                const guard = parseFloat($row.find('.guard').val()?.trim()) || 0;
+                const agua = parseFloat($row.find('.agua').val()?.trim()) || 0;
+
+                if (id_empleado && id_obra && fecha) {
+                    datos.push({
+                        id_empleado,
+                        id_orden: id_obra,
+                        fecha,
+                        hn,
+                        hs,
+                        he,
+                        material,
+                        trans,
+                        ali,
+                        hosp,
+                        guard,
+                        agua
+                    });
                 }
-                if (tel.length > 0 && tel.length < 10) {
-                    celular.parentNode.querySelector(".ten").style.display = "block";
-                }
-                return;
-            }
-            const id_e = id.value;
-            let datos = new FormData();
-            datos.append('id', id_e);
-            datos.append('cedula', ced);
-            datos.append('nombre', nom);
-            datos.append('apellido', ape);
-            datos.append('celular', tel);
-            datos.append('id_empresa', emp);
-            datos.append('id_rol', rol);
-            datos.append('id_placa', pla);
-            datos.append('accion', accion);
-            accion = 0;
-            empresa_filter = cboEmpresaFilter.value;
-            confirmarAccion(datos, 'horario', tabla, modal, function(r) {
-                cargarCombo('Conductor', '', 2);
-                cargarCombo('Despachado', '', 6);
-                cargarCombo('Responsable', '', 7);
             });
+
+            // Ahora puedes enviar 'datos' al servidor con AJAX como ya vimos
+            console.log("Datos a guardar:", datos);
+
+            // 👉 Aquí haces el envío AJAX
+            // if (datos.length > 0) {
+            //     $.ajax({
+            //         url: '/ruta/guardarHorario', // Cambia a tu ruta real
+            //         method: 'POST',
+            //         contentType: 'application/json',
+            //         data: JSON.stringify({
+            //             registros: datos
+            //         }),
+            //         success: function(resp) {
+            //             Swal.fire('Guardado', 'Los registros se guardaron correctamente.', 'success');
+            //         },
+            //         error: function(err) {
+            //             console.error(err);
+            //             Swal.fire('Error', 'Hubo un problema al guardar.', 'error');
+            //         }
+            //     });
+            // } else {
+            //     Swal.fire('Advertencia', 'No hay datos válidos para guardar.', 'warning');
+            // }
         });
+
+
+
+        // form.addEventListener("submit", function(e) {
+        //     e.preventDefault();
+        //     $('.ten').hide();
+        //     const ced = cedula.value.trim(),
+        //         nom = nombre.value.trim().toUpperCase(),
+        //         ape = apellido.value.trim().toUpperCase(),
+        //         tel = celular.value.trim(),
+        //         emp = cboEmpresa.value,
+        //         rol = cboRol.value,
+        //         pla = $(cboPlaca).val();
+
+
+        //     if (!this.checkValidity() || ced.length < 10 || tel.length < 10) {
+        //         this.classList.add('was-validated');
+        //         if (ced.length > 0 && ced.length < 10) {
+        //             cedula.parentNode.querySelector(".ten").style.display = "block";
+        //         }
+        //         if (tel.length > 0 && tel.length < 10) {
+        //             celular.parentNode.querySelector(".ten").style.display = "block";
+        //         }
+        //         return;
+        //     }
+        //     const id_e = id.value;
+        //     let datos = new FormData();
+        //     datos.append('id', id_e);
+        //     datos.append('cedula', ced);
+        //     datos.append('nombre', nom);
+        //     datos.append('apellido', ape);
+        //     datos.append('celular', tel);
+        //     datos.append('id_empresa', emp);
+        //     datos.append('id_rol', rol);
+        //     datos.append('id_placa', pla);
+        //     datos.append('accion', accion);
+        //     accion = 0;
+        //     empresa_filter = cboEmpresaFilter.value;
+        //     confirmarAccion(datos, 'horario', tabla, modal, function(r) {
+        //         cargarCombo('Conductor', '', 2);
+        //         cargarCombo('Despachado', '', 6);
+        //         cargarCombo('Responsable', '', 7);
+        //     });
+        // });
     })
 </script>

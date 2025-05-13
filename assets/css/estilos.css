@@ -172,6 +172,39 @@ input[type=file]::file-selector-button {
     z-index: 10;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+.odd .dtfc-fixed-right {
+    background-color: #f2f2f2;
+    z-index: 10;
+}
+
+.odd.selected .dtfc-fixed-right {
+    background-color: #cfdceb;
+    /* z-index: 10; */
+}
+
+.even.selected .dtfc-fixed-right {
+    background-color: #cfdceb;
+    /* z-index: 10; */
+}
+
+.even .dtfc-fixed-right {
+    background-color: #ffffff;
+    z-index: 10;
+}
+
+
 table.table-fix tbody>tr.selected,
 table.table-fix tbody>tr>.selected {
     background-color: #d9e5f3 !important;
@@ -674,6 +707,11 @@ table.dataTable tbody>tr>.selected {
 .th-orange {
     color: #BE5014;
     background-color: #FBE2D5;
+}
+
+.th-yellow {
+    color: #856404;
+    background-color: #fff3cd;
 }
 
 #tblEntradas tr.dtrg-group,
