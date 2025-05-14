@@ -107,7 +107,7 @@
                                     <i class="fas fa-person-digging"></i> Obra
                                 </label>
                                 <!-- <div class="position-relative"> -->
-                                <input type="search" id="nro_ordenHorario" class="form-control ui-autocomplete-input" placeholder="Ingrese el nro. de orden o cliente" autocomplete="off" style="font-size:1.2rem; border-bottom:2px solid var(--select-border-bottom);" spellcheck="false" data-ms-editor="true">
+                                <input type="search" id="nro_ordenHorario" class="form-control ui-autocomplete-input" placeholder="Nro. de orden o cliente" autocomplete="off" style="font-size:1.2rem; border-bottom:2px solid var(--select-border-bottom);" spellcheck="false" data-ms-editor="true">
                                 <button class="clear-btn" type="button" id="clearButtonObraH" onclick="clearInput('nro_ordenHorario', this)" style="display:none; position:absolute; right:10px; top:42%;">×</button>
                                 <!-- </div> -->
 
@@ -396,6 +396,7 @@
                         id="${uniqueId}"
                         oninput="formatInputOrden(this)"
                         autocomplete="off"
+                        placeholder="Empleado"
                         value="${data || ''}">
                         <button class="clear-btn" type="button" onclick="clearInput('${uniqueId}', this)" id="btn${uniqueId}" style="display:none;top:6%;right:2px">&times;</button>
                         <div class="invalid-feedback">*Campo obligatorio.</div>
@@ -413,7 +414,7 @@
                         class="form-control obra"
                         id="${uniqueId}"
                         oninput="formatInputOrden(this)"
-                        placeholder="Ingrese el nro. de orden o cliente"
+                        placeholder="Nro. de orden o cliente"
                         autocomplete="off"
                         value="${data || ''}">
                         <button class="clear-btn" type="button" id="btnO${uniqueId}" onclick="clearInput('${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button>
@@ -424,12 +425,11 @@
                     targets: 3,
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            const uniqueId = meta.row + 1;
+                            // const uniqueId = meta.row + 1;
                             return `<input
                             style="width:10rem"
                             type="date"
-                            id="fechaH${uniqueId}"
-                            class="form-control"
+                            class="form-control fechaH"
                             value="${data || ''}">`;
                         }
                         return data;
@@ -659,20 +659,32 @@
                 // Aplicar autocompletado al campo de obra
                 const $inputObra = $row.find(".obra");
                 // console.log('selectedItemOrden', selectedItemOrden);
-                aplicarAutocomplete($inputObra, datos_orden, ordenesMap, idOrden);
+                aplicarAutocomplete($inputObra, items_orden, ordenesMap, idOrden);
             }
 
         });
 
 
         $('#tblPersonH').on('change', '.cbo', function() {
-            const valorSeleccionado = $(this).val();
+            const valorSel = $(this).val();
+            const textoSel = $(this).find('option:selected').text(); // <-- obtiene el texto visible
             const fila = $(this).closest('tr');
 
-            if (valorSeleccionado !== '0') {
-                fila.css('background-color', '#ffeeba'); // Color de fondo personalizado
+            if (valorSel !== '0') {
+                fila.css('background-color', '#fffbe1');
+                // Limpiar estilos heredados (si los habías puesto antes como 'inherit')
+                fila.find('.empleado, .obra, .fechaH, .select-checkbox, .dtfc-fixed-left, .hn').css('background-color', 'inherit');
+                // Desactiva el input .obra y le asigna el texto del <option> seleccionado
+                fila.find('.hn').prop('disabled', true).val('');
+                fila.find('.obra').prop('disabled', true).val(textoSel);
             } else {
-                fila.css('background-color', ''); // Restablece si vuelve a N/A
+                fila.css('background-color', '');
+
+                fila.find('.empleado, .obra, .fechaH, .select-checkbox, .dtfc-fixed-left, .hn').css('background-color', '');
+
+                fila.find('.obra').prop('disabled', false).val(''); // limpia si vuelves a N/A
+                fila.find('.hn').prop('disabled', false).val('8');
+
             }
         });
 
@@ -857,11 +869,12 @@
                     const rowData = ['', '', '', dateH, 8, '', '', '', '', '', '', '', '', ''];
                     rowData._id_person_res = empleado.id;
                     rowData._id_orden = selectedItemOrden;
-
                     filas.push(rowData);
                 }
             } else {
-                filas.push(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']);
+                const rowData = ['', '', '', dateH, 8, '', '', '', '', '', '', '', '', ''];
+                rowData._id_orden = selectedItemOrden;
+                filas.push(rowData);
             }
 
             tblPerson.rows.add(filas).draw(false);
@@ -892,7 +905,6 @@
                 $input.autocomplete("instance")._trigger("select", null, {
                     item: selectedItem
                 });
-
             }
         }
 
@@ -903,48 +915,10 @@
             if (btn) btn.style.display = "block";
         }
 
-
-        // $("#addRow").on("click", function() {
-        //     const dateH = fechaH.value;
-        //     const selectedData = tblEmpleadoH.rows({
-        //         selected: true
-        //     }).data().toArray(); // ← convierte a array nativo
-        //     const filas = [];
-
-        //     // Guarda la orden seleccionada si existe
-        //     // if (id_orden_horario) {
-        //     //     selectedItemOrden = ordenesMap.get(id_orden_horario) || null;
-        //     // }
-
-        //     // Si hay empleados seleccionados
-        //     if (selectedData.length > 0) {
-        //         for (const empleado of selectedData) {
-        //             const rowData = ['', '', '', dateH, 8, '', '', '', '', '', '', '', '', ''];
-        //             rowData._id_person_res = empleado.id; // ← inyecta como propiedad oculta
-        //             filas.push(rowData);
-        //             console.log(rowData);
-        //         }
-        //     } else {
-        //         filas.push(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']);
-        //     }
-
-        //     // Agregar todas las filas de una vez (más eficiente)
-        //     tblPerson.rows.add(filas).draw(false);
-
-        //     // Limpiar selección
-        //     tblEmpleadoH.rows().deselect();
-        //     $('.fil-rol').prop('checked', false);
-        //     $('#selected-person').text(0);
-        //     $('#chkAll').prop('checked', false);
-        // });
-
-
-
         $('#editRow').on('click', function() {
             const selectedRows = tblPerson.rows({
                 selected: true
             });
-
             const dateH = fechaH.value;
             if (!dateH) {
                 alert('Debe seleccionar una fecha válida.');
@@ -952,13 +926,10 @@
             }
 
             const selectedItem = items_orden.find(item => item.cod === id_orden_horario);
-
             selectedRows.every(function() {
                 const $row = $(this.node());
-
                 // Actualizar campo fecha
                 $row.find('td:eq(3) input[type="date"]').val(dateH);
-
                 // Obtener elementos del campo obra
                 const $inputObra = $row.find('td:eq(2) input.obra');
                 const $btnClear = $row.find('td:eq(2) .clear-btn');
@@ -1054,7 +1025,6 @@
         });
 
         let id_orden_horario = 0;
-        let id_person_res = 0;
 
         cargarAutocompletado(function(items) {
             $(nro_ordenHorario).autocomplete({
@@ -1089,7 +1059,6 @@
         tblEmpleadoH.on('select deselect', function() {
             // Total de todas las filas (sin importar el filtro)
             const totalRows = tblEmpleadoH.rows().count();
-
             // Total de filas seleccionadas (sin importar el filtro)
             const selectedRows = tblEmpleadoH.rows({
                 selected: true
@@ -1100,14 +1069,6 @@
 
             // Actualiza el contador en el span (puedes decidir si quieres que este cuente todas o solo las filtradas)
             $('#selected-person').text(selectedRows);
-        });
-
-        $('#tblEmpleadoH tbody').on('click', 'tr', function(e) {
-            // if ($(e.target).is('input[type="checkbox"]')) return; // No hacer nada si clic fue directamente sobre el checkbox
-            // const checkbox = $(this).find('input[type="checkbox"]')[0];
-            // if (checkbox) {
-            //     checkbox.click(); // Dispara el evento "change"
-            // }
         });
 
         const modal = document.querySelector('.modal'),
@@ -1142,23 +1103,6 @@
             }
         });
 
-        // $(modal).on("shown.bs.modal", () => {
-        //     nombre.focus();
-        // });
-
-        $(modalS).on("shown.bs.modal", function() {
-            inputContent.focus();
-        });
-
-        $(modalS).on('hidden.bs.modal', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (scroll) {
-                $(body).addClass('modal-open');
-                $(body).css('padding-right', '6px');
-            }
-        });
-
         btnReturn.addEventListener('click', function() {
             ocultarFormulario();
         });
@@ -1184,25 +1128,14 @@
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                // const icon = document.querySelector('.modal-title i');
-                // cambiarModal(span, ' Nuevo Horario', icon, 'fa-calendar-circle-user', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
-                // select.forEach(function(s) {
-                //     s.classList.remove('select2-warning');
-                //     s.classList.add('select2-success');
-                // });div_hor_filter
                 document.getElementById("div_hor_header").style.display = "block";
                 document.getElementById("div_hor_filter").style.display = "block";
                 document.getElementById("div_hor").style.display = "block";
                 document.getElementById("div_content").style.display = "table-column";
                 document.getElementById("div_header").style.display = "none";
-                // form.reset();
-                // form.classList.remove('was-validated');
-                // setChange(cboEmpresa, 0);
-                // setChange(cboRol, 0);
-                // setChange(cboPlaca, []);
-
             });
         }
+
         $('#tblHorario tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
             accion = 3
@@ -1243,241 +1176,15 @@
             // $(cboPlaca).val(arr).trigger('change');
         });
 
-        // btnGuardarHorario.addEventListener("click", function(e) {
-        //     e.preventDefault();
-        //     let elementosAValidar = [fecha_sol, comprador, cboProve];
-        //     let isValid = true;
-        //     let isCotizacion = false;
-
-        //     elementosAValidar.forEach(function(elemento) {
-        //         if (!elemento.checkValidity()) {
-        //             isValid = false;
-        //             form_cotizacion.classList.add('was-validated');
-        //         }
-        //     });
-        //     if (!isValid) {
-        //         return;
-        //     }
-        //     if (accion == 1) {
-        //         let clases = ['cantidad', 'id_unidad', 'descripcion'];
-        //         let accion_cot = 9;
-        //         let formData = new FormData();
-
-        //         if (subtotal < 0) {
-        //             mostrarToast('danger', 'Error', 'fa-xmark', 'El subtotal no puede ser menor a 0');
-        //             return;
-        //         }
-
-        //         if (subtotal !== 0) {
-        //             console.log('subtotal en solic compra', subtotal)
-        //             clases.push('precio_final');
-        //             formData.append('subtotal', subtotal);
-        //             formData.append('iva', iva);
-        //             formData.append('impuesto', impuestos);
-        //             formData.append('total', total);
-        //             formData.append('descuento', descuento);
-        //             accion_cot = 10;
-        //         }
-
-        //         formData.append('proveedor', cboProve.value);
-        //         formData.append('comprador', comprador.value);
-        //         formData.append('fecha', fecha_sol.value);
-        //         formData.append('accion', accion_cot);
-        //         realizarRegistroCotizacion(tblSolicitud, formData, clases);
-
-        //     } else if (accion == 2) {
-        //         let cambiosEnInputs = {
-        //             id_prove: compararValores(proveOriginal, cboProve.value),
-        //             comprador: compararValores(comOriginal, comprador.value),
-        //             fecha: compararValores(fechaOriginal, fecha_sol.value),
-        //         };
-        //         let hayCambiosEnInputs = Object.values(cambiosEnInputs).some(cambio => cambio);
-        //         console.log(hayCambiosEnInputs);
-        //         // Verificar cambios en las filas de la tabla
-        //         let filasActualizadas = verificarCambiosEnFilas(tblSolicitud);
-        //         let cambiosEnFilas = filasActualizadas.length > 0;
-        //         // console.log('Cambios en las filas:', {iva, ivaOriginal});
-        //         let cambioIva = compararValores(iva, ivaOriginal);
-        //         let cambioDescuento = compararValores(descOriginal, otros.value);
-        //         if (!hayCambiosEnInputs && !cambiosEnFilas && !cambioIva && !cambioDescuento) {
-        //             mostrarToast('info', 'Sin cambios', 'fa-info', 'No hay cambios para guardar.');
-        //             console.log('cambios:', {
-        //                 filasActualizadas
-        //             });
-        //             return;
-        //         }
-
-        //         // Crear los datos a enviar
-        //         let data = new FormData();
-
-        //         // Agregar cambios en los inputs
-        //         if (hayCambiosEnInputs) {
-        //             data.append('id_prove', cboProve.value);
-        //             data.append('comprador', comprador.value);
-        //             data.append('fecha', fecha_sol.value);
-        //         }
-
-        //         // Agregar cambios en las filas
-        //         if (cambiosEnFilas) {
-        //             if (filasActualizadas.length > 0) {
-        //                 data.append('filas', JSON.stringify(filasActualizadas));
-        //             }
-        //         }
-        //         if (subtotal < 0) {
-        //             mostrarToast('danger', 'Error', 'fa-xmark', 'El subtotal no puede ser menor a 0');
-        //             return;
-        //         } else if (subtotal > 0) {
-        //             data.append('estado_orden', true);
-        //         }
-
-        //         if (cambioDescuento || cambiosEnFilas || cambioIva) {
-        //             data.append('desc', otros.value);
-        //             data.append('subtotal', subtotal);
-        //             data.append('iva', iva);
-        //             data.append('impuesto', impuestos);
-        //             data.append('total', total);
-        //         }
-        //         console.log('data de cambio de descuento:', cambioDescuento);
-
-        //         data.append('id_cotizacion', id_cotiz);
-        //         data.append('isFilas', cambiosEnFilas);
-        //         data.append('isInputs', hayCambiosEnInputs);
-        //         data.append('isIva', cambioIva);
-        //         data.append('accion', !cambioDescuento && !cambiosEnFilas && !cambioIva ? 11 : 6);
-        //         confirmarAccion(data, 'cotizacion', tabla, '', function(r) {
-        //             ocultarFormulario();
-        //         });
-        //     }
-
-        //     function compararValores(original, nuevo, esNumerico = false) {
-        //         console.log('Original: ' + original + ' nuevo: ' + nuevo);
-        //         return (original || '').toString().trim() !== (nuevo || '').toString().trim();
-        //     }
-
-        //     function verificarCambiosEnFilas(tbl) {
-        //         let filasActualizadas = [];
-        //         // let filasNuevas = [];
-
-        //         tbl.rows().every(function(index) {
-        //             let row = tbl.row(index);
-        //             let originalData = $(row.node()).data('original') ? JSON.parse($(row.node()).data('original')) : null;
-        //             let nuevaData = {};
-
-        //             // Obtén los valores actuales de las clases editables
-        //             ['cantidad', 'id_unidad', 'descripcion', 'precio_final'].forEach(clase => {
-        //                 let input = row.node().querySelector('.' + clase);
-        //                 nuevaData[clase] = input ? input.value.trim() : '';
-        //             });
-
-        //             if (originalData) {
-        //                 // Comparar datos
-        //                 let haCambiado = Object.keys(nuevaData).some(key => {
-        //                     return compararValores(originalData[key], nuevaData[key], key === 'precio_final' || key === 'cantidad');
-        //                 });
-
-        //                 if (haCambiado) {
-        //                     nuevaData.id = originalData.id; // Incluye el ID único de la fila
-        //                     filasActualizadas.push(nuevaData);
-        //                 }
-        //             }
-        //         });
-
-        //         return filasActualizadas;
-        //     }
-
-        //     function realizarRegistroCotizacion(table, formData, clases, header = 'productos') {
-        //         let count = table.rows().count(); // Obtener el número total de filas
-        //         let valid = true; // Flag para verificar si todas las filas son válidas
-        //         let mensajeMostrado = false; // Bandera para asegurarse que el mensaje solo se muestre una vez
-
-        //         // Verificar si hay filas en la tabla
-        //         if (count === 0) {
-        //             mostrarToast('danger', "Error", "fa-xmark", 'No hay ' + header + ' en el listado');
-        //             return;
-        //         }
-
-        //         // Validar que todas las filas tengan el campo 'descrip' no vacío
-        //         table.rows().eq(0).each(function(index) {
-        //             let row = table.row(index); // Obtener la fila actual
-        //             let descripcion = row.node().querySelector('.descripcion'); // Obtener el campo 'descrip'
-
-        //             // Si la descripción está vacía, marcar como inválido y detener la iteración
-        //             if (!descripcion || descripcion.value.trim() === '') {
-        //                 valid = false;
-
-        //                 // Mostrar el mensaje solo una vez
-        //                 if (!mensajeMostrado) {
-        //                     mostrarToast('danger', "Error", "fa-xmark", 'La descripción esta vacía en la fila ' + (index + 1));
-        //                     mensajeMostrado = true; // Cambiar la bandera para evitar que se muestre más de una vez
-        //                 }
-        //                 return false; // Detener la iteración
-        //             }
-        //         });
-        //         if (!valid) {
-        //             return; // Detener la ejecución de la función
-        //         }
-        //         // Si alguna fila no es válida, no proceder con el registro
-        //         Swal.fire({
-        //             title: "¿Estás seguro que deseas guardar los datos?",
-        //             icon: "warning",
-        //             showCancelButton: true,
-        //             confirmButtonText: "Sí, Guardar",
-        //             cancelButtonText: "Cancelar",
-        //             timer: 5000,
-        //             timerProgressBar: true,
-        //         }).then((result) => {
-        //             if (result.value) {
-        //                 let arr = []; // Arreglo para almacenar los valores de las filas
-        //                 // Recorrer todas las filas y agregar los datos a 'arr'
-        //                 table.rows().eq(0).each(function(index) {
-        //                     let row = table.row(index);
-        //                     let valores = clases.reduce((obj, clase) => {
-        //                         let inputElement = row.node().querySelector('.' + clase);
-        //                         obj[clase] = inputElement ? inputElement.value : '';
-        //                         return obj;
-        //                     }, {});
-        //                     arr.push(valores);
-        //                 });
-        //                 formData.append('arr', JSON.stringify(arr));
-        //                 // Enviar los datos con AJAX
-        //                 $.ajax({
-        //                     url: "controllers/registro.controlador.php",
-        //                     method: "POST",
-        //                     data: formData,
-        //                     cache: false,
-        //                     dataType: "json",
-        //                     contentType: false,
-        //                     processData: false,
-        //                     success: function(response) {
-        //                         let isSuccess = response.status === "success";
-        //                         mostrarToast(response.status,
-        //                             isSuccess ? "Completado" : "Error",
-        //                             isSuccess ? "fa-check" : "fa-xmark",
-        //                             response.m);
-        //                         if (isSuccess) {
-        //                             ocultarFormulario();
-        //                             sc = response.sc;
-        //                         }
-        //                         if (tabla) {
-        //                             tabla.ajax.reload(null, false); // Recargar tabla si es necesario
-        //                         }
-        //                     }
-        //                 });
-        //             }
-        //         });
-        //     }
-        // });
-
         $('#btnGuardarHorario').on('click', function() {
             const rows = tblPerson.rows().nodes();
             const datos = [];
 
             $(rows).each(function() {
                 const $row = $(this);
-
                 // Obtener los IDs reales
-                const id_empleado = $row.find('.empleado').attr('data-id');
-                const id_obra = $row.find('.obra').attr('data-id');
+                const id_empleado = $row.find('.empleado').attr('data-id') || null;
+                const id_obra = $row.find('.obra').attr('data-id') || null;
 
                 const fecha = $row.find('input[type="date"]').val()?.trim() || '';
 
@@ -1492,91 +1199,49 @@
                 const guard = parseFloat($row.find('.guard').val()?.trim()) || 0;
                 const agua = parseFloat($row.find('.agua').val()?.trim()) || 0;
 
-                if (id_empleado && id_obra && fecha) {
-                    datos.push({
-                        id_empleado,
-                        id_orden: id_obra,
-                        fecha,
-                        hn,
-                        hs,
-                        he,
-                        material,
-                        trans,
-                        ali,
-                        hosp,
-                        guard,
-                        agua
-                    });
-                }
+                // if (id_empleado && id_obra && fecha) {
+                datos.push({
+                    id_empleado,
+                    id_orden: id_obra,
+                    fecha,
+                    hn,
+                    hs,
+                    he,
+                    material,
+                    trans,
+                    ali,
+                    hosp,
+                    guard,
+                    agua
+                });
             });
-
             // Ahora puedes enviar 'datos' al servidor con AJAX como ya vimos
             console.log("Datos a guardar:", datos);
-
             // 👉 Aquí haces el envío AJAX
-            // if (datos.length > 0) {
-            //     $.ajax({
-            //         url: '/ruta/guardarHorario', // Cambia a tu ruta real
-            //         method: 'POST',
-            //         contentType: 'application/json',
-            //         data: JSON.stringify({
-            //             registros: datos
-            //         }),
-            //         success: function(resp) {
-            //             Swal.fire('Guardado', 'Los registros se guardaron correctamente.', 'success');
-            //         },
-            //         error: function(err) {
-            //             console.error(err);
-            //             Swal.fire('Error', 'Hubo un problema al guardar.', 'error');
-            //         }
-            //     });
-            // } else {
-            //     Swal.fire('Advertencia', 'No hay datos válidos para guardar.', 'warning');
-            // }
+            if (datos.length > 0) {
+                $.ajax({
+                    url: '/ruta/guardarHorario', // Cambia a tu ruta real
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        registros: datos
+                    }),
+                    success: function(resp) {
+                        Swal.fire('Guardado', 'Los registros se guardaron correctamente.', 'success');
+                    },
+                    error: function(err) {
+                        console.error(err);
+                        Swal.fire('Error', 'Hubo un problema al guardar.', 'error');
+                    }
+                });
+            } else {
+                mostrarToast(
+                    'warning',
+                    "Advertencia",
+                    "fa-triangle-exclamation",
+                    'No hay datos para guardar', 4000
+                );
+            }
         });
-
-
-
-        // form.addEventListener("submit", function(e) {
-        //     e.preventDefault();
-        //     $('.ten').hide();
-        //     const ced = cedula.value.trim(),
-        //         nom = nombre.value.trim().toUpperCase(),
-        //         ape = apellido.value.trim().toUpperCase(),
-        //         tel = celular.value.trim(),
-        //         emp = cboEmpresa.value,
-        //         rol = cboRol.value,
-        //         pla = $(cboPlaca).val();
-
-
-        //     if (!this.checkValidity() || ced.length < 10 || tel.length < 10) {
-        //         this.classList.add('was-validated');
-        //         if (ced.length > 0 && ced.length < 10) {
-        //             cedula.parentNode.querySelector(".ten").style.display = "block";
-        //         }
-        //         if (tel.length > 0 && tel.length < 10) {
-        //             celular.parentNode.querySelector(".ten").style.display = "block";
-        //         }
-        //         return;
-        //     }
-        //     const id_e = id.value;
-        //     let datos = new FormData();
-        //     datos.append('id', id_e);
-        //     datos.append('cedula', ced);
-        //     datos.append('nombre', nom);
-        //     datos.append('apellido', ape);
-        //     datos.append('celular', tel);
-        //     datos.append('id_empresa', emp);
-        //     datos.append('id_rol', rol);
-        //     datos.append('id_placa', pla);
-        //     datos.append('accion', accion);
-        //     accion = 0;
-        //     empresa_filter = cboEmpresaFilter.value;
-        //     confirmarAccion(datos, 'horario', tabla, modal, function(r) {
-        //         cargarCombo('Conductor', '', 2);
-        //         cargarCombo('Despachado', '', 6);
-        //         cargarCombo('Responsable', '', 7);
-        //     });
-        // });
     })
 </script>

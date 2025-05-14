@@ -666,7 +666,7 @@
                             mostrarToast(
                                 data.status,
                                 isSuccess ? "Completado" : "Error",
-                                isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                isSuccess ? "fa-check fa-lg" : "fa-xmark fa-lg",
                                 data.m
                             );
                             // $('#' + data.id_boleta).remove();
@@ -726,7 +726,7 @@
                             mostrarToast(
                                 data.status,
                                 isSuccess ? "Completado" : "Error",
-                                isSuccess ? "fa-solid fa-check fa-lg" : "fa-solid fa-xmark fa-lg",
+                                isSuccess ? "fa-check fa-lg" : "fa-xmark fa-lg",
                                 data.m
                             );
                             // $('#' + data.id_boleta).remove();
@@ -1255,7 +1255,7 @@
                                 if (r.status === 'success') {
                                     let nuevaFila = [r.id, '1', '', '', ''];
                                     tblDetalleFab.row.add(nuevaFila).draw(false).node();
-                                    mostrarToast(r.status, "Completado", "fa-solid fa-check fa-lg", r.m)
+                                    mostrarToast(r.status, "Completado", "fa-check fa-lg", r.m)
                                 }
                             }
                         });
@@ -2641,9 +2641,9 @@
                                                     tablaUnica.row.add(nuevaFila).node().id = "producto_" + respuesta['codigo'];
                                                     tablaUnica.draw(false);
 
-                                                    mostrarToast(res.status, "Completado", "fa-solid fa-check fa-lg", res.m)
+                                                    mostrarToast(res.status, "Completado", "fa-check fa-lg", res.m)
                                                 } else {
-                                                    mostrarToast('danger', "Error", "fa-solid fa-xmark fa-lg", res.m)
+                                                    mostrarToast('danger', "Error", "fa-xmark fa-lg", res.m)
 
                                                 }
                                             }
