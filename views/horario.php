@@ -327,8 +327,9 @@
             value: item.text,
             cod: item.id
         }));
-        let selectedItemOrden;
-        // let selectedItemPerson;
+
+        const empleadosMap = new Map(datos_em.map(item => [item.cod, item]));
+        const ordenesMap = new Map(items_orden.map(item => [item.cod, item]));
 
         clearButtonObraH.addEventListener('click', function() {
             id_orden_horario = null;
@@ -647,58 +648,20 @@
                 }
             ],
             createdRow: function(row, data, dataIndex) {
-                let $input1 = $(row).find(".empleado");
-                $input1.autocomplete({
-                    source: datos_em,
-                    autoFocus: true,
-                    appendTo: "body",
-                    focus: function() {
-                        return false;
-                    },
-                    select: function(event, ui) {
-                        this.readOnly = true;
-                        $(this).attr("data-id", ui.item.cod); // ← Guarda el ID real
-                        let btn = this.parentElement.querySelector("button");
-                        if (btn) btn.style.display = "block";
-                    }
-                })
+                const $row = $(row);
+                const idEmpleado = data._id_person_res || null; // ← aquí está el ID que pasaste
 
-                if (id_person_res !== null) {
-                    // console.log('este es el id_person_res', id_person_res);
-                    const selectedItemPerson = datos_em.find(item => item.cod === id_person_res);
-                    if (selectedItemPerson) {
-                        $input1.val(selectedItemPerson.label);
-                        $input1.autocomplete("instance")._trigger("select", null, {
-                            item: selectedItemPerson
-                        });
-                    }
-                }
+                // Aplicar autocompletado al campo de empleado
+                const $inputEmpleado = $row.find(".empleado");
+                aplicarAutocomplete($inputEmpleado, datos_em, empleadosMap, idEmpleado, true);
 
-                let $input2 = $(row).find(".obra");
-                $input2.autocomplete({
-                    source: items_orden,
-                    autoFocus: true,
-                    appendTo: "body",
-                    focus: function() {
-                        return false;
-                    },
-                    select: function(event, ui) {
-                        this.readOnly = true;
-                        $(this).attr("data-id", ui.item.cod); // ← Guarda el ID real de la obra
-                        let btn = this.parentElement.querySelector("button");
-                        if (btn) btn.style.display = "block";
-                    }
-                });
-
-                if (id_orden_horario !== null) {
-                    if (selectedItemOrden) {
-                        $input2.val(selectedItemOrden.label);
-                        $input2.autocomplete("instance")._trigger("select", null, {
-                            item: selectedItemOrden
-                        });
-                    }
-                }
+                const idOrden = data._id_orden || null;
+                // Aplicar autocompletado al campo de obra
+                const $inputObra = $row.find(".obra");
+                // console.log('selectedItemOrden', selectedItemOrden);
+                aplicarAutocomplete($inputObra, datos_orden, ordenesMap, idOrden);
             }
+
         });
 
 
@@ -884,23 +847,97 @@
             let dateH = fechaH.value;
             let selectedData = tblEmpleadoH.rows({
                 selected: true
-            }).data();
-            selectedItemOrden = items_orden.find(item => item.cod === id_orden_horario);
+            }).data().toArray();
+
+            const filas = [];
+            const selectedItemOrden = ordenesMap.get(id_orden_horario) || null;
+
             if (selectedData.length > 0) {
-                for (let i = 0; i < selectedData.length; i++) {
-                    // console.log(selectedData[i]);
-                    id_person_res = selectedData[i].id;
-                    tblPerson.row.add(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']).draw(false);
+                for (const empleado of selectedData) {
+                    const rowData = ['', '', '', dateH, 8, '', '', '', '', '', '', '', '', ''];
+                    rowData._id_person_res = empleado.id;
+                    rowData._id_orden = selectedItemOrden;
+
+                    filas.push(rowData);
                 }
             } else {
-                tblPerson.row.add(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']).draw(false);
+                filas.push(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']);
             }
 
+            tblPerson.rows.add(filas).draw(false);
             tblEmpleadoH.rows().deselect();
             $('.fil-rol').prop('checked', false);
             $('#selected-person').text(0);
             $('#chkAll').prop('checked', false);
         });
+
+
+        function aplicarAutocomplete($input, sourceData, dataMap, idSeleccionado = null, search = false) {
+            $input.autocomplete({
+                source: sourceData,
+                autoFocus: true,
+                appendTo: "body",
+                focus: () => false,
+                select: handleAutocompleteSelect,
+            });
+
+            if (idSeleccionado != null) {
+                let selectedItem;
+                if (search) {
+                    selectedItem = dataMap.get(idSeleccionado);
+                } else {
+                    selectedItem = idSeleccionado
+                }
+                $input.val(selectedItem.label);
+                $input.autocomplete("instance")._trigger("select", null, {
+                    item: selectedItem
+                });
+
+            }
+        }
+
+        function handleAutocompleteSelect(event, ui) {
+            this.readOnly = true;
+            $(this).attr("data-id", ui.item.cod);
+            const btn = this.parentElement.querySelector("button");
+            if (btn) btn.style.display = "block";
+        }
+
+
+        // $("#addRow").on("click", function() {
+        //     const dateH = fechaH.value;
+        //     const selectedData = tblEmpleadoH.rows({
+        //         selected: true
+        //     }).data().toArray(); // ← convierte a array nativo
+        //     const filas = [];
+
+        //     // Guarda la orden seleccionada si existe
+        //     // if (id_orden_horario) {
+        //     //     selectedItemOrden = ordenesMap.get(id_orden_horario) || null;
+        //     // }
+
+        //     // Si hay empleados seleccionados
+        //     if (selectedData.length > 0) {
+        //         for (const empleado of selectedData) {
+        //             const rowData = ['', '', '', dateH, 8, '', '', '', '', '', '', '', '', ''];
+        //             rowData._id_person_res = empleado.id; // ← inyecta como propiedad oculta
+        //             filas.push(rowData);
+        //             console.log(rowData);
+        //         }
+        //     } else {
+        //         filas.push(['', '', '', dateH, 8, '', '', '', '', '', '', '', '', '']);
+        //     }
+
+        //     // Agregar todas las filas de una vez (más eficiente)
+        //     tblPerson.rows.add(filas).draw(false);
+
+        //     // Limpiar selección
+        //     tblEmpleadoH.rows().deselect();
+        //     $('.fil-rol').prop('checked', false);
+        //     $('#selected-person').text(0);
+        //     $('#chkAll').prop('checked', false);
+        // });
+
 
 
         $('#editRow').on('click', function() {
