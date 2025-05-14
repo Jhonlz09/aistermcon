@@ -633,7 +633,7 @@
                     defaultContent: `
                         <div class="row">
                             <div class="col-12">
-                                <select id="cboJust" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
+                                <select class="cbo form-control select2 select2-success just" data-dropdown-css-class="select2-dark">
                                     <option value="0">N/A</option>
                                     <option value="1">LIBRE</option>
                                     <option value="2">FALTA</option>
@@ -1184,9 +1184,30 @@
                 const $row = $(this);
                 // Obtener los IDs reales
                 const id_empleado = $row.find('.empleado').attr('data-id') || null;
+
+                const fecha = $row.find('.fechaH').val() || '';
+
+                const justificacion = $row.find('.just').val(); // Valor del select
+
+                // Si el campo justificación es diferente de "0" (es decir, hay justificación)
+                if (justificacion !== "0") {
+                    if (id_empleado === null || fecha === '') {
+                        mostrarToast('warning',"Advertencia","fa-triangle-exclamation",
+                            'Por favor completa los campo(s) en las fila(s) a justificar', 4000
+                        );
+                        return false;
+                    } else {
+                        datos.push({
+                            id_empleado,fecha,justificacion,hn: null,
+                            hs: null,he: null,material: null,trans: null,
+                            ali: null,hosp: null,guard: null,agua: null
+                        });
+                    }
+                    return;
+                    // Saltar al siguiente row
+                }
                 const id_obra = $row.find('.obra').attr('data-id') || null;
 
-                const fecha = $row.find('input[type="date"]').val()?.trim() || '';
 
                 const hn = parseFloat($row.find('.hn').val()?.trim()) || 0;
                 const hs = parseFloat($row.find('.hs').val()?.trim()) || 0;
@@ -1218,30 +1239,30 @@
             // Ahora puedes enviar 'datos' al servidor con AJAX como ya vimos
             console.log("Datos a guardar:", datos);
             // 👉 Aquí haces el envío AJAX
-            if (datos.length > 0) {
-                $.ajax({
-                    url: '/ruta/guardarHorario', // Cambia a tu ruta real
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        registros: datos
-                    }),
-                    success: function(resp) {
-                        Swal.fire('Guardado', 'Los registros se guardaron correctamente.', 'success');
-                    },
-                    error: function(err) {
-                        console.error(err);
-                        Swal.fire('Error', 'Hubo un problema al guardar.', 'error');
-                    }
-                });
-            } else {
-                mostrarToast(
-                    'warning',
-                    "Advertencia",
-                    "fa-triangle-exclamation",
-                    'No hay datos para guardar', 4000
-                );
-            }
+            // if (datos.length > 0) {
+            //     $.ajax({
+            //         url: '/ruta/guardarHorario', // Cambia a tu ruta real
+            //         method: 'POST',
+            //         contentType: 'application/json',
+            //         data: JSON.stringify({
+            //             registros: datos
+            //         }),
+            //         success: function(resp) {
+            //             Swal.fire('Guardado', 'Los registros se guardaron correctamente.', 'success');
+            //         },
+            //         error: function(err) {
+            //             console.error(err);
+            //             Swal.fire('Error', 'Hubo un problema al guardar.', 'error');
+            //         }
+            //     });
+            // } else {
+            //     mostrarToast(
+            //         'warning',
+            //         "Advertencia",
+            //         "fa-triangle-exclamation",
+            //         'No hay datos para guardar', 4000
+            //     );
+            // }
         });
     })
 </script>
