@@ -46,7 +46,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search"  onpaste="return trimPaste(event, this)" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>

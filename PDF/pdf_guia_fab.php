@@ -259,11 +259,11 @@ $pdf->SetMargins(12, 0, 12);
 $pdf->AliasNbPages();
 
 $pdf->AddPage();
+$pdf->SetTitle("Nro. Guia" . $nro_guia);
 if ($datos_guias == null) {
     $pdf->SetFont('Arial', '', 14);
     $pdf->SetXY(10, 20);
     $pdf->Cell(0, 20, iconv('UTF-8', 'windows-1252', 'NO SE ENCONTRARON DATOS PARA LA GUIA'), 0, 0, 'C');
-    $pdf->SetTitle("Nro. Guia " . $nro_guia);
 } else {
     $pdf->Ln(10);
     $pdf->Image('../assets/img/logo_pdf.jpeg', 48, null, 115, 16);

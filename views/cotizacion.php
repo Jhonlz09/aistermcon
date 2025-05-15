@@ -5,7 +5,7 @@
 </head>
 
 <!-- Contenido Header -->
-<section id="div_header" class="content-header">
+<section id="div_header" class="ini-section content-header">
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
@@ -22,7 +22,7 @@
 </section>
 <!-- /.content-header -->
 <!-- Main content -->
-<section id="div_content" class="content">
+<section id="div_content" class="ini-section content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -79,7 +79,7 @@
 <!-- /.Contenido -->
 
 <!-- Formulario oculto al principio -->
-<section id="div_cot" class="content" style="display: none;">
+<section id="div_cot" class="form-section content" style="display: none;">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
@@ -710,7 +710,7 @@
         function ocultarFormulario() {
             document.getElementById("div_cot").style.display = "none";
             document.getElementById("div_content").style.display = "block";
-            $('#tblCotizacion').DataTable().columns.adjust().draw(false);
+            tabla.columns.adjust().draw(false);
             tblSolicitud.clear().draw();
             document.getElementById("div_header").style.display = "block";
             window.scrollTo(0, scrollPos);
@@ -968,7 +968,6 @@
                 console.log('valor sc', sc)
                 const nro_cotizacion = (sc || 0).toString().padStart(4, '0');
                 const nro_cotizacion_formateado = parseInt(nro_cotizacion, 10).toString().padStart(nro_cotizacion.length, '0');
-
                 $('#nroSolicitud').text(nro_cotizacion_formateado);
                 $('#text_accion').text(' Nueva solicitud de compra');
                 fecha_sol.value = fecha_hoy;
@@ -990,7 +989,7 @@
                 scrollPos = window.scrollY || document.documentElement.scrollTop;
 
                 document.getElementById("div_cot").style.display = "block";
-                document.getElementById("div_content").style.display = "table-column";
+                document.getElementById("div_content").style.display = "none";
                 document.getElementById("div_header").style.display = "none";
             });
         }
@@ -1073,7 +1072,7 @@
 
             scrollPos = window.scrollY || document.documentElement.scrollTop;
             document.getElementById("div_cot").style.display = "block";
-            document.getElementById("div_content").style.display = "table-column";
+            document.getElementById("div_content").style.display = "none";
             document.getElementById("div_header").style.display = "none";
         });
 
@@ -1301,7 +1300,7 @@
                             contentType: false,
                             processData: false,
                             success: function(response) {
-                                let isSuccess = response.status === "success";
+                                const isSuccess = response.status === "success";
                                 mostrarToast(response.status,
                                     isSuccess ? "Completado" : "Error",
                                     isSuccess ? "fa-check" : "fa-xmark",

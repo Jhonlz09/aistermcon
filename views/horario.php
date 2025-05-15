@@ -9,7 +9,7 @@
     <!-- <link href="assets/plugins/datatables-keytable/css/keyTable.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
 </head>
 <!-- Contenido Header -->
-<section id="div_header" class="content-header">
+<section id="div_header" class="ini-section content-header ">
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
@@ -26,7 +26,7 @@
 </section>
 <!-- /.content-header -->
 <!-- Main content -->
-<section id="div_content" class="content">
+<section id="div_content" class="ini-section content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -41,7 +41,7 @@
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search" onpaste="return trimPaste(event, this)" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>
@@ -79,7 +79,7 @@
 </section>
 <!-- /.Contenido -->
 
-<section id="div_hor_header" style="display:none" class="content-header">
+<section id="div_hor_header" class="form-section content-header" style="display:none">
     <div class="container-fluid">
         <div class="row justify-content-between">
             <div class="col-auto">
@@ -94,7 +94,7 @@
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
 </section>
-<section id="div_hor_filter" class="content" style="display: none;">
+<section id="div_hor_filter" class="form-section content" style="display: none;">
     <div class="container-fluid">
         <div class="row" style="align-items:flex-start">
             <div class="col-xl-12">
@@ -157,7 +157,7 @@
     </div>
 </section>
 </section>
-<section id="div_hor" class="content" style="display: none;">
+<section id="div_hor" class="form-section content" style="display: none;">
     <div class="container-fluid">
         <div class="row" style="align-items:flex-start">
             <div class="col-xl-12">
@@ -201,6 +201,8 @@
     </div>
     </div>
 </section>
+
+
 <!-- Modal -->
 
 <div class="modal fade" id="modal_personal">
@@ -679,12 +681,9 @@
                 fila.find('.obra').prop('disabled', true).val(textoSel);
             } else {
                 fila.css('background-color', '');
-
                 fila.find('.empleado, .obra, .fechaH, .select-checkbox, .dtfc-fixed-left, .hn').css('background-color', '');
-
                 fila.find('.obra').prop('disabled', false).val(''); // limpia si vuelves a N/A
                 fila.find('.hn').prop('disabled', false).val('8');
-
             }
         });
 
@@ -750,7 +749,6 @@
                     });
                     return;
                 }
-
                 // Si no encontró input, ajusta solo columnas (no avanza fila)
                 if (key === 'ArrowRight') nextCellIndex++;
                 else if (key === 'ArrowLeft') nextCellIndex--;
@@ -1075,7 +1073,7 @@
             span = document.querySelector('.modal-title span'),
             elements = document.querySelectorAll('.modal .bg-gradient-green'),
             form = document.getElementById('formNuevo'),
-            div_placa = document.getElementById('div_placa'),
+            // div_placa = document.getElementById('div_placa'),
             modalS = document.getElementById('modalS'),
             elementsE = document.querySelectorAll('#modalS .bg-gradient-green'),
             select = document.querySelectorAll('.modal-body select.select2'),
@@ -1087,13 +1085,13 @@
             btnNuevo = document.getElementById('btnNuevo'),
             btnReturn = document.getElementById('btnReturn');
 
+        let scrollPos = 0;
 
-
-        const id = document.getElementById('id'),
-            cedula = document.getElementById('cedula'),
-            nombre = document.getElementById('nombre'),
-            apellido = document.getElementById('apellido'),
-            celular = document.getElementById('celular');
+        // const id = document.getElementById('id'),
+        //     cedula = document.getElementById('cedula'),
+        //     nombre = document.getElementById('nombre'),
+        //     apellido = document.getElementById('apellido'),
+        //     celular = document.getElementById('celular');
 
 
         OverlayScrollbars(document.querySelector('.scroll-modal'), {
@@ -1103,36 +1101,56 @@
             }
         });
 
-        btnReturn.addEventListener('click', function() {
-            ocultarFormulario();
-        });
+        btnReturn.addEventListener('click', () => showHideFormSection('none', 'block', tblPerson, scrollPos));
 
-        function visibleForm(show) {
-            let look = show ? 'block' : 'none';
-            document.getElementById("div_cot").style.display = "none";
-            document.getElementById("div_content").style.display = "block";
-            $('#tblCotizacion').DataTable().columns.adjust().draw(false);
-            tblSolicitud.clear().draw();
-            document.getElementById("div_header").style.display = "block";
+        function showHideFormSection(dis1, dis2, dtabla) {
+            console.log('showHideFormSection', 'esgto awio');
+            document.querySelectorAll('.form-section').forEach(el => {
+                el.style.display = dis1;
+            });
+            document.querySelectorAll('.ini-section').forEach(el => {
+                el.style.display = dis2;
+            });
+            tabla.columns.adjust().draw(false);
+            dtabla.clear().draw();
+            window.scrollTo(0, scrollPos);
         }
 
-        function novisibleForm(show) {
-            let look = show ? 'block' : 'none';
-            document.getElementById("div_cot").style.display = "none";
-            document.getElementById("div_content").style.display = "block";
-            $('#tblCotizacion').DataTable().columns.adjust().draw(false);
-            tblSolicitud.clear().draw();
-            document.getElementById("div_header").style.display = "block";
-        }
+        // function ocultarFormulario() {
+        //     document.getElementById("div_hor_filter").style.display = "none";
+        //     document.getElementById("div_hor_header").style.display = "none";
+        //     document.getElementById("div_hor").style.display = "none";
+
+        //     document.getElementById("div_content").style.display = "block";
+        //     tabla.columns.adjust().draw(false);
+        //     tblPerson.clear().draw();
+        //     document.getElementById("div_header").style.display = "block";
+        // }
+
+        // function visibleForm(show) {
+        //     let look = show ? 'block' : 'none';
+        //     document.getElementById("div_cot").style.display = "none";
+        //     document.getElementById("div_content").style.display = "block";
+        //     $('#tblCotizacion').DataTable().columns.adjust().draw(false);
+        //     tblSolicitud.clear().draw();
+        //     document.getElementById("div_header").style.display = "block";
+        // }
+
+        // function novisibleForm(show) {
+        //     let look = show ? 'block' : 'none';
+        //     document.getElementById("div_cot").style.display = "none";
+        //     document.getElementById("div_content").style.display = "block";
+        //     $('#tblCotizacion').DataTable().columns.adjust().draw(false);
+        //     tblSolicitud.clear().draw();
+        //     document.getElementById("div_header").style.display = "block";
+        // }
 
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                document.getElementById("div_hor_header").style.display = "block";
-                document.getElementById("div_hor_filter").style.display = "block";
-                document.getElementById("div_hor").style.display = "block";
-                document.getElementById("div_content").style.display = "table-column";
-                document.getElementById("div_header").style.display = "none";
+                showHideFormSection('block', 'none', tblPerson);
+                scrollPos = window.scrollY || document.documentElement.scrollTop;
+
             });
         }
 
@@ -1192,15 +1210,25 @@
                 // Si el campo justificación es diferente de "0" (es decir, hay justificación)
                 if (justificacion !== "0") {
                     if (id_empleado === null || fecha === '') {
-                        mostrarToast('warning',"Advertencia","fa-triangle-exclamation",
+                        mostrarToast('warning', "Advertencia", "fa-triangle-exclamation",
                             'Por favor completa los campo(s) en las fila(s) a justificar', 4000
                         );
                         return false;
                     } else {
                         datos.push({
-                            id_empleado,fecha,justificacion,hn: null,
-                            hs: null,he: null,material: null,trans: null,
-                            ali: null,hosp: null,guard: null,agua: null
+                            id_empleado,
+                            id_orden: null,
+                            fecha,
+                            hn: null,
+                            hs: null,
+                            he: null,
+                            material: null,
+                            trans: null,
+                            ali: null,
+                            hosp: null,
+                            guard: null,
+                            agua: null,
+                            justificacion,
                         });
                     }
                     return;
@@ -1208,17 +1236,16 @@
                 }
                 const id_obra = $row.find('.obra').attr('data-id') || null;
 
+                const hn = parseFloat($row.find('.hn').val()) || null;
+                const hs = parseFloat($row.find('.hs').val()) || null;
+                const he = parseFloat($row.find('.h100').val()) || null;
 
-                const hn = parseFloat($row.find('.hn').val()?.trim()) || 0;
-                const hs = parseFloat($row.find('.hs').val()?.trim()) || 0;
-                const he = parseFloat($row.find('.h100').val()?.trim()) || 0;
-
-                const material = parseFloat($row.find('.material').val()?.trim()) || 0;
-                const trans = parseFloat($row.find('.trans').val()?.trim()) || 0;
-                const ali = parseFloat($row.find('.ali').val()?.trim()) || 0;
-                const hosp = parseFloat($row.find('.hosp').val()?.trim()) || 0;
-                const guard = parseFloat($row.find('.guard').val()?.trim()) || 0;
-                const agua = parseFloat($row.find('.agua').val()?.trim()) || 0;
+                const material = parseFloat($row.find('.material').val()) || null;
+                const trans = parseFloat($row.find('.trans').val()) || null;
+                const ali = parseFloat($row.find('.ali').val()) || null;
+                const hosp = parseFloat($row.find('.hosp').val()) || null;
+                const guard = parseFloat($row.find('.guard').val()) || null;
+                const agua = parseFloat($row.find('.agua').val()) || null;
 
                 // if (id_empleado && id_obra && fecha) {
                 datos.push({
@@ -1233,36 +1260,48 @@
                     ali,
                     hosp,
                     guard,
-                    agua
+                    agua,
+                    justificacion: null
                 });
             });
             // Ahora puedes enviar 'datos' al servidor con AJAX como ya vimos
             console.log("Datos a guardar:", datos);
             // 👉 Aquí haces el envío AJAX
-            // if (datos.length > 0) {
-            //     $.ajax({
-            //         url: '/ruta/guardarHorario', // Cambia a tu ruta real
-            //         method: 'POST',
-            //         contentType: 'application/json',
-            //         data: JSON.stringify({
-            //             registros: datos
-            //         }),
-            //         success: function(resp) {
-            //             Swal.fire('Guardado', 'Los registros se guardaron correctamente.', 'success');
-            //         },
-            //         error: function(err) {
-            //             console.error(err);
-            //             Swal.fire('Error', 'Hubo un problema al guardar.', 'error');
-            //         }
-            //     });
-            // } else {
-            //     mostrarToast(
-            //         'warning',
-            //         "Advertencia",
-            //         "fa-triangle-exclamation",
-            //         'No hay datos para guardar', 4000
-            //     );
-            // }
+            if (datos.length > 0) {
+                $.ajax({
+                    url: 'controllers/horario.controlador.php', // Cambia a tu ruta real
+                    method: 'POST',
+                    dataType: 'json',
+                    // contentType: 'application/json',
+                    data: {
+                        accion: 1,
+                        registros: JSON.stringify(datos) // Importante: lo mandas como string normal
+                    },
+                    success: function(resp) {
+                        const isSuccess = resp.status === "success";
+                        mostrarToast(resp.status,
+                            isSuccess ? "Completado" : "Error",
+                            isSuccess ? "fa-check" : "fa-xmark",
+                            resp.m);
+
+                        if (isSuccess) {
+                            showHideFormSection('none', 'block', tblPerson, scrollPos);
+                        }
+                        if (tabla) {
+                            tabla.ajax.reload(null, false); // Recargar tabla si es necesario
+                        }
+
+                        // Swal.fire('Guardado', 'Los registros se guardaron correctamente.', 'success');
+                    },
+                });
+            } else {
+                mostrarToast(
+                    'warning',
+                    "Advertencia",
+                    "fa-triangle-exclamation",
+                    'No hay datos para guardar', 4000
+                );
+            }
         });
     })
 </script>

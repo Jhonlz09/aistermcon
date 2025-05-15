@@ -3,55 +3,27 @@ require_once "../models/horario.modelo.php";
 
 class ControladorHorario
 {
-    public $id, $ruc,$nombres,$dir, $tel, $correo;
+    public $id, $registros, $id_empleado, $id_orden, $fecha, $hn, $hs, $he, $material, $trans,
+        $ali, $hosp, $guard, $agua;
 
     static public function listarHorario()
     {
         $data = ModeloHorario::mdlListarHorario();
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    public function agregarProveedores()
+    public function agregarHorario()
     {
-        $data = ModeloHorario::mdlAgregarProveedores($this->ruc,$this->nombres,$this->dir,$this->correo,$this->tel);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    }
-    public function editarProveedor()
-    {
-        $data = ModeloHorario::mdlEditarProveedor($this->id,$this->ruc,$this->nombres,$this->dir,$this->correo,$this->tel);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    }
-    
-    public function eliminarProveedor()
-    {
-        $data = ModeloHorario::mdlEliminarProveedor($this->id);
+        $data = ModeloHorario::mdlAgregarHorario($this->registros); // ahora usa $this->registros
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
+$data = new ControladorHorario();
 
 if (!isset($_POST["accion"])) {
-    $data = new ControladorHorario();
     $data->listarHorario();
 } else {
     if ($_POST["accion"] == 1) {
-        $data = new ControladorHorario();
-        $data->ruc = $_POST["ruc"];
-        $data->nombres = $_POST["nombre"];
-        $data->tel = $_POST["tel"];
-        $data->dir = $_POST["dir"];
-        $data->correo = $_POST["correo"];
-        $data->agregarProveedores();
-    } else if ($_POST["accion"] == 2) {
-        $data = new ControladorHorario();
-        $data->id = $_POST["id"];
-        $data->ruc = $_POST["ruc"];
-        $data->nombres = $_POST["nombre"];
-        $data->tel = $_POST["tel"];
-        $data->dir = $_POST["dir"];
-        $data->correo = $_POST["correo"];
-        $data->editarProveedor();
-    } else if ($_POST["accion"] == 3) {
-        $data = new ControladorHorario();
-        $data->id = $_POST["id"];
-        $data->eliminarProveedor();
+        $data->registros = json_decode($_POST["registros"], true); // Decodificar a array
+        $data->agregarHorario();
     }
 }

@@ -15,8 +15,13 @@
 //     }
 // };
 
-
-function confirmarEliminar(art, name, callback, opcion = 'eliminar', subtitle = 'Una vez eliminado no podrá recuperarlo') {
+function confirmarEliminar(
+  art,
+  name,
+  callback,
+  opcion = "eliminar",
+  subtitle = "Una vez eliminado no podrá recuperarlo"
+) {
   Swal.fire({
     title: "¿Está seguro de " + opcion + " " + art + " " + name + "?",
     text: subtitle,
@@ -68,7 +73,7 @@ function limpiar(btn = false) {
     motivo.value = "";
     salida_radio.value = "2";
     salida_radio.dispatchEvent(new Event("change"));
-    btn ? btn.style.display = "none" : null;
+    btn ? (btn.style.display = "none") : null;
   } else if (selectedTab === "6") {
     const retorno = document.getElementById("radio-3");
     setChange(cboConductor, conductorPorDefecto);
@@ -86,20 +91,24 @@ function limpiar(btn = false) {
     motivo.value = "";
     retorno.value = "3";
     retorno.dispatchEvent(new Event("change"));
-    btn ? btn.style.display = "none" : null;
+    btn ? (btn.style.display = "none") : null;
   } else if (selectedTab === "5") {
     const entrada_radio = document.getElementById("radio-1");
-    const nro_factura = document.getElementById('nro_fac');
+    const nro_factura = document.getElementById("nro_fac");
 
     fecha.value = `${year}-${mes}-${dia}`;
     setChange(cboProveedores, 0);
     nro_factura.value = "";
     entrada_radio.value = "1";
     entrada_radio.dispatchEvent(new Event("change"));
-    btn ? btn.style.display = "none" : null;
-  } else if (selectedTab === "7" || selectedTab === "8" || selectedTab === "9") {
+    btn ? (btn.style.display = "none") : null;
+  } else if (
+    selectedTab === "7" ||
+    selectedTab === "8" ||
+    selectedTab === "9"
+  ) {
     const radio = document.getElementById("radio-7");
-    const nro_gui = document.getElementById('nro_guiaFab');
+    const nro_gui = document.getElementById("nro_guiaFab");
 
     setChange(cboConductor, conductorPorDefecto);
     setChange(cboDespachado, bodegueroPorDefecto);
@@ -112,19 +121,19 @@ function limpiar(btn = false) {
     nro_gui.value = "";
     radio.value = "7";
     radio.dispatchEvent(new Event("change"));
-    btn ? btn.style.display = "none" : null;
+    btn ? (btn.style.display = "none") : null;
     isTrasFab.disabled = false;
   }
 }
 
-function cargarOpcionesSelect(selectElement, value, size = '110%') {
+function cargarOpcionesSelect(selectElement, value, size = "110%") {
   selectElement.select2({
     data: datos_uni,
     minimumResultsForSearch: -1,
     width: size,
   });
   if (value) {
-    selectElement.val(value).trigger('change');
+    selectElement.val(value).trigger("change");
   }
 }
 
@@ -140,7 +149,7 @@ function cargarCombo(id, s, a = 1, isDataCbo = false, anio = null) {
       data: {
         tabla: tabla,
         accion: a,
-        anio: anio
+        anio: anio,
       },
       success: function (respuesta) {
         let dataCbo = [];
@@ -150,20 +159,26 @@ function cargarCombo(id, s, a = 1, isDataCbo = false, anio = null) {
           if (anio !== null) {
             let text = respuesta[index][1]; // Nombre del elemento
             if (respuesta[index][2]) {
-              text += ' <span class="alert alert-default-dark mb-0"><i class="fas fa-hammer-crash"></i> FAB</span>';
+              text +=
+                ' <span class="alert alert-default-dark mb-0"><i class="fas fa-hammer-crash"></i> FAB</span>';
             }
             dataCbo.push({
               id: respuesta[index][0],
               text: respuesta[index][1], // Guardamos el texto limpio
               fab: respuesta[index][2], // Guardamos si es fabricado
-              html: `<div style="display:flex;justify-content:space-between;align-items:center;height:1.6rem;overflow:hidden;white-space:nowrap;width:auto;text-overflow:ellipsis">${text}</div>` // HTML personalizado
+              html: `<div style="display:flex;justify-content:space-between;align-items:center;height:1.6rem;overflow:hidden;white-space:nowrap;width:auto;text-overflow:ellipsis">${text}</div>`, // HTML personalizado
             });
           } else if (isDataCbo) {
-            dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
+            dataCbo.push({
+              id: respuesta[index][0],
+              text: respuesta[index][1],
+            });
           }
         }
         $(cbo).html(options);
-        $(cbo).val(s !== "" ? s : 0).trigger("change");
+        $(cbo)
+          .val(s !== "" ? s : 0)
+          .trigger("change");
         if (isDataCbo) {
           resolve(dataCbo);
         } else if (anio !== null) {
@@ -292,21 +307,29 @@ function opcionSelect(select, name) {
 
 function formatNumberInput(input) {
   // Remove all non-numeric characters except for the decimal point
-  let value = input.value.replace(/[^0-9.]/g, '');
+  let value = input.value.replace(/[^0-9.]/g, "");
 
   // Split the value into integer and decimal parts
-  let parts = value.split('.');
+  let parts = value.split(".");
   let integerPart = parts[0];
-  let decimalPart = parts.length > 1 ? '.' + parts[1].slice(0, 2) : '';
+  let decimalPart = parts.length > 1 ? "." + parts[1].slice(0, 2) : "";
 
   // Format the integer part with commas
-  integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   // Set the formatted value back to the input
   input.value = integerPart + decimalPart;
 }
 
-function confirmarAccion(datos, ruta, tabla, modal = "", callback, time = 5500, showToast = true) {
+function confirmarAccion(
+  datos,
+  ruta,
+  tabla,
+  modal = "",
+  callback,
+  time = 5500,
+  showToast = true
+) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
     method: "POST",
@@ -329,7 +352,8 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback, time = 5500, 
           r.status,
           isSuccess ? "Completado" : "Error",
           isSuccess ? "fa-check" : "fa-xmark",
-          r.m, time
+          r.m,
+          time
         );
       }
       if (typeof callback === "function") {
@@ -339,14 +363,21 @@ function confirmarAccion(datos, ruta, tabla, modal = "", callback, time = 5500, 
   });
 }
 
-function mostrarToast(status, title, icon, m, time = 5500, position = "topRight") {
+function mostrarToast(
+  status,
+  title,
+  icon,
+  m,
+  time = 5500,
+  position = "topRight"
+) {
   $(document).Toasts("create", {
     autohide: true,
     delay: time,
     position: position,
     class: "bg-" + status,
     title: title,
-    icon: 'fa-solid ' + icon + ' fa-lg',
+    icon: "fa-solid " + icon + " fa-lg",
     body: m,
   });
 }
@@ -359,7 +390,18 @@ function obtenerFila(fila, tabla) {
   return row;
 }
 
-function cambiarModal(span, title, iconE, icon, e, bg1, bg2, modalElement, m1, m2) {
+function cambiarModal(
+  span,
+  title,
+  iconE,
+  icon,
+  e,
+  bg1,
+  bg2,
+  modalElement,
+  m1,
+  m2
+) {
   span.textContent = title;
   iconE.classList.remove(...iconE.classList);
   iconE.classList.add("fa-solid", icon);
@@ -389,6 +431,29 @@ function displayModal(elements, ...args) {
   elements.forEach((element, index) => {
     element.style.display = args[index];
   });
+}
+
+function trimPaste(e, el) {
+  e.preventDefault();
+  const pastedText = (e.clipboardData || window.clipboardData)
+    .getData("text")
+    .trim();
+
+  // Insertar texto en la posición actual del cursor
+  const start = el.selectionStart;
+  const end = el.selectionEnd;
+  const textBefore = el.value.substring(0, start);
+  const textAfter = el.value.substring(end);
+  el.value = textBefore + pastedText + textAfter;
+
+  // Restaurar posición del cursor
+  const newCursorPos = textBefore.length + pastedText.length;
+  el.setSelectionRange(newCursorPos, newCursorPos);
+
+  if (typeof el.oninput === "function") {
+    el.oninput();
+  }
+  return false;
 }
 
 function Buscar(tabla, s) {
@@ -452,7 +517,6 @@ function validarNumber(input, regex, ten = false, decimal = 2) {
     var mensajeTen = input.parentNode.querySelector(".ten");
     mensajeTen.style.display =
       input.value.length !== 10 && input.value.length !== 0 ? "block" : "none";
-
   } else {
     if ((input.value.match(/\./g) || []).length > 1) {
       input.value = input.value.slice(0, -1);
@@ -568,32 +632,42 @@ function validarClave(input, sub) {
 async function updateAll(element) {
   // Deshabilitar el botón (usando pointer-events) y cambiar el fondo a gris
   $(element).css({
-    'pointer-events': 'none',  // Deshabilitar clics
-    'background-color': '#d3d3d3'  // Cambiar el fondo a gris
+    "pointer-events": "none", // Deshabilitar clics
+    "background-color": "#d3d3d3", // Cambiar el fondo a gris
   });
 
-  cargarAutocompletado(function (items) {
-    items_orden = items;
-    $('#nro_orden').autocomplete("option", "source", items);
-    $('#nro_ordenEntrada').autocomplete("option", "source", items);
-    $('#nro_ordenFab').autocomplete("option", "source", items);
-    $('#nro_ordenHorario').autocomplete("option", "source", items);
-  }, null, 'orden', 6);
+  cargarAutocompletado(
+    function (items) {
+      items_orden = items;
+      $("#nro_orden").autocomplete("option", "source", items);
+      $("#nro_ordenEntrada").autocomplete("option", "source", items);
+      $("#nro_ordenFab").autocomplete("option", "source", items);
+      $("#nro_ordenHorario").autocomplete("option", "source", items);
+    },
+    null,
+    "orden",
+    6
+  );
   // Ejecutar la recarga de la tabla
   try {
     tabla.ajax.reload(null, false);
     // Usar Promise.all para esperar todas las promesas
     await cargarDatos();
-
   } catch (error) {
     console.error("Error en la ejecución de alguna de las promesas:", error);
   } finally {
-
     $(element).css({
-      'pointer-events': 'auto',  // Reactivar el enlace
-      'background-color': ''  // Restaurar el color original
+      "pointer-events": "auto", // Reactivar el enlace
+      "background-color": "", // Restaurar el color original
     });
-    mostrarToast("success", "Completado", "fas fa-check", "Datos actualizados correctamente", 2000, "bottomRight");
+    mostrarToast(
+      "success",
+      "Completado",
+      "fas fa-check",
+      "Datos actualizados correctamente",
+      2000,
+      "bottomRight"
+    );
   }
 }
 
@@ -601,9 +675,9 @@ async function cargarDatos() {
   // Ejecutar todas las promesas en paralelo y esperar a que terminen
   const [autocompletado, proveedores, clientes, orden] = await Promise.all([
     cargarAutocompletado(),
-    cargarCombo('Proveedores', '', 1, true),
-    cargarCombo('Clientes', '', 1, true),
-    cargarCombo('Orden', '', 3, true)
+    cargarCombo("Proveedores", "", 1, true),
+    cargarCombo("Clientes", "", 1, true),
+    cargarCombo("Orden", "", 3, true),
   ]);
   // Asignar los resultados de las promesas
   datos_prove = proveedores;
@@ -611,7 +685,12 @@ async function cargarDatos() {
   datos_orden = orden;
 }
 
-function cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'inventario', action = 7) {
+function cargarAutocompletado(
+  callback = false,
+  input = "codProducto",
+  ruta = "inventario",
+  action = 7
+) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
     method: "POST",
@@ -634,7 +713,7 @@ function cargarAutocompletado(callback = false, input = 'codProducto', ruta = 'i
       if (typeof callback === "function") {
         callback(items);
       } else {
-        $('#' + input).autocomplete("option", "source", items);
+        $("#" + input).autocomplete("option", "source", items);
       }
     },
   });
@@ -649,9 +728,7 @@ function clearInput(inputId, btn) {
     input.focus();
     btn.style.display = "none";
   }
-  
 }
-
 
 function evitarEnvio(event) {
   if (event.keyCode === 13) {

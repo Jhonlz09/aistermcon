@@ -20,26 +20,42 @@ class ModeloHorario
         }
     }
 
-    static public function mdlAgregarProveedores($ruc, $nombre, $dir, $correo, $tel)
+    static public function mdlAgregarHorario($registros)
     {
         try {
-            $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblproveedores(ruc,nombre,direccion, correo, telefono) VALUES (:ruc,:nombre,:dir, :correo, :tel)");
-            $a->bindParam(":ruc", $ruc, PDO::PARAM_STR);
-            $a->bindParam(":nombre", $nombre, PDO::PARAM_STR);
-            $a->bindParam(":dir", $dir, PDO::PARAM_STR);
-            $a->bindParam(":correo", $correo, PDO::PARAM_STR);
-            $a->bindParam(":tel", $tel, PDO::PARAM_STR);
-            $a->execute();
+            $conn = Conexion::ConexionDB();
+            $stmt = $conn->prepare("INSERT INTO tblhorario (
+                id_empleado, id_orden, fecha, hn, hs, he, gm, gt, ga, gh, gg, gc, id_justificacion
+            ) VALUES (
+                :id_empleado, :id_orden, :fecha, :hn, :hs, :he, :material, :trans, :agua, :hosp, :guard, :ali, :id_justificacion
+            )
+        ");
+
+            foreach ($registros as $r) {
+                $stmt->bindValue(":id_empleado", $r["id_empleado"], PDO::PARAM_INT);
+                $stmt->bindValue(":id_orden", $r["id_orden"], PDO::PARAM_INT);
+                $stmt->bindValue(":fecha", $r["fecha"], PDO::PARAM_STR);
+                $stmt->bindValue(":hn", $r["hn"]);
+                $stmt->bindValue(":hs", $r["hs"]);
+                $stmt->bindValue(":he", $r["he"]);
+                $stmt->bindValue(":material", $r["material"]);
+                $stmt->bindValue(":trans", $r["trans"]);
+                $stmt->bindValue(":agua", $r["agua"]);
+                $stmt->bindValue(":hosp", $r["hosp"]);
+                $stmt->bindValue(":guard", $r["guard"]);
+                $stmt->bindValue(":ali", $r["ali"]);
+                $stmt->bindValue(":id_justificacion", $r["justificacion"]);
+                $stmt->execute();
+            }
 
             return array(
                 'status' => 'success',
-                'm' => 'El proveedor se agregó correctamente'
+                'm' => 'El horario se agregó correctamente'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo agregar el proveedor: ' . $e->getMessage()
+                'm' => 'No se pudo agregar el horario: ' . $e->getMessage()
             );
         }
     }
