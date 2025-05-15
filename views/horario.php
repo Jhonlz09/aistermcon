@@ -54,16 +54,16 @@
                         <table id="tblHorario" cellspacing="0" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th class="text-center">Nº</th>
-                                    <th>NOMBRES</th>
-                                    <th>Nº DE ORDEN</th>
-                                    <th>CLIENTE</th>
+                                    <th class="th-orange text-center">Nº</th>
+                                    <th class="th-orange">NOMBRES</th>
+                                    <th class="th-orange">Nº DE ORDEN</th>
+                                    <th class="th-orange">CLIENTE</th>
                                     <th>FECHA</th>
-                                    <th>HN</th>
-                                    <th>HS</th>
-                                    <th>HE</th>
-                                    <th>TOTAL</th>
-                                    <th>%12.15</th>
+                                    <th class="th-green">HN</th>
+                                    <th class="th-purple">HS</th>
+                                    <th class="th-blue">HE</th>
+                                    <th class="th-dark-blue">TOTAL</th>
+                                    <th class="th-green">%12.15</th>
                                     <th>13ER</th>
                                     <th>14TO</th>
                                     <th>VAC</th>

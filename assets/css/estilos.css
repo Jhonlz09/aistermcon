@@ -709,6 +709,16 @@ table.dataTable tbody>tr>.selected {
     background-color: #FBE2D5;
 }
 
+.th-purple {
+    color: #4E1F6D;
+    background-color: #E8DAEF;
+}
+
+.th-dark-blue {
+    background-color: #aad8ff;
+    color: #005aaa;
+}
+
 .th-yellow {
     color: #856404;
     background-color: #fff3cd;
