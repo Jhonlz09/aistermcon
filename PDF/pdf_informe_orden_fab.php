@@ -48,6 +48,7 @@ class PDF extends FPDF
             $this->SetFont('Arial', '', 10);
             $this->SetXY(15, 13);
             $this->MultiCell(0, 0, iconv('UTF-8', 'windows-1252', $info_header), 0, 'L', 0);
+            // $this->Ln(2);
         }
     }
 
@@ -55,7 +56,7 @@ class PDF extends FPDF
     {
         parent::__construct();
         // $this->y0 = $this->GetY();
-        $this->startY = 25;
+        $this->startY = 20;
         $this->SetMargins(8, 0, 8);
     }
 
@@ -297,7 +298,7 @@ if ($datos_guias == null) {
     $pdf->SetMargins(12, 0, 12);
     $pdf->SetWidths(array(27, 88, 18, 16));
     $pdf->SetAligns(array('L', 'L', 'C', 'C'));
-    $pdf->SetX(12);
+    // $pdf->SetX(12);
     $pdf->SetY(25);
     foreach ($datos_guias as $row) {
         if ($row["responsable"] == '') {
