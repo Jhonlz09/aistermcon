@@ -48,18 +48,14 @@ class PDF extends FPDF
     {
         $this->SetFont('Arial', '', 11);
         $this->SetTextColor(10, 0, 0);
-
+        $this->SetY(0);
         $this->Cell(376, 25, '' . $this->PageNo() . ' / {nb}', 0, 0, 'C');
         if ($this->encabezado) {
-
             global $info_header;
-            // // Arial bold 15
-
-            // Movernos a la derecha
-            // $this->Cell(80);
             $this->SetFont('Arial', '', 10);
             $this->SetXY(15, 13);
             $this->MultiCell(0, 0, iconv('UTF-8', 'windows-1252', $info_header), 0, 'L', 0);
+            $this->Ln(5);
         }
     }
 
@@ -68,7 +64,7 @@ class PDF extends FPDF
         parent::__construct();
         $this->y0 = $this->GetY();
         $this->startY = $this->y0;
-        $this->SetMargins(8, 0, 8);
+        $this->SetMargins(50, 0, 50);
     }
 
     function desactivarEncabezado()
@@ -287,19 +283,19 @@ if ($datos_guias == null) {
     $pdf->activarEncabezado();
     $pdf->AddPage();
     $pdf->SetAutoPageBreak(true, 20);
-    $pdf->SetY(25);
+    // $pdf->SetY(30);
     $pdf->SetFont('Arial', 'B', 18);
-    $pdf->SetMargins(12, 12, 12);
+    $pdf->SetMargins(12, 20, 12);
     $pdf->SetWidths(array(27, 80, 18, 21, 21, 21));
     $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C'));
     $pdf->SetX(12);
-
     foreach ($datos_guias as $row) {
         if ($row["responsable"] == '') {
             $encargado = 'N/A';
         } else {
             $encargado = $row["responsable"];
         }
+        $pdf->SetStartY(20);
 
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Fecha de salida: ' . $row["fecha_emision"]), 0, 0, 'L');

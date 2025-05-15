@@ -59,6 +59,18 @@
                                     <th>Nº DE ORDEN</th>
                                     <th>CLIENTE</th>
                                     <th>FECHA</th>
+                                    <th>HN</th>
+                                    <th>HS</th>
+                                    <th>HE</th>
+                                    <th>TOTAL</th>
+                                    <th>%12.15</th>
+                                    <th>13ER</th>
+                                    <th>14TO</th>
+                                    <th>VAC</th>
+                                    <th>FR</th>
+                                    <th>COSTO MANO OBRA </th>
+                                    <th>GASTO EN OBRA</th>
+                                    <th>TOTAL COSTO</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -119,7 +131,7 @@
                             <!-- Elemento 2 -->
                             <div class="col-sm col-md-3  mb-2">
                                 <label for="fechaH" class="m-0"><i class="fas fa-calendar"></i> Fecha</label>
-                                <input type="date" id="fechaH" class="form-control" value="2025-05-04" style="border-bottom: solid 2px #000;">
+                                <input type="date" id="fechaH" class="form-control" value="<?php echo date('Y-m-d'); ?>" style="border-bottom: solid 2px #000;">
                             </div>
 
                             <!-- Elemento 3 -->
@@ -269,54 +281,133 @@
     var eliminar = '<?php echo $_SESSION["eliminar20"] ?>';
 
     configuracionTable = {
-        "responsive": true,
-        "dom": 'Ptp',
-        "lengthChange": false,
-        "ordering": false,
-        "autoWidth": false,
+        responsive: true,
+        dom: 'Ptp',
+        lengthChange: false,
+        ordering: false,
+        autoWidth: false,
+        // 1) Añadimos rowGroup para agrupar por la columna 'fecha'
+        rowGroup: {
+            dataSrc: 4, // índice de la columna 'fecha'
+            startRender: function(rows, group) {
+                // Opcional: puedes personalizar la cabecera de grupo
+                return $('<tr/>')
+                    .append('<td colspan="16" class="font-weight-bold bg-light">Fecha: ' + group + ' (' + rows.count() + ' registros)</td>');
+            }
+        },
+
+        // 2) SearchPanes sigue igual si lo necesitas
         searchPanes: {
             cascadePanes: true,
-            columns: [1, 2, 3],
+            columns: [1, 2, 3], // columnas por las que filtrar
             initCollapsed: true,
-            threshold: 0.8, // Ajusta este valor según tus necesidades
+            threshold: 0.8,
             dtOpts: {
                 select: {
                     style: 'multiple'
                 }
-            },
+            }
         },
+
         columnDefs: [{
                 targets: 0,
                 data: "acciones",
                 className: "text-center",
                 render: function(data, type, row, meta) {
                     if (type === 'display') {
-                        return meta.row + 1; // Devuelve el número de fila + 1
+                        return meta.row + 1;
                     }
-                    return meta.row; // Devuelve el índice de la fila
+                    return meta.row;
                 }
+            },
+            // Definimos todas las columnas nuevas:
+            {
+                targets: 1,
+                data: 'nombres'
+            },
+            {
+                targets: 2,
+                data: 'orden'
+            },
+            {
+                targets: 3,
+                data: 'cliente'
+            },
+            {
+                targets: 4,
+                data: 'fecha',
+                visible: false,
             },
             {
                 targets: 5,
+                data: 'hn_val'
+            },
+            {
+                targets: 6,
+                data: 'hs_val'
+            },
+            {
+                targets: 7,
+                data: 'he_val'
+            },
+            {
+                targets: 8,
+                data: 'ht_val'
+            },
+            {
+                targets: 9,
+                data: 'adicional_1215'
+            },
+            {
+                targets: 10,
+                data: 'decimo_tercer'
+            },
+            {
+                targets: 11,
+                data: 'decimo_cuarto'
+            },
+            {
+                targets: 12,
+                data: 'vacaciones'
+            },
+            {
+                targets: 13,
+                data: 'fondo_reserva'
+            },
+            {
+                targets: 14,
+                data: 'costo_mano_obra'
+            },
+            {
+                targets: 15,
+                data: 'gasto_en_obra'
+            },
+            {
+                targets: 16,
+                data: 'total_costo',
+                visible: false,
+            },
+            // Botones de acciones al final:
+            {
+                targets: 17,
                 data: 'acciones',
                 visible: mostrarCol,
+                orderable: false,
                 render: function(data, type, row, full, meta) {
-                    return (
-                        "<center style='white-space: nowrap;'>" +
+                    return "<center style='white-space: nowrap;'>" +
                         (editar ?
-                            " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
-                            " <i class='fa-solid fa-pencil'></i>" +
-                            "</button>" : "") +
+                            "<button class='btn border-2 btn-sm btn-outline-primary btnEditar mr-1' data-toggle='modal' data-target='#modal' title='Editar'>" +
+                            "<i class='fa-solid fa-pencil'></i></button>" : ""
+                        ) +
                         (eliminar ?
-                            " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
-                            " <i class='fa fa-trash'></i>" +
-                            "</button>" : "") +
-                        " </center>"
-                    );
+                            "<button class='border-2 btn btn-sm btn-outline-danger btnEliminar' title='Eliminar'>" +
+                            "<i class='fa fa-trash'></i></button>" : ""
+                        ) +
+                        "</center>";
                 }
             }
         ]
-    }
+    };
 
     $(document).ready(function() {
         let accion = 0;
@@ -1116,35 +1207,6 @@
             window.scrollTo(0, scrollPos);
         }
 
-        // function ocultarFormulario() {
-        //     document.getElementById("div_hor_filter").style.display = "none";
-        //     document.getElementById("div_hor_header").style.display = "none";
-        //     document.getElementById("div_hor").style.display = "none";
-
-        //     document.getElementById("div_content").style.display = "block";
-        //     tabla.columns.adjust().draw(false);
-        //     tblPerson.clear().draw();
-        //     document.getElementById("div_header").style.display = "block";
-        // }
-
-        // function visibleForm(show) {
-        //     let look = show ? 'block' : 'none';
-        //     document.getElementById("div_cot").style.display = "none";
-        //     document.getElementById("div_content").style.display = "block";
-        //     $('#tblCotizacion').DataTable().columns.adjust().draw(false);
-        //     tblSolicitud.clear().draw();
-        //     document.getElementById("div_header").style.display = "block";
-        // }
-
-        // function novisibleForm(show) {
-        //     let look = show ? 'block' : 'none';
-        //     document.getElementById("div_cot").style.display = "none";
-        //     document.getElementById("div_content").style.display = "block";
-        //     $('#tblCotizacion').DataTable().columns.adjust().draw(false);
-        //     tblSolicitud.clear().draw();
-        //     document.getElementById("div_header").style.display = "block";
-        // }
-
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
@@ -1290,8 +1352,6 @@
                         if (tabla) {
                             tabla.ajax.reload(null, false); // Recargar tabla si es necesario
                         }
-
-                        // Swal.fire('Guardado', 'Los registros se guardaron correctamente.', 'success');
                     },
                 });
             } else {

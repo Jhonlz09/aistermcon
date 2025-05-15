@@ -7,12 +7,17 @@ class ModeloHorario
     static public function mdlListarHorario()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT h.id, e.nombre || ' ' || e.apellido as nombres,
-             o.nombre as orden, c.nombre as cliente,  TO_CHAR(h.fecha, 'DD/MM/YYYY') , null as acciones
-	            FROM public.tblhorario h
-	            JOIN tblorden o ON o.id = h.id_orden
-	            JOIN tblempleado e ON e.id = h.id_empleado 
-	            JOIN tblclientes c ON c.id = o.id_cliente ORDER BY h.id");
+            $l = Conexion::ConexionDB()->prepare("SELECT h.id,e.nombre || ' ' || e.apellido AS nombres,
+                o.nombre AS orden,c.nombre AS cliente,TO_CHAR(h.fecha, 'DD/MM/YYYY')   AS fecha,
+                h.hn_val::MONEY ,h.hs_val::MONEY ,h.he_val::MONEY ,h.ht_val::MONEY ,h.adicional_1215::MONEY,
+                h.decimo_tercer::MONEY ,h.decimo_cuarto::MONEY,h.vacaciones::MONEY ,h.fondo_reserva::MONEY,
+                h.costo_mano_obra,h.gasto_en_obra,h.total_costo ,
+                NULL AS acciones
+                    FROM public.tblhorario h
+                        JOIN tblorden    o ON o.id = h.id_orden
+                        JOIN tblempleado e ON e.id = h.id_empleado 
+                        JOIN tblclientes c ON c.id = o.id_cliente
+                    ORDER BY h.fecha, h.id;");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -28,8 +33,7 @@ class ModeloHorario
                 id_empleado, id_orden, fecha, hn, hs, he, gm, gt, ga, gh, gg, gc, id_justificacion
             ) VALUES (
                 :id_empleado, :id_orden, :fecha, :hn, :hs, :he, :material, :trans, :agua, :hosp, :guard, :ali, :id_justificacion
-            )
-        ");
+            )");
 
             foreach ($registros as $r) {
                 $stmt->bindValue(":id_empleado", $r["id_empleado"], PDO::PARAM_INT);
