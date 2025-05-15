@@ -48,7 +48,7 @@ class PDF extends FPDF
             $this->SetFont('Arial', '', 10);
             $this->SetXY(15, 13);
             $this->MultiCell(0, 0, iconv('UTF-8', 'windows-1252', $info_header), 0, 'L', 0);
-            // $this->Ln(2);
+            $this->Ln(5);
         }
     }
 
