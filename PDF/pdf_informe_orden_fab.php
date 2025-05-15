@@ -397,6 +397,7 @@ if ($datos_guias == null) {
         $pdf->SetMargins(12, 0, 12);
     }
     $pdf->SetFont('Arial', 'B', 12);
+    $pdf->Ln(8);
     $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'RESUMEN DE FABRICACION: '), 0, 1, 'L');
     $pdf->Ln(3);
     $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.');
