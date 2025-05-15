@@ -64,7 +64,7 @@ class PDF extends FPDF
         parent::__construct();
         $this->y0 = $this->GetY();
         $this->startY = $this->y0;
-        $this->SetMargins(50, 0, 50);
+        $this->SetMargins(12, 0, 12);
     }
 
     function desactivarEncabezado()
