@@ -113,7 +113,6 @@
             dataSrc: [9],
             startRender: function(rows, group) {
                 var collapsed = !!collapsedGroups[group];
-
                 // rows.nodes().each(function(r) {
                 //     r.style.visibility = collapsed ? '' : 'collapse';
                 // });
@@ -178,7 +177,7 @@
         ],
         "preDrawCallback": function(settings) {
             // Guardar la posición del scroll antes de redibujar
-            console.log("Guardando posición del scroll:", $(window).scrollTop());
+            // console.log("Guardando posición del scroll:", $(window).scrollTop());
             scrollPosition = $(window).scrollTop();
         },
         "drawCallback": function(settings) {

@@ -64,12 +64,12 @@
                                     <th class="th-blue">HE</th>
                                     <th class="th-dark-blue">TOTAL</th>
                                     <th class="th-green">%12.15</th>
-                                    <th>13ER</th>
-                                    <th>14TO</th>
-                                    <th>VAC</th>
-                                    <th>FR</th>
-                                    <th>COSTO MANO OBRA </th>
-                                    <th>GASTO EN OBRA</th>
+                                    <th class="th-purple">13ER</th>
+                                    <th class="th-blue">14TO</th>
+                                    <th class="th-dark-blue">VAC</th>
+                                    <th class="th-purple">FR</th>
+                                    <th class="th-blue">COSTO MANO OBRA </th>
+                                    <th class="th-green">GASTO EN OBRA</th>
                                     <th>TOTAL COSTO</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
@@ -282,20 +282,49 @@
 
     configuracionTable = {
         responsive: true,
-        dom: 'Ptp',
+        dom: 'Pt',
         lengthChange: false,
         ordering: false,
         autoWidth: false,
+        paging: false,
         // 1) Añadimos rowGroup para agrupar por la columna 'fecha'
+        // rowGroup: {
+        //     dataSrc: 4, // índice de la columna 'fecha'
+        //     startRender: function(rows, group) {
+        //         // Opcional: puedes personalizar la cabecera de grupo
+        //         return $('<tr/>')
+        //             .append('<td colspan="16" class="font-weight-bold bg-light">Fecha: ' + group + ' (' + rows.count() + ' registros)</td>');
+        //     }
+        // },
+
         rowGroup: {
-            dataSrc: 4, // índice de la columna 'fecha'
+            dataSrc: [4], // índice de la columna “FECHA”
             startRender: function(rows, group) {
-                // Opcional: puedes personalizar la cabecera de grupo
+                // Comprueba si el grupo está colapsado
+                var collapsed = !!collapsedGroups[group];
+                // Oculta/visibiliza las filas del grupo
+                rows.nodes().each(function(r) {
+                    r.style.visibility = collapsed ? '' : 'hidden';
+                    r.style.lineHeight = collapsed ? '1.5' : '0';
+                    $(r).find('td').each(function() {
+                        this.style.paddingBlock = collapsed ? '' : '0';
+                        this.style.borderTop = collapsed ? '' : '0';
+                        this.style.borderBottom = collapsed ? '' : '0';
+                    });
+                });
+
+                // Construye el HTML de la cabecera de grupo
+                var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer"><strong style="padding-block:.4rem" class="pl-2" >' + group + ' (' + rows.count() + ' registros)</strong><div class="txt-wrap-sm">' +
+                    (editar ? '<button id="editE" style="font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button> ' : '') +
+                    (eliminar ? '<button id="eliE" style="font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : '') + '</div></div>';
+
+                // Devuelve la fila de grupo con colspan=18
                 return $('<tr/>')
-                    .append('<td colspan="16" class="font-weight-bold bg-light">Fecha: ' + group + ' (' + rows.count() + ' registros)</td>');
+                    .append('<td colspan="16">' + groupText + '</td>')
+                    .attr('data-name', group)
+                    .toggleClass('collapsed', collapsed);
             }
         },
-
         // 2) SearchPanes sigue igual si lo necesitas
         searchPanes: {
             cascadePanes: true,
@@ -408,6 +437,18 @@
             }
         ]
     };
+
+    $('#tblHorario tbody').on('click', 'tr.dtrg-start', function() {
+        if ($(event.target).closest('.txt-wrap-sm').length === 0) {
+            var windowScrollTop = $(window).scrollTop();
+            var tableScrollTop = $('#tblHorario_wrapper').scrollTop();
+            var name = $(this).data('name');
+            collapsedGroups[name] = !collapsedGroups[name];
+            tabla.draw(false);
+            // $(window).scrollTop(windowScrollTop);
+            // $('#tblHorario_wrapper').scrollTop(tableScrollTop);
+        }
+    });
 
     $(document).ready(function() {
         let accion = 0;

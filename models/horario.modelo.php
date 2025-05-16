@@ -8,7 +8,7 @@ class ModeloHorario
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT h.id,e.nombre || ' ' || e.apellido AS nombres,
-                o.nombre AS orden,c.nombre AS cliente,TO_CHAR(h.fecha, 'DD/MM/YYYY')   AS fecha,
+                o.nombre AS orden,c.nombre AS cliente, UPPER(TO_CHAR(h.fecha, 'TMDy DD TMMON YYYY'))  AS fecha,
                 h.hn_val::MONEY ,h.hs_val::MONEY ,h.he_val::MONEY ,h.ht_val::MONEY ,h.adicional_1215::MONEY,
                 h.decimo_tercer::MONEY ,h.decimo_cuarto::MONEY,h.vacaciones::MONEY ,h.fondo_reserva::MONEY,
                 h.costo_mano_obra,h.gasto_en_obra,h.total_costo ,
