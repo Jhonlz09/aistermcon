@@ -53,12 +53,46 @@
                         <!-- <div class="table-responsive"> -->
                         <table id="tblHorario" cellspacing="0" class="table table-bordered table-striped">
                             <thead>
+
+
+                                <!-- <tr>
+                                    <th rowspan="2" class="th-orange"><input type="checkbox" id="chkAllP" class="select-all"></th>
+                                    <th rowspan="2" class="th-orange">NOMBRES</th>
+                                    <th rowspan="2" class="th-orange">OBRA</th>
+                                    <th rowspan="2" class="th-orange">FECHA</th>
+                                    <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
+                                    <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
+                                    <th rowspan="2" class="th-yellow">JUSTIFICACIÓN</th>
+                                </tr>
                                 <tr>
-                                    <th class="th-orange text-center">Nº</th>
-                                    <th class="th-orange">NOMBRES</th>
-                                    <th class="th-orange">Nº DE ORDEN</th>
-                                    <th class="th-orange">CLIENTE</th>
+                                    <th class="th-green">HORARIO NORMAL</th>
+                                    <th class="th-green">HORA SUPL.</th>
+                                    <th class="th-green">HORA 100%</th>
+                                    <th class="th-green">TOTAL HORAS</th>
+                                    <th class="th-blue">MATERIAL</th>
+                                    <th class="th-blue">TRANSP.</th>
+                                    <th class="th-blue">ALIM.</th>
+                                    <th class="th-blue">HOSP.</th>
+                                    <th class="th-blue">GUARD.</th>
+                                    <th class="th-blue">AGUA</th>
+                                </tr> -->
+
+
+
+
+
+
+                                <tr>
+                                    <th rowspan="2" class="th-orange text-center">Nº</th>
+                                    <th rowspan="2" class="th-orange">NOMBRES</th>
+                                    <th rowspan="2" class="th-orange">Nº DE ORDEN</th>
+                                    <th rowspan="2" class="th-orange">CLIENTE</th>
                                     <th>FECHA</th>
+                                    <th colspan="3" class="th-red">SUELDO Y SOBRETIEMPO</th>
+                                    <th colspan="5" class="th-dark-blue">PREVISIONES</th>
+                                </tr>
+                                <tr>
+                                    
                                     <th class="th-green">HN</th>
                                     <th class="th-purple">HS</th>
                                     <th class="th-blue">HE</th>

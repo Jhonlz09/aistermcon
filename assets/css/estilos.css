@@ -724,6 +724,10 @@ table.dataTable tbody>tr>.selected {
     background-color: #fff3cd;
 }
 
+.th-red{
+    color: #721c24;
+    background-color: #f8d7da;
+}
 #tblEntradas tr.dtrg-group,
 .th-green {
     color: #155724;
