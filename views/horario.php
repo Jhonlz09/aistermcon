@@ -49,49 +49,56 @@
                         </div>
                     </div>
                     <!-- /.card-header -->
-                    <div class="card-body p-0">
-                        <!-- <div class="table-responsive"> -->
-                        <table id="tblHorario" cellspacing="0" class="display table table-bordered table-striped" with="100%">
-                            <thead>
-                                <tr>
-                                    <th rowspan="2" class="th-orange text-center">Nº</th>
-                                    <th rowspan="2" class="th-orange">NOMBRES</th>
-                                    <th rowspan="2" class="th-orange">Nº DE ORDEN</th>
-                                    <th rowspan="2" class="th-orange">CLIENTE</th>
-                                    <th colspan="4" class="th-yellow">SUELDO Y SOBRETIEMPO</th>
-                                    <th colspan="5" class="th-orange">PREVISIONES</th>
-                                    <th rowspan="2" class="th-red">COSTO MANO OBRA </th>
-                                    <th rowspan="2" class="th-green">GASTO EN OBRA</th>
-                                </tr>
-                                <tr>
-                                    <th class="th-green">HN</th>
-                                    <th class="th-purple">HS</th>
-                                    <th class="th-blue">HE</th>
-                                    <th class="th-dark-blue">TOTAL</th>
-                                    <th class="th-green">%12.15</th>
-                                    <th class="th-purple">13ER</th>
-                                    <th class="th-blue">14TO</th>
-                                    <th class="th-dark-blue">VAC</th>
-                                    <th class="th-purple">FR</th>
+                    <div class="card-body p-0" id="card-hor">
+                        <div class="table-responsive">
+                            <table id="tblHorario" cellspacing="0" class="display table table-bordered table-striped" with="100%">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" class="th-orange text-center">Nº</th>
+                                        <th rowspan="2" class="th-orange">NOMBRES</th>
+                                        <th rowspan="2" class="th-orange">Nº DE ORDEN</th>
+                                        <th rowspan="2" class="th-orange">CLIENTE</th>
+                                        <th colspan="4" class="th-yellow">SUELDO Y SOBRETIEMPO</th>
+                                        <th colspan="5" class="th-orange">PREVISIONES</th>
+                                        <th rowspan="2" class="th-red">COSTO MANO OBRA </th>
+                                        <th rowspan="2" class="th-green">GASTO EN OBRA</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="th-green">HN</th>
+                                        <th class="th-purple">HS</th>
+                                        <th class="th-blue">HE</th>
+                                        <th class="th-dark-blue">TOTAL</th>
+                                        <th class="th-green">%12.15</th>
+                                        <th class="th-purple">13ER</th>
+                                        <th class="th-blue">14TO</th>
+                                        <th class="th-dark-blue">VAC</th>
+                                        <th class="th-purple">FR</th>
 
-                                    <th>TOTAL COSTO</th>
-                                    <!-- <th class="text-center">ACCIONES</th> -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                        <!-- </div> -->
+                                        <th>TOTAL COSTO</th>
+                                        <!-- <th class="text-center">ACCIONES</th> -->
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3"><strong>Total general:</strong></th>
+                                        <th colspan="13" id="totalGeneral"></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
                     </div>
-                    <!-- /.card-body -->
+                    <!-- /.card -->
                 </div>
-                <!-- /.card -->
+                <!-- /.col -->
             </div>
-            <!-- /.col -->
+            <!-- /.row -->
         </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
+        <!-- /.container-fluid -->
 </section>
 <!-- /.Contenido -->
 
@@ -177,7 +184,7 @@
         <div class="row" style="align-items:flex-start">
             <div class="col-xl-12">
                 <div class="card">
-                    <div class="card-body p-0" id="card-hor">
+                    <div class="card-body p-0" id="card-per">
                         <form id="formHorario">
                             <!-- <div class="table-responsive" style="padding:0;border:1px solid #ccc;border-radius: 4px;"> -->
                             <table id="tblPersonH" class="table table-bordered w-100 table-striped table-fix">
@@ -256,12 +263,7 @@
                     </table>
                     <!-- </div> -->
                 </div>
-                <!-- <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-ballot-check"></i> </span>Seleccionar</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
-                </div> -->
             </form>
-
         </div>
         <!-- /.modal-content -->
     </div>
@@ -292,19 +294,14 @@
         paging: false,
         scrollCollapse: true,
         scrollX: true,
-        scrollY: 'calc(100vh - 410px)' ,
+        scrollY: 'calc(100vh - 410px)',
         rowGroup: {
             dataSrc: 4,
             startRender: function(rows, group) {
-                // 1) Control de colapso (igual que tú lo tienes)
                 var collapsed = !!collapsedGroups[group];
                 rows.nodes().each(function(r) {
                     $(r).toggleClass('collapsedrow', !collapsed);
                 });
-
-                // 2) Sumar total_costo en todas las filas del grupo
-                //    Si tus datos vienen como objeto (data: 'total_costo'), rows.data() es un
-                //    API de DataTables que puedes convertir a array y luego reducir:
                 var total = rows
                     .data()
                     .toArray()
@@ -312,8 +309,6 @@
                         // parseFloat por si viene como string; devuelve 0 si no es número
                         return acc + (parseFloat(rowData.total_costo) || 0);
                     }, 0);
-
-                // 3) Formatear a dos decimales (opcional)
                 let totalStr = total.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
@@ -336,7 +331,6 @@
                     .toggleClass('collapsed', collapsed);
             }
         },
-        // 2) SearchPanes sigue igual si lo necesitas
         searchPanes: {
             cascadePanes: true,
             columns: [1, 2, 3], // columnas por las que filtrar
@@ -423,7 +417,20 @@
                 data: 'total_costo',
                 visible: false,
             },
-        ]
+        ],
+        // footerCallback: function(row, data, start, end, display) {
+        //     let total = data.reduce(function(acc, row) {
+        //         return acc + (parseFloat(row.total_costo) || 0);
+        //     }, 0);
+
+        //     let totalStr = total.toLocaleString('en-US', {
+        //         minimumFractionDigits: 2,
+        //         maximumFractionDigits: 2
+        //     });
+        //     // console.log('total scr', totalStr);
+        //     // Escribe en el <td id="totalGeneral">
+        //     $(row).find('td:last').html('$' + totalStr);
+        // },
     };
 
     $('#tblHorario tbody').on('click', 'tr.dtrg-start', function() {
@@ -445,7 +452,9 @@
     $(document).ready(function() {
         let accion = 0;
         const container = document.getElementById('div-empleado'); // el div padre de tu tabla
-        const container2 = document.getElementById('card-hor'); // el div padre de tu tabla
+        const container2 = document.getElementById('card-per');
+        const container3 = document.getElementById('card-hor'); // el div padre de tu tabla
+        // el div padre de tu tabla
         const nro_ordenHorario = document.getElementById('nro_ordenHorario');
         const fechaH = document.getElementById('fechaH');
 
@@ -929,6 +938,12 @@
         });
 
         observer2.observe(container2);
+
+        const observer3 = new ResizeObserver(() => {
+            tabla.columns.adjust();
+        });
+
+        observer3.observe(container3);
 
         let lastSelectedIndex = null;
 
