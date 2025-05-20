@@ -51,48 +51,19 @@
                     <!-- /.card-header -->
                     <div class="card-body p-0">
                         <!-- <div class="table-responsive"> -->
-                        <table id="tblHorario" cellspacing="0" class="table table-bordered table-striped">
+                        <table id="tblHorario" cellspacing="0" class="display table table-bordered table-striped" with="100%">
                             <thead>
-
-
-                                <!-- <tr>
-                                    <th rowspan="2" class="th-orange"><input type="checkbox" id="chkAllP" class="select-all"></th>
-                                    <th rowspan="2" class="th-orange">NOMBRES</th>
-                                    <th rowspan="2" class="th-orange">OBRA</th>
-                                    <th rowspan="2" class="th-orange">FECHA</th>
-                                    <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
-                                    <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
-                                    <th rowspan="2" class="th-yellow">JUSTIFICACIÓN</th>
-                                </tr>
-                                <tr>
-                                    <th class="th-green">HORARIO NORMAL</th>
-                                    <th class="th-green">HORA SUPL.</th>
-                                    <th class="th-green">HORA 100%</th>
-                                    <th class="th-green">TOTAL HORAS</th>
-                                    <th class="th-blue">MATERIAL</th>
-                                    <th class="th-blue">TRANSP.</th>
-                                    <th class="th-blue">ALIM.</th>
-                                    <th class="th-blue">HOSP.</th>
-                                    <th class="th-blue">GUARD.</th>
-                                    <th class="th-blue">AGUA</th>
-                                </tr> -->
-
-
-
-
-
-
                                 <tr>
                                     <th rowspan="2" class="th-orange text-center">Nº</th>
                                     <th rowspan="2" class="th-orange">NOMBRES</th>
                                     <th rowspan="2" class="th-orange">Nº DE ORDEN</th>
                                     <th rowspan="2" class="th-orange">CLIENTE</th>
-                                    <th>FECHA</th>
-                                    <th colspan="3" class="th-red">SUELDO Y SOBRETIEMPO</th>
-                                    <th colspan="5" class="th-dark-blue">PREVISIONES</th>
+                                    <th colspan="4" class="th-yellow">SUELDO Y SOBRETIEMPO</th>
+                                    <th colspan="5" class="th-orange">PREVISIONES</th>
+                                    <th rowspan="2" class="th-red">COSTO MANO OBRA </th>
+                                    <th rowspan="2" class="th-green">GASTO EN OBRA</th>
                                 </tr>
                                 <tr>
-                                    
                                     <th class="th-green">HN</th>
                                     <th class="th-purple">HS</th>
                                     <th class="th-blue">HE</th>
@@ -102,10 +73,9 @@
                                     <th class="th-blue">14TO</th>
                                     <th class="th-dark-blue">VAC</th>
                                     <th class="th-purple">FR</th>
-                                    <th class="th-blue">COSTO MANO OBRA </th>
-                                    <th class="th-green">GASTO EN OBRA</th>
+
                                     <th>TOTAL COSTO</th>
-                                    <th class="text-center">ACCIONES</th>
+                                    <!-- <th class="text-center">ACCIONES</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -182,7 +152,6 @@
                                     <span class="font-weight-bold" id="selected-person">0</span> seleccionado(s)
                                 </label>
                             </div>
-
                             <!-- Elemento 4 (botones) -->
                             <div class="col-6 col-lg d-flex flex-column justify-content-between mb-1">
                                 <button type="button" id="editRow" style="display:none;" class="btn border-2 btn-sm btn-block btn-outline-primary mb-1">
@@ -313,48 +282,56 @@
     var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
     var editar = '<?php echo $_SESSION["editar20"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar20"] ?>';
-
+    var collapsedGroups = {};
     configuracionTable = {
-        responsive: true,
+        responsive: false,
         dom: 'Pt',
         lengthChange: false,
         ordering: false,
         autoWidth: false,
         paging: false,
-        // 1) Añadimos rowGroup para agrupar por la columna 'fecha'
-        // rowGroup: {
-        //     dataSrc: 4, // índice de la columna 'fecha'
-        //     startRender: function(rows, group) {
-        //         // Opcional: puedes personalizar la cabecera de grupo
-        //         return $('<tr/>')
-        //             .append('<td colspan="16" class="font-weight-bold bg-light">Fecha: ' + group + ' (' + rows.count() + ' registros)</td>');
-        //     }
-        // },
-
+        scrollCollapse: true,
+        scrollX: true,
+        scrollY: '38vh',
         rowGroup: {
-            dataSrc: [4], // índice de la columna “FECHA”
+            dataSrc: 4,
             startRender: function(rows, group) {
-                // Comprueba si el grupo está colapsado
+                // 1) Control de colapso (igual que tú lo tienes)
                 var collapsed = !!collapsedGroups[group];
-                // Oculta/visibiliza las filas del grupo
                 rows.nodes().each(function(r) {
-                    r.style.visibility = collapsed ? '' : 'hidden';
-                    r.style.lineHeight = collapsed ? '1.5' : '0';
-                    $(r).find('td').each(function() {
-                        this.style.paddingBlock = collapsed ? '' : '0';
-                        this.style.borderTop = collapsed ? '' : '0';
-                        this.style.borderBottom = collapsed ? '' : '0';
-                    });
+                    $(r).toggleClass('collapsedrow', !collapsed);
                 });
 
-                // Construye el HTML de la cabecera de grupo
-                var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer"><strong style="padding-block:.4rem" class="pl-2" >' + group + ' (' + rows.count() + ' registros)</strong><div class="txt-wrap-sm">' +
-                    (editar ? '<button id="editE" style="font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button> ' : '') +
-                    (eliminar ? '<button id="eliE" style="font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : '') + '</div></div>';
+                // 2) Sumar total_costo en todas las filas del grupo
+                //    Si tus datos vienen como objeto (data: 'total_costo'), rows.data() es un
+                //    API de DataTables que puedes convertir a array y luego reducir:
+                var total = rows
+                    .data()
+                    .toArray()
+                    .reduce(function(acc, rowData) {
+                        // parseFloat por si viene como string; devuelve 0 si no es número
+                        return acc + (parseFloat(rowData.total_costo) || 0);
+                    }, 0);
 
-                // Devuelve la fila de grupo con colspan=18
+                // 3) Formatear a dos decimales (opcional)
+                let totalStr = total.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                var groupText =
+                    '<div class="group-header d-flex align-items-center">' +
+                    '<div class="group-title sticky-start">' +
+                    '<strong style="padding-left:.5rem">' + group + ' - Total: $' + totalStr + '</strong>' +
+                    '</div>' +
+                    '<div class="txt-wrap-sm sticky-end">' +
+                    (editar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button> ' : '') +
+                    (eliminar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : '') +
+                    '</div>' +
+                    '</div>';
+
+                // 5) Devolver la fila de grupo con colspan (ajusta a tu número total de columnas)
                 return $('<tr/>')
-                    .append('<td colspan="16">' + groupText + '</td>')
+                    .append('<td class="pr-0 pl-0" colspan="16">' + groupText + '</td>')
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -371,7 +348,6 @@
                 }
             }
         },
-
         columnDefs: [{
                 targets: 0,
                 data: "acciones",
@@ -383,92 +359,70 @@
                     return meta.row;
                 }
             },
-            // Definimos todas las columnas nuevas:
             {
                 targets: 1,
-                data: 'nombres'
+                data: 'nombres',
+                defaultContent: ''
             },
             {
                 targets: 2,
-                data: 'orden'
+                data: 'orden',
+                defaultContent: ''
             },
             {
                 targets: 3,
-                data: 'cliente'
+                data: 'cliente',
+                defaultContent: ''
             },
             {
                 targets: 4,
-                data: 'fecha',
-                visible: false,
-            },
-            {
-                targets: 5,
                 data: 'hn_val'
             },
             {
-                targets: 6,
+                targets: 5,
                 data: 'hs_val'
             },
             {
-                targets: 7,
+                targets: 6,
                 data: 'he_val'
             },
             {
-                targets: 8,
+                targets: 7,
                 data: 'ht_val'
             },
             {
-                targets: 9,
+                targets: 8,
                 data: 'adicional_1215'
             },
             {
-                targets: 10,
+                targets: 9,
                 data: 'decimo_tercer'
             },
             {
-                targets: 11,
+                targets: 10,
                 data: 'decimo_cuarto'
             },
             {
-                targets: 12,
+                targets: 11,
                 data: 'vacaciones'
             },
             {
-                targets: 13,
+                targets: 12,
                 data: 'fondo_reserva'
             },
             {
-                targets: 14,
+                targets: 13,
                 data: 'costo_mano_obra'
             },
             {
-                targets: 15,
+                targets: 14,
                 data: 'gasto_en_obra'
             },
             {
-                targets: 16,
+                targets: 15,
                 data: 'total_costo',
                 visible: false,
             },
-            // Botones de acciones al final:
-            {
-                targets: 17,
-                data: 'acciones',
-                visible: mostrarCol,
-                orderable: false,
-                render: function(data, type, row, full, meta) {
-                    return "<center style='white-space: nowrap;'>" +
-                        (editar ?
-                            "<button class='btn border-2 btn-sm btn-outline-primary btnEditar mr-1' data-toggle='modal' data-target='#modal' title='Editar'>" +
-                            "<i class='fa-solid fa-pencil'></i></button>" : ""
-                        ) +
-                        (eliminar ?
-                            "<button class='border-2 btn btn-sm btn-outline-danger btnEliminar' title='Eliminar'>" +
-                            "<i class='fa fa-trash'></i></button>" : ""
-                        ) +
-                        "</center>";
-                }
-            }
         ]
     };
 
@@ -478,9 +432,13 @@
             var tableScrollTop = $('#tblHorario_wrapper').scrollTop();
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
+            tabla.rows().every(function() {
+                if (this.child.isShown()) {
+                    this.child.hide();
+                    $(this.node()).removeClass('parent'); // opcional, para limpiar la clase que indica expansión
+                }
+            });
             tabla.draw(false);
-            // $(window).scrollTop(windowScrollTop);
-            // $('#tblHorario_wrapper').scrollTop(tableScrollTop);
         }
     });
 
@@ -490,6 +448,7 @@
         const container2 = document.getElementById('card-hor'); // el div padre de tu tabla
         const nro_ordenHorario = document.getElementById('nro_ordenHorario');
         const fechaH = document.getElementById('fechaH');
+
         let datos_em = datos_person.map(item => ({
             label: item.text,
             value: item.text,

@@ -281,6 +281,13 @@
             let scrollPosition = $(window).scrollTop();
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
+
+            tabla.rows().every(function() {
+                if (this.child.isShown()) {
+                    this.child.hide();
+                    $(this.node()).removeClass('parent'); // opcional, para limpiar la clase que indica expansión
+                }
+            });
             tabla.draw(false)
             $(window).scrollTop(scrollPosition);
         }

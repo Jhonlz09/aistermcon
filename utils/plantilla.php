@@ -22,9 +22,9 @@
     <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
     <noscript>
-    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
-    <link rel="stylesheet" href="assets/plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css" type="text/css"/>
+        <link rel="stylesheet" href="assets/plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css" type="text/css" />
         <!-- <link rel="stylesheet" href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" /> -->
     </noscript>
     <!-- SweetAlert2 -->
@@ -228,6 +228,14 @@
                 setB = body.querySelectorAll('.setB'),
                 inputauto = body.querySelector('#codProducto'),
                 inputBarras = body.querySelector('#codBarras');
+
+
+            // btnSide.addEventListener('click', function() {
+            //     setTimeout(function() {
+            //         tabla.columns.adjust().draw();
+            //     }, 100);
+
+            // });
             // const configu = {
             //     selector: "#autoComplete",
             //     placeHolder: "Search for numero de orden...",
@@ -1639,7 +1647,7 @@
                                 // Eliminar la fila seleccionada
                             })
                         }
-                    } );
+                    });
                 });
 
                 $(document).on('click', '.btnEliminaRowServer', function() {
