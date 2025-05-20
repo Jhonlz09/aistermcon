@@ -292,7 +292,7 @@
         paging: false,
         scrollCollapse: true,
         scrollX: true,
-        scrollY: '38vh',
+        scrollY: 'calc(100vh - 410px)' ,
         rowGroup: {
             dataSrc: 4,
             startRender: function(rows, group) {

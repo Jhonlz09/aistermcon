@@ -127,8 +127,8 @@
                 });
 
                 var groupText = '<div class="d-flex justify-content-between align-items-center" style="cursor:pointer"><strong style="padding-block:.4rem" class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' +
-                    (editar ? '<button id="editH" style="font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button> ' : '') +
-                    (eliminar ? '<button id="eliH" style="font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : '') + '</div></div>';
+                    (editar ? '<button id="editE" style="font-size:1.55rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button> ' : '') +
+                    (eliminar ? '<button id="eliE" style="font-size:1.4rem;padding-inline:.5rem!important" class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : '') + '</div></div>';
 
                 return $('<tr/>')
                     .append('<td colspan="9">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
