@@ -30,14 +30,21 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
+                <div class="card card-primary card-outline card-outline-tabs">
+                    <div class="card-header  p-0">
                         <div class="col-12">
                             <div class="row">
-                                <div class="col col-p">
-                                    <h3 style="white-space:normal;" class="card-title ">Listado de horario</h3>
+                                <div class="col p-0">
+                                    <ul class="nav nav-tabs" style="border-bottom:none;" id="custom-tabs-four-tab" role="tablist">
+                                        <li class="nav-item">
+                                            <a style="padding: .75rem;border-right:1px solid #dfdfdf" class="nav-link active" id="custom-tabs-dia-tab" data-toggle="pill" href="#custom-tabs-dia" role="tab" aria-controls="custom-tabs-dia" aria-selected="true">POR DIA</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a style="padding: .75rem;border-left:none" class="nav-link" id="custom-tabs-orden-tab" data-toggle="pill" href="#custom-tabs-orden" role="tab" aria-controls="custom-tabs-orden" aria-selected="false">POR ORDEN</a>
+                                        </li>
+                                    </ul>
                                 </div>
-                                <div class="col-sm-8 p-0">
+                                <div class="col-sm-6 p-0">
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
@@ -50,44 +57,51 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-0" id="card-hor">
-                        <!-- <div class="table-responsive"> -->
-                        <table id="tblHorario" cellspacing="0" class="display table table-bordered table-striped w-100">
-                            <thead>
-                                <tr>
-                                    <th rowspan="2" class="th-orange text-center">Nº</th>
-                                    <th rowspan="2" class="th-orange">NOMBRES</th>
-                                    <th rowspan="2" class="th-orange">Nº DE ORDEN</th>
-                                    <th rowspan="2" class="th-orange">CLIENTE</th>
-                                    <th colspan="4" class="th-yellow">SUELDO Y SOBRETIEMPO</th>
-                                    <th colspan="5" class="th-orange">PREVISIONES</th>
-                                    <th rowspan="2" class="th-red">COSTO MANO OBRA </th>
-                                    <th rowspan="2" class="th-green">GASTO EN OBRA</th>
-                                </tr>
-                                <tr>
-                                    <th class="th-green">HN</th>
-                                    <th class="th-purple">HS</th>
-                                    <th class="th-blue">HE</th>
-                                    <th class="th-dark-blue">TOTAL</th>
-                                    <th class="th-green">%12.15</th>
-                                    <th class="th-purple">13ER</th>
-                                    <th class="th-blue">14TO</th>
-                                    <th class="th-dark-blue">VAC</th>
-                                    <th class="th-purple">FR</th>
+                        <div class="tab-content" id="custom-tabs-four-tabContent">
+                            <div class="tab-pane fade show active" id="custom-tabs-dia" role="tabpanel" aria-labelledby="custom-tabs-dia-tab">
+                                <table id="tblHorario" cellspacing="0" class="display table table-bordered table-striped w-100">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2" class="th-blue text-center">Nº</th>
+                                            <th rowspan="2" class="th-blue">NOMBRES</th>
+                                            <th rowspan="2" class="th-blue">Nº DE ORDEN</th>
+                                            <th rowspan="2" class="th-blue">CLIENTE</th>
+                                            <th colspan="4" class="th-purple">SUELDO Y SOBRETIEMPO</th>
+                                            <th colspan="5" class="th-red">PREVISIONES</th>
+                                            <th rowspan="2" class="th-green">COSTO MANO OBRA </th>
+                                            <th rowspan="2" class="th-green">GASTO EN OBRA</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="th-purple">HN</th>
+                                            <th class="th-purple">HS</th>
+                                            <th class="th-purple">HE</th>
+                                            <th class="th-purple">TOTAL</th>
+                                            <th class="th-red">%12.15</th>
+                                            <th class="th-red">13ER</th>
+                                            <th class="th-red">14TO</th>
+                                            <th class="th-red">VAC</th>
+                                            <th class="th-red">FR</th>
 
-                                    <th>TOTAL COSTO</th>
-                                    <!-- <th class="text-center">ACCIONES</th> -->
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="3"><strong>Total general:</strong></th>
-                                    <th colspan="13" id="totalGeneral"></th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                            </tbody>
+                                            <th>TOTAL COSTO</th>
+                                            <!-- <th class="text-center">ACCIONES</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3"><strong>Total general:</strong></th>
+                                            <th colspan="13" id="totalGeneral"></th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" id="custom-tabs-orden" role="tabpanel" aria-labelledby="custom-tabs-orden-tab">
+                                Mauris tincidunt mi at erat gravida, eget tristique urna bibendum. Mauris pharetra purus ut ligula tempor, et vulputate metus facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas sollicitudin, nisi a luctus interdum, nisl ligula placerat mi, quis posuere purus ligula eu lectus. Donec nunc tellus, elementum sit amet ultricies at, posuere nec nunc. Nunc euismod pellentesque diam.
+                            </div>
 
-                        </table>
+                        </div>
+
                         <!-- </div> -->
                     </div>
                     <!-- /.card-body -->
@@ -242,12 +256,9 @@
                     <div id="filtrosRoles" class="row ">
                         <div class="col d-flex flex-wrap justify-content-between align-items-center">
                             <label><input type="checkbox" class="select-all fil-rol" value="1"> Técnico</label>
-
                             <label><input type="checkbox" class="select-all fil-rol" value="2"> Supervisor</label>
-
                             <label><input type="checkbox" class="select-all fil-rol" value="3"> Administrativo</label>
                         </div>
-
                     </div>
                     <!-- <div class="table-responsive"> -->
                     <table id="tblEmpleadoH" class="table table-bordered table-striped table-header">
@@ -287,17 +298,18 @@
     var collapsedGroups = {};
     configuracionTable = {
         responsive: false,
-        dom: 'Pt',
+        dom: 'Ptp',
         lengthChange: false,
         ordering: false,
         autoWidth: true,
-        paging: false,
+        paging: true,
+        pageLength: 50,
         fixedColumns: {
             leftColumns: 2,
         },
         scrollX: '100%',
         // scroller: true,
-        scrollY: 'calc(100vh - 455px)',
+        scrollY: 'calc(100vh - 450px)',
         rowGroup: {
             dataSrc: 4,
             startRender: function(rows, group) {
@@ -305,19 +317,16 @@
                 rows.nodes().each(function(r) {
                     $(r).toggleClass('collapsedrow', !collapsed);
                 });
-                var total = rows
-                    .data()
-                    .toArray()
-                    .reduce(function(acc, rowData) {
-                        // parseFloat por si viene como string; devuelve 0 si no es número
-                        return acc + (parseFloat(rowData.total_costo) || 0);
-                    }, 0);
+                let total = rows.data().toArray().reduce(function(acc, rowData) {
+                    // parseFloat por si viene como string; devuelve 0 si no es número
+                    return acc + (parseFloat(rowData.total_costo) || 0);
+                }, 0);
+
                 let totalStr = total.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
-                var groupText =
-                    '<div class="group-header d-flex align-items-center">' +
+                var groupText = '<div style="cursor:pointer" class="group-header d-flex align-items-center">' +
                     '<div class="group-title sticky-start">' +
                     '<strong style="padding-left:.5rem">' + group + ' - Total: $' + totalStr + '</strong>' +
                     '</div>' +
@@ -326,10 +335,9 @@
                     (eliminar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : '') +
                     '</div>' +
                     '</div>';
-
                 // 5) Devolver la fila de grupo con colspan (ajusta a tu número total de columnas)
-                return $('<tr/>')
-                    .append('<td class="pr-0 pl-0" colspan="16">' + groupText + '</td>')
+                return $('<tr/>').
+                append('<td class="pr-0 pl-0" colspan="16">' + groupText + '</td>')
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -344,6 +352,10 @@
                     style: 'multiple'
                 }
             }
+        },
+        initComplete: function() {
+            // Elimina el div dtsp-titleRow
+            $('.dtsp-titleRow').remove();
         },
         columnDefs: [{
                 targets: 0,
