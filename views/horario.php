@@ -34,7 +34,7 @@
                     <div class="card-header  p-0">
                         <div class="col-12">
                             <div class="row">
-                                <div class="col p-0">
+                                <div class="col-auto p-0">
                                     <ul class="nav nav-tabs" style="border-bottom:none;" id="custom-tabs-four-tab" role="tablist">
                                         <li class="nav-item">
                                             <a style="padding: .75rem;border-right:1px solid #dfdfdf" class="nav-link active" id="custom-tabs-dia-tab" data-toggle="pill" href="#custom-tabs-dia" role="tab" aria-controls="custom-tabs-dia" aria-selected="true">POR DIA</a>
@@ -44,7 +44,16 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col-sm-6 p-0">
+                                <div class=" col col-sm-auto">
+                                    <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                                    </select>
+                                </div>
+                                <div class="col-sm-auto">
+                                    <select name="cboMeses" id="cboMeses" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                                        <option value="null">TODO</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm p-0">
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
@@ -237,10 +246,7 @@
     </div>
     </div>
 </section>
-
-
 <!-- Modal -->
-
 <div class="modal fade" id="modal_personal">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -472,7 +478,7 @@
     };
 
     $('#tblHorario tbody').on('click', 'tr.dtrg-start', function() {
-        // if ($(event.target).closest('.txt-wrap-sm').length === 0) {
+        // if ($(event.target).closest('.txt-wrap-sm').length === 0) {\
         var windowScrollTop = $(window).scrollTop();
         var tableScrollTop = $('#tblHorario_wrapper').scrollTop();
         var name = $(this).data('name');
@@ -483,6 +489,8 @@
 
     $(document).ready(function() {
         let accion = 0;
+        let anio = year;
+        let mes = month;
         const container = document.getElementById('div-empleado'); // el div padre de tu tabla
         const container2 = document.getElementById('card-per');
         const container3 = document.getElementById('card-hor'); // el div padre de tu tabla
@@ -498,6 +506,22 @@
 
         const empleadosMap = new Map(datos_em.map(item => [item.cod, item]));
         const ordenesMap = new Map(items_orden.map(item => [item.cod, item]));
+
+        $(cboAnio).select2({
+            width: '110%',
+            data: datos_anio,
+            minimumResultsForSearch: -1,
+        });
+
+        setChange(cboAnio, anio);
+
+        $(cboMeses).select2({
+            minimumResultsForSearch: -1,
+            width: 'calc(100% + .4vw)',
+            data: datos_meses,
+        });
+        setChange(cboMeses, mes);
+
 
         clearButtonObraH.addEventListener('click', function() {
             id_orden_horario = null;
