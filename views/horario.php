@@ -106,7 +106,42 @@
                                 </table>
                             </div>
                             <div class="tab-pane fade" id="custom-tabs-orden" role="tabpanel" aria-labelledby="custom-tabs-orden-tab">
-                                Mauris tincidunt mi at erat gravida, eget tristique urna bibendum. Mauris pharetra purus ut ligula tempor, et vulputate metus facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas sollicitudin, nisi a luctus interdum, nisl ligula placerat mi, quis posuere purus ligula eu lectus. Donec nunc tellus, elementum sit amet ultricies at, posuere nec nunc. Nunc euismod pellentesque diam.
+                                <table id="tblHorario2" cellspacing="0" class="display table table-bordered table-striped w-100">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2" class="th-blue text-center">Nº</th>
+                                            <th rowspan="2" class="th-blue">NOMBRES</th>
+                                            <th rowspan="2" class="th-blue">Nº DE ORDEN</th>
+                                            <th rowspan="2" class="th-blue">CLIENTE</th>
+                                            <th colspan="4" class="th-purple">SUELDO Y SOBRETIEMPO</th>
+                                            <th colspan="5" class="th-red">PREVISIONES</th>
+                                            <th rowspan="2" class="th-green">COSTO MANO OBRA </th>
+                                            <th rowspan="2" class="th-green">GASTO EN OBRA</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="th-purple">HN</th>
+                                            <th class="th-purple">HS</th>
+                                            <th class="th-purple">HE</th>
+                                            <th class="th-purple">TOTAL</th>
+                                            <th class="th-red">%12.15</th>
+                                            <th class="th-red">13ER</th>
+                                            <th class="th-red">14TO</th>
+                                            <th class="th-red">VAC</th>
+                                            <th class="th-red">FR</th>
+
+                                            <th>TOTAL COSTO</th>
+                                            <!-- <th class="text-center">ACCIONES</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3"><strong>Total general:</strong></th>
+                                            <th colspan="13" id="totalGeneral"></th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
                             </div>
 
                         </div>
@@ -522,7 +557,34 @@
         });
         setChange(cboMeses, mes);
 
+        $(cboAnio).on("change", function() {
+            let a = this.options[this.selectedIndex].text
+            if (a == anio) {
+                return;
+            }
+            anio = a
+            if (cboMeses.value == 'null') {
+                mes = null;
+            } else {
+                mes = cboMeses.value;
+            }
+            tabla.ajax.reload();
+        });
 
+        $(cboMeses).on("change", function() {
+            let m = this.value;
+            if (m == mes) {
+                return;
+            }
+            if (m == 'null') {
+                mes = null;
+            } else {
+                mes = m;
+            }
+            anio = cboAnio.options[cboAnio.selectedIndex].text;
+            tabla.ajax.reload();
+        });
+        
         clearButtonObraH.addEventListener('click', function() {
             id_orden_horario = null;
         });
@@ -538,6 +600,10 @@
                     "url": "controllers/horario.controlador.php",
                     "type": "POST",
                     "dataSrc": '',
+                    data: function(data) {
+                        data.anio = anio;
+                        data.mes = mes;
+                    }
                 },
                 ...configuracionTable
             });
