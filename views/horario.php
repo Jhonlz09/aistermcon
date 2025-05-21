@@ -50,55 +50,55 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-0" id="card-hor">
-                        <div class="table-responsive">
-                            <table id="tblHorario" cellspacing="0" class="display table table-bordered table-striped" with="100%">
-                                <thead>
-                                    <tr>
-                                        <th rowspan="2" class="th-orange text-center">Nº</th>
-                                        <th rowspan="2" class="th-orange">NOMBRES</th>
-                                        <th rowspan="2" class="th-orange">Nº DE ORDEN</th>
-                                        <th rowspan="2" class="th-orange">CLIENTE</th>
-                                        <th colspan="4" class="th-yellow">SUELDO Y SOBRETIEMPO</th>
-                                        <th colspan="5" class="th-orange">PREVISIONES</th>
-                                        <th rowspan="2" class="th-red">COSTO MANO OBRA </th>
-                                        <th rowspan="2" class="th-green">GASTO EN OBRA</th>
-                                    </tr>
-                                    <tr>
-                                        <th class="th-green">HN</th>
-                                        <th class="th-purple">HS</th>
-                                        <th class="th-blue">HE</th>
-                                        <th class="th-dark-blue">TOTAL</th>
-                                        <th class="th-green">%12.15</th>
-                                        <th class="th-purple">13ER</th>
-                                        <th class="th-blue">14TO</th>
-                                        <th class="th-dark-blue">VAC</th>
-                                        <th class="th-purple">FR</th>
+                        <!-- <div class="table-responsive"> -->
+                        <table id="tblHorario" cellspacing="0" class="display table table-bordered table-striped w-100">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" class="th-orange text-center">Nº</th>
+                                    <th rowspan="2" class="th-orange">NOMBRES</th>
+                                    <th rowspan="2" class="th-orange">Nº DE ORDEN</th>
+                                    <th rowspan="2" class="th-orange">CLIENTE</th>
+                                    <th colspan="4" class="th-yellow">SUELDO Y SOBRETIEMPO</th>
+                                    <th colspan="5" class="th-orange">PREVISIONES</th>
+                                    <th rowspan="2" class="th-red">COSTO MANO OBRA </th>
+                                    <th rowspan="2" class="th-green">GASTO EN OBRA</th>
+                                </tr>
+                                <tr>
+                                    <th class="th-green">HN</th>
+                                    <th class="th-purple">HS</th>
+                                    <th class="th-blue">HE</th>
+                                    <th class="th-dark-blue">TOTAL</th>
+                                    <th class="th-green">%12.15</th>
+                                    <th class="th-purple">13ER</th>
+                                    <th class="th-blue">14TO</th>
+                                    <th class="th-dark-blue">VAC</th>
+                                    <th class="th-purple">FR</th>
 
-                                        <th>TOTAL COSTO</th>
-                                        <!-- <th class="text-center">ACCIONES</th> -->
-                                    </tr>
-                                </thead>
+                                    <th>TOTAL COSTO</th>
+                                    <!-- <th class="text-center">ACCIONES</th> -->
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3"><strong>Total general:</strong></th>
+                                    <th colspan="13" id="totalGeneral"></th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                            </tbody>
 
-                                <tbody>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th colspan="3"><strong>Total general:</strong></th>
-                                        <th colspan="13" id="totalGeneral"></th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            </div>
-                        </div>
-                        <!-- /.card-body -->
+                        </table>
+                        <!-- </div> -->
                     </div>
-                    <!-- /.card -->
+                    <!-- /.card-body -->
                 </div>
-                <!-- /.col -->
+                <!-- /.card -->
             </div>
-            <!-- /.row -->
+            <!-- /.col -->
         </div>
-        <!-- /.container-fluid -->
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
 </section>
 <!-- /.Contenido -->
 
@@ -290,11 +290,14 @@
         dom: 'Pt',
         lengthChange: false,
         ordering: false,
-        autoWidth: false,
+        autoWidth: true,
         paging: false,
-        scrollCollapse: true,
-        scrollX: true,
-        scrollY: 'calc(100vh - 410px)',
+        fixedColumns: {
+            leftColumns: 2,
+        },
+        scrollX: '100%',
+        // scroller: true,
+        scrollY: 'calc(100vh - 455px)',
         rowGroup: {
             dataSrc: 4,
             startRender: function(rows, group) {
@@ -418,6 +421,29 @@
                 visible: false,
             },
         ],
+        footerCallback: function(row, data, start, end, display) {
+            const api = this.api();
+
+            // Obtiene los datos filtrados y visibles de la columna "total_costo" (suponiendo que es la columna 13)
+            const total = api
+                .column(15, {
+                    search: 'applied'
+                }) // Asegúrate de usar el índice correcto
+                .data()
+                .reduce(function(acc, value) {
+                    return acc + (parseFloat(value) || 0);
+                }, 0);
+
+            // Formatear el total
+            const totalStr = total.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            // Escribir en el footer
+            const footer = $(api.table().footer());
+            footer.find('#totalGeneral').html('$' + totalStr);
+        }
         // footerCallback: function(row, data, start, end, display) {
         //     let total = data.reduce(function(acc, row) {
         //         return acc + (parseFloat(row.total_costo) || 0);
@@ -434,19 +460,13 @@
     };
 
     $('#tblHorario tbody').on('click', 'tr.dtrg-start', function() {
-        if ($(event.target).closest('.txt-wrap-sm').length === 0) {
-            var windowScrollTop = $(window).scrollTop();
-            var tableScrollTop = $('#tblHorario_wrapper').scrollTop();
-            var name = $(this).data('name');
-            collapsedGroups[name] = !collapsedGroups[name];
-            tabla.rows().every(function() {
-                if (this.child.isShown()) {
-                    this.child.hide();
-                    $(this.node()).removeClass('parent'); // opcional, para limpiar la clase que indica expansión
-                }
-            });
-            tabla.draw(false);
-        }
+        // if ($(event.target).closest('.txt-wrap-sm').length === 0) {
+        var windowScrollTop = $(window).scrollTop();
+        var tableScrollTop = $('#tblHorario_wrapper').scrollTop();
+        var name = $(this).data('name');
+        collapsedGroups[name] = !collapsedGroups[name];
+
+        tabla.rows().invalidate().draw(false); // }
     });
 
     $(document).ready(function() {

@@ -20,12 +20,12 @@
     <link href='assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' rel='stylesheet' type='text/css' />
     <link href='assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' rel='stylesheet' type='text/css' />
     <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
     <noscript>
-        <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-
-        <link rel="stylesheet" href="assets/plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css" type="text/css" />
-        <!-- <link rel="stylesheet" href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" /> -->
+    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="assets/plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css" type="text/css" />
+    <!-- <link rel="stylesheet" href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" /> -->
     </noscript>
     <!-- SweetAlert2 -->
     <link rel='stylesheet' href='assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css'>
@@ -47,6 +47,7 @@
     <!-- AdminLTE App -->
     <script src='assets/js/theme/adminlte.min.js'></script>
     <!-- DataTables  & Plugins -->
+    <script src='assets/plugins/datatables-scroller/js/scroller.bootstrap4.min.js'></script>
     <script src='assets/plugins/datatables/jquery.dataTables.min.js' type='text/javascript'></script>
     <script defer src='assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' type='text/javascript'></script>
     <script defer src='assets/plugins/datatables-responsive/js/dataTables.responsive.min.js' type='text/javascript'></script>

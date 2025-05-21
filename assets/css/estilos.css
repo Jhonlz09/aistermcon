@@ -54,7 +54,7 @@ button.dtsp-collapseButton:active {
 }
 
 .dtsp-panes.dtsp-panesContainer {
-    padding: 0 .75rem;
+    padding: 0 .75rem .75rem .75rem;
 }
 
 .tooltip-inner {
@@ -154,6 +154,14 @@ input[type=file]::file-selector-button {
     display: none;
 }
 
+#tblHorario .odd td{
+    background-color: #f2f2f2;
+}
+
+#tblHorario .even td{
+    background-color: #fff;
+}
+
 .odd .dtfc-fixed-left {
     background-color: #f2f2f2;
     z-index: 10;
@@ -170,7 +178,7 @@ input[type=file]::file-selector-button {
 }
 
 .even .dtfc-fixed-left {
-    background-color: #ffffff;
+    background-color: #fff;
     z-index: 10;
 }
 
@@ -628,6 +636,11 @@ input[type="number"] {
     z-index: 2;
     display: flex;
     padding-right: .5rem;
+} */
+
+/* .dataTables_scrollHeadInner,
+.dataTables_scrollBody table {
+  width: 100% !important;
 } */
 
 .group-header {
