@@ -4,11 +4,11 @@ require_once "../utils/database/conexion.php";
 
 class ModeloHorario
 {
-   static public function mdlListarHorario($anio, $mes)
-{
-    try {
-        // Construimos la parte inicial de la consulta
-        $sql = "SELECT
+    static public function mdlListarHorario($anio, $mes)
+    {
+        try {
+            // Construimos la parte inicial de la consulta
+            $sql = "SELECT
                     h.id,
                     split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
                     o.nombre AS orden,
@@ -35,27 +35,27 @@ class ModeloHorario
                     EXTRACT(YEAR FROM h.fecha) = :anio
                 ";
 
-        // Si nos pasan mes, agregamos la condición
-        if ($mes !== '') {
-            $sql .= " AND EXTRACT(MONTH FROM h.fecha) = :mes";
+            // Si nos pasan mes, agregamos la condición
+            if ($mes !== '') {
+                $sql .= " AND EXTRACT(MONTH FROM h.fecha) = :mes";
+            }
+
+            // Añadimos el ORDER BY al final
+            $sql .= " ORDER BY h.fecha DESC, h.id";
+
+            // Preparamos, vinculamos y ejecutamos
+            $stmt = Conexion::ConexionDB()->prepare($sql);
+            $stmt->bindParam(":anio", $anio, PDO::PARAM_INT);
+            if ($mes !== '') {
+                $stmt->bindParam(":mes", $mes, PDO::PARAM_INT);
+            }
+            $stmt->execute();
+
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
         }
-
-        // Añadimos el ORDER BY al final
-        $sql .= " ORDER BY h.fecha DESC, h.id";
-
-        // Preparamos, vinculamos y ejecutamos
-        $stmt = Conexion::ConexionDB()->prepare($sql);
-        $stmt->bindParam(":anio", $anio, PDO::PARAM_INT);
-        if ($mes !== '') {
-            $stmt->bindParam(":mes", $mes, PDO::PARAM_INT);
-        }
-        $stmt->execute();
-
-        return $stmt->fetchAll();
-    } catch (PDOException $e) {
-        return "Error en la consulta: " . $e->getMessage();
     }
-}
 
     static public function mdlAgregarHorario($registros)
     {

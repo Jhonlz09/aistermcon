@@ -47,6 +47,7 @@
     <!-- AdminLTE App -->
     <script src='assets/js/theme/adminlte.min.js'></script>
     <!-- DataTables  & Plugins -->
+    <script src="assets/plugins/moment/moment-with-locales.min.js" type="text/javascript"></script>
     <script src='assets/plugins/datatables-scroller/js/scroller.bootstrap4.min.js'></script>
     <script src='assets/plugins/datatables/jquery.dataTables.min.js' type='text/javascript'></script>
     <script defer src='assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' type='text/javascript'></script>
@@ -100,7 +101,7 @@
         const month = now.getMonth() + 1;
         const mes = month.toString().padStart(2, '0');
         const dia = now.getDate().toString().padStart(2, '0');
-
+        moment.locale('es');
         const fecha_hoy = `${year}-${mes}-${dia}`;
 
         let estado_filter = 'null';

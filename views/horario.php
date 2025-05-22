@@ -2,6 +2,7 @@
 
 <head>
     <title>Ingreso personal</title>
+    <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css">
     <!-- <link href="assets/plugins/datatables-fixedcolumns/css/fixedColumns.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
     <!-- <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
     <!-- <link href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css" rel="stylesheet" integrity="sha384-b6V45oYHXYNRRbOBt+gMso4peE+V6GATcho1MZx7ELTjReHmjA8zW2Ap/w0D3+QX" crossorigin="anonymous">
@@ -48,10 +49,10 @@
                                     <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
                                     </select>
                                 </div>
-                                <div class="col-sm-auto">
-                                    <select name="cboMeses" id="cboMeses" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
-                                        <option value="null">TODO</option>
-                                    </select>
+                                <div class="col-sm-auto input-group-text p-0" style="color:#494c50 !important;">
+                                    <span class=""><i class="fas fa-calendar-range"></i></span>
+                                    <input autocomplete="off" style="border:none" type="text" id="miRangoFecha" class="form-control" placeholder="Selecciona un rango" />
+
                                 </div>
                                 <div class="col-sm p-0">
                                     <div class="card-tools">
@@ -324,8 +325,8 @@
 
 
 <!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
-<script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
-
+<!-- <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script> -->
+<script src="assets/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
 <!-- <script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
 <script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
 <script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script> -->
@@ -344,12 +345,12 @@
         ordering: false,
         autoWidth: true,
         paging: true,
-        pageLength: 50,
+        pageLength: 100,
+        scroller: true,
         fixedColumns: {
             leftColumns: 2,
         },
         scrollX: '100%',
-        // scroller: true,
         scrollY: 'calc(100vh - 450px)',
         rowGroup: {
             dataSrc: 4,
@@ -395,7 +396,6 @@
             }
         },
         initComplete: function() {
-            // Elimina el div dtsp-titleRow
             $('.dtsp-titleRow').remove();
         },
         columnDefs: [{
@@ -522,10 +522,48 @@
         tabla.rows().invalidate().draw(false); // }
     });
 
+
+
     $(document).ready(function() {
         let accion = 0;
         let anio = year;
         let mes = month;
+
+        let start = moment([anio, mes - 1, 1]);
+        let end = moment(start).endOf('month');
+
+        function initDateRange() {
+            const start = moment([anio, mes - 1, 1]);
+            const end = moment(start).endOf('month');
+            const minDate = moment([anio, 0, 1]);
+            const maxDate = moment([anio, 11, 31]);
+
+            $('#miRangoFecha').daterangepicker({
+                locale: {
+                    format: 'D MMM',
+                    separator: ' - ',
+                    applyLabel: 'Aplicar',
+                    cancelLabel: 'Cancelar',
+                    fromLabel: 'Desde',
+                    toLabel: 'Hasta',
+                    customRangeLabel: 'Personalizado',
+                    daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+                    monthNames: [
+                        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                    ],
+                    firstDay: 1
+                },
+                startDate: start,
+                endDate: end,
+                minDate: minDate,
+                maxDate: maxDate
+            });
+
+            // const textoInicial = $('#miRangoFecha').val().toUpperCase();
+            // $('#miRangoFecha').val(textoInicial);
+        }
+
         const container = document.getElementById('div-empleado'); // el div padre de tu tabla
         const container2 = document.getElementById('card-per');
         const container3 = document.getElementById('card-hor'); // el div padre de tu tabla
@@ -541,6 +579,8 @@
 
         const empleadosMap = new Map(datos_em.map(item => [item.cod, item]));
         const ordenesMap = new Map(items_orden.map(item => [item.cod, item]));
+        initDateRange();
+
 
         $(cboAnio).select2({
             width: '110%',
@@ -550,41 +590,97 @@
 
         setChange(cboAnio, anio);
 
-        $(cboMeses).select2({
-            minimumResultsForSearch: -1,
-            width: 'calc(100% + .4vw)',
-            data: datos_meses,
+        $('#miRangoFecha').on('apply.daterangepicker', function(ev, picker) {
+            const fechaInicio = picker.startDate.format('YYYY-MM-DD');
+            const fechaFin = picker.endDate.format('YYYY-MM-DD');
+
+            console.log("Inicio:", fechaInicio, "Fin:", fechaFin); // verificación
+
+            // // Enviar a tu backend por AJAX
+            // $.ajax({
+            //     url: 'ruta/tu-backend.php', // ajusta la URL
+            //     method: 'POST',
+            //     data: {
+            //         fecha_inicio: fechaInicio,
+            //         fecha_fin: fechaFin
+            //     },
+            //     success: function(response) {
+            //         console.log('Datos recibidos:', response);
+            //         // Aquí puedes recargar tu tabla o hacer algo con los datos
+            //     },
+            //     error: function(xhr, status, error) {
+            //         console.error('Error:', error);
+            //     }
+            // });
         });
-        setChange(cboMeses, mes);
+
+
+
+        // $(cboMeses).select2({
+        //     minimumResultsForSearch: -1,
+        //     width: 'calc(100% + .4vw)',
+        //     data: datos_meses,
+        // });
+        // setChange(cboMeses, mes);
 
         $(cboAnio).on("change", function() {
             let a = this.options[this.selectedIndex].text
             if (a == anio) {
                 return;
             }
-            anio = a
-            if (cboMeses.value == 'null') {
-                mes = null;
-            } else {
-                mes = cboMeses.value;
+            anio = a;
+            console.log('anio', anio);
+
+            start = moment([anio, mes - 1, 1]);
+            end = moment(start).endOf('month');
+
+            const picker = $('#miRangoFecha').data('daterangepicker');
+            if (picker) {
+                picker.remove();
             }
-            tabla.ajax.reload();
+            // reaplica todas las opciones necesarias
+            initDateRange();
+            // recarga tu tabla
+            tabla.ajax.reload(function() {
+                tabla.searchPanes.rebuildPane();
+                $('.dtsp-titleRow').remove();
+            }, false);
         });
 
-        $(cboMeses).on("change", function() {
-            let m = this.value;
-            if (m == mes) {
-                return;
-            }
-            if (m == 'null') {
-                mes = null;
-            } else {
-                mes = m;
-            }
-            anio = cboAnio.options[cboAnio.selectedIndex].text;
-            tabla.ajax.reload();
-        });
-        
+        // $(cboAnio).on("change", function() {
+        //     const nuevoAnio = parseInt(this.value);
+
+        //     // mes es el número que ya tienes (1-12)
+        //     const start = moment([nuevoAnio, month - 1, 1]);
+        //     const end = moment(start).endOf('month');
+
+        //     const picker = $('#miRangoFecha').data('daterangepicker');
+        //     picker.setStartDate(start);
+        //     picker.setEndDate(end);
+        //     picker.minDate = moment([nuevoAnio, 0, 1]);
+        //     picker.maxDate = moment([nuevoAnio, 11, 31]);
+        //     picker.updateView();
+        //     picker.updateCalendars();
+        // });
+
+        // $(cboMeses).on("change", function() {
+        //     let m = this.value;
+        //     if (m == mes) {
+        //         return;
+        //     }
+        //     if (m == 'null') {
+        //         mes = null;
+        //     } else {
+        //         mes = m;
+        //     }
+        //     anio = cboAnio.options[cboAnio.selectedIndex].text;
+        //     tabla.ajax.reload(function() {
+        //         tabla.searchPanes.rebuildPane();
+        //         $('.dtsp-titleRow').remove();
+
+        //     }, false);
+        // });
+
         clearButtonObraH.addEventListener('click', function() {
             id_orden_horario = null;
         });
@@ -602,7 +698,7 @@
                     "dataSrc": '',
                     data: function(data) {
                         data.anio = anio;
-                        data.mes = mes;
+                        data.mes = null;
                     }
                 },
                 ...configuracionTable

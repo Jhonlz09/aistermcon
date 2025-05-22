@@ -52,7 +52,7 @@ class ModeloCombos
                         ELSE 3
                         END AS rol 
                     FROM tblempleado WHERE id_empresa=1 AND estado=true ORDER BY nombre ASC";
-            } else {
+            } else if ($lastName == false) {
                 $sql = "SELECT id, split_part(apellido, ' ', 1) || ' ' ||  split_part(nombre, ' ', 1) as nombre FROM tblempleado WHERE id_empresa=1 AND estado=true ORDER BY nombre ASC";
             }
 

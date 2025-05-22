@@ -177,10 +177,6 @@
         "lengthChange": false,
         "pageLength": 100,
         "ordering": false,
-        // fixedHeader: {
-        //     header: true,
-        //     headerOffset: $('#navbar-fix').outerHeight()  // Calcula el alto del navbar dinámicamente
-        // },
         "autoWidth": false,
         "paging": true,
         searchPanes: {
@@ -193,6 +189,9 @@
                     style: 'multiple'
                 }
             },
+        },
+        initComplete: function() {
+            $('.dtsp-titleRow').remove();
         },
         rowGroup: {
             dataSrc: [4],
@@ -362,7 +361,10 @@
             } else {
                 mes = cboMeses.value;
             }
-            tabla.ajax.reload();
+            tabla.ajax.reload(function() {
+                tabla.searchPanes.rebuildPane();
+                $('.dtsp-titleRow').remove();
+            }, false);
         });
 
         $(cboMeses).on("change", function() {
@@ -375,8 +377,12 @@
             } else {
                 mes = m;
             }
+
             anio = cboAnio.options[cboAnio.selectedIndex].text;
-            tabla.ajax.reload();
+            tabla.ajax.reload(function() {
+                tabla.searchPanes.rebuildPane();
+                $('.dtsp-titleRow').remove();
+            }, false);
         });
 
         $('#tblSalidas').on('click', '.btn_pdf', function(event) {
