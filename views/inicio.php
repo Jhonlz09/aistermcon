@@ -1,3 +1,7 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}?>
 <head>
     <title>Inicio</title>
 </head>
@@ -25,59 +29,66 @@
         <!-- row Tarjetas Informativas -->
         <div class="row">
             <div class="col-lg">
-                <!-- small box -->
-                <div class="small-box bg-1">
-                    <div class="inner">
-                        <p>Productos</p>
-                        <h3 id="pro">0</h3>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-shelves"></i>
-                    </div>
-                    <a onclick="masInfo('Inventario')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                <div class="row">
+                    <?php if (isset($_SESSION["crear3"])) : ?>
+                        <div class="col-6 col-sm">
+                            <div class="small-box bg-1">
+                                <div class="inner">
+                                    <p>Productos</p>
+                                    <h3 id="pro">0</h3>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-shelves"></i>
+                                </div>
+                                <a onclick="masInfo('Inventario')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION["crear4"])) : ?>
+                        <div class="col-6 col-sm">
+                            <div class="small-box bg-2">
+                                <div class="inner">
+                                    <p>Movimientos</p>
+                                    <h3 id="mov">0</h3>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-cart-minus"></i>
+                                </div>
+                                <a onclick="masInfo('Movimientos')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION["crear9"])) : ?>
+                        <div class="col-6 col-sm">
+                            <div class="small-box bg-3">
+                                <div class="inner">
+                                    <p>Compras</p>
+                                    <h3 id="com">0</h3>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-cart-plus"></i>
+                                </div>
+                                <a onclick="masInfo('Listado de compras')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION["crear17"])) : ?>
+                        <div class="col-6 col-sm">
+                            <div class="small-box bg-4">
+                                <div class="inner">
+                                    <p class="text-nowrap">En operación</p>
+                                    <h3 id="ope">0</h3>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-person-digging"></i>
+                                </div>
+                                <a onclick="masInfo('Orden de trabajo'); estado_filter= '1'" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
-            <!-- TARJETA TOTAL PENDIENTES -->
-            <div class="col-lg">
-                <!-- small box -->
-                <div class="small-box bg-2">
-                    <div class="inner">
-                        <p>Movimientos</p>
-                        <h3 id="mov">0</h3>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-cart-minus"></i>
-                    </div>
-                    <a onclick="masInfo('Movimientos')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <!-- TARJETA ENTRADAS-->
-            <div class="col-lg">
-                <!-- small box -->
-                <div class="small-box bg-3">
-                    <div class="inner">
-                        <p>Compras</p>
-                        <h3 id="com">0</h3>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-cart-plus"></i>
-                    </div>
-                    <a onclick="masInfo('Listado de compras')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg">
-                <!-- small box -->
-                <div class="small-box bg-4">
-                    <div class="inner">
-                        <p>En obra</p>
-                        <h3 id="ope">0</h3>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-person-digging"></i>
-                    </div>
-                    <a onclick="masInfo('Orden de trabajo'); estado_filter= '1'" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
+
         </div> <!-- ./row Tarjetas Informativas -->
         <!-- /.row -->
         <div class="card">
@@ -161,18 +172,18 @@
             </div>
             <div id="div-poco" class="card-body p-0">
                 <!-- <div  class="table-responsive"> -->
-                    <table class="table" id="tblPoco">
-                        <thead>
-                            <tr>
-                                <th class="text-center">CÓDIGO</th>
-                                <th>DESCRIPCION</th>
-                                <th class="text-center">CANT. MIN.</th>
-                                <th class="text-center">CANT. ACTUAL</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                <table class="table" id="tblPoco">
+                    <thead>
+                        <tr>
+                            <th class="text-center">CÓDIGO</th>
+                            <th>DESCRIPCION</th>
+                            <th class="text-center">CANT. MIN.</th>
+                            <th class="text-center">CANT. ACTUAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
                 <!-- </div> -->
             </div> <!-- ./ end card-body -->
         </div>

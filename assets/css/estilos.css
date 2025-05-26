@@ -170,7 +170,7 @@ input[type=file]::file-selector-button {
 
 .odd .dtfc-fixed-left {
     background-color: #f2f2f2;
-    z-index: 10;
+    z-index: 3;
 }
 
 .odd.selected .dtfc-fixed-left {
@@ -185,7 +185,7 @@ input[type=file]::file-selector-button {
 
 .even .dtfc-fixed-left {
     background-color: #fff;
-    z-index: 10;
+    z-index: 3;
 }
 
 
@@ -847,9 +847,9 @@ table.dataTable tbody>tr>.selected {
     --btn-row-hover: #b3d9ff;
 }
 
-#tblHorario tr.dtrg-group td {
+/* #tblHorario tr.dtrg-group td {
     border: 1px solid #c3d5e6;
-}
+} */
 
 .overflow-body {
     overflow: hidden;
@@ -1184,22 +1184,21 @@ tr.fila-anulada+tr.child {
     box-shadow: inset 0 0 0 transparent, 0 0 0 1px #fff, 0 0 0 0.2rem #0d305761
 }
 
-.collapsedrow {
+.collapsedrow * {
     visibility: hidden;
-    line-height: 0;
     height: 0;
-    overflow: hidden;
+    line-height: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
 }
 
-.collapsedrow td {
-    padding-block: 0;
-    border-top: 0;
-    border-bottom: 0;
+#tblHorario tr.dtrg-start td {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 58%);
+    position:sticky;
+    top: 0; /* o ajusta si tienes headers sticky encima */
+    z-index: 5; /* asegúrate que esté sobre otras filas */
 }
-
-/* .collapsedrow td * {
-        visibility: hidden;
-    } */
 
 .partir-texto {
     word-wrap: break-word;
@@ -1270,8 +1269,6 @@ svg {
     color: #186df5 !important;
 }
 
-
-
 .dtsp-nameButton,
 .dtsp-countButton,
 .clearButton {
@@ -1329,6 +1326,19 @@ svg {
     border-bottom-color: var(--label-new);
 }
 
+#div_header .select2-container--default .select2-selection--single {
+    border-bottom-color: #c9c9c9;
+}
+
+#select2-cboMeses1-result-775t-0{
+    padding:0;
+}
+
+/* .col-6-cus{
+    flex: 0 0 50%;
+    max-width: 100%;
+    flex-grow: 1;
+} */
 
 @media (max-width: 762px) {
     .span-btn {

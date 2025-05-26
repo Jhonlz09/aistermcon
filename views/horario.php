@@ -2,12 +2,8 @@
 
 <head>
     <title>Ingreso personal</title>
+    <script src="assets/plugins/moment/moment-with-locales.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css">
-    <!-- <link href="assets/plugins/datatables-fixedcolumns/css/fixedColumns.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
-    <!-- <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
-    <!-- <link href="https://cdn.datatables.net/fixedcolumns/4.2.2/css/fixedColumns.dataTables.min.css" rel="stylesheet" integrity="sha384-b6V45oYHXYNRRbOBt+gMso4peE+V6GATcho1MZx7ELTjReHmjA8zW2Ap/w0D3+QX" crossorigin="anonymous">
-    <link href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css" rel="stylesheet" integrity="sha384-fvFMooh85/CFhRcmgNLO/DEXj4/h8h4Fz2s0Wtq2hPU/s7z0rLzrk77ID2JS+YUg" crossorigin="anonymous"> -->
-    <!-- <link href="assets/plugins/datatables-keytable/css/keyTable.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
 </head>
 <!-- Contenido Header -->
 <section id="div_header" class="ini-section content-header ">
@@ -22,6 +18,22 @@
                         <i class="fa fa-plus"></i> Agregar horario</button>
                 </div>
             <?php endif; ?>
+            <div class="col-sm">
+                <div class="row">
+                    <div class="col-6">
+                        <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <select name="cboMeses1" id="cboMeses1" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                            <option value="null">TODO</option>
+                            <!-- <option data-hide='1' style="display:none;padding:0;" value="0"></option> -->
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
 </section>
@@ -35,7 +47,7 @@
                     <div class="card-header  p-0">
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-auto p-0">
+                                <div class="col-auto pl-0">
                                     <ul class="nav nav-tabs" style="border-bottom:none;" id="custom-tabs-four-tab" role="tablist">
                                         <li class="nav-item">
                                             <a style="padding: .75rem;border-right:1px solid #dfdfdf" class="nav-link active" id="custom-tabs-dia-tab" data-toggle="pill" href="#custom-tabs-dia" role="tab" aria-controls="custom-tabs-dia" aria-selected="true">POR DIA</a>
@@ -45,13 +57,12 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class=" col col-sm-auto">
-                                    <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
-                                    </select>
-                                </div>
-                                <div class="col-sm-auto input-group-text p-0" style="color:#494c50 !important;">
-                                    <span class=""><i class="fas fa-calendar-range"></i></span>
-                                    <input autocomplete="off" style="border:none" type="text" id="miRangoFecha" class="form-control" placeholder="Selecciona un rango" />
+
+                                <div class="col-sm-3" style="padding-block:.4rem;">
+                                    <div class="input-group-text" style="background:#eceef1;color:#494c50!important;padding-inline:.5rem">
+                                        <span><i class="fas fa-calendar-range"></i></span>
+                                        <input autocomplete="off" style="border:none" type="text" id="miRangoFecha" readonly class="form-control" placeholder="Selecciona un rango" />
+                                    </div>
 
                                 </div>
                                 <div class="col-sm p-0">
@@ -80,6 +91,8 @@
                                             <th colspan="5" class="th-red">PREVISIONES</th>
                                             <th rowspan="2" class="th-green">COSTO MANO OBRA </th>
                                             <th rowspan="2" class="th-green">GASTO EN OBRA</th>
+                                            <th rowspan="2" class="th-yellow">ACCIONES</th>
+                                            <th rowspan="2">TOTAL COSTO</th>
                                         </tr>
                                         <tr>
                                             <th class="th-purple">HN</th>
@@ -91,9 +104,7 @@
                                             <th class="th-red">14TO</th>
                                             <th class="th-red">VAC</th>
                                             <th class="th-red">FR</th>
-
-                                            <th>TOTAL COSTO</th>
-                                            <!-- <th class="text-center">ACCIONES</th> -->
+                                           
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -107,7 +118,7 @@
                                 </table>
                             </div>
                             <div class="tab-pane fade" id="custom-tabs-orden" role="tabpanel" aria-labelledby="custom-tabs-orden-tab">
-                                <table id="tblHorario2" cellspacing="0" class="display table table-bordered table-striped w-100">
+                                <table id="tblGastos" cellspacing="0" class="display table table-bordered table-striped w-100">
                                     <thead>
                                         <tr>
                                             <th rowspan="2" class="th-blue text-center">Nº</th>
@@ -115,7 +126,7 @@
                                             <th rowspan="2" class="th-blue">Nº DE ORDEN</th>
                                             <th rowspan="2" class="th-blue">CLIENTE</th>
                                             <th colspan="4" class="th-purple">SUELDO Y SOBRETIEMPO</th>
-                                            <th colspan="5" class="th-red">PREVISIONES</th>
+                                            <th colspan="6" class="th-red">PREVISIONES</th>
                                             <th rowspan="2" class="th-green">COSTO MANO OBRA </th>
                                             <th rowspan="2" class="th-green">GASTO EN OBRA</th>
                                         </tr>
@@ -129,15 +140,14 @@
                                             <th class="th-red">14TO</th>
                                             <th class="th-red">VAC</th>
                                             <th class="th-red">FR</th>
-
-                                            <th>TOTAL COSTO</th>
+                                            <!-- <th>TOTAL COSTO</th> -->
                                             <!-- <th class="text-center">ACCIONES</th> -->
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th colspan="3"><strong>Total general:</strong></th>
-                                            <th colspan="13" id="totalGeneral"></th>
+                                            <!-- <th colspan="13" id="totalGeneral"></th> -->
                                         </tr>
                                     </tfoot>
                                     <tbody>
@@ -325,7 +335,7 @@
 
 
 <!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
-<!-- <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script> -->
+<script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
 <script src="assets/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
 <!-- <script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
 <script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
@@ -351,35 +361,45 @@
             leftColumns: 2,
         },
         scrollX: '100%',
-        scrollY: 'calc(100vh - 450px)',
+        scrollY: 'calc(100vh - 442px)',
         rowGroup: {
             dataSrc: 4,
             startRender: function(rows, group) {
-                var collapsed = !!collapsedGroups[group];
-                rows.nodes().each(function(r) {
-                    $(r).toggleClass('collapsedrow', !collapsed);
-                });
-                let total = rows.data().toArray().reduce(function(acc, rowData) {
-                    // parseFloat por si viene como string; devuelve 0 si no es número
-                    return acc + (parseFloat(rowData.total_costo) || 0);
-                }, 0);
+                const collapsed = !!collapsedGroups[group];
 
-                let totalStr = total.toLocaleString('en-US', {
+                // Agrupamos todos los nodos primero
+                const nodeList = rows.nodes().toArray();
+                for (let i = 0; i < nodeList.length; i++) {
+                    if (collapsed) {
+                        nodeList[i].classList.add('collapsedrow');
+                    } else {
+                        nodeList[i].classList.remove('collapsedrow');
+                    }
+                }
+
+                const total = rows
+                    .data()
+                    .toArray()
+                    .reduce((acc, rowData) => acc + (parseFloat(rowData.total_costo) || 0), 0);
+
+                const totalStr = total.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
-                var groupText = '<div style="cursor:pointer" class="group-header d-flex align-items-center">' +
-                    '<div class="group-title sticky-start">' +
-                    '<strong style="padding-left:.5rem">' + group + ' - Total: $' + totalStr + '</strong>' +
-                    '</div>' +
-                    '<div class="txt-wrap-sm sticky-end">' +
-                    (editar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button> ' : '') +
-                    (eliminar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : '') +
-                    '</div>' +
-                    '</div>';
-                // 5) Devolver la fila de grupo con colspan (ajusta a tu número total de columnas)
-                return $('<tr/>').
-                append('<td class="pr-0 pl-0" colspan="16">' + groupText + '</td>')
+
+                const groupText = `<div style="cursor:pointer" class="group-header d-flex align-items-center">
+            <div class="group-title sticky-start">
+                <strong style="padding-left:.5rem">${group} - Total: $${totalStr}</strong>
+            </div>
+            <div class="txt-wrap-sm sticky-end">
+                ${editar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button>' : ''}
+                ${eliminar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : ''}
+            </div>
+        </div>
+    `;
+
+                return $('<tr/>')
+                    .append(`<td class="pr-0 pl-0" colspan="16">${groupText}</td>`)
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -470,6 +490,24 @@
             },
             {
                 targets: 15,
+                data: 'acciones',
+                visible: mostrarCol,
+                render: function(data, type, row, full, meta) {
+                    return "<center style='white-space:nowrap'>" +
+                        (editar ?
+                            "<button class='btn border-2 btn-sm btn-outline-primary btnEditar mr-1' data-toggle='modal' data-target='#modal' title='Editar'>" +
+                            "<i class='fa-solid fa-pencil'></i></button>" : ""
+                        ) +
+                        (eliminar ?
+                            "<button class='border-2 btn btn-sm btn-outline-danger btnEliminar' title='Eliminar'>" +
+                            "<i class='fa fa-trash'></i></button>" : ""
+                        ) +
+                        "</center>";
+                }
+            },
+            
+            {
+                targets: 16,
                 data: 'total_costo',
                 visible: false,
             },
@@ -479,7 +517,7 @@
 
             // Obtiene los datos filtrados y visibles de la columna "total_costo" (suponiendo que es la columna 13)
             const total = api
-                .column(15, {
+                .column(16, {
                     search: 'applied'
                 }) // Asegúrate de usar el índice correcto
                 .data()
@@ -494,6 +532,7 @@
             });
 
             // Escribir en el footer
+            console.log('total', totalStr);
             const footer = $(api.table().footer());
             footer.find('#totalGeneral').html('$' + totalStr);
         }
@@ -513,16 +552,14 @@
     };
 
     $('#tblHorario tbody').on('click', 'tr.dtrg-start', function() {
-        // if ($(event.target).closest('.txt-wrap-sm').length === 0) {\
-        var windowScrollTop = $(window).scrollTop();
-        var tableScrollTop = $('#tblHorario_wrapper').scrollTop();
-        var name = $(this).data('name');
-        collapsedGroups[name] = !collapsedGroups[name];
+        const $this = $(this);
+        const name = $this.data('name');
+        const wasCollapsed = collapsedGroups[name];
+        collapsedGroups[name] = !wasCollapsed;
 
-        tabla.rows().invalidate().draw(false); // }
+        // Solo actualiza la tabla si hubo un cambio real
+        tabla.draw(false);
     });
-
-
 
     $(document).ready(function() {
         let accion = 0;
@@ -532,15 +569,15 @@
         let start = moment([anio, mes - 1, 1]);
         let end = moment(start).endOf('month');
 
-        function initDateRange() {
-            const start = moment([anio, mes - 1, 1]);
-            const end = moment(start).endOf('month');
+        function initDateRange(startD, endD) {
+            // const start = moment([anio, mes - 1, 1]);
+            // const end = moment(start).endOf('month');
             const minDate = moment([anio, 0, 1]);
             const maxDate = moment([anio, 11, 31]);
 
             $('#miRangoFecha').daterangepicker({
                 locale: {
-                    format: 'D MMM',
+                    format: 'D MMM YY',
                     separator: ' - ',
                     applyLabel: 'Aplicar',
                     cancelLabel: 'Cancelar',
@@ -554,16 +591,19 @@
                     ],
                     firstDay: 1
                 },
-                startDate: start,
-                endDate: end,
+                startDate: startD,
+                endDate: endD,
                 minDate: minDate,
                 maxDate: maxDate
+            }, function(startSelected, endSelected) {
+                // Actualizar variables globales
+                start = startSelected;
+                end = endSelected;
+                $(cboMeses1).val('0').trigger('change');
+                tabla.ajax.reload();
             });
-
-            // const textoInicial = $('#miRangoFecha').val().toUpperCase();
-            // $('#miRangoFecha').val(textoInicial);
         }
-
+        initDateRange(start, end);
         const container = document.getElementById('div-empleado'); // el div padre de tu tabla
         const container2 = document.getElementById('card-per');
         const container3 = document.getElementById('card-hor'); // el div padre de tu tabla
@@ -577,69 +617,138 @@
             cod: item.id
         }));
 
+        function toggleCustomFilterButtons() {
+            $('.dtsp-searchPane').each(function() {
+                const $pane = $(this);
+                const hasSelected = $pane.find('.dtsp-selected').length > 0;
+                const $collapseBtn = $pane.find('.dtsp-collapseButton');
+
+                // Quitar botón anterior si existe
+                $pane.find('.custom-filter-icon').remove();
+
+                if (hasSelected) {
+                    // Crear botón personalizado con funcionalidad
+                    const $customBtn = $(`<button type="button" class="btn btn-light custom-filter-icon" title="Limpiar filtro">
+                            <i class="fas fa-filter fa-sm text-primary"></i>
+                            </button>`);
+
+                    // Al hacer hover: cambia el ícono a "X"
+                    $customBtn.hover(
+                        function() {
+                            $(this).find('i').removeClass('fa-filter fa-sm').addClass('fa-xmark fa-lg');
+                        },
+                        function() {
+                            $(this).find('i').removeClass('fa-xmark fa-lg').addClass('fa-filter fa-sm');
+                        }
+                    );
+
+                    // Al hacer clic: limpia el filtro del panel actual
+                    $customBtn.on('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation(); // 🔒 Detiene la propagación
+
+                        // Llamar a .clearButton pero simulando click sin eventos que suban
+                        const $clearBtn = $pane.find('.clearButton');
+                        if ($clearBtn.length) {
+                            // Crea un evento click sin burbujeo
+                            const clickEvent = new MouseEvent("click", {
+                                bubbles: false, // 🔑 esto evita la propagación ascendente
+                                cancelable: true
+                            });
+                            $clearBtn[0].dispatchEvent(clickEvent);
+                        }
+                    });
+
+                    // Insertar el botón justo después del de colapso
+                    $collapseBtn.parent().append($customBtn);
+                }
+            });
+        }
+
+
+        $('#tblHorario').on('searchPanes.dt draw.dt', function() {
+            toggleCustomFilterButtons();
+            console.log('se activó el evento');
+        });
+
         const empleadosMap = new Map(datos_em.map(item => [item.cod, item]));
         const ordenesMap = new Map(items_orden.map(item => [item.cod, item]));
-        initDateRange();
-
 
         $(cboAnio).select2({
-            width: '110%',
+            width: '100%',
             data: datos_anio,
             minimumResultsForSearch: -1,
         });
 
         setChange(cboAnio, anio);
 
-        $('#miRangoFecha').on('apply.daterangepicker', function(ev, picker) {
-            const fechaInicio = picker.startDate.format('YYYY-MM-DD');
-            const fechaFin = picker.endDate.format('YYYY-MM-DD');
+        // $('#miRangoFecha').on('apply.daterangepicker', function(ev, picker) {
+        //     const fechaInicio = picker.startDate.format('YYYY-MM-DD');
+        //     const fechaFin = picker.endDate.format('YYYY-MM-DD');
 
-            console.log("Inicio:", fechaInicio, "Fin:", fechaFin); // verificación
+        //     console.log("Inicio:", fechaInicio, "Fin:", fechaFin); // verificación
 
-            // // Enviar a tu backend por AJAX
-            // $.ajax({
-            //     url: 'ruta/tu-backend.php', // ajusta la URL
-            //     method: 'POST',
-            //     data: {
-            //         fecha_inicio: fechaInicio,
-            //         fecha_fin: fechaFin
-            //     },
-            //     success: function(response) {
-            //         console.log('Datos recibidos:', response);
-            //         // Aquí puedes recargar tu tabla o hacer algo con los datos
-            //     },
-            //     error: function(xhr, status, error) {
-            //         console.error('Error:', error);
-            //     }
-            // });
-        });
-
-
-
-        // $(cboMeses).select2({
-        //     minimumResultsForSearch: -1,
-        //     width: 'calc(100% + .4vw)',
-        //     data: datos_meses,
+        //     // // Enviar a tu backend por AJAX
+        //     // $.ajax({
+        //     //     url: 'ruta/tu-backend.php', // ajusta la URL
+        //     //     method: 'POST',
+        //     //     data: {
+        //     //         fecha_inicio: fechaInicio,
+        //     //         fecha_fin: fechaFin
+        //     //     },
+        //     //     success: function(response) {
+        //     //         console.log('Datos recibidos:', response);
+        //     //         // Aquí puedes recargar tu tabla o hacer algo con los datos
+        //     //     },
+        //     //     error: function(xhr, status, error) {
+        //     //         console.error('Error:', error);
+        //     //     }
+        //     // });
         // });
-        // setChange(cboMeses, mes);
+
+        $(cboMeses1).select2({
+            minimumResultsForSearch: -1,
+            width: '100%',
+            data: datos_meses,
+            placeholder: 'SELECCIONE',
+            // allowClear: true,
+            // templateResult: function(data) {
+            //     if (data.id === 13) {
+            //         // Opción oculta en el menú desplegable
+            //         return null;
+            //     }
+            //     return data.text;
+            // },
+            // templateSelection: function(data) {
+            //     return data.text;
+            // }
+        });
+        setChange(cboMeses1, mes);
 
         $(cboAnio).on("change", function() {
             let a = this.options[this.selectedIndex].text
             if (a == anio) {
                 return;
             }
+            if (mes == null) {
+                start = moment([a, 0, 1]);
+                end = moment(start).endOf('year');
+            } else {
+                start = moment([a, mes - 1, 1]);
+                end = moment(start).endOf('month');
+            }
             anio = a;
             console.log('anio', anio);
 
-            start = moment([anio, mes - 1, 1]);
-            end = moment(start).endOf('month');
+            // start = moment([anio, mes - 1, 1]);
+            // end = moment(start).endOf('month');
 
             const picker = $('#miRangoFecha').data('daterangepicker');
             if (picker) {
                 picker.remove();
             }
             // reaplica todas las opciones necesarias
-            initDateRange();
+            initDateRange(start, end);
             // recarga tu tabla
             tabla.ajax.reload(function() {
                 tabla.searchPanes.rebuildPane();
@@ -663,23 +772,34 @@
         //     picker.updateCalendars();
         // });
 
-        // $(cboMeses).on("change", function() {
-        //     let m = this.value;
-        //     if (m == mes) {
-        //         return;
-        //     }
-        //     if (m == 'null') {
-        //         mes = null;
-        //     } else {
-        //         mes = m;
-        //     }
-        //     anio = cboAnio.options[cboAnio.selectedIndex].text;
-        //     tabla.ajax.reload(function() {
-        //         tabla.searchPanes.rebuildPane();
-        //         $('.dtsp-titleRow').remove();
+        $(cboMeses1).on("change", function() {
+            let m = this.value;
+            console.log('mes', m);
+            if (m == mes || m == '') {
+                return;
+            }
+            if (m == 'null') {
+                mes = null;
+                start = moment([anio, 0, 1]);
+                end = moment(start).endOf('year');
+            } else {
+                mes = m;
+                start = moment([anio, mes - 1, 1]);
+                end = moment(start).endOf('month');
+            }
+            anio = cboAnio.options[cboAnio.selectedIndex].text;
+            const picker = $('#miRangoFecha').data('daterangepicker');
+            if (picker) {
+                picker.remove();
+            }
+            initDateRange(start, end);
 
-        //     }, false);
-        // });
+            tabla.ajax.reload(function() {
+                tabla.searchPanes.rebuildPane();
+                $('.dtsp-titleRow').remove();
+
+            }, false);
+        });
 
         clearButtonObraH.addEventListener('click', function() {
             id_orden_horario = null;
@@ -697,8 +817,8 @@
                     "type": "POST",
                     "dataSrc": '',
                     data: function(data) {
-                        data.anio = anio;
-                        data.mes = null;
+                        data.start = start.format('YYYY-MM-DD');
+                        data.end = end.format('YYYY-MM-DD');
                     }
                 },
                 ...configuracionTable

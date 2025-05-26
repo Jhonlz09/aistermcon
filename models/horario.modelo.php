@@ -4,58 +4,47 @@ require_once "../utils/database/conexion.php";
 
 class ModeloHorario
 {
-    static public function mdlListarHorario($anio, $mes)
+    static public function mdlListarHorario($start, $end)
     {
         try {
-            // Construimos la parte inicial de la consulta
+            // Construimos la consulta con BETWEEN
             $sql = "SELECT
-                    h.id,
-                    split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
-                    o.nombre AS orden,
-                    c.nombre AS cliente,
-                    UPPER(TO_CHAR(h.fecha, 'TMDy DD TMMON')) AS fecha,
-                    h.hn_val::MONEY,
-                    h.hs_val::MONEY,
-                    h.he_val::MONEY,
-                    h.ht_val::MONEY,
-                    h.adicional_1215::MONEY,
-                    h.decimo_tercer::MONEY,
-                    h.decimo_cuarto::MONEY,
-                    h.vacaciones::MONEY,
-                    h.fondo_reserva::MONEY,
-                    h.costo_mano_obra,
-                    h.gasto_en_obra,
-                    h.total_costo::numeric,
-                    NULL AS acciones
-                FROM public.tblhorario h
-                    JOIN tblorden    o ON o.id = h.id_orden
-                    JOIN tblempleado e ON e.id = h.id_empleado 
-                    JOIN tblclientes c ON c.id = o.id_cliente
-                WHERE
-                    EXTRACT(YEAR FROM h.fecha) = :anio
-                ";
-
-            // Si nos pasan mes, agregamos la condición
-            if ($mes !== '') {
-                $sql .= " AND EXTRACT(MONTH FROM h.fecha) = :mes";
-            }
-
-            // Añadimos el ORDER BY al final
-            $sql .= " ORDER BY h.fecha DESC, h.id";
+                h.id,
+                split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
+                o.nombre AS orden,
+                c.nombre AS cliente,
+                UPPER(TO_CHAR(h.fecha, 'TMDy DD TMMON')) AS fecha,
+                h.hn_val::MONEY,
+                h.hs_val::MONEY,
+                h.he_val::MONEY,
+                h.ht_val::MONEY,
+                h.adicional_1215::MONEY,
+                h.decimo_tercer::MONEY,
+                h.decimo_cuarto::MONEY,
+                h.vacaciones::MONEY,
+                h.fondo_reserva::MONEY,
+                h.costo_mano_obra,
+                h.gasto_en_obra,
+                h.total_costo::numeric,
+                NULL AS acciones
+            FROM public.tblhorario h
+                JOIN tblorden    o ON o.id = h.id_orden
+                JOIN tblempleado e ON e.id = h.id_empleado 
+                JOIN tblclientes c ON c.id = o.id_cliente
+            WHERE h.fecha BETWEEN :start AND :end
+            ORDER BY h.fecha DESC, h.id";
 
             // Preparamos, vinculamos y ejecutamos
             $stmt = Conexion::ConexionDB()->prepare($sql);
-            $stmt->bindParam(":anio", $anio, PDO::PARAM_INT);
-            if ($mes !== '') {
-                $stmt->bindParam(":mes", $mes, PDO::PARAM_INT);
-            }
+            $stmt->bindParam(":start", $start);
+            $stmt->bindParam(":end", $end);
             $stmt->execute();
-
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
         }
     }
+
 
     static public function mdlAgregarHorario($registros)
     {
