@@ -93,10 +93,14 @@
 
     configuracionTable = {
         "responsive": true,
-        "dom": 'Pt',
+        "dom": 'Ptp',
         "lengthChange": false,
         "ordering": false,
+        "pageLength": 100,
         "autoWidth": false,
+        initComplete: function() {
+            $('.dtsp-titleRow').remove();
+        },
         searchPanes: {
             cascadePanes: true,
             columns: [8, 10, 11],
@@ -155,9 +159,9 @@
             {
                 targets: 4,
                 "render": function(data, type, row) {
-                    var numericValue = data.replace('$', '').trim();
+                    const numericValue = data.replace('$', '').trim();
                     // Convertir a número flotante y luego a cadena para eliminar ceros innecesarios
-                    var formattedValue = parseFloat(numericValue).toString();
+                    const formattedValue = parseFloat(numericValue).toString();
                     // Volver a agregar el símbolo '$'
                     return '$ ' + formattedValue;
                 }
@@ -175,18 +179,18 @@
                 visible: false,
             },
         ],
-        "preDrawCallback": function(settings) {
-            // Guardar la posición del scroll antes de redibujar
-            // console.log("Guardando posición del scroll:", $(window).scrollTop());
-            scrollPosition = $(window).scrollTop();
-        },
-        "drawCallback": function(settings) {
-            // Restaurar la posición del scroll después de redibujar
-            setTimeout(function() {
-                console.log("Restaurando posición del scroll:", scrollPosition);
-                $(window).scrollTop(scrollPosition);
-            }, 3);
-        }
+        // "preDrawCallback": function(settings) {
+        //     // Guardar la posición del scroll antes de redibujar
+        //     // console.log("Guardando posición del scroll:", $(window).scrollTop());
+        //     scrollPosition = $(window).scrollTop();
+        // },
+        // "drawCallback": function(settings) {
+        //     // Restaurar la posición del scroll después de redibujar
+        //     setTimeout(function() {
+        //         console.log("Restaurando posición del scroll:", scrollPosition);
+        //         $(window).scrollTop(scrollPosition);
+        //     }, 3);
+        // }
     }
 
     $('#tblEntradas tbody').on('click', 'tr.dtrg-start', function() {

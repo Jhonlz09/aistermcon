@@ -53,7 +53,7 @@
                                             <a style="padding: .75rem;border-right:1px solid #dfdfdf" class="nav-link active" id="custom-tabs-dia-tab" data-toggle="pill" href="#custom-tabs-dia" role="tab" aria-controls="custom-tabs-dia" aria-selected="true">POR DIA</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a style="padding: .75rem;border-left:none" class="nav-link" id="custom-tabs-orden-tab" data-toggle="pill" href="#custom-tabs-orden" role="tab" aria-controls="custom-tabs-orden" aria-selected="false">POR ORDEN</a>
+                                            <a style="padding: .75rem;border-left:none" class="nav-link" id="custom-tabs-orden-tab" data-toggle="pill" href="#custom-tabs-orden" role="tab" aria-controls="custom-tabs-orden" aria-selected="false">GASTOS</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -92,7 +92,6 @@
                                             <th rowspan="2" class="th-green">COSTO MANO OBRA </th>
                                             <th rowspan="2" class="th-green">GASTO EN OBRA</th>
                                             <th rowspan="2" class="th-yellow">ACCIONES</th>
-                                            <th rowspan="2">TOTAL COSTO</th>
                                         </tr>
                                         <tr>
                                             <th class="th-purple">HN</th>
@@ -104,7 +103,7 @@
                                             <th class="th-red">14TO</th>
                                             <th class="th-red">VAC</th>
                                             <th class="th-red">FR</th>
-                                           
+                                            <th class="th-red">TOTAL COSTO</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -121,26 +120,19 @@
                                 <table id="tblGastos" cellspacing="0" class="display table table-bordered table-striped w-100">
                                     <thead>
                                         <tr>
-                                            <th rowspan="2" class="th-blue text-center">Nº</th>
-                                            <th rowspan="2" class="th-blue">NOMBRES</th>
-                                            <th rowspan="2" class="th-blue">Nº DE ORDEN</th>
-                                            <th rowspan="2" class="th-blue">CLIENTE</th>
-                                            <th colspan="4" class="th-purple">SUELDO Y SOBRETIEMPO</th>
-                                            <th colspan="6" class="th-red">PREVISIONES</th>
-                                            <th rowspan="2" class="th-green">COSTO MANO OBRA </th>
-                                            <th rowspan="2" class="th-green">GASTO EN OBRA</th>
+                                            <th rowspan="2" class="th-orange text-center">Nº</th>
+                                            <th rowspan="2" class="th-orange">NOMBRES</th>
+                                            <th rowspan="2" class="th-orange">Nº DE ORDEN</th>
+                                            <th rowspan="2" class="th-orange">CLIENTE</th>
+                                            <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
                                         </tr>
                                         <tr>
-                                            <th class="th-purple">HN</th>
-                                            <th class="th-purple">HS</th>
-                                            <th class="th-purple">HE</th>
-                                            <th class="th-purple">TOTAL</th>
-                                            <th class="th-red">%12.15</th>
-                                            <th class="th-red">13ER</th>
-                                            <th class="th-red">14TO</th>
-                                            <th class="th-red">VAC</th>
-                                            <th class="th-red">FR</th>
-                                            <!-- <th>TOTAL COSTO</th> -->
+                                            <th class="th-blue">MATERIAL</th>
+                                            <th class="th-blue">TRANSP.</th>
+                                            <th class="th-blue">ALIM.</th>
+                                            <th class="th-blue">HOSP.</th>
+                                            <th class="th-blue">GUARD.</th>
+                                            <th class="th-blue">AGUA</th>
                                             <!-- <th class="text-center">ACCIONES</th> -->
                                         </tr>
                                     </thead>
@@ -332,6 +324,58 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<div class="modal fade" id="modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-green">
+                <h4 class="modal-title"><i class="fas fa-calendar-circle-user"></i><span> Editar Horario</span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
+                <div class="modal-body scroll-modal" style="padding-block:1rem .5rem">
+                    <input type="hidden" id="id" value="">
+                    <div class="table-responsive">
+                        <table id="tblPersonH" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th colspan="4"></th>
+                                    <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
+                                    <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
+                                </tr>
+                                <tr>
+                                    <th class="th-orange">NOMBRES</th>
+                                    <th class="th-orange">CLIENTE</th>
+                                    <th class="th-orange">Nº DE ORDEN</th>
+                                    <th class="th-orange">FECHA</th>
+                                    <th class="th-green">HORARIO NORMAL</th>
+                                    <th class="th-green">HORA SUPLEMENTARIA</th>
+                                    <th class="th-green">HORA 100%</th>
+                                    <th class="th-green">TOTAL DE HORAS</th>
+                                    <th class="th-blue">MATERIAL</th>
+                                    <th class="th-blue">TRANSPORTE</th>
+                                    <th class="th-blue">ALIMENTACION</th>
+                                    <th class="th-blue">HOSPEDAJE</th>
+                                    <th class="th-blue">GUARDIANIA</th>
+                                    <th class="th-blue">AGUA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 
 
 <!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
@@ -348,6 +392,7 @@
     var editar = '<?php echo $_SESSION["editar20"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar20"] ?>';
     var collapsedGroups = {};
+
     configuracionTable = {
         responsive: false,
         dom: 'Ptp',
@@ -366,40 +411,40 @@
             dataSrc: 4,
             startRender: function(rows, group) {
                 const collapsed = !!collapsedGroups[group];
-
-                // Agrupamos todos los nodos primero
                 const nodeList = rows.nodes().toArray();
-                for (let i = 0; i < nodeList.length; i++) {
-                    if (collapsed) {
-                        nodeList[i].classList.add('collapsedrow');
-                    } else {
-                        nodeList[i].classList.remove('collapsedrow');
-                    }
-                }
 
+                // Aplicar clase 'collapsedrow' según el estado del grupo
+                nodeList.forEach(node => {
+                    node.classList.toggle('collapsedrow', collapsed);
+                });
+
+                // Calcular total
                 const total = rows
                     .data()
                     .toArray()
-                    .reduce((acc, rowData) => acc + (parseFloat(rowData.total_costo) || 0), 0);
+                    .reduce((acc, row) => acc + (parseFloat(row.total_costo) || 0), 0);
 
                 const totalStr = total.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
 
+                // Construir contenido del grupo
+                const actionButtons = `
+        ${editar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button>' : ''}
+        ${eliminar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : ''}`;
+
                 const groupText = `<div style="cursor:pointer" class="group-header d-flex align-items-center">
-            <div class="group-title sticky-start">
-                <strong style="padding-left:.5rem">${group} - Total: $${totalStr}</strong>
-            </div>
-            <div class="txt-wrap-sm sticky-end">
-                ${editar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button>' : ''}
-                ${eliminar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : ''}
-            </div>
-        </div>
-    `;
+                                    <div class="group-title sticky-start">
+                                        <strong style="padding-left:.5rem">${group} (${rows.count()} personas) - Total: $${totalStr}</strong>
+                                    </div>
+                                    <div class="txt-wrap-sm sticky-end">
+                                        ${actionButtons}
+                                    </div>
+                                </div>`;
 
                 return $('<tr/>')
-                    .append(`<td class="pr-0 pl-0" colspan="16">${groupText}</td>`)
+                    .append(`<td class="pr-0 pl-0" colspan="17">${groupText}</td>`)
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -420,14 +465,9 @@
         },
         columnDefs: [{
                 targets: 0,
-                data: "acciones",
+                data: null,
                 className: "text-center",
-                render: function(data, type, row, meta) {
-                    if (type === 'display') {
-                        return meta.row + 1;
-                    }
-                    return meta.row;
-                }
+                defaultContent: '' // lo llenaremos luego en el evento draw
             },
             {
                 targets: 1,
@@ -491,7 +531,7 @@
             {
                 targets: 15,
                 data: 'acciones',
-                visible: mostrarCol,
+                visible: mostrarCol == 1 ? true : false,
                 render: function(data, type, row, full, meta) {
                     return "<center style='white-space:nowrap'>" +
                         (editar ?
@@ -505,7 +545,6 @@
                         "</center>";
                 }
             },
-            
             {
                 targets: 16,
                 data: 'total_costo',
@@ -514,14 +553,12 @@
         ],
         footerCallback: function(row, data, start, end, display) {
             const api = this.api();
-
             // Obtiene los datos filtrados y visibles de la columna "total_costo" (suponiendo que es la columna 13)
             const total = api
                 .column(16, {
                     search: 'applied'
                 }) // Asegúrate de usar el índice correcto
-                .data()
-                .reduce(function(acc, value) {
+                .data().reduce(function(acc, value) {
                     return acc + (parseFloat(value) || 0);
                 }, 0);
 
@@ -532,23 +569,10 @@
             });
 
             // Escribir en el footer
-            console.log('total', totalStr);
+            // console.log('total', totalStr);
             const footer = $(api.table().footer());
             footer.find('#totalGeneral').html('$' + totalStr);
         }
-        // footerCallback: function(row, data, start, end, display) {
-        //     let total = data.reduce(function(acc, row) {
-        //         return acc + (parseFloat(row.total_costo) || 0);
-        //     }, 0);
-
-        //     let totalStr = total.toLocaleString('en-US', {
-        //         minimumFractionDigits: 2,
-        //         maximumFractionDigits: 2
-        //     });
-        //     // console.log('total scr', totalStr);
-        //     // Escribe en el <td id="totalGeneral">
-        //     $(row).find('td:last').html('$' + totalStr);
-        // },
     };
 
     $('#tblHorario tbody').on('click', 'tr.dtrg-start', function() {
@@ -557,9 +581,16 @@
         const wasCollapsed = collapsedGroups[name];
         collapsedGroups[name] = !wasCollapsed;
 
-        // Solo actualiza la tabla si hubo un cambio real
         tabla.draw(false);
+
+        tabla.columns.adjust();
+        if (tabla.fixedHeader) {
+            tabla.fixedHeader.adjust();
+        }
     });
+
+
+    // Reiniciar contadores en cada draw
 
     $(document).ready(function() {
         let accion = 0;
@@ -570,11 +601,9 @@
         let end = moment(start).endOf('month');
 
         function initDateRange(startD, endD) {
-            // const start = moment([anio, mes - 1, 1]);
-            // const end = moment(start).endOf('month');
+
             const minDate = moment([anio, 0, 1]);
             const maxDate = moment([anio, 11, 31]);
-
             $('#miRangoFecha').daterangepicker({
                 locale: {
                     format: 'D MMM YY',
@@ -596,7 +625,6 @@
                 minDate: minDate,
                 maxDate: maxDate
             }, function(startSelected, endSelected) {
-                // Actualizar variables globales
                 start = startSelected;
                 end = endSelected;
                 $(cboMeses1).val('0').trigger('change');
@@ -756,28 +784,13 @@
             }, false);
         });
 
-        // $(cboAnio).on("change", function() {
-        //     const nuevoAnio = parseInt(this.value);
-
-        //     // mes es el número que ya tienes (1-12)
-        //     const start = moment([nuevoAnio, month - 1, 1]);
-        //     const end = moment(start).endOf('month');
-
-        //     const picker = $('#miRangoFecha').data('daterangepicker');
-        //     picker.setStartDate(start);
-        //     picker.setEndDate(end);
-        //     picker.minDate = moment([nuevoAnio, 0, 1]);
-        //     picker.maxDate = moment([nuevoAnio, 11, 31]);
-        //     picker.updateView();
-        //     picker.updateCalendars();
-        // });
-
         $(cboMeses1).on("change", function() {
             let m = this.value;
-            console.log('mes', m);
-            if (m == mes || m == '') {
+            console.log('m', m);
+            if (m == '') {
                 return;
             }
+            console.log('mes', mes);
             if (m == 'null') {
                 mes = null;
                 start = moment([anio, 0, 1]);
@@ -797,7 +810,6 @@
             tabla.ajax.reload(function() {
                 tabla.searchPanes.rebuildPane();
                 $('.dtsp-titleRow').remove();
-
             }, false);
         });
 
@@ -825,6 +837,28 @@
             });
 
             tabla.on('draw.dt', function() {
+                let currentGroup = null;
+                let counter = 0;
+
+                tabla.rows({
+                    page: 'current',
+                    search: 'applied'
+                }).every(function() {
+                    const row = this.node();
+                    const data = this.data();
+                    const group = data[4]; // usa el índice correcto de tu agrupación
+
+                    // Cuando cambia el grupo, reiniciamos el contador
+                    if (group !== currentGroup) {
+                        currentGroup = group;
+                        counter = 1;
+                    } else {
+                        counter++;
+                    }
+
+                    // Escribimos el número en la primera celda de esta fila
+                    $('td:eq(0)', row).html(counter);
+                });
                 if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
                     const b = document.body;
                     const s = b.scrollHeight;
@@ -835,6 +869,7 @@
                 localStorage.setItem('horario', JSON.stringify(tablaData));
             });
         }
+
 
         tblPerson = $("#tblPersonH").DataTable({
             "dom": 't',
@@ -851,7 +886,7 @@
             paging: false,
             scrollCollapse: true,
             scrollX: true,
-            scrollY: '38vh',
+            scrollY: 'calc(100vh - 375px)',
             columnDefs: [{
                     targets: 0,
                     "data": null,
