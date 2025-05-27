@@ -168,8 +168,8 @@ input[type=file]::file-selector-button {
     background-color: #fff;
 }
 
-.odd .dtfc-fixed-left {
-    background-color: #f2f2f2;
+.odd .dtfc-fixed-left, .odd .dtfc-fixed-right {
+    /* background-color: #f2f2f2; */
     z-index: 3;
 }
 
@@ -183,14 +183,27 @@ input[type=file]::file-selector-button {
     /* z-index: 10; */
 }
 
-.even .dtfc-fixed-left {
-    background-color: #fff;
+.even .dtfc-fixed-left{
+    /* background-color: #fff; */
     z-index: 3;
+
+}
+.even td.dtfc-fixed-right{
+    z-index: 3;
+    border-left-width: 1px;
+    box-shadow: -4px 0 10px 0 #ced4da9f ;
 }
 
+.odd td.dtfc-fixed-right {
+    z-index: 3;
+    border-left-width: 1px;
+    box-shadow: -4px 0 10px 0 #ced4da9f;
 
+}
 
-
+#tblHorarioE tbody tr:nth-of-type(odd){
+    background-color: #f2f2f2;
+}
 
 
 

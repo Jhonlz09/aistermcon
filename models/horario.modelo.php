@@ -7,7 +7,6 @@ class ModeloHorario
     static public function mdlListarHorario($start, $end)
     {
         try {
-            // Construimos la consulta con BETWEEN
             $sql = "SELECT
                 h.id,
                 split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
@@ -25,8 +24,8 @@ class ModeloHorario
                 h.fondo_reserva::MONEY,
                 h.costo_mano_obra,
                 h.gasto_en_obra,
-                h.total_costo::numeric,
-                NULL AS acciones
+                h.total_costo,
+                h.total_costo::numeric
             FROM public.tblhorario h
                 JOIN tblorden    o ON o.id = h.id_orden
                 JOIN tblempleado e ON e.id = h.id_empleado 
@@ -38,6 +37,38 @@ class ModeloHorario
             $stmt = Conexion::ConexionDB()->prepare($sql);
             $stmt->bindParam(":start", $start);
             $stmt->bindParam(":end", $end);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlConsultarHorario($id_horario)
+    {
+        try {
+            // Construimos la consulta con BETWEEN
+            $sql = "SELECT
+                h.id_empleado,
+                h.id_orden,
+                TO_CHAR(h.fecha, 'YYYY-MM-DD') AS fecha,
+                h.hn,
+                h.hs,
+                h.he,
+                h.ht,
+                h.gm,
+                h.gt,
+                h.gc,
+                h.gh,
+                h.gg,
+                h.ga,
+                h.id
+            FROM public.tblhorario h
+            WHERE h.id = :id_horario;";
+
+            // Preparamos, vinculamos y ejecutamos
+            $stmt = Conexion::ConexionDB()->prepare($sql);
+            $stmt->bindParam(":id_horario", $id_horario);
             $stmt->execute();
             return $stmt->fetchAll();
         } catch (PDOException $e) {
@@ -86,7 +117,7 @@ class ModeloHorario
     }
 
 
-    static public function mdlEditarProveedor($id, $ruc, $nombre, $dir, $correo, $tel)
+    static public function mdlEditarHorario($id, $ruc, $nombre, $dir, $correo, $tel)
     {
         try {
             $u = Conexion::ConexionDB()->prepare("UPDATE tblproveedores SET ruc=:ruc, nombre=:nombre, direccion = :dir, correo = :correo, telefono = :tel WHERE id=:id");
@@ -126,4 +157,6 @@ class ModeloHorario
             );
         }
     }
+
+
 }
