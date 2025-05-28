@@ -26,6 +26,12 @@ class ControladorHorario
         $data = ModeloHorario::mdlEditarHorario($this->id, $this->id_empleado, $this->id_orden, $this->fecha, $this->hn, $this->hs, $this->he, $this->material, $this->trans, $this->ali, $this->hosp, $this->guard, $this->agua);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    public function eliminarHorario()
+    {
+        $data = ModeloHorario::mdlEliminarHorario($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 $data = new ControladorHorario();
 
@@ -55,5 +61,8 @@ if (!isset($_POST["accion"])) {
         $data->guard = $_POST["guard"];
         $data->agua = $_POST["agua"];
         $data->editarHorario();
+    }else if ($_POST["accion"] == 4) {
+        $data->id = $_POST["id"];
+        $data->eliminarHorario();
     }
 }

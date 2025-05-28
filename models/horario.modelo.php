@@ -25,7 +25,11 @@ class ModeloHorario
                 h.costo_mano_obra,
                 h.gasto_en_obra,
                 h.total_costo,
-                h.total_costo::numeric
+                h.total_costo::numeric,
+                h.id_empleado,
+                h.id_orden,
+                TO_CHAR(h.fecha, 'YYYY-MM-DD') AS fecha_val
+
             FROM public.tblhorario h
                 JOIN tblorden    o ON o.id = h.id_orden
                 JOIN tblempleado e ON e.id = h.id_empleado 
@@ -49,9 +53,6 @@ class ModeloHorario
         try {
             // Construimos la consulta con BETWEEN
             $sql = "SELECT
-                h.id_empleado,
-                h.id_orden,
-                TO_CHAR(h.fecha, 'YYYY-MM-DD') AS fecha,
                 h.hn,
                 h.hs,
                 h.he,
@@ -62,7 +63,10 @@ class ModeloHorario
                 h.gh,
                 h.gg,
                 h.ga,
-                h.id
+                h.id,
+                h.id_empleado,
+                h.id_orden,
+                TO_CHAR(h.fecha, 'YYYY-MM-DD') AS fecha
             FROM public.tblhorario h
             WHERE h.id = :id_horario;";
 
@@ -140,20 +144,20 @@ class ModeloHorario
         }
     }
 
-    public static function mdlEliminarProveedor($id)
+    public static function mdlEliminarHorario($id)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("UPDATE tblproveedores SET estado=false WHERE id=:id");
+            $e = Conexion::ConexionDB()->prepare("DELETE FROM public.tblhorario WHERE id=:id");
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->execute();
             return array(
                 'status' => 'success',
-                'm' => 'Se eliminó el proveedor con éxito.'
+                'm' => 'Se eliminó el horario correctamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo eliminar el proveedor: ' . $e->getMessage()
+                'm' => 'No se pudo eliminar el horario: ' . $e->getMessage()
             );
         }
     }

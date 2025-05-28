@@ -112,7 +112,7 @@
                                     <tfoot>
                                         <tr>
                                             <th colspan="4"><strong>Total general:</strong></th>
-                                            <th colspan="12" id="totalGeneral"></th>
+                                            <th colspan="12" style="color:#208520" id="totalGeneral"></th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
@@ -194,7 +194,7 @@
                                     <i class="fas fa-person-digging"></i> Obra
                                 </label>
                                 <!-- <div class="position-relative"> -->
-                                <input type="search" id="nro_ordenHorario" class="form-control ui-autocomplete-input" placeholder="Nro. de orden o cliente" autocomplete="off" style="font-size:1.2rem; border-bottom:2px solid var(--select-border-bottom);" spellcheck="false" data-ms-editor="true">
+                                <input type="search" id="nro_ordenHorario" class="form-control ui-autocomplete-input" placeholder="Nro. de orden o cliente" autocomplete="off" style="font-size:1.2rem; border-bottom:2px solid var(--select-border-bottom);" oninput="formatInputOrden(this)" spellcheck="false" data-ms-editor="true">
                                 <button class="clear-btn" type="button" id="clearButtonObraH" onclick="clearInput('nro_ordenHorario', this)" style="display:none; position:absolute; right:10px; top:42%;">×</button>
                                 <!-- </div> -->
 
@@ -339,18 +339,56 @@
             <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
                 <div class="modal-body scroll-modal" style="padding-block:1rem .5rem">
                     <input type="hidden" id="id" value="">
+                    <div class="col-md-12 pb-3">
+                        <div class="row">
+                            <div class="col-md-4 ui-front">
+                                <label class="col-form-label combo ml-1" for="empleado_edit">
+                                    <i class="fas fa-user-helmet-safety"></i> Empleado</label>
+                                <input
+                                    type="search"
+                                    class="form-control empleado"
+                                    id="empleado_edit"
+                                    autocomplete="off"
+                                    placeholder="Empleado"
+                                    value="">
+                                <button class="clear-btn" type="button" onclick="clearInput('empleado_edit', this)" style="display:none;top:40%;">&times;</button>
+                                <div class="invalid-feedback">*Campo obligatorio.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="ui-front" style="z-index:inherit;position:relative">
+                                    <label class="col-form-label combo" for="orden_edit">
+                                        <i class="fas fa-person-digging"></i> Obra</label>
+                                    <input
+                                        type="search"
+                                        class="form-control obra"
+                                        id="orden_edit"
+                                        oninput="formatInputOrden(this)"
+                                        placeholder="Nro. de orden o cliente"
+                                        autocomplete="off"
+                                        value="">
+                                    <button class="clear-btn" type="button" id="btnOrden_edit" onclick="clearInput('orden_edit', this)" style="display:none;top:40%">&times;</button>
+                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fecha_edit" class="m-0"><i class="fas fa-calendar"></i> Fecha</label>
+                                <input
+                                    type="date"
+                                    class="form-control"
+                                    id="fecha_edit"
+                                    value="">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table id="tblHorarioE" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th rowspan="2" class="th-orange">NOMBRES</th>
-                                    <th rowspan="2" class="th-orange">OBRA</th>
-                                    <th rowspan="2" class="th-orange">FECHA</th>
                                     <th class="th-green" colspan="4">SUELDO Y SOBRETIEMPO</th>
                                     <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
                                 </tr>
                                 <tr>
-
                                     <th class="th-green">HORARIO NORMAL</th>
                                     <th class="th-green">HORA SUPL.</th>
                                     <th class="th-green">HORA 100%</th>
@@ -369,7 +407,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-blue"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="submit" id="btnGuardarE" class="btn bg-gradient-blue"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -696,9 +734,9 @@
 
         $('#tblHorario').on('searchPanes.dt draw.dt', function() {
             toggleCustomFilterButtons();
-            console.log('se activó el evento');
-        });
 
+        });
+        const fecha_edit = document.getElementById('fecha_edit');
         const empleadosMap = new Map(datos_em.map(item => [item.cod, item]));
         const ordenesMap = new Map(items_orden.map(item => [item.cod, item]));
 
@@ -833,6 +871,7 @@
                         data.end = end.format('YYYY-MM-DD');
                     }
                 },
+                // stateSave: true,
                 ...configuracionTable
             });
 
@@ -874,10 +913,7 @@
             "dom": 't',
             "lengthChange": false,
             "ordering": false,
-            fixedColumns: {
-                leftColumns: 1,
-                rightColumns: 0
-            },
+            autoWidth: false,
             ajax: {
                 url: 'controllers/horario.controlador.php',
                 type: 'POST',
@@ -890,57 +926,6 @@
             paging: false,
             columnDefs: [{
                     targets: 0,
-                    render: function(data, type, row, meta) {
-                        const timestamp = Date.now(); // milisegundos actuales
-                        const uniqueId = `empleado_${timestamp}`; // ID único
-                        return `<div class="ui-front" style="z-index:99999;position:relative">
-                        <input style="width:12em"
-                        type="search"
-                        class="form-control empleado"
-                        id="${uniqueId}"
-                        oninput="formatInputOrden(this)"
-                        autocomplete="off"
-                        placeholder="Empleado"
-                        value="${data || ''}">
-                        <button class="clear-btn" type="button" onclick="clearInput('${uniqueId}', this)" id="btn${uniqueId}" style="display:none;top:6%;right:2px">&times;</button>
-                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                        </div>`;
-                    }
-                },
-                {
-                    targets: 1,
-                    render: function(data, type, row, meta) {
-                        const timestamp = Date.now(); // milisegundos actuales
-                        const uniqueId = `obra_${timestamp}`; // ID único
-                        return `<div class="ui-front" style="z-index:inherit;position:relative">
-                        <input style="width:12rem"
-                        type="search"
-                        class="form-control obra"
-                        id="${uniqueId}"
-                        oninput="formatInputOrden(this)"
-                        placeholder="Nro. de orden o cliente"
-                        autocomplete="off"
-                        value="${data || ''}">
-                        <button class="clear-btn" type="button" id="btnO${uniqueId}" onclick="clearInput('${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button>
-                        <div class="invalid-feedback">*Campo obligatorio.</div></div>`;
-                    }
-                },
-                {
-                    targets: 2,
-                    render: function(data, type, row, meta) {
-                        if (type === 'display') {
-                            // const uniqueId = meta.row + 1;
-                            return `<input
-                            style="width:10rem"
-                            type="date"
-                            class="form-control fechaH"
-                            value="${data || ''}">`;
-                        }
-                        return data;
-                    }
-                },
-                {
-                    targets: 3,
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -960,7 +945,7 @@
                     }
                 },
                 {
-                    targets: 4,
+                    targets: 1,
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -981,7 +966,7 @@
                     }
                 },
                 {
-                    targets: 5,
+                    targets: 2,
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -1001,7 +986,7 @@
                     }
                 },
                 {
-                    targets: 6,
+                    targets: 3,
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -1011,7 +996,7 @@
                     }
                 },
                 {
-                    targets: 7,
+                    targets: 4,
                     className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -1031,7 +1016,7 @@
                     }
                 },
                 {
-                    targets: 8,
+                    targets: 5,
                     className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -1051,7 +1036,7 @@
                     }
                 },
                 {
-                    targets: 9,
+                    targets: 6,
                     className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -1071,7 +1056,7 @@
                     }
                 },
                 {
-                    targets: 10,
+                    targets: 7,
                     className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -1091,7 +1076,7 @@
                     }
                 },
                 {
-                    targets: 11,
+                    targets: 8,
                     className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -1111,7 +1096,7 @@
                     }
                 },
                 {
-                    targets: 12,
+                    targets: 9,
                     className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
@@ -1151,20 +1136,20 @@
                 //         </div>`,
                 // }
             ],
-            createdRow: function(row, data, dataIndex) {
-                const $row = $(row);
-                const idEmpleado = data.id_empleado || null; // ← aquí está el ID que pasaste
+            // createdRow: function(row, data, dataIndex) {
+            //     const $row = $(row);
+            //     const idEmpleado = data.id_empleado || null; // ← aquí está el ID que pasaste
 
-                // Aplicar autocompletado al campo de empleado
-                const $inputEmpleado = $row.find(".empleado");
-                aplicarAutocomplete($inputEmpleado, datos_em, empleadosMap, idEmpleado, true);
+            //     // Aplicar autocompletado al campo de empleado
+            //     const $inputEmpleado = $row.find(".empleado");
+            //     aplicarAutocomplete($inputEmpleado, datos_em, empleadosMap, idEmpleado, true);
 
-                const idOrden = data.id_orden || null;
-                // Aplicar autocompletado al campo de obra
-                const $inputObra = $row.find(".obra");
-                // console.log('selectedItemOrden', selectedItemOrden);
-                aplicarAutocomplete($inputObra, items_orden, ordenesMap, idOrden, true);
-            }
+            //     const idOrden = data.id_orden || null;
+            //     // Aplicar autocompletado al campo de obra
+            //     const $inputObra = $row.find(".obra");
+            //     // console.log('selectedItemOrden', selectedItemOrden);
+            //     aplicarAutocomplete($inputObra, items_orden, ordenesMap, idOrden, true);
+            // }
         });
 
         let tblPerson = $("#tblPersonH").DataTable({
@@ -1199,7 +1184,6 @@
                         type="search"
                         class="form-control empleado"
                         id="${uniqueId}"
-                        oninput="formatInputOrden(this)"
                         autocomplete="off"
                         placeholder="Empleado"
                         value="${data || ''}">
@@ -1649,18 +1633,18 @@
             });
         });
 
-        // $('#tblHorarioE').on('input keydown', '.hn, .hs, .h100', function() {
-        //     // Encuentra la fila del input cambiado
-        //     let $row = $(this).closest('tr');
-        //     // Obtiene los valores de cantidad y precio
-        //     let hn = parseFloat($row.find('.hn').val()) || 0;
-        //     let hs = parseFloat($row.find('.hs').val()) || 0;
-        //     let h100 = parseFloat($row.find('.h100').val()) || 0;
-        //     // Calcula el total
-        //     let total_horas = hn + hs + h100;
-        //     $row.find('.totalh').text(total_horas);
+        $('#tblHorarioE').on('input keydown', '.hn, .hs, .h100', function() {
+            // Encuentra la fila del input cambiado
+            let $row = $(this).closest('tr');
+            // Obtiene los valores de cantidad y precio
+            let hn = parseFloat($row.find('.hn').val()) || 0;
+            let hs = parseFloat($row.find('.hs').val()) || 0;
+            let h100 = parseFloat($row.find('.h100').val()) || 0;
+            // Calcula el total
+            let total_horas = hn + hs + h100;
+            $row.find('.totalh').text(total_horas);
 
-        // });
+        });
 
         $('#tblPersonH').on('input keydown', '.hn, .hs, .h100', function() {
             // Encuentra la fila del input cambiado
@@ -1949,20 +1933,24 @@
 
         $('#tblHorario tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
-            accion = 3
-            const id_e = e["id"];
-            console.log(id_e)
+            const id = e["id"];
+            const scrollBody = $('#tblHorario').closest('.dataTables_scroll').find('.dataTables_scrollBody')[0];
+            const scrollPosition = scrollBody.scrollTop;
+            const $scrollBody = $('#tblHorario').closest('.dataTables_scroll').find('.dataTables_scrollBody');
+
             let src = new FormData();
-            src.append('accion', accion);
-            src.append('id', id_e);
-            accion = 0;
+            src.append('accion', 4);
+            src.append('id', id);
             confirmarEliminar('este', 'horario de empleado', function(r) {
                 if (r) {
-                    confirmarAccion(src, 'horario', tabla, '', function(r) {
-                        cargarCombo('Conductor', '', 2);
-                        cargarCombo('Despachado', '', 6);
-                        cargarCombo('Responsable', '', 7)
-                    })
+                    confirmarAccion(src, 'horario', null, '', function(r) {
+                        if (r) {
+                            tabla.ajax.reload(function() {
+                                $scrollBody.scrollTop(scrollPosition);
+                                // Ajusta el delay si es necesario
+                            }, false);
+                        }
+                    }, 4000)
                 }
             });
         });
@@ -1970,8 +1958,15 @@
         $('#tblHorario tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             id_horario_editar = row["id"];
-            tblHorarioE.ajax.reload(null, false); 
+            const idEmpleado = row["id_empleado"] || null;
+            const idOrden = row["id_orden"] || null;
+            const fecha_horario = row["fecha_val"] || null;
 
+            fecha_edit.value = fecha_horario || '';
+            // console.log('idEmpleado', empleado_edit, orden_edit);
+            tblHorarioE.ajax.reload(null, false);
+            aplicarAutocomplete($('#empleado_edit'), datos_em, empleadosMap, idEmpleado, true);
+            aplicarAutocomplete($('#orden_edit'), items_orden, ordenesMap, idOrden, true);
         });
 
         $('#btnGuardarHorario').on('click', function() {

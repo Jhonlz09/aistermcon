@@ -191,26 +191,19 @@ input[type=file]::file-selector-button {
 .even td.dtfc-fixed-right{
     z-index: 3;
     border-left-width: 1px;
-    box-shadow: -4px 0 10px 0 #ced4da9f ;
+    box-shadow: -4px 0 10px 0 #ced4da58 ;
 }
 
 .odd td.dtfc-fixed-right {
     z-index: 3;
     border-left-width: 1px;
-    box-shadow: -4px 0 10px 0 #ced4da9f;
+    box-shadow: -4px 0 10px 0 #ced4da58;
 
 }
 
 #tblHorarioE tbody tr:nth-of-type(odd){
     background-color: #f2f2f2;
 }
-
-
-
-
-
-
-
 
 
 .odd .dtfc-fixed-right {
