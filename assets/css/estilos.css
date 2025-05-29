@@ -169,7 +169,7 @@ input[type=file]::file-selector-button {
 }
 
 .odd .dtfc-fixed-left, .odd .dtfc-fixed-right {
-    /* background-color: #f2f2f2; */
+    background-color: #f2f2f2;
     z-index: 3;
 }
 
@@ -184,7 +184,7 @@ input[type=file]::file-selector-button {
 }
 
 .even .dtfc-fixed-left{
-    /* background-color: #fff; */
+    background-color: #fff;
     z-index: 3;
 
 }
