@@ -64,13 +64,15 @@
                                         <span><i class="fas fa-calendar-range"></i></span>
                                         <input autocomplete="off" style="border:none" type="text" id="miRangoFecha" readonly class="form-control" placeholder="Selecciona un rango" />
                                     </div>
-
                                 </div>
+                                <script>
+                                    let tablaActiva = tabla; // Variable para identificar la tabla activa
+                                </script>
                                 <div class="col-sm p-0">
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="search" id="_search" onpaste="return trimPaste(event, this)" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search" onpaste="return trimPaste(event, this)" oninput="Buscar(tablaActiva,this)" class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>
@@ -150,9 +152,7 @@
                                     </tbody>
                                 </table>
                             </div>
-
                         </div>
-
                         <!-- </div> -->
                     </div>
                     <!-- /.card-body -->
@@ -166,7 +166,6 @@
     <!-- /.container-fluid -->
 </section>
 <!-- /.Contenido -->
-
 <section id="div_hor_header" class="form-section content-header" style="display:none">
     <div class="container-fluid">
         <div class="row justify-content-between">
@@ -431,8 +430,7 @@
     var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
     var editar = '<?php echo $_SESSION["editar20"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar20"] ?>';
-    var collapsedGroups = {};
-
+    var collapsedGroups = {};// Variable para identificar la tabla activa
     configuracionTable = {
         dom: 'Ptp',
         lengthChange: false,
@@ -637,9 +635,6 @@
             tabla.fixedHeader.adjust();
         }
     });
-
-
-    // Reiniciar contadores en cada draw
 
     $(document).ready(function() {
         let accion = 0;
@@ -900,7 +895,7 @@
                 // stateSave: true,
                 ...configuracionTable
             });
-
+            tablaActiva = tabla; // Asignar la tabla activa
             tabla.on('draw.dt', function() {
                 let currentGroup = null;
                 let counter = 0;
@@ -1766,10 +1761,12 @@
             let target = $(e.target).attr("href"); // Por ejemplo: #custom-tabs-orden
             // Ajustar DataTable de la pestaña activa
             if (target === '#custom-tabs-dia') {
+                tablaActiva = tabla;
                 tblHorario.columns.adjust().draw();
                 tblHorario.searchPanes.rebuildPane();
             } else if (target === '#custom-tabs-orden') {
                 // tblGastos.columns.adjust().draw();
+                tablaActiva = tblGastos;
                 tblGastos.searchPanes.rebuildPane();
                 $('.dtsp-titleRow').remove();
             }
