@@ -7,36 +7,43 @@ class ModeloHorario
     static public function mdlListarHorario($start, $end)
     {
         try {
-            $sql = "SELECT
-                h.id,
-                split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
-                o.nombre AS orden,
-                c.nombre AS cliente,
-                UPPER(TO_CHAR(h.fecha, 'TMDy DD TMMON')) AS fecha,
-                h.hn_val::MONEY,
-                h.hs_val::MONEY,
-                h.he_val::MONEY,
-                h.ht_val::MONEY,
-                h.adicional_1215::MONEY,
-                h.decimo_tercer::MONEY,
-                h.decimo_cuarto::MONEY,
-                h.vacaciones::MONEY,
-                h.fondo_reserva::MONEY,
-                h.costo_mano_obra,
-                h.gasto_en_obra,
-                h.total_costo,
-                h.total_costo::numeric,
-                h.id_empleado,
-                h.id_orden,
-                TO_CHAR(h.fecha, 'YYYY-MM-DD') AS fecha_val
-
+            $sql = "SELECT h.id, split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
+                COALESCE(j.justificacion, o.nombre) AS orden,c.nombre AS cliente,
+                UPPER(TO_CHAR(h.fecha, 'TMDy DD TMMON')) AS fecha,h.hn_val::MONEY,h.hs_val::MONEY,
+                h.he_val::MONEY,h.ht_val::MONEY,h.adicional_1215::MONEY,h.decimo_tercer::MONEY,
+                h.decimo_cuarto::MONEY,h.vacaciones::MONEY,h.fondo_reserva::MONEY,h.costo_mano_obra,
+                h.gasto_en_obra,h.total_costo,h.id_empleado,h.id_orden,TO_CHAR(h.fecha, 'YYYY-MM-DD') AS fecha_val
             FROM public.tblhorario h
-                JOIN tblorden    o ON o.id = h.id_orden
-                JOIN tblempleado e ON e.id = h.id_empleado 
-                JOIN tblclientes c ON c.id = o.id_cliente
+                LEFT JOIN tblorden o ON o.id = h.id_orden
+                JOIN tblempleado e   ON e.id = h.id_empleado 
+                LEFT JOIN tblclientes c ON c.id = o.id_cliente
+                LEFT JOIN tbljustificacion j ON j.id = h.id_justificacion
             WHERE h.fecha BETWEEN :start AND :end
-            ORDER BY h.fecha DESC, h.id";
+            ORDER BY h.fecha DESC, h.id;";
+            // Preparamos, vinculamos y ejecutamos
+            $stmt = Conexion::ConexionDB()->prepare($sql);
+            $stmt->bindParam(":start", $start);
+            $stmt->bindParam(":end", $end);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
 
+    static public function mdlListarGastos($start, $end)
+    {
+        try {
+            $sql = "SELECT h.id, split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
+            COALESCE(j.justificacion, o.nombre) AS orden,c.nombre AS cliente,h.gm::MONEY,h.gt::MONEY,
+            h.gc::MONEY,h.gh::MONEY,h.gg::MONEY,h.ga::MONEY,h.gasto_en_obra
+            FROM public.tblhorario h
+                LEFT JOIN tblorden o ON o.id = h.id_orden
+                JOIN tblempleado e   ON e.id = h.id_empleado 
+                LEFT JOIN tblclientes c ON c.id = o.id_cliente
+                LEFT JOIN tbljustificacion j ON j.id = h.id_justificacion
+            WHERE h.fecha BETWEEN :start AND :end
+            ORDER BY h.fecha DESC, h.id;";
             // Preparamos, vinculamos y ejecutamos
             $stmt = Conexion::ConexionDB()->prepare($sql);
             $stmt->bindParam(":start", $start);
@@ -80,7 +87,6 @@ class ModeloHorario
         }
     }
 
-
     static public function mdlAgregarHorario($registros)
     {
         try {
@@ -121,28 +127,64 @@ class ModeloHorario
     }
 
 
-    static public function mdlEditarHorario($id, $ruc, $nombre, $dir, $correo, $tel)
+    static public function mdlEditarHorario($registros)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("UPDATE tblproveedores SET ruc=:ruc, nombre=:nombre, direccion = :dir, correo = :correo, telefono = :tel WHERE id=:id");
-            $u->bindParam(":id", $id, PDO::PARAM_INT);
-            $u->bindParam(":ruc", $ruc, PDO::PARAM_STR);
-            $u->bindParam(":nombre", $nombre, PDO::PARAM_STR);
-            $u->bindParam(":dir", $dir, PDO::PARAM_STR);
-            $u->bindParam(":correo", $correo, PDO::PARAM_STR);
-            $u->bindParam(":tel", $tel, PDO::PARAM_STR);
-            $u->execute();
+            $conn = Conexion::ConexionDB();
+            $stmt = $conn->prepare("UPDATE tblhorario SET
+            id_empleado = :id_empleado,
+            id_orden = :id_orden,
+            fecha = :fecha,
+            hn = :hn,
+            hs = :hs,
+            he = :he,
+            gm = :material,
+            gt = :trans,
+            ga = :agua,
+            gh = :hosp,
+            gg = :guard,
+            gc = :ali,
+            id_justificacion = :id_justificacion
+        WHERE id = :id_horario");
+            foreach ($registros as $r) {
+                if (empty($r["id_horario"])) {
+                    throw new Exception("Falta el campo id_horario en el registro a actualizar.");
+                }
+
+                $stmt->bindValue(":id_empleado", $r["id_empleado"], PDO::PARAM_INT);
+                $stmt->bindValue(":id_orden", $r["id_orden"], PDO::PARAM_INT);
+                $stmt->bindValue(":fecha", $r["fecha"], PDO::PARAM_STR);
+                $stmt->bindValue(":hn", $r["hn"]);
+                $stmt->bindValue(":hs", $r["hs"]);
+                $stmt->bindValue(":he", $r["he"]);
+                $stmt->bindValue(":material", $r["material"]);
+                $stmt->bindValue(":trans", $r["trans"]);
+                $stmt->bindValue(":agua", $r["agua"]);
+                $stmt->bindValue(":hosp", $r["hosp"]);
+                $stmt->bindValue(":guard", $r["guard"]);
+                $stmt->bindValue(":ali", $r["ali"]);
+                $stmt->bindValue(":id_justificacion", $r["justificacion"], PDO::PARAM_INT);
+                $stmt->bindValue(":id_horario", $r["id_horario"], PDO::PARAM_INT);
+                $stmt->execute();
+            }
+
             return array(
                 'status' => 'success',
-                'm' => 'El proveedor se editó correctamente'
+                'm' => 'El horario se editó correctamente'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo editar el proveedor: ' . $e->getMessage()
+                'm' => 'No se pudo editar el horario: ' . $e->getMessage()
+            );
+        } catch (Exception $e) {
+            return array(
+                'status' => 'danger',
+                'm' => $e->getMessage()
             );
         }
     }
+
 
     public static function mdlEliminarHorario($id)
     {
@@ -161,6 +203,4 @@ class ModeloHorario
             );
         }
     }
-
-
 }

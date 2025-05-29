@@ -127,7 +127,7 @@
                                             <th rowspan="2" class="th-orange">NOMBRES</th>
                                             <th rowspan="2" class="th-orange">Nº DE ORDEN</th>
                                             <th rowspan="2" class="th-orange">CLIENTE</th>
-                                            <th class="th-blue" colspan="6">GASTOS EN OBRA</th>
+                                            <th class="th-blue" colspan="7">GASTOS EN OBRA</th>
                                         </tr>
                                         <tr>
                                             <th class="th-blue">MATERIAL</th>
@@ -136,13 +136,14 @@
                                             <th class="th-blue">HOSP.</th>
                                             <th class="th-blue">GUARD.</th>
                                             <th class="th-blue">AGUA</th>
+                                            <th style="color:#1f3853" class="th-dark-blue">TOTAL</th>
                                             <!-- <th class="text-center">ACCIONES</th> -->
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th colspan="3"><strong>Total general:</strong></th>
-                                            <!-- <th colspan="13" id="totalGeneral"></th> -->
+                                            <th colspan="8" id="totalGeneralGastos"></th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
@@ -336,9 +337,9 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
+            <form id="formEditar" autocomplete="off" class="needs-validation" novalidate>
                 <div class="modal-body scroll-modal" style="padding-block:1rem .5rem">
-                    <input type="hidden" id="id" value="">
+                    <input type="hidden" id="id_horario" value="">
                     <div class="col-md-12 pb-3">
                         <div class="row">
                             <div class="col-md-4 ui-front">
@@ -461,18 +462,22 @@
                 const total = rows
                     .data()
                     .toArray()
-                    .reduce((acc, row) => acc + (parseFloat(row.total_costo) || 0), 0);
-
+                    .reduce((acc, row) => {
+                        const num = parseFloat(
+                            String(row.total_costo).replace(/[^0-9.-]+/g, '')
+                        );
+                        return acc + (isNaN(num) ? 0 : num);
+                    }, 0);
                 const totalStr = total.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
 
                 // Construir contenido del grupo
-                const actionButtons = `
-        ${editar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button>' : ''}
-        ${eliminar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : ''}`;
-
+                //         const actionButtons = `
+                // ${editar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button>' : ''}
+                // ${eliminar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : ''}`;
+                const actionButtons = ""
                 const groupText = `<div style="cursor:pointer" class="group-header d-flex align-items-center">
                                     <div class="group-title sticky-start">
                                         <strong style="padding-left:.5rem">${group} (${rows.count()} personas) - Total: $${totalStr}</strong>
@@ -483,7 +488,7 @@
                                 </div>`;
 
                 return $('<tr/>')
-                    .append(`<td class="pr-0 pl-0" colspan="17">${groupText}</td>`)
+                    .append(`<td class="pr-0 pl-0" style="padding:.7rem" colspan="17">${groupText}</td>`)
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -594,20 +599,26 @@
         ],
         footerCallback: function(row, data, start, end, display) {
             const api = this.api();
-            // Obtiene los datos filtrados y visibles de la columna "total_costo" (suponiendo que es la columna 13)
+            // Suma la columna 15 (ajusta el índice si hace falta)
             const total = api.column(15, {
                     search: 'applied'
-                }) // Asegúrate de usar el índice correcto
-                .data().reduce(function(acc, value) {
-                    return acc + (parseFloat(value) || 0);
+                })
+                .data()
+                .reduce((acc, value) => {
+                    // Limpia el string: quita todo lo que no sea dígito, punto o signo menos
+                    const num = parseFloat(
+                        String(value).replace(/[^0-9.-]+/g, '')
+                    );
+                    return acc + (isNaN(num) ? 0 : num);
                 }, 0);
 
-            // Formatear el total
+            // Formatea el total de vuelta a money
             const totalStr = total.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
 
+            // Escribe en el footer
             const footer = $(api.table().footer());
             footer.find('#totalGeneral').html('$' + totalStr);
         }
@@ -672,8 +683,9 @@
         initDateRange(start, end);
         const container = document.getElementById('div-empleado'); // el div padre de tu tabla
         const container2 = document.getElementById('card-per');
-        const container3 = document.getElementById('card-hor'); // el div padre de tu tabla
-        // el div padre de tu tabla
+        const container3 = document.getElementById('custom-tabs-dia'); // el div padre de tu tabla
+        const container4 = document.getElementById('custom-tabs-orden');
+
         const nro_ordenHorario = document.getElementById('nro_ordenHorario');
         const fechaH = document.getElementById('fechaH');
 
@@ -736,6 +748,11 @@
             toggleCustomFilterButtons();
 
         });
+
+        $('#tblGastos').on('searchPanes.dt draw.dt', function() {
+            toggleCustomFilterButtons();
+        });
+
         const fecha_edit = document.getElementById('fecha_edit');
         const empleadosMap = new Map(datos_em.map(item => [item.cod, item]));
         const ordenesMap = new Map(items_orden.map(item => [item.cod, item]));
@@ -804,7 +821,7 @@
                 end = moment(start).endOf('month');
             }
             anio = a;
-            console.log('anio', anio);
+            // console.log('anio', anio);
 
             // start = moment([anio, mes - 1, 1]);
             // end = moment(start).endOf('month');
@@ -818,6 +835,10 @@
             // recarga tu tabla
             tabla.ajax.reload(function() {
                 tabla.searchPanes.rebuildPane();
+                $('.dtsp-titleRow').remove();
+            }, false);
+            tblGastos.ajax.reload(function() {
+                tblGastos.searchPanes.rebuildPane();
                 $('.dtsp-titleRow').remove();
             }, false);
         });
@@ -847,6 +868,11 @@
 
             tabla.ajax.reload(function() {
                 tabla.searchPanes.rebuildPane();
+                $('.dtsp-titleRow').remove();
+            }, false);
+
+            tblGastos.ajax.reload(function() {
+                tblGastos.searchPanes.rebuildPane();
                 $('.dtsp-titleRow').remove();
             }, false);
         });
@@ -926,7 +952,7 @@
             paging: false,
             columnDefs: [{
                     targets: 0,
-                    className: "text-center",
+                    className: "text-center d-flex justify-content-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
                             return `<input
@@ -949,7 +975,9 @@
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input
+                            return `
+                    <div class="d-flex justify-content-center align-items-center" style="height:100%;">
+                            <input
                         style="width:5rem"
                         type="text"
                         autocomplete="off"
@@ -958,9 +986,10 @@
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
                         maxlength="4"
-                        id="id${meta.row + 1}"
+                        
                         class="form-control hs text-center"
-                        value="${data || ''}">`;
+                        value="${data || ''}">
+                        </div>`;
                         }
                         return data;
                     }
@@ -970,7 +999,10 @@
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input
+                            return `
+                                    <div class="d-flex justify-content-center align-items-center" style="height:100%;">
+
+                            <input
                         style="width:5rem"
                         type="text"
                         autocomplete="off"
@@ -980,7 +1012,8 @@
                         inputmode="numeric"
                         maxlength="4"
                         class="form-control h100 text-center"
-                        value="${data || ''}">`;
+                        value="${data || ''}">
+                         </div>`;
                         }
                         return data;
                     }
@@ -1151,6 +1184,76 @@
             //     aplicarAutocomplete($inputObra, items_orden, ordenesMap, idOrden, true);
             // }
         });
+
+        let tblGastos = $("#tblGastos").DataTable({
+            "dom": 'Ptp',
+            "lengthChange": false,
+            "ordering": false,
+            autoWidth: false,
+            paging: true,
+            pageLength: 100,
+            scrollY: 'calc(100vh - 425px)',
+            searchPanes: {
+                cascadePanes: true,
+                columns: [1, 2, 3], // columnas por las que filtrar
+                initCollapsed: true,
+                threshold: 0.8,
+                dtOpts: {
+                    select: {
+                        style: 'multiple'
+                    }
+                }
+            },
+            initComplete: function() {
+                $('.dtsp-titleRow').remove();
+            },
+            "ajax": {
+                "url": "controllers/horario.controlador.php",
+                "type": "POST",
+                "dataSrc": '',
+                data: function(data) {
+                    data.accion = 6;
+                    data.start = start.format('YYYY-MM-DD');
+                    data.end = end.format('YYYY-MM-DD');
+                }
+            },
+            columnDefs: [{
+                targets: 0,
+                data: null,
+                className: "text-center",
+                render: function(data, type, row, meta) {
+                    if (type === 'display') {
+                        return meta.row + 1; // Devuelve el número de fila + 1
+                    }
+                    return meta.row; // Devuelve el índice de la fila
+                }
+            }],
+            footerCallback: function(row, data, start, end, display) {
+                const api = this.api();
+                // Suma la columna 15 (ajusta el índice si hace falta)
+                const total = api.column(10, {
+                        search: 'applied'
+                    })
+                    .data()
+                    .reduce((acc, value) => {
+                        // Limpia el string: quita todo lo que no sea dígito, punto o signo menos
+                        const num = parseFloat(
+                            String(value).replace(/[^0-9.-]+/g, '')
+                        );
+                        return acc + (isNaN(num) ? 0 : num);
+                    }, 0);
+                // Formatea el total de vuelta a money
+                const totalStr = total.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                // Escribe en el footer
+                const footer = $(api.table().footer());
+                footer.find('#totalGeneralGastos').html('$' + totalStr);
+            }
+        });
+
 
         let tblPerson = $("#tblPersonH").DataTable({
             "dom": 't',
@@ -1453,6 +1556,24 @@
 
         });
 
+        // $('#tblHorarioE').on('draw.dt', function() {
+        //     tblHorarioE.row.add({
+        //         0: '',
+        //         1: '',
+        //         2: '',
+        //         3: '',
+        //         4: '',
+        //         5: '',
+        //         6: '',
+        //         7: '',
+        //         8: '',
+        //         9: '',
+        //         10: '',
+        //         11: '',
+        //         12: ''
+        //     }).draw(false);
+        // });
+
 
         $('#tblPersonH').on('change', '.cbo', function() {
             const valorSel = $(this).val();
@@ -1598,6 +1719,14 @@
 
         observer3.observe(container3);
 
+        const observer4 = new ResizeObserver(() => {
+            tblGastos.columns.adjust();
+
+        });
+
+        observer4.observe(container4);
+
+
         let lastSelectedIndex = null;
 
         $('#tblPersonH tbody').on('click', 'td.select-checkbox', function(e) {
@@ -1631,6 +1760,19 @@
                     }
                 }
             });
+        });
+
+        $('a[data-toggle="pill"]').on('shown.bs.tab', function(e) {
+            let target = $(e.target).attr("href"); // Por ejemplo: #custom-tabs-orden
+            // Ajustar DataTable de la pestaña activa
+            if (target === '#custom-tabs-dia') {
+                tblHorario.columns.adjust().draw();
+                tblHorario.searchPanes.rebuildPane();
+            } else if (target === '#custom-tabs-orden') {
+                // tblGastos.columns.adjust().draw();
+                tblGastos.searchPanes.rebuildPane();
+                $('.dtsp-titleRow').remove();
+            }
         });
 
         $('#tblHorarioE').on('input keydown', '.hn, .hs, .h100', function() {
@@ -1877,21 +2019,17 @@
 
         const modal = document.querySelector('.modal'),
             span = document.querySelector('.modal-title span'),
-            elements = document.querySelectorAll('.modal .bg-gradient-green'),
             form = document.getElementById('formNuevo'),
-            // div_placa = document.getElementById('div_placa'),
-            modalS = document.getElementById('modalS'),
-            elementsE = document.querySelectorAll('#modalS .bg-gradient-green'),
-            select = document.querySelectorAll('.modal-body select.select2'),
-            formS = document.getElementById('formNuevoS'),
-            spanE = document.querySelector('#span-title span'),
-            iconElement = document.querySelector('#span-title i'),
-            inputContent = document.getElementById('nombreS'),
-            inputId = document.getElementById('idS'),
+            formEditar = document.getElementById('formEditar'),
+            inputId = document.getElementById('id_horario'),
             btnNuevo = document.getElementById('btnNuevo'),
             btnReturn = document.getElementById('btnReturn');
 
+        const scrollBody = $('#tblHorario').closest('.dataTables_scroll').find('.dataTables_scrollBody')[0];
+        const $scrollBody = $('#tblHorario').closest('.dataTables_scroll').find('.dataTables_scrollBody');
+
         let scrollPos = 0;
+        let scrollPosition = 0;
 
         // const id = document.getElementById('id'),
         //     cedula = document.getElementById('cedula'),
@@ -1934,9 +2072,7 @@
         $('#tblHorario tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
             const id = e["id"];
-            const scrollBody = $('#tblHorario').closest('.dataTables_scroll').find('.dataTables_scrollBody')[0];
-            const scrollPosition = scrollBody.scrollTop;
-            const $scrollBody = $('#tblHorario').closest('.dataTables_scroll').find('.dataTables_scrollBody');
+            scrollPosition = scrollBody.scrollTop;
 
             let src = new FormData();
             src.append('accion', 4);
@@ -1957,7 +2093,10 @@
 
         $('#tblHorario tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
+            scrollPosition = scrollBody.scrollTop;
+
             id_horario_editar = row["id"];
+            inputId.value = id_horario_editar || '';
             const idEmpleado = row["id_empleado"] || null;
             const idOrden = row["id_orden"] || null;
             const fecha_horario = row["fecha_val"] || null;
@@ -1968,6 +2107,85 @@
             aplicarAutocomplete($('#empleado_edit'), datos_em, empleadosMap, idEmpleado, true);
             aplicarAutocomplete($('#orden_edit'), items_orden, ordenesMap, idOrden, true);
         });
+
+        formEditar.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const rows = tblHorarioE.rows().nodes();
+            const datos = [];
+            const fecha = fecha_edit.value || '';
+            const id_empleado = $('#empleado_edit').attr('data-id') || null;
+            const id_obra = $('#orden_edit').attr('data-id') || null;
+            $(rows).each(function() {
+                const $row = $(this);
+                const hn = parseFloat($row.find('.hn').val()) || null;
+                const hs = parseFloat($row.find('.hs').val()) || null;
+                const he = parseFloat($row.find('.h100').val()) || null;
+
+                const material = parseFloat($row.find('.material').val()) || null;
+                const trans = parseFloat($row.find('.trans').val()) || null;
+                const ali = parseFloat($row.find('.ali').val()) || null;
+                const hosp = parseFloat($row.find('.hosp').val()) || null;
+                const guard = parseFloat($row.find('.guard').val()) || null;
+                const agua = parseFloat($row.find('.agua').val()) || null;
+
+                // if (id_empleado && id_obra && fecha) {
+                datos.push({
+                    id_horario: id_horario_editar,
+                    id_empleado,
+                    id_orden: id_obra,
+                    fecha,
+                    hn,
+                    hs,
+                    he,
+                    material,
+                    trans,
+                    ali,
+                    hosp,
+                    guard,
+                    agua,
+                    justificacion: null
+                });
+            });
+            // Ahora puedes enviar 'datos' al servidor con AJAX como ya vimos
+            console.log("Datos a editar:", datos);
+            // 👉 Aquí haces el envío AJAX
+            if (datos.length > 0) {
+                $.ajax({
+                    url: 'controllers/horario.controlador.php', // Cambia a tu ruta real
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {
+                        accion: 3,
+                        registros: JSON.stringify(datos) // Importante: lo mandas como string normal
+                    },
+                    success: function(resp) {
+                        const isSuccess = resp.status === "success";
+                        mostrarToast(resp.status,
+                            isSuccess ? "Completado" : "Error",
+                            isSuccess ? "fa-check" : "fa-xmark",
+                            resp.m);
+                        if (isSuccess) {
+                            $('#modal').modal('hide');
+                        }
+                        if (tabla) {
+                            tabla.ajax.reload(function() {
+                                $scrollBody.scrollTop(scrollPosition);
+                                // Ajusta el delay si es necesario
+                            }, false); // Recargar tabla si es necesario
+                        }
+
+
+                    },
+                });
+            } else {
+                mostrarToast(
+                    'warning',
+                    "Advertencia",
+                    "fa-triangle-exclamation",
+                    'No hay datos para guardar', 4000
+                );
+            }
+        })
 
         $('#btnGuardarHorario').on('click', function() {
             const rows = tblPerson.rows().nodes();
@@ -2003,7 +2221,6 @@
                             hosp: null,
                             guard: null,
                             agua: null,
-                            justificacion,
                         });
                     }
                     return;

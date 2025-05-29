@@ -23,13 +23,25 @@ class ControladorHorario
     }
     public function editarHorario()
     {
-        $data = ModeloHorario::mdlEditarHorario($this->id, $this->id_empleado, $this->id_orden, $this->fecha, $this->hn, $this->hs, $this->he, $this->material, $this->trans, $this->ali, $this->hosp, $this->guard, $this->agua);
+        $data = ModeloHorario::mdlEditarHorario($this->registros);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     public function eliminarHorario()
     {
         $data = ModeloHorario::mdlEliminarHorario($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function agg_editHorario()
+    {
+        $data = ModeloHorario::mdlEliminarHorario($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function listarGastos()
+    {
+        $data = ModeloHorario::mdlListarGastos($this->start, $this->end);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
@@ -47,22 +59,17 @@ if (!isset($_POST["accion"])) {
         $data->id = $_POST["id"];
         $data->consultarHorario();
     } else if ($_POST["accion"] == 3) {
-        $data->id = $_POST["id"];
-        $data->id_empleado = $_POST["id_empleado"];
-        $data->id_orden = $_POST["id_orden"];
-        $data->fecha = $_POST["fecha"];
-        $data->hn = $_POST["hn"];
-        $data->hs = $_POST["hs"];
-        $data->he = $_POST["he"];
-        $data->material = $_POST["material"];
-        $data->trans = $_POST["trans"];
-        $data->ali = $_POST["ali"];
-        $data->hosp = $_POST["hosp"];
-        $data->guard = $_POST["guard"];
-        $data->agua = $_POST["agua"];
+        $data->registros = json_decode($_POST["registros"], true); // Decodificar a array
         $data->editarHorario();
-    }else if ($_POST["accion"] == 4) {
+    } else if ($_POST["accion"] == 4) {
         $data->id = $_POST["id"];
         $data->eliminarHorario();
+    } else if ($_POST["accion"] == 5) {
+        $data->id = $_POST["id"];
+        $data->agg_editHorario();
+    } else if ($_POST["accion"] == 6) {
+        $data->start = $_POST["start"];
+        $data->end = $_POST["end"];
+        $data->listarGastos();
     }
 }
