@@ -3,8 +3,7 @@ require_once "../models/horario.modelo.php";
 
 class ControladorHorario
 {
-    public $id, $registros, $id_empleado, $id_orden, $fecha, $hn, $hs, $he, $material, $trans,
-        $ali, $hosp, $guard, $agua, $start, $end;
+    public $id, $datos, $datos_edit, $start, $end ;
 
     public function listarHorario()
     {
@@ -13,7 +12,7 @@ class ControladorHorario
     }
     public function agregarHorario()
     {
-        $data = ModeloHorario::mdlAgregarHorario($this->registros); // ahora usa $this->registros
+        $data = ModeloHorario::mdlAgregarHorario($this->datos); // ahora usa $this->datos
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     public function consultarHorario()
@@ -23,7 +22,7 @@ class ControladorHorario
     }
     public function editarHorario()
     {
-        $data = ModeloHorario::mdlEditarHorario($this->registros);
+        $data = ModeloHorario::mdlEditarHorario($this->datos);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -33,9 +32,9 @@ class ControladorHorario
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function agg_editHorario()
+    public function add_editHorario()
     {
-        $data = ModeloHorario::mdlEliminarHorario($this->id);
+        $data = ModeloHorario::add_editHorario($this->datos, $this->datos_edit);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -53,20 +52,21 @@ if (!isset($_POST["accion"])) {
     $data->listarHorario();
 } else {
     if ($_POST["accion"] == 1) {
-        $data->registros = json_decode($_POST["registros"], true); // Decodificar a array
+        $data->datos = json_decode($_POST["datos"], true); // Decodificar a array
         $data->agregarHorario();
     } else if ($_POST["accion"] == 2) {
         $data->id = $_POST["id"];
         $data->consultarHorario();
     } else if ($_POST["accion"] == 3) {
-        $data->registros = json_decode($_POST["registros"], true); // Decodificar a array
+        $data->datos = json_decode($_POST["datos"], true); // Decodificar a array
         $data->editarHorario();
     } else if ($_POST["accion"] == 4) {
         $data->id = $_POST["id"];
         $data->eliminarHorario();
     } else if ($_POST["accion"] == 5) {
-        $data->id = $_POST["id"];
-        $data->agg_editHorario();
+        $data->datos = json_decode($_POST["datos"], true);
+        $data->datos_edit = json_decode($_POST["datos_edit"], true);
+        $data->add_editHorario();
     } else if ($_POST["accion"] == 6) {
         $data->start = $_POST["start"];
         $data->end = $_POST["end"];

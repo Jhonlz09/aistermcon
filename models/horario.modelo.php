@@ -87,7 +87,7 @@ class ModeloHorario
         }
     }
 
-    static public function mdlAgregarHorario($registros)
+    static public function mdlAgregarHorario($datos)
     {
         try {
             $conn = Conexion::ConexionDB();
@@ -97,7 +97,7 @@ class ModeloHorario
                 :id_empleado, :id_orden, :fecha, :hn, :hs, :he, :material, :trans, :agua, :hosp, :guard, :ali, :id_justificacion
             )");
 
-            foreach ($registros as $r) {
+            foreach ($datos as $r) {
                 $stmt->bindValue(":id_empleado", $r["id_empleado"], PDO::PARAM_INT);
                 $stmt->bindValue(":id_orden", $r["id_orden"], PDO::PARAM_INT);
                 $stmt->bindValue(":fecha", $r["fecha"], PDO::PARAM_STR);
@@ -126,8 +126,7 @@ class ModeloHorario
         }
     }
 
-
-    static public function mdlEditarHorario($registros)
+    static public function mdlEditarHorario($datos)
     {
         try {
             $conn = Conexion::ConexionDB();
@@ -146,7 +145,7 @@ class ModeloHorario
             gc = :ali,
             id_justificacion = :id_justificacion
         WHERE id = :id_horario");
-            foreach ($registros as $r) {
+            foreach ($datos as $r) {
                 if (empty($r["id_horario"])) {
                     throw new Exception("Falta el campo id_horario en el registro a actualizar.");
                 }
@@ -185,6 +184,53 @@ class ModeloHorario
         }
     }
 
+    static public function add_editHorario($datos, $datos_edit)
+    {
+        // Para acumular mensajes y estado
+        $result = [
+            'status' => 'success',
+            'messages' => []
+        ];
+        try {
+            // Si hay datos nuevos, los insertamos
+            if (!empty($datos)) {
+                $addResult = self::mdlAgregarHorario($datos);
+                // Si falla el insert, propagamos el error
+                if ($addResult['status'] !== 'success') {
+                    return $addResult;
+                }
+                $result['messages'][] = $addResult['m'];
+            }
+
+            // Si hay datos para editar, los actualizamos
+            if (!empty($datos_edit)) {
+                $editResult = self::mdlEditarHorario($datos_edit);
+                if ($editResult['status'] !== 'success') {
+                    return $editResult;
+                }
+                $result['messages'][] = $editResult['m'];
+            }
+
+            // Si no había nada qué hacer
+            if (empty($datos) && empty($datos_edit)) {
+                throw new Exception("No hay datos para agregar ni editar.");
+            }
+
+            // Combinamos los mensajes en uno solo
+            $result['m'] = implode(" | ", $result['messages']);
+            return $result;
+        } catch (PDOException $e) {
+            return [
+                'status' => 'danger',
+                'm'      => 'Error al procesar horarios: ' . $e->getMessage()
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => 'danger',
+                'm'      => $e->getMessage()
+            ];
+        }
+    }
 
     public static function mdlEliminarHorario($id)
     {

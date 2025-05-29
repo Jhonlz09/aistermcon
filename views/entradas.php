@@ -196,12 +196,10 @@
     $('#tblEntradas tbody').on('click', 'tr.dtrg-start', function() {
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
             var windowScrollTop = $(window).scrollTop();
-            var tableScrollTop = $('#tblEntradas_wrapper').scrollTop();
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
             tabla.draw(false);
             $(window).scrollTop(windowScrollTop);
-            $('#tblEntradas_wrapper').scrollTop(tableScrollTop);
         }
     });
 
@@ -267,7 +265,9 @@
             } else {
                 mes = cboMeses.value;
             }
-            tabla.ajax.reload();
+            tabla.ajax.reload(function() {
+                tabla.searchPanes.resizePanes();
+            }, false);
         });
 
         $(cboMeses).on("change", function() {
@@ -281,7 +281,9 @@
                 mes = m;
             }
             anio = cboAnio.options[cboAnio.selectedIndex].text;
-            tabla.ajax.reload();
+            tabla.ajax.reload(function() {
+                tabla.searchPanes.resizePanes();
+            }, false);
         });
 
         if (btnNuevo) {
@@ -309,7 +311,6 @@
             entrada_radio.dispatchEvent(new Event('change'));
             first_control.click();
             tblDetalleCompra.ajax.reload(null, false);
-            // entrada_radio.value = '1';
         });
 
         $('#tblEntradas').on('click', '#eliE', function() {

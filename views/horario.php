@@ -206,7 +206,7 @@
                             <!-- Elemento 2 -->
                             <div class="col-sm col-md-3  mb-2">
                                 <label for="fechaH" class="m-0"><i class="fas fa-calendar"></i> Fecha</label>
-                                <input type="date" id="fechaH" class="form-control" value="<?php echo date('Y-m-d'); ?>" style="border-bottom: solid 2px #000;">
+                                <input type="date" id="fechaH" class="form-control" min="2024-01-01" value="<?php echo date('Y-m-d'); ?>" style="border-bottom: solid 2px #000;">
                             </div>
 
                             <!-- Elemento 3 -->
@@ -472,10 +472,12 @@
                 });
 
                 // Construir contenido del grupo
-                //         const actionButtons = `
-                // ${editar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button>' : ''}
-                // ${eliminar ? '<button class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : ''}`;
+                // const actionButtons = `
+                // ${editar ? '<button id="editH" class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button>' : ''}
+                // ${eliminar ? '<button id="eliH" class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : ''}`;
+                
                 const actionButtons = ""
+
                 const groupText = `<div style="cursor:pointer" class="group-header d-flex align-items-center">
                                     <div class="group-title sticky-start">
                                         <strong style="padding-left:.5rem">${group} (${rows.count()} personas) - Total: $${totalStr}</strong>
@@ -486,7 +488,7 @@
                                 </div>`;
 
                 return $('<tr/>')
-                    .append(`<td class="pr-0 pl-0" style="padding:.7rem" colspan="17">${groupText}</td>`)
+                    .append(`<td class="pr-0 pl-0" colspan="17">${groupText}</td>`)
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -621,20 +623,6 @@
             footer.find('#totalGeneral').html('$' + totalStr);
         }
     };
-
-    $('#tblHorario tbody').on('click', 'tr.dtrg-start', function() {
-        const $this = $(this);
-        const name = $this.data('name');
-        const wasCollapsed = collapsedGroups[name];
-        collapsedGroups[name] = !wasCollapsed;
-
-        tabla.draw(false);
-
-        tabla.columns.adjust();
-        // if (tabla.fixedHeader) {
-        //     tabla.fixedHeader.adjust();
-        // }
-    });
 
     $(document).ready(function() {
         let accion = 0;
@@ -881,7 +869,7 @@
                 ...configuracionTable
             });
             tablaActiva = tabla; // Asignar la tabla activa
-            
+
             tabla.on('draw.dt', function() {
                 let currentGroup = null;
                 let counter = 0;
@@ -1306,6 +1294,7 @@
                             return `<input
                             style="width:10rem"
                             type="date"
+                            min="2024-01-01"
                             class="form-control fechaH"
                             value="${data || ''}">`;
                         }
@@ -1918,7 +1907,6 @@
         // Escuchar selección de filas
         tblPerson.on('select deselect', function() {
             const totalRows = tblPerson.rows().count();
-
             // Total de filas seleccionadas (sin importar el filtro)
             const selectedRows = tblPerson.rows({
                 selected: true
@@ -2031,11 +2019,20 @@
             });
         }
 
+        $('#tblHorario tbody').on('click', 'tr.dtrg-start', function() {
+            scrollPositionTable = scrollBody.scrollTop;
+            const $this = $(this);
+            const name = $this.data('name');
+            const wasCollapsed = collapsedGroups[name];
+            collapsedGroups[name] = !wasCollapsed;
+            tabla.draw(false);
+            tabla.columns.adjust();
+        });
+
         $('#tblHorario tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
             const id = e["id"];
             scrollPositionTable = scrollBody.scrollTop;
-
             let src = new FormData();
             src.append('accion', 4);
             src.append('id', id);
@@ -2115,7 +2112,7 @@
                     dataType: 'json',
                     data: {
                         accion: 3,
-                        registros: JSON.stringify(datos) // Importante: lo mandas como string normal
+                        datos: JSON.stringify(datos) // Importante: lo mandas como string normal
                     },
                     success: function(resp) {
                         const isSuccess = resp.status === "success";
@@ -2141,10 +2138,116 @@
             }
         })
 
+        $('#tblHorario').on('click', '#editH', function() {
+            let row = tabla.row($(this).closest('tr').next()).data()
+            id_horario_editar = row[0];
+            // id_boleta_fab = row[10];
+            // const id_orden = row[11],
+            //     id_cliente = row[12],
+            //     fecha_id = row[13],
+            //     conductor = row[14],
+            //     despachado_id = row[15],
+            //     entrega = row[16],
+            //     fab = row[21],
+            //     tras = row[22],
+            //     orden = row[7],
+            //     cliente = row[8],
+            //     guia = row[17];
+            const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
+            const isfab = fab ? '7' : '2';
+            const isfabValue = fab ? '8' : '4';
+            const radio = document.getElementById('radio-' + isfab);
+            const cancelar = document.getElementById('Cancelar');
+            let selectedItem = items_orden.find(item => item.cod === id_orden);
+            if (fab) {
+                // isTrasFab.disabled = true;
+                if (selectedItem) {
+                    // Asignamos el valor al input de autocompletado
+                    $(nro_ordenFab).val(selectedItem.label);
+                    // Simulamos la selección del ítem en el autocompletado
+                    $(nro_ordenFab)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: selectedItem
+                        });
+
+                } else {
+                    // Crear un nuevo item con los datos disponibles
+                    let nuevoItem = {
+                        cod: id_orden,
+                        label: `${orden}  ${cliente}`,
+                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                    };
+                    $(nro_ordenFab).val(nuevoItem.label);
+
+                    // Simular la selección del nuevo item en el autocompletado
+                    $(nro_ordenFab)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: nuevoItem
+                        });
+                }
+                nro_guiaFab.value = guia;
+                isTrasFab.disabled = tras;
+                isTrasFab.checked = tras;
+                isTrasFab.dispatchEvent(new Event('click'));
+                // console.log(row[22])
+                obtenerDatosProdFab(id_boleta, tras);
+            } else {
+                if (selectedItem) {
+                    // Asignamos el valor al input de autocompletado
+                    $(nro_orden).val(selectedItem.label);
+                    // Simulamos la selección del ítem en el autocompletado
+                    $(nro_orden)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: selectedItem
+                        });
+                } else {
+                    // Crear un nuevo item con los datos disponibles
+                    let nuevoItem = {
+                        cod: id_orden,
+                        label: `${orden}  ${cliente}`,
+                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                    };
+
+                    // Agregar el nuevo item a la lista de items del autocomplete
+                    // items_orden.push(nuevoItem);
+
+                    // Asignar el valor al input
+                    $(nro_orden).val(nuevoItem.label);
+
+                    // Simular la selección del nuevo item en el autocompletado
+                    $(nro_orden)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: nuevoItem
+                        });
+                }
+                setChange(cboConductor, conductor)
+                nro_guia.value = guia;
+                tblDetalleSalida.ajax.reload(null, false);
+            }
+            setChange(cboResponsable, entrega)
+            fecha.value = fecha_id;
+            motivo.value = motivo_text;
+            radio.value = isfabValue;
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change'));
+            cancelar.style.display = 'block'
+            first_control.click();
+            cargarImagenesDropzone(id_boleta);
+            dropzone.enable();
+            if (eliminar) {
+                drop_element.classList.remove("dropzone-disabled");
+            } else {
+                drop_element.classList.add("dropzone-disabled");
+            }
+        });
+
         $('#btnGuardarHorario').on('click', function() {
             const rows = tblPerson.rows().nodes();
             const datos = [];
-
             $(rows).each(function() {
                 const $row = $(this);
                 // Obtener los IDs reales
@@ -2185,14 +2288,12 @@
                 const hn = parseFloat($row.find('.hn').val()) || null;
                 const hs = parseFloat($row.find('.hs').val()) || null;
                 const he = parseFloat($row.find('.h100').val()) || null;
-
                 const material = parseFloat($row.find('.material').val()) || null;
                 const trans = parseFloat($row.find('.trans').val()) || null;
                 const ali = parseFloat($row.find('.ali').val()) || null;
                 const hosp = parseFloat($row.find('.hosp').val()) || null;
                 const guard = parseFloat($row.find('.guard').val()) || null;
                 const agua = parseFloat($row.find('.agua').val()) || null;
-
                 // if (id_empleado && id_obra && fecha) {
                 datos.push({
                     id_empleado,
@@ -2210,9 +2311,7 @@
                     justificacion: null
                 });
             });
-            // Ahora puedes enviar 'datos' al servidor con AJAX como ya vimos
-            console.log("Datos a guardar:", datos);
-            // 👉 Aquí haces el envío AJAX
+
             if (datos.length > 0) {
                 $.ajax({
                     url: 'controllers/horario.controlador.php', // Cambia a tu ruta real
@@ -2221,7 +2320,7 @@
                     // contentType: 'application/json',
                     data: {
                         accion: 1,
-                        registros: JSON.stringify(datos) // Importante: lo mandas como string normal
+                        datos: JSON.stringify(datos) // Importante: lo mandas como string normal
                     },
                     success: function(resp) {
                         const isSuccess = resp.status === "success";

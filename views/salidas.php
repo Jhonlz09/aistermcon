@@ -280,7 +280,6 @@
             let scrollPosition = $(window).scrollTop();
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
-
             tabla.rows().every(function() {
                 if (this.child.isShown()) {
                     this.child.hide();
@@ -362,8 +361,7 @@
                 mes = cboMeses.value;
             }
             tabla.ajax.reload(function() {
-                tabla.searchPanes.rebuildPane();
-                $('.dtsp-titleRow').remove();
+                tblGastos.searchPanes.resizePanes();
             }, false);
         });
 
@@ -380,8 +378,7 @@
 
             anio = cboAnio.options[cboAnio.selectedIndex].text;
             tabla.ajax.reload(function() {
-                tabla.searchPanes.rebuildPane();
-                $('.dtsp-titleRow').remove();
+                tabla.searchPanes.resizePanes();
             }, false);
         });
 
@@ -824,47 +821,5 @@
                 }
             })
         });
-
-        // document.addEventListener('keydown', function(e) {
-        //     if (e.key === "Escape") {
-        //         const activeModal = document.querySelector('.modal.show');
-        //         if (activeModal) {
-        //             $(activeModal).modal('hide');
-        //         }
-        //     }
-        // });
-
-        // $('#tblSalidas tbody').on('click', '.btnEditar', function() {
-        //     let row = obtenerFila(this, tabla);
-        //     accion = 2;
-        //     const icon = document.querySelector('.modal-title i');
-        //     cambiarModal(span, ' Editar Entrada', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
-        //     id.value = row["id_empleado"];
-        //     nombre.value = row["nombres_empleado"];
-        //     cedula.value = row["cedula"];
-        //     conductor.checked = row["conductor"];
-        // });
-
-        // form.addEventListener("submit", function(e) {
-        //     e.preventDefault();
-        //     $('.ten').hide();
-        //     const ced = cedula.value.trim(),
-        //         nom = nombre.value.trim().toUpperCase(),
-        //         con = conductor.checked;
-        //     if (!this.checkValidity() || ced.length < 10) {
-        //         this.classList.add('was-validated');
-        //         ced.length > 0 && $('.ten').show();
-        //         return;
-        //     }
-        //     console.log("Ejecutando el resto del código...");
-        //     const id_e = id.value;
-        //     let datos = new FormData();
-        //     datos.append('id_empleado', id_e);
-        //     datos.append('cedula', ced);
-        //     datos.append('nombres_empleado', nom);
-        //     datos.append('conductor', con);
-        //     datos.append('accion', accion);
-        //     confirmarAccion(datos, null, 'empleados', modal, tabla)
-        // });
     })
 </script>
