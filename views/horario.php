@@ -672,7 +672,8 @@
                 start = startSelected;
                 end = endSelected;
                 $(cboMeses1).val('0').trigger('change');
-                tabla.ajax.reload();
+                tabla.ajax.reload(null, false);
+                tblGastos.ajax.reload(null, false);
             });
         }
         initDateRange(start, end);
@@ -789,17 +790,6 @@
             width: '100%',
             data: datos_meses,
             placeholder: 'SELECCIONE',
-            // allowClear: true,
-            // templateResult: function(data) {
-            //     if (data.id === 13) {
-            //         // Opción oculta en el menú desplegable
-            //         return null;
-            //     }
-            //     return data.text;
-            // },
-            // templateSelection: function(data) {
-            //     return data.text;
-            // }
         });
         setChange(cboMeses1, mes);
 
@@ -876,11 +866,6 @@
             id_orden_horario = null;
         });
 
-        // const observer = new ResizeObserver(() => {
-        //     tablaTop.columns.adjust();
-        // });
-
-        // const clearButtonObraH = document.getElementById('clearButtonObraH');
         if (!$.fn.DataTable.isDataTable('#tblHorario')) {
             tabla = $("#tblHorario").DataTable({
                 "ajax": {
@@ -1551,24 +1536,6 @@
 
         });
 
-        // $('#tblHorarioE').on('draw.dt', function() {
-        //     tblHorarioE.row.add({
-        //         0: '',
-        //         1: '',
-        //         2: '',
-        //         3: '',
-        //         4: '',
-        //         5: '',
-        //         6: '',
-        //         7: '',
-        //         8: '',
-        //         9: '',
-        //         10: '',
-        //         11: '',
-        //         12: ''
-        //     }).draw(false);
-        // });
-
 
         $('#tblPersonH').on('change', '.cbo', function() {
             const valorSel = $(this).val();
@@ -2027,13 +1994,6 @@
 
         let scrollPos = 0;
         let scrollPosition = 0;
-
-        // const id = document.getElementById('id'),
-        //     cedula = document.getElementById('cedula'),
-        //     nombre = document.getElementById('nombre'),
-        //     apellido = document.getElementById('apellido'),
-        //     celular = document.getElementById('celular');
-
 
         OverlayScrollbars(document.querySelector('.scroll-modal'), {
             autoUpdate: true,
