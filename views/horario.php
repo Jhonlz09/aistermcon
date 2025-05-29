@@ -488,7 +488,7 @@
                                 </div>`;
 
                 return $('<tr/>')
-                    .append(`<td class="pr-0 pl-0" colspan="17">${groupText}</td>`)
+                    .append(`<td class="pr-0 pl-0" style="padding:.7rem" colspan="17">${groupText}</td>`)
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }

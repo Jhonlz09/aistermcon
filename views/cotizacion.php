@@ -528,9 +528,9 @@
                 {
                     targets: 3, // Input para descripción
                     render: function(data, type, row) {
-                        return `<input type="text" class="form-control descripcion" value="${data || ''}" 
-                            style="width:100%;border-bottom-width:2px;padding:0;font-size:1.1rem" 
-                            autocomplete="off" onfocus="selecTexto(this)" spellcheck="false">`;
+                        return `<textarea class="form-control descripcion" 
+                            style="width:100%;border-bottom-width:2px;padding-block:.3rem;font-size:1.1rem" 
+                            autocomplete="off" onfocus="selecTexto(this)" spellcheck="false">${data || ''}</textarea>`;
                     }
                 },
                 {
@@ -563,7 +563,7 @@
             ],
             createdRow: function(row, data, dataIndex) {
                 const selectElement = $(row).find('.id_unidad');
-                cargarOpcionesSelect(selectElement, data.id_unidad);
+                cargarOpcionesSelect(selectElement, data.id_unidad, "100%");
             },
             buttons: [{
                 text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
@@ -633,7 +633,7 @@
             radios = document.querySelectorAll('input[name="customRadio"]'),
             radio = document.getElementById('customRadio3');
 
-            let scrollPos = 0;
+        let scrollPos = 0;
         const nom_prove = document.getElementById('nombre_prove'),
             ruc_prove = document.getElementById('ruc_prove'),
             tel_prove = document.getElementById('telefono_prove'),
@@ -1026,10 +1026,10 @@
             otros.readOnly = false;
             iva = row[12];
             ivaOriginal = iva; // subtotal = parseFloat((subtotal || '0').toString().replace(/[$,]/g, '')) || 0;
-            console.log('iva en editar', {
-                iva,
-                ivaOriginal
-            })
+            // console.log('iva en editar', {
+            //     iva,
+            //     ivaOriginal
+            // })
             subtotalOriginal = parseFloat((row[10] || '0').toString().replace(/[$,]/g, '')) || 0;
             descuento = parseFloat((row[14] || '0').toString().replace(/[$,]/g, '')) || '';
             descOriginal = descuento;
@@ -1245,7 +1245,7 @@
                 // Validar que todas las filas tengan el campo 'descrip' no vacío
                 table.rows().eq(0).each(function(index) {
                     let row = table.row(index); // Obtener la fila actual
-                    let descripcion = row.node().querySelector('.descripcion'); // Obtener el campo 'descrip'
+                    let descripcion = row.node().querySelector('.descripcion'); // Obtener el campo 
 
                     // Si la descripción está vacía, marcar como inválido y detener la iteración
                     if (!descripcion || descripcion.value.trim() === '') {
