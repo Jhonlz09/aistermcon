@@ -1731,6 +1731,7 @@
                 tablaActiva = tabla;
                 tabla.columns.adjust().draw();
                 tabla.searchPanes.rebuildPane();
+                $('.dtsp-titleRow').remove();
             } else if (target === '#custom-tabs-orden') {
                 // tblGastos.columns.adjust().draw();
                 tablaActiva = tblGastos;
