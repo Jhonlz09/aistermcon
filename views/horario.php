@@ -430,7 +430,7 @@
     var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
     var editar = '<?php echo $_SESSION["editar20"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar20"] ?>';
-    var collapsedGroups = {};// Variable para identificar la tabla activa
+    var collapsedGroups = {}; // Variable para identificar la tabla activa
     configuracionTable = {
         dom: 'Ptp',
         lengthChange: false,
@@ -631,9 +631,9 @@
         tabla.draw(false);
 
         tabla.columns.adjust();
-        if (tabla.fixedHeader) {
-            tabla.fixedHeader.adjust();
-        }
+        // if (tabla.fixedHeader) {
+        //     tabla.fixedHeader.adjust();
+        // }
     });
 
     $(document).ready(function() {
@@ -819,12 +819,12 @@
             initDateRange(start, end);
             // recarga tu tabla
             tabla.ajax.reload(function() {
-                tabla.searchPanes.rebuildPane();
-                $('.dtsp-titleRow').remove();
+                tabla.searchPanes.resizePanes();
+                // $('.dtsp-titleRow').remove();
             }, false);
             tblGastos.ajax.reload(function() {
-                tblGastos.searchPanes.rebuildPane();
-                $('.dtsp-titleRow').remove();
+                tblGastos.searchPanes.resizePanes();
+                // $('.dtsp-titleRow').remove();
             }, false);
         });
 
@@ -852,13 +852,13 @@
             initDateRange(start, end);
 
             tabla.ajax.reload(function() {
-                tabla.searchPanes.rebuildPane();
-                $('.dtsp-titleRow').remove();
+                tabla.searchPanes.resizePanes();
+                // $('.dtsp-titleRow').remove();
             }, false);
 
             tblGastos.ajax.reload(function() {
-                tblGastos.searchPanes.rebuildPane();
-                $('.dtsp-titleRow').remove();
+                tblGastos.searchPanes.resizePanes();
+                // $('.dtsp-titleRow').remove();
             }, false);
         });
 
@@ -881,9 +881,14 @@
                 ...configuracionTable
             });
             tablaActiva = tabla; // Asignar la tabla activa
+            
             tabla.on('draw.dt', function() {
                 let currentGroup = null;
                 let counter = 0;
+
+                console.log('Reloaded table', scrollPositionTable);
+
+                $scrollBody.scrollTop(scrollPositionTable);
 
                 tabla.rows({
                     page: 'current',
@@ -1729,13 +1734,12 @@
             // Ajustar DataTable de la pestaña activa
             if (target === '#custom-tabs-dia') {
                 tablaActiva = tabla;
-                tabla.columns.adjust().draw();
-                tabla.searchPanes.rebuildPane();
+                tabla.searchPanes.resizePanes();
                 $('.dtsp-titleRow').remove();
             } else if (target === '#custom-tabs-orden') {
                 // tblGastos.columns.adjust().draw();
                 tablaActiva = tblGastos;
-                tblGastos.searchPanes.rebuildPane();
+                tblGastos.searchPanes.resizePanes();
                 $('.dtsp-titleRow').remove();
             }
         });
@@ -1994,7 +1998,7 @@
         const $scrollBody = $('#tblHorario').closest('.dataTables_scroll').find('.dataTables_scrollBody');
 
         let scrollPos = 0;
-        let scrollPosition = 0;
+        let scrollPositionTable = 0;
 
         OverlayScrollbars(document.querySelector('.scroll-modal'), {
             autoUpdate: true,
@@ -2030,7 +2034,7 @@
         $('#tblHorario tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
             const id = e["id"];
-            scrollPosition = scrollBody.scrollTop;
+            scrollPositionTable = scrollBody.scrollTop;
 
             let src = new FormData();
             src.append('accion', 4);
@@ -2039,10 +2043,7 @@
                 if (r) {
                     confirmarAccion(src, 'horario', null, '', function(r) {
                         if (r) {
-                            tabla.ajax.reload(function() {
-                                $scrollBody.scrollTop(scrollPosition);
-                                // Ajusta el delay si es necesario
-                            }, false);
+                            tabla.ajax.reload(null, false);
                         }
                     }, 4000)
                 }
@@ -2051,8 +2052,8 @@
 
         $('#tblHorario tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
-            scrollPosition = scrollBody.scrollTop;
-
+            scrollPositionTable = scrollBody.scrollTop;
+            console.log('scrollPosition', scrollPositionTable);
             id_horario_editar = row["id"];
             inputId.value = id_horario_editar || '';
             const idEmpleado = row["id_empleado"] || null;
@@ -2126,13 +2127,8 @@
                             $('#modal').modal('hide');
                         }
                         if (tabla) {
-                            tabla.ajax.reload(function() {
-                                $scrollBody.scrollTop(scrollPosition);
-                                // Ajusta el delay si es necesario
-                            }, false); // Recargar tabla si es necesario
+                            tabla.ajax.reload(null, false);
                         }
-
-
                     },
                 });
             } else {
