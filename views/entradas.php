@@ -112,7 +112,7 @@
                 }
             },
         },
-        paging: false, // Esto deshabilita la paginación
+        paging: true, // Esto deshabilita la paginación
         rowGroup: {
             dataSrc: [9],
             startRender: function(rows, group) {
