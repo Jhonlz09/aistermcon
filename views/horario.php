@@ -66,7 +66,7 @@
                                     </div>
                                 </div>
                                 <script>
-                                    let tablaActiva = tabla; // Variable para identificar la tabla activa
+                                    var tablaActiva = tabla; // Variable para identificar la tabla activa
                                 </script>
                                 <div class="col-sm p-0">
                                     <div class="card-tools">
@@ -1762,8 +1762,8 @@
             // Ajustar DataTable de la pestaña activa
             if (target === '#custom-tabs-dia') {
                 tablaActiva = tabla;
-                tblHorario.columns.adjust().draw();
-                tblHorario.searchPanes.rebuildPane();
+                tabla.columns.adjust().draw();
+                tabla.searchPanes.rebuildPane();
             } else if (target === '#custom-tabs-orden') {
                 // tblGastos.columns.adjust().draw();
                 tablaActiva = tblGastos;
