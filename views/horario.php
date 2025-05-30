@@ -341,18 +341,21 @@
                     <input type="hidden" id="id_horario" value="">
                     <div class="col-md-12 pb-3">
                         <div class="row">
-                            <div class="col-md-4 ui-front">
-                                <label class="col-form-label combo ml-1" for="empleado_edit">
-                                    <i class="fas fa-user-helmet-safety"></i> Empleado</label>
-                                <input
-                                    type="search"
-                                    class="form-control empleado"
-                                    id="empleado_edit"
-                                    autocomplete="off"
-                                    placeholder="Empleado"
-                                    value="">
-                                <button class="clear-btn" type="button" onclick="clearInput('empleado_edit', this)" style="display:none;top:40%;">&times;</button>
-                                <div class="invalid-feedback">*Campo obligatorio.</div>
+                            <div class="col-md-4">
+                                <div class="ui-front" style="z-index:inherit;position:relative">
+
+                                    <label class="col-form-label combo ml-1" for="empleado_edit">
+                                        <i class="fas fa-user-helmet-safety"></i> Empleado</label>
+                                    <input
+                                        type="search"
+                                        class="form-control empleado"
+                                        id="empleado_edit"
+                                        autocomplete="off"
+                                        placeholder="Empleado"
+                                        value="">
+                                    <button class="clear-btn" type="button" onclick="clearInput('empleado_edit', this)" style="display:none;top:40%;">&times;</button>
+                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="ui-front" style="z-index:inherit;position:relative">
@@ -471,11 +474,6 @@
                     maximumFractionDigits: 2
                 });
 
-                // Construir contenido del grupo
-                // const actionButtons = `
-                // ${editar ? '<button id="editH" class="btn pt-0 pb-0 btn-row"><i class="fas fa-pen-to-square"></i></button>' : ''}
-                // ${eliminar ? '<button id="eliH" class="btn pt-0 pb-0 btn-row"><i class="fas fa-trash-can"></i></button>' : ''}`;
-                
                 const actionButtons = ""
 
                 const groupText = `<div style="cursor:pointer" class="group-header d-flex align-items-center">
@@ -497,7 +495,7 @@
             cascadePanes: true,
             columns: [1, 2, 3], // columnas por las que filtrar
             initCollapsed: true,
-            threshold: 0.8,
+            threshold: 1,
             dtOpts: {
                 select: {
                     style: 'multiple'
@@ -1086,17 +1084,11 @@
                     className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `$<input
-                        style="width:5rem"
-                        type="text"
-                        autocomplete="off"
-                        spellcheck="false"
-                        oninput="validarNumber(this,/[^0-9.]/g)"
-                        onpaste="validarPegado(this, event)"
-                        inputmode="numeric"
-                        maxlength="4"
-                        class="form-control guard text-center d-inline"
-                        value="${data || ''}">`;
+                            return `$<input style="width:5rem" type="text" autocomplete="off"
+                                spellcheck="false" oninput="validarNumber(this,/[^0-9.]/g)"
+                                onpaste="validarPegado(this, event)" inputmode="numeric"
+                                maxlength="4" class="form-control guard text-center d-inline"
+                                value="${data || ''}">`;
                         }
                         return data;
                     }
@@ -1121,41 +1113,7 @@
                         return data;
                     }
                 },
-                // {
-                //     targets: 13,
-                //     className: "text-center",
-                //     data: null,
-                //     defaultContent: `
-                //         <div class="row">
-                //             <div class="col-12">
-                //                 <select class="cbo form-control select2 select2-success just" data-dropdown-css-class="select2-dark">
-                //                     <option value="0">N/A</option>
-                //                     <option value="1">LIBRE</option>
-                //                     <option value="2">FALTA</option>
-                //                     <option value="3">IESS</option>
-                //                     <option value="4">VACACIONES</option>
-                //                     <option value="5">FERIADO</option>
-                //                     <option value="6">SAB</option>
-                //                     <option value="7">DOM</option>
-                //                 </select>
-                //             </div>
-                //         </div>`,
-                // }
             ],
-            // createdRow: function(row, data, dataIndex) {
-            //     const $row = $(row);
-            //     const idEmpleado = data.id_empleado || null; // ← aquí está el ID que pasaste
-
-            //     // Aplicar autocompletado al campo de empleado
-            //     const $inputEmpleado = $row.find(".empleado");
-            //     aplicarAutocomplete($inputEmpleado, datos_em, empleadosMap, idEmpleado, true);
-
-            //     const idOrden = data.id_orden || null;
-            //     // Aplicar autocompletado al campo de obra
-            //     const $inputObra = $row.find(".obra");
-            //     // console.log('selectedItemOrden', selectedItemOrden);
-            //     aplicarAutocomplete($inputObra, items_orden, ordenesMap, idOrden, true);
-            // }
         });
 
         let tblGastos = $("#tblGastos").DataTable({
@@ -1170,7 +1128,7 @@
                 cascadePanes: true,
                 columns: [1, 2, 3], // columnas por las que filtrar
                 initCollapsed: true,
-                threshold: 0.8,
+                threshold: 1,
                 dtOpts: {
                     select: {
                         style: 'multiple'
@@ -2041,6 +1999,7 @@
                     confirmarAccion(src, 'horario', null, '', function(r) {
                         if (r) {
                             tabla.ajax.reload(null, false);
+                            tblGastos.ajax.reload(null, false);
                         }
                     }, 4000)
                 }

@@ -3,7 +3,7 @@ require_once "../models/personal.modelo.php";
 
 class ControladorPersonal
 {
-    public $id, $cedula, $nombre, $apellido, $fecha_ini, $fecha_cor, $sueldo, $ruta;
+    public $id, $cedula, $nombre, $apellido, $fecha_ini, $fecha_cor, $sueldo, $ruta, $isSbu;
 
     public function listarPersonal()
     {
@@ -34,7 +34,7 @@ class ControladorPersonal
         }else{
             $fullNameFinal = '';
         }
-        $data = ModeloPersonal::mdlAgregarPersonal($this->cedula, $this->nombre, $this->apellido, $this->fecha_ini, $this->fecha_cor, $this->sueldo, $fullNameFinal);
+        $data = ModeloPersonal::mdlAgregarPersonal($this->cedula, $this->nombre, $this->apellido, $this->fecha_ini, $this->fecha_cor, $this->sueldo, $fullNameFinal, $this->isSbu);
         // $this->notifyWebSocket($data);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -86,7 +86,7 @@ class ControladorPersonal
         }
 
         // Actualizar la información del personal en la base de datos
-        $data = ModeloPersonal::mdlEditarPersonal($this->id, $this->cedula, $this->nombre, $this->apellido, $this->fecha_ini, $this->fecha_cor, $this->sueldo, $fullNameFinal);
+        $data = ModeloPersonal::mdlEditarPersonal($this->id, $this->cedula, $this->nombre, $this->apellido, $this->fecha_ini, $this->fecha_cor, $this->sueldo, $fullNameFinal, $this->isSbu);
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -106,6 +106,7 @@ if (!isset($_POST["accion"])) {
             $data->fecha_ini = $_POST["fecha_ini"];
             $data->fecha_cor = $_POST["fecha_cor"];
             $data->sueldo = $_POST["sueldo"];
+            $data->isSbu = isset($_POST["isSbu"]) ? $_POST["isSbu"] : false;
             if ($_POST["accion"] == 2) {
                 $data->id = $_POST["id"];
                 $data->ruta = $_POST["ruta"];

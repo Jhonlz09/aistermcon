@@ -125,7 +125,6 @@
                                         <div class="col-sm-6 form-group">
                                             <label id="lblSueldo" class="combo mb-0 d-flex justify-content-between" for="sueldo">
                                                 <span><i class="fas fa-sack-dollar"></i> Sueldo</span>
-
                                                 <label class="d-flex align-items-center mb-0" for="isSbu" style="color:#5b5b5b;gap:.3rem;font-size:.9rem;"> SBU
                                                     <label class="switch-2" style="font-size:.8rem">
                                                         <input id="isSbu" class="switch__input" type="checkbox" onkeydown="toggleWithEnter(event, this)">
@@ -492,8 +491,6 @@
 
         sueldo.addEventListener('input', function() {
             const value = parseFloat(this.value);
-            // console.log(value);
-            // console.log(sbu_config);
             if (value === sbu_config) {
                 isSbu.checked = true;
                 this.setAttribute('readonly', true);
@@ -521,16 +518,15 @@
 
         $('#tblPersonal tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
-            accion = 3
+            accion = 3;
             const id_e = e["id"];
-            console.log(id_e)
             let src = new FormData();
             src.append('accion', accion);
             src.append('id', id_e);
             accion = 0;
             confirmarEliminar('este', 'empleado', function(r) {
                 if (r) {
-                    confirmarAccion(src, 'personal', tabla, '', function(r) {})
+                    confirmarAccion(src, 'personal', tabla, '', null)
                 }
             });
         });
@@ -551,6 +547,14 @@
             cedula.value = row["cedula"];
             apellido.value = row["apellido"];
             ruta_ced = row["ruta"] ?? '';
+            
+            if (row["issbu"]==true) {
+                isSbu.click();
+            }else {
+                sueldo.removeAttribute('readonly');
+            } 
+            // console.log(row["issbu"])
+            // isSbu.checked = row["issbu"] ?? false;
             setChange(cboRol, row["id_rol"])
             fecha_ini.value = convertirFecha(row["fecha_ini"]) ?? '';
             fecha_cor.value = convertirFecha(row["fecha_cor"]) ?? '';
@@ -591,7 +595,7 @@
                 }
                 return;
             }
-            // const id_e = id.value;
+
             datos.append('id', id.value);
             datos.append('cedula', ced);
             datos.append('nombre', nom);
@@ -600,6 +604,7 @@
             datos.append('fecha_cor', f_c);
             datos.append('sueldo', sue);
             datos.append('ruta', ruta_ced);
+            datos.append('isSbu', isSbu.checked);
             datos.append('accion', accion);
             confirmarAccion(datos, 'personal', tabla, modal, function(r) {})
         });

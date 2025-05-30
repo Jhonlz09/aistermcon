@@ -60,8 +60,6 @@ if (empty($data_boleta)) {
     $pdf->SetFont('Arial', '', 16);
     $pdf->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'No se encontraron imágenes'), 0, 1, 'C');
 } else {
-    // $firstPage = true;
-
     foreach ($data_boleta as $imagen) {
         $image_path = $dir . $imagen['nombre_imagen'];
 

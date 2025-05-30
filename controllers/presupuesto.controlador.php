@@ -1,9 +1,9 @@
 <?php
-require_once "../models/orden.modelo.php";
+require_once "../models/presupuesto.modelo.php";
 
 class ControladorOrden
 {
-    public $id, $descrip, $id_cliente, $estado, $orden, $anio, $fileOrden, $cliente, $fecha, $nota;
+    public $id, $descrip, $id_cliente, $estado, $presupuesto, $anio, $fileOrden, $cliente, $fecha, $nota;
 
     public function listarOrden()
     {
@@ -21,7 +21,7 @@ class ControladorOrden
             $fileName = basename($_FILES['fileOrden']['name']);
             $filePath = $uploadDir . $year . '/' . $fileName;
            
-            $fullNameFinal = $this->orden . '   ' . $this->cliente;
+            $fullNameFinal = $this->presupuesto . '   ' . $this->cliente;
             // Generar un nombre único si el archivo ya existe
             $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
 
@@ -41,7 +41,7 @@ class ControladorOrden
             }
         }
 
-        $data = ModeloOrden::mdlAgregarOrden($this->descrip, $this->id_cliente, $this->cliente, $this->orden, $finalPath, $this->fecha);
+        $data = ModeloOrden::mdlAgregarOrden($this->descrip, $this->id_cliente, $this->cliente, $this->presupuesto, $finalPath, $this->fecha);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -56,7 +56,7 @@ class ControladorOrden
             $fileName = basename($_FILES['fileOrden']['name']);
             $filePath = $uploadDir . $year . '/' . $fileName;
 
-            $fullNameFinal = $this->orden . '   ' . $this->cliente;
+            $fullNameFinal = $this->presupuesto . '   ' . $this->cliente;
             // Generar un nombre único si el archivo ya existe
             if (file_exists($uploadDir . $existingPdf)) {
                 unlink($uploadDir . $existingPdf);
@@ -77,7 +77,7 @@ class ControladorOrden
             $finalPath = $existingPdf;
         }
 
-        $data = ModeloOrden::mdlEditarOrden($this->id, $this->descrip, $this->id_cliente, $this->orden, $finalPath);
+        $data = ModeloOrden::mdlEditarOrden($this->id, $this->descrip, $this->id_cliente, $this->presupuesto, $finalPath);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -131,7 +131,7 @@ if (!isset($_POST["accion"])) {
     if ($_POST["accion"] == 1) {
         $data = new ControladorOrden();
         $data->descrip = $_POST["nombre"];
-        $data->orden = $_POST["orden"];
+        $data->presupuesto = $_POST["presupuesto"];
         $data->id_cliente = $_POST["id_cliente"];
         $data->cliente = $_POST["cliente"];
         // $data->estado = $_POST["estado"];
@@ -141,7 +141,7 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorOrden();
         $data->id = $_POST["id"];
         $data->descrip = $_POST["nombre"];
-        $data->orden = $_POST["orden"];
+        $data->presupuesto = $_POST["presupuesto"];
         $data->id_cliente = $_POST["id_cliente"];
         $data->cliente = $_POST["cliente"];
         // $data->estado = $_POST["estado"];
