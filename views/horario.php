@@ -2,9 +2,8 @@
 
 <head>
     <title>Ingreso personal</title>
-    <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
-    <script src="assets/plugins/moment/moment-with-locales.min.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css">
+    <!-- <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css" rel="stylesheet">
 </head>
 <!-- Contenido Header -->
 <section id="div_header" class="ini-section content-header ">
@@ -62,7 +61,12 @@
                                 <div class="col-sm-3" style="padding-block:.4rem;">
                                     <div class="input-group-text" style="background:#eceef1;color:#494c50!important;padding-inline:.5rem">
                                         <span><i class="fas fa-calendar-range"></i></span>
-                                        <input autocomplete="off" style="border:none" type="text" id="miRangoFecha" readonly class="form-control" placeholder="Selecciona un rango" />
+                                        <!-- <input autocomplete="off" style="border:none" type="text" id="miRangoFecha" readonly class="form-control" placeholder="Selecciona un rango" /> -->
+                                        <div id="rango-fechas" class="datepicker-range">
+                                            <input autocomplete="off" style="border:none" type="text" id="startDate" placeholder="Fecha inicio" class="form-control">
+
+                                            <input autocomplete="off" style="border:none" type="text" id="endDate" placeholder="Fecha fin" class="form-control">
+                                        </div>
                                     </div>
                                 </div>
                                 <script>
@@ -419,9 +423,11 @@
     <!-- /.modal-dialog -->
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker-full.min.js"></script>
+<script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
+<!-- <script src="assets/plugins/moment/moment-with-locales.min.js" type="text/javascript"></script> -->
 <!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
-<script src="assets/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
+<!-- <script src="assets/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script> -->
 <!-- <script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
 <script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
 <script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script> -->
@@ -621,47 +627,55 @@
         }
     };
 
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     // Selecciona el contenedor de los dos inputs
+
+    // });
+
     $(document).ready(function() {
         let accion = 0;
         let anio = year;
         let mes = month;
         let id_horario_editar = 0;
-        let start = moment([anio, mes - 1, 1]);
-        let end = moment(start).endOf('month');
+        // let start = moment([anio, mes - 1, 1]);
+        // let end = moment(start).endOf('month');
 
-        function initDateRange(startD, endD) {
+        // function initDateRange(startD, endD) {
 
-            const minDate = moment([anio, 0, 1]);
-            const maxDate = moment([anio, 11, 31]);
-            $('#miRangoFecha').daterangepicker({
-                locale: {
-                    format: 'D MMM YY',
-                    separator: ' - ',
-                    applyLabel: 'Aplicar',
-                    cancelLabel: 'Cancelar',
-                    fromLabel: 'Desde',
-                    toLabel: 'Hasta',
-                    customRangeLabel: 'Personalizado',
-                    daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
-                    monthNames: [
-                        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-                    ],
-                    firstDay: 1
-                },
-                startDate: startD,
-                endDate: endD,
-                minDate: minDate,
-                maxDate: maxDate
-            }, function(startSelected, endSelected) {
-                start = startSelected;
-                end = endSelected;
-                $(cboMeses1).val('0').trigger('change');
-                tabla.ajax.reload(null, false);
-                tblGastos.ajax.reload(null, false);
-            });
-        }
-        initDateRange(start, end);
+        //     const minDate = moment([anio, 0, 1]);
+        //     const maxDate = moment([anio, 11, 31]);
+        //     $('#miRangoFecha').daterangepicker({
+        //         locale: {
+        //             format: 'D MMM YY',
+        //             separator: ' - ',
+        //             applyLabel: 'Aplicar',
+        //             cancelLabel: 'Cancelar',
+        //             fromLabel: 'Desde',
+        //             toLabel: 'Hasta',
+        //             customRangeLabel: 'Personalizado',
+        //             daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+        //             monthNames: [
+        //                 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        //                 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        //             ],
+        //             firstDay: 1
+        //         },
+        //         startDate: startD,
+        //         endDate: endD,
+        //         minDate: minDate,
+        //         maxDate: maxDate
+        //     }, function(startSelected, endSelected) {
+        //         start = startSelected;
+        //         end = endSelected;
+        //         $(cboMeses1).val('0').trigger('change');
+        //         tabla.ajax.reload(null, false);
+        //         tblGastos.ajax.reload(null, false);
+        //     });
+        // }
+        // initDateRange(start, end);
+
+
+        // console.log('datepicker', datepicker);
         const container = document.getElementById('div-empleado'); // el div padre de tu tabla
         const container2 = document.getElementById('card-per');
         const container3 = document.getElementById('custom-tabs-dia'); // el div padre de tu tabla
@@ -675,6 +689,39 @@
             value: item.text,
             cod: item.id
         }));
+
+        Datepicker.locales.es = {
+            days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            daysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+            daysMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+            months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            today: 'Hoy',
+            clear: 'Limpiar',
+            titleFormat: 'MM yyyy',
+            format: 'dd/mm/yyyy',
+            weekStart: 1
+        };
+
+        const rangeContainer = document.getElementById('rango-fechas');
+
+        // Crea el selector de rango sobre el contenedor, no sobre los inputs directamente
+        const rangePicker = new DateRangePicker(rangeContainer, {
+            format: 'dd/mm/yyyy',
+            language: 'es',
+            autohide: true,
+            weekStart: 1,
+            todayHighlight: true,
+            clearBtn: true,
+            todayBtn: true,
+            pickLevel: 1,
+            minDate: '01/01/2024',
+            maxDate:  '<?php echo date('d/m/Y'); ?>',
+            // datesDisabled: ['2025-01-01', '2025-12-25'],
+            orientation: 'bottom auto'
+        });
+
+        console.log('datepicker', rangePicker);
 
         function toggleCustomFilterButtons() {
             $('.dtsp-searchPane').each(function() {
@@ -783,25 +830,25 @@
             if (a == anio) {
                 return;
             }
-            if (mes == null) {
-                start = moment([a, 0, 1]);
-                end = moment(start).endOf('year');
-            } else {
-                start = moment([a, mes - 1, 1]);
-                end = moment(start).endOf('month');
-            }
+            // if (mes == null) {
+            //     start = moment([a, 0, 1]);
+            //     end = moment(start).endOf('year');
+            // } else {
+            //     start = moment([a, mes - 1, 1]);
+            //     end = moment(start).endOf('month');
+            // }
             anio = a;
             // console.log('anio', anio);
 
             // start = moment([anio, mes - 1, 1]);
             // end = moment(start).endOf('month');
 
-            const picker = $('#miRangoFecha').data('daterangepicker');
-            if (picker) {
-                picker.remove();
-            }
+            // const picker = $('#miRangoFecha').data('daterangepicker');
+            // if (picker) {
+            //     picker.remove();
+            // }
             // reaplica todas las opciones necesarias
-            initDateRange(start, end);
+            // initDateRange(start, end);
             // recarga tu tabla
             tabla.ajax.reload(function() {
                 tabla.searchPanes.resizePanes();
@@ -820,21 +867,21 @@
                 return;
             }
             console.log('mes', mes);
-            if (m == 'null') {
-                mes = null;
-                start = moment([anio, 0, 1]);
-                end = moment(start).endOf('year');
-            } else {
-                mes = m;
-                start = moment([anio, mes - 1, 1]);
-                end = moment(start).endOf('month');
-            }
+            // if (m == 'null') {
+            //     mes = null;
+            //     start = moment([anio, 0, 1]);
+            //     end = moment(start).endOf('year');
+            // } else {
+            //     mes = m;
+            //     start = moment([anio, mes - 1, 1]);
+            //     end = moment(start).endOf('month');
+            // }
             anio = cboAnio.options[cboAnio.selectedIndex].text;
-            const picker = $('#miRangoFecha').data('daterangepicker');
-            if (picker) {
-                picker.remove();
-            }
-            initDateRange(start, end);
+            // const picker = $('#miRangoFecha').data('daterangepicker');
+            // if (picker) {
+            //     picker.remove();
+            // }
+            // initDateRange(start, end);
 
             tabla.ajax.reload(function() {
                 tabla.searchPanes.resizePanes();
@@ -858,8 +905,8 @@
                     "type": "POST",
                     "dataSrc": '',
                     data: function(data) {
-                        data.start = start.format('YYYY-MM-DD');
-                        data.end = end.format('YYYY-MM-DD');
+                        data.start = '2025-05-01';
+                        data.end = '2025-05-31';
                     }
                 },
                 // stateSave: true,
@@ -1143,8 +1190,8 @@
                 "dataSrc": '',
                 data: function(data) {
                     data.accion = 6;
-                    data.start = start.format('YYYY-MM-DD');
-                    data.end = end.format('YYYY-MM-DD');
+                    data.start = '2025-05-01';;
+                    data.end = '2025-05-31';;
                 }
             },
             columnDefs: [{
@@ -1977,7 +2024,7 @@
         }
 
         $('#tblHorario tbody').on('click', 'tr.dtrg-start', function() {
-            scrollPositionTable = scrollBody.scrollTop;
+            scrollPositionTable = scrollBody.scrollTop || 0;
             const $this = $(this);
             const name = $this.data('name');
             const wasCollapsed = collapsedGroups[name];
@@ -1989,7 +2036,7 @@
         $('#tblHorario tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
             const id = e["id"];
-            scrollPositionTable = scrollBody.scrollTop;
+            scrollPositionTable = scrollBody.scrollTop || 0;
             let src = new FormData();
             src.append('accion', 4);
             src.append('id', id);
@@ -2007,7 +2054,7 @@
 
         $('#tblHorario tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
-            scrollPositionTable = scrollBody.scrollTop;
+            scrollPositionTable = scrollBody.scrollTop || 0;
             console.log('scrollPosition', scrollPositionTable);
             id_horario_editar = row["id"];
             inputId.value = id_horario_editar || '';
@@ -2061,7 +2108,7 @@
                 });
             });
             // Ahora puedes enviar 'datos' al servidor con AJAX como ya vimos
-            console.log("Datos a editar:", datos);
+            // console.log("Datos a editar:", datos);
             // 👉 Aquí haces el envío AJAX
             if (datos.length > 0) {
                 $.ajax({
@@ -2293,7 +2340,7 @@
                         }
                         if (tabla) {
                             tabla.ajax.reload(null, false);
-                            tblGastos.ajax.reload(null, false); 
+                            tblGastos.ajax.reload(null, false);
                         }
                     },
                 });
