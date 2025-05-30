@@ -343,7 +343,6 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="ui-front" style="z-index:inherit;position:relative">
-
                                     <label class="col-form-label combo ml-1" for="empleado_edit">
                                         <i class="fas fa-user-helmet-safety"></i> Empleado</label>
                                     <input
@@ -2084,6 +2083,7 @@
                         }
                         if (tabla) {
                             tabla.ajax.reload(null, false);
+                            tblGastos.ajax.reload(null, false);
                         }
                     },
                 });
@@ -2292,7 +2292,8 @@
                             showHideFormSection('none', 'block', tblPerson, scrollPos);
                         }
                         if (tabla) {
-                            tabla.ajax.reload(null, false); // Recargar tabla si es necesario
+                            tabla.ajax.reload(null, false);
+                            tblGastos.ajax.reload(null, false); 
                         }
                     },
                 });
