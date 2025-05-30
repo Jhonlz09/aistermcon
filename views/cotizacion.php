@@ -125,7 +125,7 @@
                                         <div class="col-md-4 mb-3">
                                             <label class="col-form-label combo" for="fecha_sol">
                                                 <i class="fas fa-calendar"></i> Fecha</label>
-                                            <input id="fecha_sol" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
+                                            <input id="fecha_sol" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm">
                                             <!-- <div class="invalid-feedback">*Campo obligatorio.</div> -->
                                         </div>
                                     </div>
@@ -780,7 +780,7 @@
         });
 
         $('#tblSolicitud').on('input keydown paste', '.cantidad, .precio_final', function() {
-            let $row = $(this).closest('tr');
+            const $row = $(this).closest('tr');
             let cantidad = parseFloat($row.find('.cantidad').val()) || 0;
             let precio = parseFloat($row.find('.precio_final').val()) || 0;
             let pre_uni = 0; // Valor por defecto
@@ -873,55 +873,59 @@
         });
 
         document.addEventListener('keydown', function(event) {
-            const isInputOrSelect = event.target.tagName === 'INPUT' || $(event.target).hasClass('select2-selection');
+            // Reconocemos INPUT, TEXTAREA o Select2
+            const tag = event.target.tagName;
+            const isInputOrTextarea = (tag === 'INPUT' || tag === 'TEXTAREA');
+            const isSelect2 = $(event.target).hasClass('select2-selection');
+            const isField = (isInputOrTextarea || isSelect2);
 
-            if (isInputOrSelect && event.target.closest('table')) {
-                let currentElement = event.target.tagName === 'INPUT' ?
-                    event.target :
-                    $(event.target).closest('.select2-container').prev('select')[0]; // Referencia al select original
-
-                // Verificar si el menú Select2 está abierto
-                const select2Open = $(currentElement).data('select2')?.isOpen();
-
-                if (select2Open) {
-                    // Prevenir movimiento con todas las flechas si el menú está abierto
-                    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        return;
-                    }
+            if (isField && event.target.closest('table')) {
+                // Referencia al elemento real (input/textarea/select)
+                let currentElement;
+                if (isSelect2) {
+                    currentElement = $(event.target).closest('.select2-container').prev('select')[0];
+                } else {
+                    currentElement = event.target;
                 }
 
-                let currentCell = currentElement.closest('td');
-                let currentRow = currentCell.closest('tr');
-                let currentTable = currentRow.closest('table');
+                // Si el menú Select2 está abierto, cancelamos las flechas
+                const select2Open = $(currentElement).data('select2')?.isOpen();
+                if (select2Open && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    return;
+                }
 
-                let rowIndex = currentRow.rowIndex;
-                let cellIndex = currentCell.cellIndex;
+                // Coordenadas
+                let cell = currentElement.closest('td');
+                let row = cell.closest('tr');
+                let table = row.closest('table');
+                let rowIndex = row.rowIndex;
+                let cellIndex = cell.cellIndex;
 
                 switch (event.key) {
                     case 'ArrowRight':
                         if (shouldMoveFocus(event, currentElement, 'end')) {
                             event.preventDefault();
-                            moveFocus(currentTable, rowIndex, cellIndex + 1);
+                            moveFocus(table, rowIndex, cellIndex + 1);
                         }
                         break;
                     case 'ArrowLeft':
                         if (shouldMoveFocus(event, currentElement, 'start')) {
                             event.preventDefault();
-                            moveFocus(currentTable, rowIndex, cellIndex - 1);
+                            moveFocus(table, rowIndex, cellIndex - 1);
                         }
                         break;
                     case 'ArrowDown':
                         if (!select2Open) {
                             event.preventDefault();
-                            moveFocus(currentTable, rowIndex + 1, cellIndex);
+                            moveFocus(table, rowIndex + 1, cellIndex);
                         }
                         break;
                     case 'ArrowUp':
                         if (!select2Open) {
                             event.preventDefault();
-                            moveFocus(currentTable, rowIndex - 1, cellIndex);
+                            moveFocus(table, rowIndex - 1, cellIndex);
                         }
                         break;
                 }
@@ -929,38 +933,41 @@
         });
 
         function shouldMoveFocus(event, element, position) {
-            if (element.tagName === 'INPUT') {
-                let cursorPosition = element.selectionStart;
-                let inputLength = element.value.length;
-                return (position === 'start' && cursorPosition === 0) ||
-                    (position === 'end' && cursorPosition === inputLength);
+            const tag = element.tagName;
+            // Para INPUT y TEXTAREA, comprobamos posición del cursor
+            if (tag === 'INPUT' || tag === 'TEXTAREA') {
+                const pos = element.selectionStart;
+                const len = element.value.length;
+                return (position === 'start' && pos === 0) || (position === 'end' && pos === len);
             }
-
-            if (element.tagName === 'SELECT') {
-                return event.key === 'ArrowRight' || event.key === 'ArrowLeft'; // Permitir navegación horizontal solo si no es select2 abierto
+            // Para SELECT (no select2 abierto), dejamos navegar horizontal
+            if (tag === 'SELECT') {
+                return event.key === 'ArrowRight' || event.key === 'ArrowLeft';
             }
-
             return false;
         }
 
         function moveFocus(table, nextRowIndex, nextCellIndex) {
-            let nextRow = table.rows[nextRowIndex];
-            if (nextRow) {
-                let nextCell = nextRow.cells[nextCellIndex];
-                if (nextCell) {
-                    let nextElement = nextCell.querySelector('input, select');
+            const nextRow = table.rows[nextRowIndex];
+            if (!nextRow) return;
+            const nextCell = nextRow.cells[nextCellIndex];
+            if (!nextCell) return;
+            // Buscamos INPUT, TEXTAREA o SELECT
+            const nextElement = nextCell.querySelector('input, textarea, select');
+            if (!nextElement) return;
 
-                    if (nextElement) {
-                        if ($(nextElement).hasClass('select2-hidden-accessible')) {
-                            // Poner foco en Select2 sin desplegar el menú
-                            $(nextElement).select2('focus');
-                        } else {
-                            nextElement.focus();
-                        }
-                    }
+            // Si es un SELECT2, le damos foco sin abrir menú
+            if (nextElement.tagName === 'SELECT' && $(nextElement).hasClass('select2-hidden-accessible')) {
+                $(nextElement).select2('focus');
+            } else {
+                nextElement.focus();
+                // Para textarea, opcionalmente situar cursor al inicio
+                if (nextElement.tagName === 'TEXTAREA') {
+                    nextElement.setSelectionRange(0, 0);
                 }
             }
         }
+
 
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {

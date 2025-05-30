@@ -1,5 +1,4 @@
 <?php require_once "../utils/database/config.php";?>
-
 <head>
     <title>Presupuestos</title>
 </head>
@@ -49,10 +48,12 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">Nº</th>
-                                    <th>NRO. OFERTA</th>
+                                    <th>NRO. ORDEN</th>
                                     <th>CLIENTE</th>
                                     <th>DESCRIPCION</th>
                                     <th>FECHA</th>
+                                    <th>PRECIO UNIT</th>
+                                    <th>PRECIO IVA</th>
                                     <th>ESTADO</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
@@ -78,21 +79,73 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green">
-                <h4 class="modal-title"><i class="fa-solid fa-user-plus"></i><span> Nuevo Rol</span></h4>
+                <h4 class="modal-title"><i class="fas fa-ticket"></i><span> Nueva Orden</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formNuevo" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body">
+            <form id="formNuevo" autocomplete="off" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <div class="modal-body scroll-modal">
                     <input type="hidden" id="id" value="">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="input-data" style="margin-bottom:1em;">
-                                <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
-                                <div class="line underline"></div>
-                                <label class="label"><i class="fa-solid fa-signature"></i> Proveedor</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="input-data mb-4">
+                                        <input autocomplete="off" id="orden_nro" class="input-nuevo" type="text" maxlength="9" oninput="formatInputOrden(this, null, false)" required>
+                                        <div class="line underline"></div>
+                                        <label class="label"><i class="fas fa-ticket"></i> Nro. orden</label>
+                                        <div class="invalid-feedback mt-0">*Campo obligatorio.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="form-group mb-4">
+                                        <label id="lblCO" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
+                                        <div class="row">
+                                            <div class="col">
+                                                <select id="cboClientesOrden" class="cbo modalB form-control select2 select2-success" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE" required>
+                                                </select>
+                                                <div class="invalid-feedback mt-0">*Campo obligatorio.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 form-group mb-4" id="div_fecha_new">
+                                    <label class="combo" style="line-height:1.2;font-size: 1.15rem;" for="fecha_">
+                                        <i class="fas fa-calendar"></i> Fecha de creación</label>
+                                    <input id="fecha_new" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                                    <div class="invalid-feedback">*Campo obligatorio.</div>
+                                </div>
+                                <div class="col-lg col-md-9">
+                                    <div class="input-data mb-4">
+                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
+                                        <!-- <div class="invalid-feedback">*Campo obligatorio.</div> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
+                                    <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
+                                    <div class="ten no-margin">*Debe selecionar un archivo .pdf</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label id="lblP" class="mb-0 combo"><i class="fas fa-user-helmet-safety"></i> Responsable </label>
+                                        <div class="row">
+                                            <div class="col">
+                                                <select id="cboRes" class="form-control select2 select2-success" multiple="multiple" data-dropdown-css-class="select2-dark" style="width: 100%;">
+                                                </select>
+                                                <!-- <div class="invalid-feedback">*Campo obligatorio</div> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
