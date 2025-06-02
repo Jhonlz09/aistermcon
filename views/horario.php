@@ -3,7 +3,7 @@
 <head>
     <title>Ingreso personal</title>
     <!-- <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css"> -->
-    <link href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css" rel="stylesheet">
+    <link href="assets/plugins/daterange-vanilla/daterange.min.css" rel="stylesheet">
 </head>
 <!-- Contenido Header -->
 <section id="div_header" class="ini-section content-header ">
@@ -62,10 +62,10 @@
                                     <div class="input-group-text" style="background:#eceef1;color:#494c50!important;padding-inline:.5rem">
                                         <span><i class="fas fa-calendar-range"></i></span>
                                         <!-- <input autocomplete="off" style="border:none" type="text" id="miRangoFecha" readonly class="form-control" placeholder="Selecciona un rango" /> -->
-                                        <div id="rango-fechas" class="datepicker-range">
-                                            <input autocomplete="off" style="border:none" type="text" id="startDate" placeholder="Fecha inicio" class="form-control">
-
-                                            <input autocomplete="off" style="border:none" type="text" id="endDate" placeholder="Fecha fin" class="form-control">
+                                        <div class="datepicker-range">
+                                            <input autocomplete="off" style="border:none" type="text" id="rango-fechas" placeholder="Seleccion el rango" class="form-control" readonly>
+                                            <!-- 
+                                            <input autocomplete="off" style="border:none" type="text" id="endDate" placeholder="Fecha fin" class="form-control">  -->
                                         </div>
                                     </div>
                                 </div>
@@ -199,10 +199,10 @@
                                 </label>
                                 <!-- <div class="position-relative"> -->
                                 <input type="search" id="nro_ordenHorario" class="form-control ui-autocomplete-input" placeholder="Nro. de orden o cliente" autocomplete="off" style="font-size:1.2rem; border-bottom:2px solid var(--select-border-bottom);" oninput="formatInputOrden(this)" spellcheck="false" data-ms-editor="true">
-                                <button class="clear-btn" type="button" id="clearButtonObraH" onclick="clearInput('nro_ordenHorario', this)" style="display:none; position:absolute; right:10px; top:42%;">×</button>
+                                <button class="clear-btn-inp" type="button" id="clearButtonObraH" onclick="clearInput('nro_ordenHorario', this)" style="display:none; position:absolute; right:10px; top:42%;">×</button>
                                 <!-- </div> -->
 
-                                <!-- <button class="clear-btn" type="button" id="btnO${uniqueId}" onclick="clearInput('${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button> -->
+                                <!-- <button class="clear-btn-inp" type="button" id="btnO${uniqueId}" onclick="clearInput('${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button> -->
 
                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                             </div>
@@ -356,7 +356,7 @@
                                         autocomplete="off"
                                         placeholder="Empleado"
                                         value="">
-                                    <button class="clear-btn" type="button" onclick="clearInput('empleado_edit', this)" style="display:none;top:40%;">&times;</button>
+                                    <button class="clear-btn-inp" type="button" onclick="clearInput('empleado_edit', this)" style="display:none;top:40%;">&times;</button>
                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                 </div>
                             </div>
@@ -372,7 +372,7 @@
                                         placeholder="Nro. de orden o cliente"
                                         autocomplete="off"
                                         value="">
-                                    <button class="clear-btn" type="button" id="btnOrden_edit" onclick="clearInput('orden_edit', this)" style="display:none;top:40%">&times;</button>
+                                    <button class="clear-btn-inp" type="button" id="btnOrden_edit" onclick="clearInput('orden_edit', this)" style="display:none;top:40%">&times;</button>
                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                 </div>
                             </div>
@@ -423,7 +423,7 @@
     <!-- /.modal-dialog -->
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker-full.min.js"></script>
+<script src="assets/plugins/daterange-vanilla/daterange.min.js"></script>
 <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
 <!-- <script src="assets/plugins/moment/moment-with-locales.min.js" type="text/javascript"></script> -->
 <!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
@@ -637,8 +637,46 @@
         let anio = year;
         let mes = month;
         let id_horario_editar = 0;
-        // let start = moment([anio, mes - 1, 1]);
-        // let end = moment(start).endOf('month');
+
+
+        let startDate = convertirFecha(new Date(anio, mes - 1, 1));
+        let endDate = convertirFecha(new Date(anio, mes, 0));
+
+        console.log('startDate', startDate);
+        console.log('endDate', endDate);
+
+        const formatDate = (dateStr) => {
+            if (!dateStr) return '';
+            const date = parseLocalDate(dateStr);
+
+            if (isNaN(date)) return '';
+
+            const day = date.getDate();
+            // console.log('day', day);
+            // console.log('date', date);
+            // console.log('dateStr', dateStr);
+            const shortMonth = date.toLocaleString('es-ES', {
+                month: 'short'
+            }); // Ej: "jun."
+            const year = String(date.getFullYear()).slice(-2); // Últimos 2 dígitos
+
+            return `${day} ${capitalize(shortMonth)} ${year}`;
+        };
+
+        const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
+        const parseLocalDate = (dateStr) => {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            return new Date(year, month - 1, day); // evita desfase por zona horaria
+        };
+
+
+        const i = document.getElementById('rango-fechas');
+        // console.log('onInit', i);
+        const s = formatDate(startDate);
+        const e = formatDate(endDate);
+        let txtFilter = `${s} - ${e}`
+        i.value = `${s} - ${e}`;
 
         // function initDateRange(startD, endD) {
 
@@ -673,8 +711,6 @@
         //     });
         // }
         // initDateRange(start, end);
-
-
         // console.log('datepicker', datepicker);
         const container = document.getElementById('div-empleado'); // el div padre de tu tabla
         const container2 = document.getElementById('card-per');
@@ -690,38 +726,215 @@
             cod: item.id
         }));
 
-        Datepicker.locales.es = {
-            days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-            daysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
-            daysMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
-            months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-            monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-            today: 'Hoy',
-            clear: 'Limpiar',
-            titleFormat: 'MM yyyy',
-            format: 'dd/mm/yyyy',
-            weekStart: 1
+        // Datepicker.locales.es = {
+        //     days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        //     daysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+        //     daysMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+        //     months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        //     monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+        //     today: 'Hoy',
+        //     clear: 'Limpiar',
+        //     titleFormat: 'MM yyyy',
+        //     format: 'dd/mm/yyyy',
+        //     weekStart: 1
+        // };
+
+        // const rangeContainer = document.getElementById('rango-fechas');
+
+        // // Crea el selector de rango sobre el contenedor, no sobre los inputs directamente
+        // const rangePicker = new DateRangePicker(rangeContainer, {
+        // format: 'dd/M/yyyy',
+        //     language: 'es',
+        //     autohide: true,
+        //     weekStart: 1,
+        //     todayHighlight: true,
+        //     clearBtn: true,
+        //     todayBtn: true,
+        //     pickLevel: 1,
+        //     minDate: '01/01/2024',
+
+        //     // datesDisabled: ['2025-01-01', '2025-12-25'],
+        //     orientation: 'bottom auto'
+        // });
+
+        // console.log('datepicker', rangePicker);
+        const options = {
+            type: 'multiple',
+            dateMin: '2025-01-01',
+            dateMax: endDate,
+            selectionYearsMode: false,
+            inputMode: true,
+            positionToInput: 'auto',
+            displayDatesOutside: false,
+            selectionDatesMode: 'multiple-ranged',
+            locale: 'es',
+            // selectedDates: [startDate, endDate],
+            // selectedMonth: month - 1,
+            // selectedYear: year,
+            // selectedTheme: 'dark',
+            layouts: {
+                multiple: `<div class="vc-controls" data-vc="controls" role="toolbar" aria-label="Calendar Navigation">
+                        <#ArrowPrev [month] />
+                        <#ArrowNext [month] />
+                        </div>
+                    <div class="vc-grid" data-vc="grid">
+                        <#Multiple>
+                    <div class="vc-column" data-vc="column" role="region">
+                    <div class="vc-header" data-vc="header">
+                    <div class="vc-header__content" data-vc-header="content">
+                        <#Month />
+                        <#Year />
+                    </div>
+                </div>
+            <div class="vc-wrapper" data-vc="wrapper">
+                    <#WeekNumbers />
+                    <div class="vc-content" data-vc="content">
+                <#Week />
+                <#Dates />
+                </div>
+                </div>
+                </div>
+                <#/Multiple>
+                <#DateRangeTooltip />
+            </div>
+            <#ControlTime />
+        <button id="btn-apply" class="btn btn-sm btn-primary" type="button">Aplicar</button>`
+            },
+            // onRender(self) {
+            //     const btnEl = self.context.mainElement.querySelector('#btn-apply');
+            //     if (!btnEl) return;
+            //     console.log('onrender', btnEl);
+            //     // Primero quitamos listeners anteriores (buena práctica)
+            //     const cloned = btnEl.cloneNode(true);
+            //     btnEl.parentNode.replaceChild(cloned, btnEl);
+
+            //     // Y luego agregamos el listener
+            //     cloned.addEventListener('click', () => {
+            //         aplicarFiltroTable(self);
+            //         console.log('onrender', btnEl);
+            //         self.hide();
+            //     });
+            // },
+            // onClickMonth(self, event) {
+            //     const btnEl = self.context.mainElement.querySelector('#btn-close');
+            //     // if (!btnEl) return;
+            //     btnEl.addEventListener('click', self.hide);
+            // },
+
+            // onClickYear(self, event) {
+            //     const btnEl = self.context.mainElement.querySelector('#btn-close');
+            //     // if (!btnEl) return;
+            //     btnEl.addEventListener('click', self.hide);
+            // },
+            onHide(self) {
+                i.value = textFilter; // Actualiza el valor del input con el rango seleccionado
+
+                // self.update({
+                //     selectedDates: [startDate, endDate]
+                // });
+                console.log('onHide', i.value, startDate, endDate);
+            },
+            onUpdate(self) {
+                self.context.selectedDates = [startDate, endDate];
+            },
+            onInit(self) {
+                const btnEl = self.context.mainElement.querySelector('#btn-apply');
+                if (!btnEl) return;
+
+                // Reemplaza el botón por una copia sin eventos previos
+                const newBtn = btnEl.cloneNode(true);
+                btnEl.replaceWith(newBtn);
+
+                // Agrega el evento click solo una vez
+                newBtn.addEventListener('click', () => {
+                    aplicarFiltroTable(self);
+                });
+            },
+            onShow(self) {
+                const btnEl = self.context.mainElement.querySelector('#btn-apply');
+                if (!btnEl) return;
+
+                // Reemplaza el botón por una copia sin eventos previos
+                const newBtn = btnEl.cloneNode(true);
+                btnEl.replaceWith(newBtn);
+
+                // Agrega el evento click solo una vez
+                newBtn.addEventListener('click', () => {
+                    aplicarFiltroTable(self);
+                });
+            },
+            onChangeToInput(self) {
+                const btnEl = self.context.mainElement.querySelector('#btn-apply');
+                if (!btnEl) return;
+
+                // Reemplaza el botón por una copia sin eventos previos
+                const newBtn = btnEl.cloneNode(true);
+                btnEl.replaceWith(newBtn);
+
+                // Agrega el evento click solo una vez
+                newBtn.addEventListener('click', () => {
+                    aplicarFiltroTable(self);
+                });
+                const input = self.context.inputElement;
+                const dates = self.context.selectedDates;
+                console.log('onChangeToInput', dates);
+                if (!input) return;
+                if (Array.isArray(dates) && dates.length > 0) {
+                    const start = formatDate(dates[0]);
+                    const end = formatDate(dates[1]);
+
+                    if (start && end) {
+                        input.value = `${start} - ${end}`;
+                    } else if (start) {
+                        input.value = `${start}`;
+                    } else {
+                        input.value = '';
+                    }
+                } else {
+                    input.value = '';
+                }
+            }
         };
 
-        const rangeContainer = document.getElementById('rango-fechas');
 
-        // Crea el selector de rango sobre el contenedor, no sobre los inputs directamente
-        const rangePicker = new DateRangePicker(rangeContainer, {
-            format: 'dd/mm/yyyy',
-            language: 'es',
-            autohide: true,
-            weekStart: 1,
-            todayHighlight: true,
-            clearBtn: true,
-            todayBtn: true,
-            pickLevel: 1,
-            minDate: '01/01/2024',
-            maxDate:  '<?php echo date('d/m/Y'); ?>',
-            // datesDisabled: ['2025-01-01', '2025-12-25'],
-            orientation: 'bottom auto'
-        });
+        function aplicarFiltroTable(self) {
+            const dates = self.context.selectedDates;
+            startDate = dates[0];
+            endDate = dates[1];
+            textFilter = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+            i.value = textFilter;
+            console.log('aplicarFiltroTable', textFilter, startDate, endDate);
+            tabla.ajax.reload(null, false);
+            // i.value = txtFilter; // Actualiza el valor del input con el rango seleccionado
+            self.update();
+            self.hide(); // Cierra el calendario
+        }
 
-        console.log('datepicker', rangePicker);
+        function convertirFecha(date) {
+            let year = date.getFullYear();
+            let month = (date.getMonth() + 1).toString().padStart(2, '0'); // mes comienza en 0
+            let day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+
+        // Capitaliza la primera letra del mes (opcional)
+
+
+        const {
+            Calendar
+        } = window.VanillaCalendarPro;
+        // Create a calendar instance and initialize it.
+        const calendar = new Calendar('#rango-fechas', options);
+        calendar.init();
+        calendar.update();
+
+
+
+        // $('#btn-apply').off('click').on('click', function() {
+        //     aplicarFiltroTable(calendar);
+        //     calendar.hide();
+        // });
 
         function toggleCustomFilterButtons() {
             $('.dtsp-searchPane').each(function() {
@@ -905,8 +1118,8 @@
                     "type": "POST",
                     "dataSrc": '',
                     data: function(data) {
-                        data.start = '2025-05-01';
-                        data.end = '2025-05-31';
+                        data.start = startDate;
+                        data.end = endDate;
                     }
                 },
                 // stateSave: true,
@@ -1267,7 +1480,7 @@
                         autocomplete="off"
                         placeholder="Empleado"
                         value="${data || ''}">
-                        <button class="clear-btn" type="button" onclick="clearInput('${uniqueId}', this)" id="btn${uniqueId}" style="display:none;top:6%;right:2px">&times;</button>
+                        <button class="clear-btn-inp" type="button" onclick="clearInput('${uniqueId}', this)" id="btn${uniqueId}" style="display:none;top:6%;right:2px">&times;</button>
                         <div class="invalid-feedback">*Campo obligatorio.</div>
                         </div>`;
                     }
@@ -1286,7 +1499,7 @@
                         placeholder="Nro. de orden o cliente"
                         autocomplete="off"
                         value="${data || ''}">
-                        <button class="clear-btn" type="button" id="btnO${uniqueId}" onclick="clearInput('${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button>
+                        <button class="clear-btn-inp" type="button" id="btnO${uniqueId}" onclick="clearInput('${uniqueId}', this)" style="display:none;top:6%;right:2px">&times;</button>
                         <div class="invalid-feedback">*Campo obligatorio.</div></div>`;
                     }
                 },
@@ -1840,7 +2053,7 @@
                 $row.find('td:eq(3) input[type="date"]').val(dateH);
                 // Obtener elementos del campo obra
                 const $inputObra = $row.find('td:eq(2) input.obra');
-                const $btnClear = $row.find('td:eq(2) .clear-btn');
+                const $btnClear = $row.find('td:eq(2) .clear-btn-inp');
 
                 if (selectedItem) {
                     $inputObra.val(selectedItem.label);
