@@ -12,12 +12,16 @@
                 <h1 class="col-p">Horario personal</h1>
             </div>
             <?php if (isset($_SESSION["crear20"]) && $_SESSION["crear20"] === true) : ?>
-                <div class="col">
+                <div class="col-auto" style="padding-block:.5rem">
                     <button id="btnNuevo" class="btn bg-gradient-green">
-                        <i class="fa fa-plus"></i> Agregar horario</button>
+                        <i class="fa fa-plus"></i> Nuevo</button>
+                </div>
+                <div class="col">
+                    <button id="btnInforme" data-toggle="modal" data-target="#modal-informe" class="btn btn-outline-success">
+                        <i class="fa fa-file"></i> Generar informe</button>
                 </div>
             <?php endif; ?>
-            <div class="col-sm">
+            <!-- <div class="col-sm">
                 <div class="row">
                     <div class="col-6">
                         <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
@@ -26,13 +30,12 @@
                     <div class="col-6">
                         <select name="cboMeses1" id="cboMeses1" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
                             <option value="null">TODO</option>
-                            <!-- <option data-hide='1' style="display:none;padding:0;" value="0"></option> -->
                         </select>
                     </div>
 
                 </div>
 
-            </div>
+            </div> -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
 </section>
@@ -292,7 +295,7 @@
 </section>
 <!-- Modal -->
 <div class="modal fade" id="modal_personal">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-sm modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fas fa-calendar-circle-user"></i><span> Selecciona el personal</span></h4>
@@ -421,7 +424,69 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<div class="modal fade" id="modal-informe">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content modal-nuevo">
+            <div class="modal-header bg-gradient-green">
+                <div class="row">
+                    <div class="col-auto" style="padding-block:.2rem">
+                        <h4 class="modal-title text-wrap"><i class="fas fa-file-lines"></i> Generar Informe</h4>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formInforme" method="POST" action="PDF/pdf_informe_orden.php" class="needs-validation" autocomplete="off" target="_blank" novalidate>
+                <div class="modal-body" style="padding: 1rem;">
+                    <div class="container-fluid">
+                        <label for="none" class=" combo">
+                            <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
+                            <i class="fas fa-file-pdf"></i> Seleccione un tipo de informe</label>
+                        <div class="row">
+                            <div class="col d-flex" style="padding-bottom:.75rem;">
+                                <div style="background-color:var(--primary-color-light)" class="tabs">
+                                    <input type="radio" class="rd-i" id="r-orden" name="tabs" value="1" checked />
+                                    <label class="tab" for="r-orden"> Orden</label>
+                                    <input type="radio" class="rd-i" id="r-fecha" name="tabs" value="2" />
+                                    <label class="tab" for="r-fecha">Fecha</label>
+                                    <span style="width:50%;" class="glider"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3" id="groupOrden">
+                                    <label for="none" class="mb-0 combo">
+                                        <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
+                                        <i class="fas fa-ticket"></i> Orden de trabajo
+                                    </label>
+                                    <!-- Selector de Orden -->
+                                    <div class="row">
+                                        <div class="col">
+                                            <select id="cboOrden_i" name="id_orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                            </select>
+                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="datepicker-range" id="groupFecha">
 
+                                </div>
+                            </div>
+                        </div> <!-- Fin container-fluid -->
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-file-lines"> </i><span class="button-text"> </span>Generar informe</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
+                    </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<script src="assets/plugins/daterange-vanilla/daterange.min.js"></script>
 <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
 <!-- <script src="assets/plugins/moment/moment-with-locales.min.js" type="text/javascript"></script> -->
 <!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
@@ -437,7 +502,7 @@
     var editar = '<?php echo $_SESSION["editar20"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar20"] ?>';
     var collapsedGroups = {}; // Variable para identificar la tabla activa
-    var calendarInstance = null;
+    // var calendarInstance = null;
     configuracionTable = {
         dom: 'Ptp',
         lengthChange: false,
@@ -636,13 +701,9 @@
         let anio = year;
         let mes = month;
         let id_horario_editar = 0;
-
-
         let startDate = convertirFecha(new Date(anio, mes - 1, 1));
         let endDate = convertirFecha(new Date(anio, mes, 0));
 
-        console.log('startDate', startDate);
-        console.log('endDate', endDate);
 
         const formatDate = (dateStr) => {
             if (!dateStr) return '';
@@ -669,9 +730,7 @@
             return new Date(year, month - 1, day); // evita desfase por zona horaria
         };
 
-
         const i = document.getElementById('rango-fechas');
-        // console.log('onInit', i);
         const s = formatDate(startDate);
         const e = formatDate(endDate);
         let txtFilter = `${s} - ${e}`
@@ -770,7 +829,7 @@
             selectedDates: [startDate, endDate],
             // selectedMonth: month - 1,
             // selectedYear: year,
-            // selectedTheme: 'dark',
+            selectedTheme: 'light',
             layouts: {
                 multiple: `<div class="vc-controls" data-vc="controls" role="toolbar" aria-label="Calendar Navigation">
                         <#ArrowPrev [month] />
@@ -799,49 +858,15 @@
             <#ControlTime />
             <button id="btn-apply" class="btn btn-sm btn-primary" type="button">Aplicar</button>`
             },
-            // onRender(self) {
-            //     const btnEl = self.context.mainElement.querySelector('#btn-apply');
-            //     if (!btnEl) return;
-            //     console.log('onrender', btnEl);
-            //     // Primero quitamos listeners anteriores (buena práctica)
-            //     const cloned = btnEl.cloneNode(true);
-            //     btnEl.parentNode.replaceChild(cloned, btnEl);
-
-            //     // Y luego agregamos el listener
-            //     cloned.addEventListener('click', () => {
-            //         aplicarFiltroTable(self);
-            //         console.log('onrender', btnEl);
-            //         self.hide();
-            //     });
-            // },
-            // onClickMonth(self, event) {
-            //     const btnEl = self.context.mainElement.querySelector('#btn-close');
-            //     // if (!btnEl) return;
-            //     btnEl.addEventListener('click', self.hide);
-            // },
-
-            // onClickYear(self, event) {
-            //     const btnEl = self.context.mainElement.querySelector('#btn-close');
-            //     // if (!btnEl) return;
-            //     btnEl.addEventListener('click', self.hide);
-            // },
             onHide: function(self) {
                 i.value = txtFilter; // Asigna el valor actualizado
-                // self.update()
-
                 self.set({
                     selectedDates: [startDate, endDate],
-                    selectedMonth: mes,
+                    selectedMonth: mes - 1,
                     selectedYear: anio
                 });
-
                 console.log('onHide', mes, anio);
             },
-            // onUpdate(self) {
-            //     self.context.selectedDates = [startDate, endDate];
-            //     console.log('onUpdate', self.context.selectedDates);
-
-            // },
             onInit(self) {
                 const btnEl = self.context.mainElement.querySelector('#btn-apply');
                 if (!btnEl) return;
@@ -870,16 +895,13 @@
                 });
                 //  self.update()
                 // self.context.selectedDates = [startDate, endDate];
-
             },
             onChangeToInput(self) {
                 const btnEl = self.context.mainElement.querySelector('#btn-apply');
                 if (!btnEl) return;
-
                 // Reemplaza el botón por una copia sin eventos previos
                 const newBtn = btnEl.cloneNode(true);
                 btnEl.replaceWith(newBtn);
-
                 // Agrega el evento click solo una vez
                 newBtn.addEventListener('click', () => {
                     aplicarFiltroTable(self);
@@ -891,7 +913,6 @@
                 if (Array.isArray(dates) && dates.length > 0) {
                     const start = formatDate(dates[0]);
                     const end = formatDate(dates[1]);
-
                     if (start && end) {
                         input.value = `${start} - ${end}`;
                     } else if (start) {
@@ -905,6 +926,15 @@
             }
         };
 
+        const options2 = {
+            type: 'multiple',
+            months: 2,
+            jumpMonths: 1,
+            locale: 'es',
+            selectionDatesMode: 'multiple',
+            selectedTheme: 'light',
+            selectionYearsMode: false,
+        };
 
         function aplicarFiltroTable(self) {
             const dates = self.context.selectedDates;
@@ -912,7 +942,7 @@
             endDate = dates[1];
             const partes = startDate.split('-');
             anio = parseInt(partes[0]);
-            mes = parseInt(partes[1]) - 1;
+            mes = parseInt(partes[1]);
             txtFilter = `${formatDate(startDate)} - ${formatDate(endDate)}`;
             i.value = txtFilter;
             console.log('aplicarFiltroTable', txtFilter, startDate, endDate);
@@ -929,38 +959,29 @@
             return `${year}-${month}-${day}`;
         }
 
-
         // Capitaliza la primera letra del mes (opcional)
-        console.log('calendar', calendarInstance);
-        if (typeof calendarInstance !== 'undefined' && calendarInstance !== null) {
-            calendarInstance.destroy();
-            console.log('Calendar destroyed');
-        }
+        // console.log('calendar', calendarInstance);
+        // if (calendarInstance !== null) {
+        //     calendarInstance.destroy();
+        //     console.log('Calendar destroyed');
+        // }
         // if (!document.querySelector('.vc')) {
         const {
             Calendar
         } = window.VanillaCalendarPro;
         calendarInstance = new Calendar('#rango-fechas', options);
         calendarInstance.init();
-        // }
-
-        // calendar.set({ locale: 'de-AT', firstWeekday: 0 });
-
-        // calendar.update();
+        console.log('Calendar initialized', calendarInstance);
 
 
-
-        // $('#btn-apply').off('click').on('click', function() {
-        //     aplicarFiltroTable(calendar);
-        //     calendar.hide();
-        // });
+        calendarInstance2 = new Calendar('#groupFecha', options2);
+        calendarInstance2.init();
 
         function toggleCustomFilterButtons() {
             $('.dtsp-searchPane').each(function() {
                 const $pane = $(this);
                 const hasSelected = $pane.find('.dtsp-selected').length > 0;
                 const $collapseBtn = $pane.find('.dtsp-collapseButton');
-
                 // Quitar botón anterior si existe
                 $pane.find('.custom-filter-icon').remove();
 
@@ -1003,7 +1024,6 @@
             });
         }
 
-
         $('#tblHorario').on('searchPanes.dt draw.dt', function() {
             toggleCustomFilterButtons();
 
@@ -1017,13 +1037,13 @@
         const empleadosMap = new Map(datos_em.map(item => [item.cod, item]));
         const ordenesMap = new Map(items_orden.map(item => [item.cod, item]));
 
-        $(cboAnio).select2({
-            width: '100%',
-            data: datos_anio,
-            minimumResultsForSearch: -1,
-        });
+        // $(cboAnio).select2({
+        //     width: '100%',
+        //     data: datos_anio,
+        //     minimumResultsForSearch: -1,
+        // });
 
-        setChange(cboAnio, anio);
+        // setChange(cboAnio, anio);
 
         // $('#miRangoFecha').on('apply.daterangepicker', function(ev, picker) {
         //     const fechaInicio = picker.startDate.format('YYYY-MM-DD');
@@ -1049,82 +1069,82 @@
         //     // });
         // });
 
-        $(cboMeses1).select2({
-            minimumResultsForSearch: -1,
-            width: '100%',
-            data: datos_meses,
-            placeholder: 'SELECCIONE',
-        });
-        setChange(cboMeses1, mes);
+        // $(cboMeses1).select2({
+        //     minimumResultsForSearch: -1,
+        //     width: '100%',
+        //     data: datos_meses,
+        //     placeholder: 'SELECCIONE',
+        // });
+        // setChange(cboMeses1, mes);
 
-        $(cboAnio).on("change", function() {
-            let a = this.options[this.selectedIndex].text
-            if (a == anio) {
-                return;
-            }
-            // if (mes == null) {
-            //     start = moment([a, 0, 1]);
-            //     end = moment(start).endOf('year');
-            // } else {
-            //     start = moment([a, mes - 1, 1]);
-            //     end = moment(start).endOf('month');
-            // }
-            anio = a;
-            // console.log('anio', anio);
+        // $(cboAnio).on("change", function() {
+        //     let a = this.options[this.selectedIndex].text
+        //     if (a == anio) {
+        //         return;
+        //     }
+        //     // if (mes == null) {
+        //     //     start = moment([a, 0, 1]);
+        //     //     end = moment(start).endOf('year');
+        //     // } else {
+        //     //     start = moment([a, mes - 1, 1]);
+        //     //     end = moment(start).endOf('month');
+        //     // }
+        //     anio = a;
+        //     // console.log('anio', anio);
 
-            // start = moment([anio, mes - 1, 1]);
-            // end = moment(start).endOf('month');
+        //     // start = moment([anio, mes - 1, 1]);
+        //     // end = moment(start).endOf('month');
 
-            // const picker = $('#miRangoFecha').data('daterangepicker');
-            // if (picker) {
-            //     picker.remove();
-            // }
-            // reaplica todas las opciones necesarias
-            // initDateRange(start, end);
-            // recarga tu tabla
-            tabla.ajax.reload(function() {
-                tabla.searchPanes.resizePanes();
-                // $('.dtsp-titleRow').remove();
-            }, false);
-            tblGastos.ajax.reload(function() {
-                tblGastos.searchPanes.resizePanes();
-                // $('.dtsp-titleRow').remove();
-            }, false);
-        });
+        //     // const picker = $('#miRangoFecha').data('daterangepicker');
+        //     // if (picker) {
+        //     //     picker.remove();
+        //     // }
+        //     // reaplica todas las opciones necesarias
+        //     // initDateRange(start, end);
+        //     // recarga tu tabla
+        //     tabla.ajax.reload(function() {
+        //         tabla.searchPanes.resizePanes();
+        //         // $('.dtsp-titleRow').remove();
+        //     }, false);
+        //     tblGastos.ajax.reload(function() {
+        //         tblGastos.searchPanes.resizePanes();
+        //         // $('.dtsp-titleRow').remove();
+        //     }, false);
+        // });
 
-        $(cboMeses1).on("change", function() {
-            let m = this.value;
-            console.log('m', m);
-            if (m == '') {
-                return;
-            }
-            console.log('mes', mes);
-            // if (m == 'null') {
-            //     mes = null;
-            //     start = moment([anio, 0, 1]);
-            //     end = moment(start).endOf('year');
-            // } else {
-            //     mes = m;
-            //     start = moment([anio, mes - 1, 1]);
-            //     end = moment(start).endOf('month');
-            // }
-            anio = cboAnio.options[cboAnio.selectedIndex].text;
-            // const picker = $('#miRangoFecha').data('daterangepicker');
-            // if (picker) {
-            //     picker.remove();
-            // }
-            // initDateRange(start, end);
+        // $(cboMeses1).on("change", function() {
+        //     let m = this.value;
+        //     console.log('m', m);
+        //     if (m == '') {
+        //         return;
+        //     }
+        //     console.log('mes', mes);
+        //     // if (m == 'null') {
+        //     //     mes = null;
+        //     //     start = moment([anio, 0, 1]);
+        //     //     end = moment(start).endOf('year');
+        //     // } else {
+        //     //     mes = m;
+        //     //     start = moment([anio, mes - 1, 1]);
+        //     //     end = moment(start).endOf('month');
+        //     // }
+        //     anio = cboAnio.options[cboAnio.selectedIndex].text;
+        //     // const picker = $('#miRangoFecha').data('daterangepicker');
+        //     // if (picker) {
+        //     //     picker.remove();
+        //     // }
+        //     // initDateRange(start, end);
 
-            tabla.ajax.reload(function() {
-                tabla.searchPanes.resizePanes();
-                // $('.dtsp-titleRow').remove();
-            }, false);
+        //     tabla.ajax.reload(function() {
+        //         tabla.searchPanes.resizePanes();
+        //         // $('.dtsp-titleRow').remove();
+        //     }, false);
 
-            tblGastos.ajax.reload(function() {
-                tblGastos.searchPanes.resizePanes();
-                // $('.dtsp-titleRow').remove();
-            }, false);
-        });
+        //     tblGastos.ajax.reload(function() {
+        //         tblGastos.searchPanes.resizePanes();
+        //         // $('.dtsp-titleRow').remove();
+        //     }, false);
+        // });
 
         clearButtonObraH.addEventListener('click', function() {
             id_orden_horario = null;

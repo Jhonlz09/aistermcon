@@ -479,34 +479,24 @@ font-size: 1rem;
     color: red;
 }
 
-#radio-orden:checked~.glider {
+/* #radio-orden:checked~.glider, #r-orden:checked~.glider {
     transform: translateX(0);
     background-color: var(--label-new);
-}
+} */
 
-#radio-cliente:checked~.glider {
-    transform: translateX(100%);
-    background-color: var(--label-new);
-}
-
-#radio-fecha:checked~.glider {
-    transform: translateX(200%);
-    background-color: var(--label-new);
-}
-
-#radio-1:checked~.glider {
+#radio-1:checked~.glider, #radio-fecha:checked~.glider {
     transform: translateX(200%);
     background-color: var(--label-new);
 
 }
 
-#radio-2:checked~.glider {
+#radio-2:checked~.glider, #radio-orden:checked~.glider, #r-orden:checked~.glider{
     /* --radio-color: #818b16; */
     transform: translateX(0);
     background-color: var(--label-new);
 }
 
-#radio-3:checked~.glider {
+#radio-3:checked~.glider, #radio-cliente:checked~.glider, #r-fecha:checked~.glider {
     /* --radio-color: #01626b; */
     transform: translateX(100%);
     background-color: var(--label-new);

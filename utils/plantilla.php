@@ -77,12 +77,12 @@
     <script defer src="assets/plugins/jquery-tabledit/tabledit.min.js"></script>
     <script defer src="assets/plugins/chart.js/Chart.min.js"></script>
     <script defer src="assets/plugins/chart.js/ChartDataLabels.min.js"></script>
-    <script defer src="assets/plugins/daterange-vanilla/daterange.min.js"></script>
 
 </head>
 <?php if (isset($_SESSION['s_usuario'])) {
 ?>
     <script>
+        // var calendarInstance = null;
         var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblFab, tblProdFab, tblDetalleFab, tblDetalleFabEntrada;
         var configuracionTable = {};
         let items = [];
@@ -394,12 +394,8 @@
                 var tablaData = localStorage.getItem(ruta);
                 accion_inv = 0;
                 scroll = false;
-                console.log('Cargando contenido: ' + id);
-                // const isCalendar = id == 'Horario personal' ? false : true;
-                // if (isCalendar && typeof calendar !== 'undefined') {
-                //     calendar.destroy();
-                //     console.log('Calendario destruido');
-                // }
+                // console.log('Cargando contenido: ' + id);
+
                 $('.' + contenedor).load(contenido, function() {
                     if (tablaData) {
                         // Restaurar los datos de la tabla desde localStorage
@@ -426,9 +422,7 @@
                             "dataSrc": '',
                         };
                         tabla.ajax.reload(null, false);
-
                     }
-
                 });
             }
 

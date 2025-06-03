@@ -54,7 +54,6 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-0">
-
                         <table id="tblInforme" class="table table-bordered table-striped" style="width:100%">
                             <thead>
                                 <tr>
@@ -106,26 +105,7 @@
             </div>
             <form id="formInforme" method="POST" action="PDF/pdf_informe_orden.php" class="needs-validation" autocomplete="off" target="_blank" novalidate>
                 <div class="modal-body" style="padding: 1rem;">
-                    <input type="hidden" name="variable" id="variable" value="">
-                    <input type="hidden" name="id_usuario" id="id_usuario" value="">
-
                     <div class="container-fluid">
-                        <!-- Selección de Año -->
-                        <!-- <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group mb-4">
-                                    <label id="lblP" class="mb-0 combo"><i class="fas fa-calendar"></i> Año</label>
-                                    <div class="row">
-                                        <div class="col">
-                                            <select id="cboAnioOrden" class="form-control select2 select2-success" data-dropdown-css-class="select2-dark">
-                                            </select>
-                                            <div class="invalid-feedback">*Campo obligatorio</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
-                        <!-- Orden de Trabajo -->
                         <label for="none" class=" combo">
                             <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
                             <i class="fas fa-file-pdf"></i> Seleccione un tipo de informe</label>
@@ -146,18 +126,6 @@
                                     <label for="none" class="mb-0 combo">
                                         <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
                                         <i class="fas fa-ticket"></i> Orden de trabajo
-                                        <!-- </div> -->
-                                        <!-- <div class="d-flex flex-wrap align-items-center" style="font-size: 70%;">
-                                            <label for="isPdfFab" class="col-form-label text-nowrap" style="cursor:pointer; padding-block: .5rem; color: #616c7a; font-size: 140%;">
-                                                Generar fabricación
-                                            </label>
-                                            <label class="switch-2 ml-2" for="isPdfFab" style="font-size: 112%;">
-                                                <input class="switch__input" type="checkbox" id="isPdfFab" onkeydown="toggleWithEnter(event, this)" checked>
-                                                <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
-                                                    <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11"></polyline>
-                                                </svg>
-                                            </label>
-                                        </div> -->
                                     </label>
                                     <!-- Selector de Orden -->
                                     <div class="row">
