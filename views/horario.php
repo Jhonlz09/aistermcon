@@ -3,7 +3,6 @@
 <head>
     <title>Ingreso personal</title>
     <!-- <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css"> -->
-    <link href="assets/plugins/daterange-vanilla/daterange.min.css" rel="stylesheet">
 </head>
 <!-- Contenido Header -->
 <section id="div_header" class="ini-section content-header ">
@@ -423,7 +422,6 @@
     <!-- /.modal-dialog -->
 </div>
 
-<script src="assets/plugins/daterange-vanilla/daterange.min.js"></script>
 <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
 <!-- <script src="assets/plugins/moment/moment-with-locales.min.js" type="text/javascript"></script> -->
 <!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
@@ -439,6 +437,7 @@
     var editar = '<?php echo $_SESSION["editar20"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar20"] ?>';
     var collapsedGroups = {}; // Variable para identificar la tabla activa
+    var calendarInstance = null;
     configuracionTable = {
         dom: 'Ptp',
         lengthChange: false,
@@ -761,14 +760,14 @@
         const options = {
             type: 'multiple',
             dateMin: '2025-01-01',
-            dateMax: endDate,
+            dateMax: '2025-12-31',
             selectionYearsMode: false,
             inputMode: true,
-            positionToInput: 'auto',
+            positionToInput: 'bottom',
             displayDatesOutside: false,
             selectionDatesMode: 'multiple-ranged',
             locale: 'es',
-            // selectedDates: [startDate, endDate],
+            selectedDates: [startDate, endDate],
             // selectedMonth: month - 1,
             // selectedYear: year,
             // selectedTheme: 'dark',
@@ -798,7 +797,7 @@
                 <#DateRangeTooltip />
             </div>
             <#ControlTime />
-        <button id="btn-apply" class="btn btn-sm btn-primary" type="button">Aplicar</button>`
+            <button id="btn-apply" class="btn btn-sm btn-primary" type="button">Aplicar</button>`
             },
             // onRender(self) {
             //     const btnEl = self.context.mainElement.querySelector('#btn-apply');
@@ -826,17 +825,23 @@
             //     // if (!btnEl) return;
             //     btnEl.addEventListener('click', self.hide);
             // },
-            onHide(self) {
-                i.value = textFilter; // Actualiza el valor del input con el rango seleccionado
+            onHide: function(self) {
+                i.value = txtFilter; // Asigna el valor actualizado
+                // self.update()
 
-                // self.update({
-                //     selectedDates: [startDate, endDate]
-                // });
-                console.log('onHide', i.value, startDate, endDate);
+                self.set({
+                    selectedDates: [startDate, endDate],
+                    selectedMonth: mes,
+                    selectedYear: anio
+                });
+
+                console.log('onHide', mes, anio);
             },
-            onUpdate(self) {
-                self.context.selectedDates = [startDate, endDate];
-            },
+            // onUpdate(self) {
+            //     self.context.selectedDates = [startDate, endDate];
+            //     console.log('onUpdate', self.context.selectedDates);
+
+            // },
             onInit(self) {
                 const btnEl = self.context.mainElement.querySelector('#btn-apply');
                 if (!btnEl) return;
@@ -849,6 +854,7 @@
                 newBtn.addEventListener('click', () => {
                     aplicarFiltroTable(self);
                 });
+                // self.context.selectedDates = [startDate, endDate];
             },
             onShow(self) {
                 const btnEl = self.context.mainElement.querySelector('#btn-apply');
@@ -862,6 +868,9 @@
                 newBtn.addEventListener('click', () => {
                     aplicarFiltroTable(self);
                 });
+                //  self.update()
+                // self.context.selectedDates = [startDate, endDate];
+
             },
             onChangeToInput(self) {
                 const btnEl = self.context.mainElement.querySelector('#btn-apply');
@@ -901,12 +910,15 @@
             const dates = self.context.selectedDates;
             startDate = dates[0];
             endDate = dates[1];
-            textFilter = `${formatDate(startDate)} - ${formatDate(endDate)}`;
-            i.value = textFilter;
-            console.log('aplicarFiltroTable', textFilter, startDate, endDate);
+            const partes = startDate.split('-');
+            anio = parseInt(partes[0]);
+            mes = parseInt(partes[1]) - 1;
+            txtFilter = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+            i.value = txtFilter;
+            console.log('aplicarFiltroTable', txtFilter, startDate, endDate);
             tabla.ajax.reload(null, false);
-            // i.value = txtFilter; // Actualiza el valor del input con el rango seleccionado
-            self.update();
+            i.value = txtFilter; // Actualiza el valor del input con el rango seleccionado
+            // self.update();
             self.hide(); // Cierra el calendario
         }
 
@@ -919,15 +931,22 @@
 
 
         // Capitaliza la primera letra del mes (opcional)
-
-
+        console.log('calendar', calendarInstance);
+        if (typeof calendarInstance !== 'undefined' && calendarInstance !== null) {
+            calendarInstance.destroy();
+            console.log('Calendar destroyed');
+        }
+        // if (!document.querySelector('.vc')) {
         const {
             Calendar
         } = window.VanillaCalendarPro;
-        // Create a calendar instance and initialize it.
-        const calendar = new Calendar('#rango-fechas', options);
-        calendar.init();
-        calendar.update();
+        calendarInstance = new Calendar('#rango-fechas', options);
+        calendarInstance.init();
+        // }
+
+        // calendar.set({ locale: 'de-AT', firstWeekday: 0 });
+
+        // calendar.update();
 
 
 
@@ -1131,7 +1150,7 @@
                 let currentGroup = null;
                 let counter = 0;
 
-                console.log('Reloaded table', scrollPositionTable);
+                // console.log('Reloaded table', scrollPositionTable);
 
                 $scrollBody.scrollTop(scrollPositionTable);
 

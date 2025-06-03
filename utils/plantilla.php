@@ -21,6 +21,7 @@
     <link href='assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' rel='stylesheet' type='text/css' />
     <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/daterange-vanilla/daterange.min.css" rel="stylesheet">
 
     <noscript>
         <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
@@ -76,6 +77,7 @@
     <script defer src="assets/plugins/jquery-tabledit/tabledit.min.js"></script>
     <script defer src="assets/plugins/chart.js/Chart.min.js"></script>
     <script defer src="assets/plugins/chart.js/ChartDataLabels.min.js"></script>
+    <script defer src="assets/plugins/daterange-vanilla/daterange.min.js"></script>
 
 </head>
 <?php if (isset($_SESSION['s_usuario'])) {
@@ -392,6 +394,12 @@
                 var tablaData = localStorage.getItem(ruta);
                 accion_inv = 0;
                 scroll = false;
+                console.log('Cargando contenido: ' + id);
+                // const isCalendar = id == 'Horario personal' ? false : true;
+                // if (isCalendar && typeof calendar !== 'undefined') {
+                //     calendar.destroy();
+                //     console.log('Calendario destruido');
+                // }
                 $('.' + contenedor).load(contenido, function() {
                     if (tablaData) {
                         // Restaurar los datos de la tabla desde localStorage
@@ -420,7 +428,7 @@
                         tabla.ajax.reload(null, false);
 
                     }
-                    $('.daterangepicker').remove();
+
                 });
             }
 
