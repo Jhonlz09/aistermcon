@@ -1,7 +1,7 @@
 <?php require_once "../utils/database/config.php"; ?>
 
 <head>
-    <title>Ingreso personal</title>
+    <title>Horario personal</title>
     <!-- <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css"> -->
 </head>
 <!-- Contenido Header -->
@@ -343,7 +343,7 @@
                 </button>
             </div>
             <form id="formEditar" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body scroll-modal" style="padding-block:1rem .5rem">
+                <div class="modal-body " style="padding-block:1rem .5rem">
                     <input type="hidden" id="id_horario" value="">
                     <div class="col-md-12 pb-3">
                         <div class="row">
@@ -425,12 +425,16 @@
     <!-- /.modal-dialog -->
 </div>
 <div class="modal fade" id="modal-informe">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-md">
         <div class="modal-content modal-nuevo">
             <div class="modal-header bg-gradient-green">
                 <div class="row">
                     <div class="col-auto" style="padding-block:.2rem">
                         <h4 class="modal-title text-wrap"><i class="fas fa-file-lines"></i> Generar Informe</h4>
+                    </div>
+                    <div class="col">
+                        <select id="cboAnioOrden" class="form-control select2 select2-light" data-dropdown-css-class="select2-dark">
+                        </select>
                     </div>
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -438,48 +442,69 @@
                 </button>
             </div>
             <form id="formInforme" method="POST" action="PDF/pdf_informe_orden.php" class="needs-validation" autocomplete="off" target="_blank" novalidate>
-                <div class="modal-body" style="padding: 1rem;">
+                <div class="modal-body scroll-modal" style="padding: 1rem;">
                     <div class="container-fluid">
-                        <label for="none" class=" combo">
-                            <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
-                            <i class="fas fa-file-pdf"></i> Seleccione un tipo de informe</label>
                         <div class="row">
-                            <div class="col d-flex" style="padding-bottom:.75rem;">
+                            <div class="col-sm-6 d-flex" style="padding-bottom:.75rem;">
+                                <label for="none" class=" combo">
+                                    <i class="fas fa-file-pdf"></i> Tipo de informe</label>
                                 <div style="background-color:var(--primary-color-light)" class="tabs">
                                     <input type="radio" class="rd-i" id="r-orden" name="tabs" value="1" checked />
-                                    <label class="tab" for="r-orden"> Orden</label>
+                                    <label class="tab" for="r-orden"> Obra</label>
                                     <input type="radio" class="rd-i" id="r-fecha" name="tabs" value="2" />
                                     <label class="tab" for="r-fecha">Fecha</label>
                                     <span style="width:50%;" class="glider"></span>
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-sm-6">
                                 <div class="mb-3" id="groupOrden">
-                                    <label for="none" class="mb-0 combo">
+                                    <label for="cboOrden_h" class="mb-0 combo">
                                         <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
-                                        <i class="fas fa-ticket"></i> Orden de trabajo
+                                        <i class="fas fa-person-digging"></i> Obra
                                     </label>
                                     <!-- Selector de Orden -->
                                     <div class="row">
                                         <div class="col">
-                                            <select id="cboOrden_i" name="id_orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                            <select id="cboOrden_h" name="id_orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                            </select>
+                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="groupFecha" style="display:none;">
+                                    <label for="cboMes_h" class="mb-0 combo">
+                                        <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
+                                        <i class="fa-solid fa-calendar-range"></i> Meses
+                                    </label>
+                                    <!-- Selector de Orden -->
+                                    <div class="row">
+                                        <div class="col">
+                                            <select id="cboMes_h" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                             </select>
                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-12">
-                                <div class="datepicker-range" id="groupFecha">
+                                <div class="datepicker-range" id="groupOrdenDate">
+
+                                </div>
+                            </div>
+                            <div class="col-md-12" style="display:none">
+                                <div class="datepicker-range" id="groupFechaDate">
 
                                 </div>
                             </div>
                         </div> <!-- Fin container-fluid -->
                     </div>
-                    <div class="modal-footer justify-content-between">
-                        <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-file-lines"> </i><span class="button-text"> </span>Generar informe</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
-                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-file-lines"> </i><span class="button-text"> </span>Generar informe</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
+                </div>
             </form>
         </div>
         <!-- /.modal-content -->
@@ -488,14 +513,6 @@
 </div>
 <script src="assets/plugins/daterange-vanilla/daterange.min.js"></script>
 <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
-<!-- <script src="assets/plugins/moment/moment-with-locales.min.js" type="text/javascript"></script> -->
-<!-- <script src="assets/plugins/datatables-keytable/js/keyTable.bootstrap4.min.js"></script> -->
-<!-- <script src="assets/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script> -->
-<!-- <script src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
-<script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script> -->
-<!-- <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/fixedColumns.dataTables.min.js" integrity="sha384-/LxS0b8zEK/HZxykvyTg3o2Ryk2vBESQvW6QMqiUsitINq/Xg5jB4X9KotjCCp3K" crossorigin="anonymous"></script>
-<script src="https://cdn.datatables.net/scroller/2.2.0/js/scroller.dataTables.min.js" integrity="sha384-cCDhK6VsxVGKfl0shwjJr2UXaCzEpxhSnd7C8Uan8yABW71pdY3iaz8aVBklw8uz" crossorigin="anonymous"></script> -->
 
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
@@ -703,7 +720,104 @@
         let id_horario_editar = 0;
         let startDate = convertirFecha(new Date(anio, mes - 1, 1));
         let endDate = convertirFecha(new Date(anio, mes, 0));
+        const cboOrden_h = document.getElementById('cboOrden_h');
 
+        // $(cboOrden_i).select2({
+        //     placeholder: 'SELECCIONA UNA ORDEN',
+        //     width: '100%',
+        // });
+        cargarCombo('Orden_h', '', 3, false, anio).then(datos_ => {
+            $(cboOrden_h).empty();
+            $(cboOrden_h).select2({
+                placeholder: 'SELECCIONA UNA ORDEN',
+                data: datos_
+            });
+            setChange(cboOrden_h, 0);
+        });
+
+
+        OverlayScrollbars(document.querySelector('.scroll-modal'), {
+            autoUpdate: true,
+            scrollbars: {
+                autoHide: 'leave'
+            }
+        });
+
+        $(cboAnioOrden).select2({
+            width: '110%',
+            data: datos_anio,
+            minimumResultsForSearch: -1,
+        })
+        setChange(cboAnioOrden, anio);
+
+
+        $(cboAnioOrden).on("change", function() {
+            const a = this.options[this.selectedIndex].text
+
+            cargarCombo('Orden_h', '', 3, false, a).then(datos_ => {
+                $(cboOrden_h).empty();
+                $(cboOrden_h).select2({
+                    placeholder: 'SELECCIONA UNA ORDEN',
+                    data: datos_,
+                    width: '100%',
+                });
+                setChange(cboOrden_h, 0);
+            });
+        });
+
+        $(cboOrden_h).on("change", function() {
+            const id_orden = $(this).val();
+            console.log('id_orden', id_orden);
+            if (id_orden != null) {
+                $.ajax({
+                    url: "controllers/horario.controlador.php", // Reemplaza por la ruta real a tu controlador
+                    method: "POST",
+                    data: {
+                        accion: 8,
+                        id_orden: id_orden
+                    },
+                    dataType: "json",
+                    success: function(respuesta) {
+                        const fechasSeleccionadas = respuesta.map(item => item.fecha);
+                        console.log('fechasSeleccionadas', fechasSeleccionadas);
+                        if (fechasSeleccionadas.length > 0) {
+                            const [anio, mes] = fechasSeleccionadas[0].split('-');
+
+                            // const costosPorFecha = {};
+                            // respuesta.forEach(item => {
+                            //     costosPorFecha[item.fecha] = item.suma_total_costo;
+                            // });
+                            calendarInstance2.set({
+                                selectedDates: fechasSeleccionadas,
+                                selectedMonth: parseInt(mes, 10) - 1, // Se espera número (1–12)
+                                selectedYear: parseInt(anio, 10)
+                            });
+
+                        } else {
+                            mostrarToast(
+                                'info',
+                                "Información",
+                                "fa-triangle-exclamation",
+                                'No hay datos para la obra seleccionada', 2500
+                            )
+                            calendarInstance2.set({
+                                selectedDates: [],
+                                selectedMonth: mes - 1, // Se espera número (0–11)
+                                selectedYear: anio
+                            });
+                        }
+                    }
+                });
+            }
+
+
+        });
+
+        // $(cboOrden_h).on('select2:open', function() {
+        //     setTimeout(function() {
+        //         document.querySelector('.select2-container--open .select2-search__field').focus();
+        //     }, 0);
+        // });
 
         const formatDate = (dateStr) => {
             if (!dateStr) return '';
@@ -930,10 +1044,31 @@
             type: 'multiple',
             months: 2,
             jumpMonths: 1,
+            displayDatesOutside: false,
             locale: 'es',
             selectionDatesMode: 'multiple',
             selectedTheme: 'light',
             selectionYearsMode: false,
+            onCreateDateEls(self, dateEl) {
+                const btnEl = dateEl.querySelector('[data-vc-date-btn]');
+                if (!btnEl) return;
+                // Obtener la fecha en formato YYYY-MM-DD
+                const dateObj = dateEl.date; // Este es un objeto Date
+                const yyyy = dateObj.getFullYear();
+                const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const dd = String(dateObj.getDate()).padStart(2, '0');
+                const fechaFormateada = `${yyyy}-${mm}-${dd}`;
+                // Si existe un costo para esta fecha, lo mostramos
+                if (costosPorFecha[fechaFormateada]) {
+                    const costo = costosPorFecha[fechaFormateada];
+                    const day = btnEl.innerText;
+                    btnEl.style.flexDirection = 'column';
+                    btnEl.innerHTML = `
+        <span>${day}</span>
+        <span style="font-size: 8px; color: #8BC34A;">${costo}</span>
+      `;
+                }
+            },
         };
 
         function aplicarFiltroTable(self) {
@@ -974,7 +1109,7 @@
         console.log('Calendar initialized', calendarInstance);
 
 
-        calendarInstance2 = new Calendar('#groupFecha', options2);
+        calendarInstance2 = new Calendar('#groupOrdenDate', options2);
         calendarInstance2.init();
 
         function toggleCustomFilterButtons() {
@@ -2244,12 +2379,7 @@
         let scrollPos = 0;
         let scrollPositionTable = 0;
 
-        OverlayScrollbars(document.querySelector('.scroll-modal'), {
-            autoUpdate: true,
-            scrollbars: {
-                autoHide: 'leave'
-            }
-        });
+
 
         btnReturn.addEventListener('click', () => showHideFormSection('none', 'block', tblPerson, scrollPos));
 

@@ -95,7 +95,7 @@
                         <h4 class="modal-title text-wrap"><i class="fas fa-file-lines"></i> Generar Informe</h4>
                     </div>
                     <div class="col">
-                        <select id="cboAnioOrden" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                        <select id="cboAnioOrden" class="form-control select2 select2-light" data-dropdown-css-class="select2-dark">
                         </select>
                     </div>
                 </div>

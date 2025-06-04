@@ -43,6 +43,12 @@ class ControladorHorario
         $data = ModeloHorario::mdlListarGastos($this->start, $this->end);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    public function listarFechaGasto()
+    {
+        $data = ModeloHorario::mdlListarFechaGasto($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 $data = new ControladorHorario();
 
@@ -71,5 +77,8 @@ if (!isset($_POST["accion"])) {
         $data->start = $_POST["start"];
         $data->end = $_POST["end"];
         $data->listarGastos();
+    }else if ($_POST["accion"] == 8) {
+        $data->id = $_POST["id_orden"];
+        $data->listarFechaGasto();
     }
 }

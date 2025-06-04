@@ -31,6 +31,24 @@ class ModeloHorario
         }
     }
 
+
+    static public function mdlListarFechaGasto($id_orden)
+    {
+        try {
+            $stmt = Conexion::ConexionDB()->prepare("SELECT DATE(fecha) AS fecha,
+                    COALESCE(SUM(total_costo), '$0.00') AS suma_total_costo
+                    FROM public.tblhorario
+                    WHERE id_orden = :id_orden
+                    GROUP BY DATE(fecha)
+                    ORDER BY fecha;");
+            $stmt->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
     static public function mdlListarGastos($start, $end)
     {
         try {
@@ -59,24 +77,11 @@ class ModeloHorario
     {
         try {
             // Construimos la consulta con BETWEEN
-            $sql = "SELECT
-                h.hn,
-                h.hs,
-                h.he,
-                h.ht,
-                h.gm,
-                h.gt,
-                h.gc,
-                h.gh,
-                h.gg,
-                h.ga,
-                h.id,
-                h.id_empleado,
-                h.id_orden,
+            $sql = "SELECT h.hn, h.hs, h.he, h.ht, h.gm, h.gt, h.gc, h.gh,
+                h.gg,h.ga,h.id,h.id_empleado,h.id_orden,
                 TO_CHAR(h.fecha, 'YYYY-MM-DD') AS fecha
             FROM public.tblhorario h
             WHERE h.id = :id_horario;";
-
             // Preparamos, vinculamos y ejecutamos
             $stmt = Conexion::ConexionDB()->prepare($sql);
             $stmt->bindParam(":id_horario", $id_horario);
@@ -92,7 +97,7 @@ class ModeloHorario
         try {
             $conn = Conexion::ConexionDB();
             $stmt = $conn->prepare("INSERT INTO tblhorario (
-                id_empleado, id_orden, fecha, hn, hs, he, gm, gt, ga, gh, gg, gc, id_justificacion
+                id_empleado,id_orden,fecha, hn, hs, he, gm, gt, ga, gh, gg, gc, id_justificacion
             ) VALUES (
                 :id_empleado, :id_orden, :fecha, :hn, :hs, :he, :material, :trans, :agua, :hosp, :guard, :ali, :id_justificacion
             )");
