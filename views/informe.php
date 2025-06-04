@@ -328,13 +328,11 @@
         const tabsIn = document.querySelectorAll('.tabs .rd-i');
         let tabSelectedIn= '1';
 
-
         tabsIn.forEach(tab => {
             tab.addEventListener('change', function() {
                 tabSelectedIn = this.value;
             });
         });
-
 
         btnGuardar.addEventListener('click', function(e) {
             e.preventDefault();
@@ -342,7 +340,7 @@
                 form.classList.add('was-validated');
                 return;
             }
-            let idOrden = cboOrden_i.value;
+            // let idOrden = cboOrden_i.value;
             if (tabSelectedIn === '1') {
                 form.action = 'PDF/pdf_informe_orden.php';
             } else if (tabSelectedIn === '2') {

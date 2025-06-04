@@ -31,7 +31,6 @@ class ModeloHorario
         }
     }
 
-
     static public function mdlListarFechaGasto($id_orden)
     {
         try {
@@ -70,6 +69,41 @@ class ModeloHorario
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlInformeHorarioOrden($id_orden, $fechas)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+
+            // Validar que $fechas no esté vacío
+            if (empty($fechas)) {
+                throw new Exception("No se proporcionaron fechas.");
+            }
+
+            // Crear placeholders dinámicos: ?, ?, ?
+            $placeholders = implode(',', array_fill(0, count($fechas), '?'));
+
+            $sql = "SELECT
+                    COALESCE(SUM(costo_mano_obra), '$0.00') AS suma_costo_mano_obra,
+                    COALESCE(SUM(gasto_en_obra), '$0.00') AS suma_gasto_en_obra,
+                    COALESCE(SUM(total_costo), '$0.00') AS suma_total_costo
+                FROM public.tblhorario
+                WHERE id_orden = ?
+                  AND fecha::date IN ($placeholders);";
+
+            $stmt = $conexion->prepare($sql);
+
+            // Combinar id_orden con fechas para bindear todos los valores
+            $params = array_merge([$id_orden], $fechas);
+
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ["error" => $e->getMessage()];
+        } catch (Exception $e) {
+            return ["error" => $e->getMessage()];
         }
     }
 
