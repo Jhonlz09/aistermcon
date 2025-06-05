@@ -444,6 +444,7 @@
             <form id="formInforme" method="POST" action="" class="needs-validation" autocomplete="off" target="_blank" novalidate>
                 <!-- <input type="hidden" name="id_orden" id="inp_orden" value=""> -->
                 <input type="hidden" name="fechas_seleccionadas" id="fechas_seleccionadas" value="">
+                <input type="hidden" name="orden_seleccionadas" id="orden_seleccionadas" value="">
                 <div class="modal-body scroll-modal" style="padding: 1rem;">
                     <div class="container-fluid">
                         <div class="row">
@@ -466,7 +467,7 @@
                                     <!-- Selector de Orden -->
                                     <div class="row">
                                         <div class="col">
-                                            <select id="cboOrden_h" name="id_orden" class="cbo form-control select2 select2-success" multiple="multiple" data-dropdown-css-class="select2-dark" required>
+                                            <select id="cboOrden_h" class="cbo form-control select2 select2-success" multiple="multiple" data-dropdown-css-class="select2-dark" style="width:100%;" required>
                                             </select>
                                             <!-- <select id="cboOrden_h" name="id_orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
                                             </select> -->
@@ -516,7 +517,6 @@
 </div>
 <script src="assets/plugins/daterange-vanilla/daterange.min.js"></script>
 <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
-
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
     var editar = '<?php echo $_SESSION["editar20"] ?>';
@@ -719,6 +719,7 @@
         let mes = month;
         let id_horario_editar = 0;
         let estado_generar_orden = false;
+        let id_orden_selecion = []
         let costosPorFecha = {};
 
         let estado_generar_fecha = false;
@@ -789,35 +790,32 @@
 
         btnGenerarInforme.addEventListener('click', function(e) {
             e.preventDefault();
-            if (!formInforme.checkValidity()) {
-                formInforme.classList.add('was-validated');
-                return;
-            }
-
-            const fechasSeleccionadas = calendarInstance2.context.selectedDates; // Esto depende de tu configuración
-            console.log('fechasSeleccionadas', fechasSeleccionadas);
-            document.getElementById('fechas_seleccionadas').value = fechasSeleccionadas.join(',');
+            // if (!formInforme.checkValidity()) {
+            //     formInforme.classList.add('was-validated');
+            //     return;
+            // }
             // Redirigir según pestaña activa
             if (tabSelectedIn === '1') {
+                const fechasSeleccionadas = calendarInstance2.context.selectedDates; // Esto depende de tu configuración
+                document.getElementById('fechas_seleccionadas').value = fechasSeleccionadas.join(',');
+                document.getElementById('orden_seleccionadas').value =  id_orden_seleccion.join(',');
+                console.log('FECHAS', document.getElementById('fechas_seleccionadas').value)
+                console.log('orden value', document.getElementById('orden_seleccionadas').value)
                 formInforme.action = 'PDF/pdf_informe_horario_orden.php';
-            } else if (tabSelectedIn === '2') {
+            } else {
+                const fechasSeleccionadas = calendarInstance3.context.selectedDates; // Esto depende de tu configuración
+                document.getElementById('fechas_seleccionadas').value = fechasSeleccionadas.join(',');
                 formInforme.action = 'PDF/pdf_informe_horario_fechas.php';
             }
             formInforme.submit();
         });
 
-        // $(cboOrden_i).select2({
-        //     placeholder: 'SELECCIONA UNA ORDEN',
-        //     width: '100%',
-        // });
-        cargarCombo('Orden_h', '', 3, false, anio).then(datos_ => {
-            $(cboOrden_h).empty();
-            $(cboOrden_h).select2({
-                placeholder: 'SELECCIONA UNA ORDEN',
-                data: datos_
-            });
-            setChange(cboOrden_h, 0);
+        $(cboOrden_h).select2({
+            placeholder: 'SELECCIONA UNA ORDEN',
+            width: '100%',
         });
+
+        cargarCombo('Orden_h', '', 12, false, anio);
 
 
         OverlayScrollbars(document.querySelector('.scroll-modal'), {
@@ -838,28 +836,20 @@
         $(cboAnioOrden).on("change", function() {
             const a = this.options[this.selectedIndex].text
             anioInfor = parseInt(a);
-            cargarCombo('Orden_h', '', 3, false, a).then(datos_ => {
-                $(cboOrden_h).empty();
-                $(cboOrden_h).select2({
-                    placeholder: 'SELECCIONA UNA ORDEN',
-                    data: datos_,
-                    width: '100%',
-                });
-                setChange(cboOrden_h, 0);
-            });
+            cargarCombo('Orden_h', '', 12, false, anioInfor);
         });
 
 
         $(cboOrden_h).change(function() {
-            const id_orden = $(this).val();
-            console.log('id_orden', id_orden);
-            if (id_orden.length > 0) {
+            id_orden_seleccion = $(this).val();
+            // console.log('id_orden', id_orden);
+            if (id_orden_seleccion.length > 0) {
                 $.ajax({
                     url: "controllers/horario.controlador.php", // Reemplaza por la ruta real a tu controlador
                     method: "POST",
                     data: {
                         accion: 8,
-                        id_orden: id_orden
+                        id_orden: id_orden_seleccion
                     },
                     dataType: "json",
                     success: function(respuesta) {
@@ -905,7 +895,7 @@
                 calendarInstance2.set({
                     selectedDates: [],
                     enableDates: [],
-                    disableAllDates:true,
+                    disableAllDates: true,
                     selectedMonth: new Date().getMonth(),
                     selectedYear: new Date().getFullYear()
                 });

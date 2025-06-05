@@ -79,33 +79,64 @@ class ModeloHorario
         }
     }
 
-    static public function mdlInformeHorarioOrden($id_orden, $fechas)
+    static public function mdlInformeHorarioOrden($ids_orden, $fechas)
     {
         try {
             $conexion = Conexion::ConexionDB();
-
-            // Validar que $fechas no esté vacío
-            if (empty($fechas)) {
-                throw new Exception("No se proporcionaron fechas.");
+            if (empty($ids_orden) || empty($fechas)) {
+                throw new Exception("No se proporcionaron IDs de orden o fechas.");
             }
 
-            // Crear placeholders dinámicos: ?, ?, ?
-            $placeholders = implode(',', array_fill(0, count($fechas), '?'));
-
-            $sql = "SELECT
-                    COALESCE(SUM(costo_mano_obra), '$0.00') AS suma_costo_mano_obra,
-                    COALESCE(SUM(gasto_en_obra), '$0.00') AS suma_gasto_en_obra,
-                    COALESCE(SUM(total_costo), '$0.00') AS suma_total_costo
-                FROM public.tblhorario
-                WHERE id_orden = ?
-                  AND fecha::date IN ($placeholders);";
+            // Crear placeholders dinámicos para ambos arrays
+            $placeholdersOrden = implode(',', array_fill(0, count($ids_orden), '?'));
+            $placeholdersFechas = implode(',', array_fill(0, count($fechas), '?'));
+            $sql = "SELECT o.nombre || ' ' || c.nombre AS orden,
+                    COALESCE(SUM(h.costo_mano_obra), '$0.00') AS suma_costo_mano_obra,
+                    COALESCE(SUM(h.gasto_en_obra), '$0.00') AS suma_gasto_en_obra,
+                    COALESCE(SUM(h.total_costo), '$0.00') AS suma_total_costo
+                FROM public.tblhorario h
+                JOIN public.tblorden o ON h.id_orden = o.id
+                JOIN public.tblclientes c ON o.id_cliente = c.id
+                WHERE h.id_orden IN ($placeholdersOrden)
+                AND h.fecha::date IN ($placeholdersFechas)
+                GROUP BY o.nombre, c.nombre
+                ORDER BY c.nombre;";
 
             $stmt = $conexion->prepare($sql);
 
-            // Combinar id_orden con fechas para bindear todos los valores
-            $params = array_merge([$id_orden], $fechas);
-
+            // Unimos ambos arrays para pasar todos los parámetros
+            $params = array_merge($ids_orden, $fechas);
             $stmt->execute($params);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ["error" => $e->getMessage()];
+        } catch (Exception $e) {
+            return ["error" => $e->getMessage()];
+        }
+    }
+
+    static public function mdlInformeHorarioFecha($startDate, $endDate)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            if (empty($startDate) || empty($endDate)) {
+                throw new Exception("No se proporcionó el rango de fechas.");
+            }
+            $sql = "SELECT o.nombre || ' ' || c.nombre AS orden,
+                    COALESCE(SUM(h.costo_mano_obra), '$0.00') AS suma_costo_mano_obra,
+                    COALESCE(SUM(h.gasto_en_obra), '$0.00') AS suma_gasto_en_obra,
+                    COALESCE(SUM(h.total_costo), '$0.00') AS suma_total_costo
+                FROM public.tblhorario h
+                JOIN public.tblorden o ON h.id_orden = o.id
+                JOIN public.tblclientes c ON o.id_cliente = c.id
+                WHERE h.fecha::date BETWEEN ? AND ?
+                GROUP BY o.nombre, c.nombre
+                ORDER BY c.nombre;";
+
+            $stmt = $conexion->prepare($sql);
+            $stmt->execute([$startDate, $endDate]);
+
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return ["error" => $e->getMessage()];

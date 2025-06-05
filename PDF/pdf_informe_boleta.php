@@ -316,11 +316,11 @@ $pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'FECHA DE EMISION: ' . $pdf->fec
 $pdf->Cell(0, 0, iconv('UTF-8', 'windows-1252', 'FECHA DE RETORNO: ' . $pdf->fecha_retorno), 0, 1, 'R');
 $pdf->SetY(47);
 $pdf->MultiCell(0, 5, iconv('UTF-8', 'windows-1252', "NRO. ORDEN:  $pdf->orden        CLIENTE: $pdf->cliente"), 0, 'L', 0);
-    $pdf->SetFont('Arial', 'B', 12);   
-    $pdf->Ln(10);
-    $pdf->SetFont('Arial', 'B', 11);
-    $header = array('Codigo', 'Descripcion', 'Unidad', 'Salida', 'Entrada', 'Tot. Util.');
-    $pdf->Row($header, array(12, 12, 12, 12, 12, 12), 'B');
+$pdf->SetFont('Arial', 'B', 12);   
+$pdf->Ln(10);
+$pdf->SetFont('Arial', 'B', 11);
+$header = array('Codigo', 'Descripcion', 'Unidad', 'Salida', 'Entrada', 'Tot. Util.');
+$pdf->Row($header, array(12, 12, 12, 12, 12, 12), 'B');
     foreach ($data_boleta as $fill) {
         $pdf->SetStartY(20);
         $pdf->SetFont('Arial', '', 10);

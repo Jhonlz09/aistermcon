@@ -154,7 +154,8 @@ function cargarCombo(id, s, a = 1, isDataCbo = false, anio = null) {
       success: function (respuesta) {
         let dataCbo = [];
         let options = "";
-        for (let index = 0; index < respuesta.length; index++) {
+        console.log('horario', respuesta)
+        for (let index = 0; index < respuesta.length;index++) {
           options += `<option value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
           if (anio !== null) {
             let text = respuesta[index][1]; // Nombre del elemento

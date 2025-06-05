@@ -1,12 +1,10 @@
 <?php
-
-use PhpOffice\PhpSpreadsheet\Writer\Pdf as WriterPdf;
-
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
 // Verificar si el usuario está autenticado
-if (!(isset($_SESSION['s_usuario']))) {
+if (!isset($_SESSION['s_usuario'])) {
     header("Location: /aistermcon");
     exit();
 }
@@ -14,58 +12,96 @@ if (!(isset($_SESSION['s_usuario']))) {
 require('../assets/plugins/fpdf/fpdf.php');
 require('../models/horario.modelo.php');
 
-$idOrden = $_POST['id_orden'] ?? null;
-$fechasSeleccionadas = isset($_POST['fechas_seleccionadas']) ? explode(',', $_POST['fechas_seleccionadas']) : [];
-$data_costos = ModeloHorario::mdlInformeHorarioOrden($id_orden, $fechasSeleccionadas);
-
-if (empty($fechasSeleccionadas)) {
-    die("No se han seleccionado fechas.");
-}else if (!$id_orden) {
-    die("Error: ID de orden no recibido.");
-}
-
-
+// Validar parámetros POST
+$fechasSeleccionadas = isset($_POST['fechas_seleccionadas']) && !empty($_POST['fechas_seleccionadas'])
+    ? explode(',', $_POST['fechas_seleccionadas'])
+    : [];
 class PDF extends FPDF
 {
-    function Header()
-    {
-        $this->SetFont('Arial','B',14);
-        $this->Cell(0,10,'Informe de Horario por Fechas',0,1,'C');
-        $this->Ln(5);
-    }
-
     function Footer()
     {
         $this->SetY(-15);
-        $this->SetFont('Arial','I',8);
-        $this->Cell(0,10,'Pagina '.$this->PageNo().'/{nb}',0,0,'C');
+        $this->SetFont('Arial', 'I', 8);
+        $this->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'Página ' . $this->PageNo() . '/{nb}'), 0, 0, 'C');
     }
 }
-
-// Crear el PDF
+// Iniciar PDF
 $pdf = new PDF();
 $pdf->AliasNbPages();
 $pdf->AddPage();
+$pdf->SetFont('Arial', '', 12);
+$pdf->SetTitle("INFORME DE GASTOS Y MANO DE OBRA");
+// Si no hay fechas seleccionadas o ID de orden inválido
+if (empty($fechasSeleccionadas) || empty($idOrden)) {
+    $pdf->SetXY(10, 20);
+    $pdf->Cell(0, 20, iconv('UTF-8', 'windows-1252', 'NO SE SELECCIONARON FECHAS'), 0, 0, 'C');
+    $pdf->SetTitle("Advertencia", true);
+} else {
+    $pdf->SetFont('Arial', 'B', 14);
+    $pdf->Cell(0, 10, 'INFORME DE GASTOS Y MANO DE OBRA POR ORDEN', 0, 1, 'C');
+    $pdf->Ln(5);
+    // Obtener datos desde el modelo
+    $data_costos = ModeloHorario::mdlInformeHorarioOrden($startDate, $endDate);
+    $pdf->SetFont('Arial', '', 10);
 
-$pdf->SetFont('Arial','',12);
-$pdf->Cell(0,10,"ID de Orden: $idOrden",0,1);
+    $margen = 10;
+    $espacioHorizontal = 5;
+    $anchoTarjeta = (210 - ($margen * 2) - (2 * $espacioHorizontal)) / 3; // 3 tarjetas por fila con espacio
+    $altoTarjeta = 40;
 
-$pdf->Ln(5);
-$pdf->Cell(0,10,'Fechas Seleccionadas:',0,1);
+    $xInicial = $margen;
+    $y = $pdf->GetY();
+    $columna = 0;
 
-foreach ($fechasSeleccionadas as $fecha) {
-    $pdf->Cell(0,10,"- $fecha",0,1);
+    foreach ($data_costos as $dato) {
+        if ($y + $altoTarjeta > 297 - $margen) { // Altura máxima A4
+            $pdf->AddPage();
+            $y = $margen;
+        }
+
+        $orden = iconv('UTF-8', 'windows-1252', $dato['orden'] ?? '');
+        $costo_mano = $dato['suma_costo_mano_obra'] ?? '$0.00';
+        $gasto_obra = $dato['suma_gasto_en_obra'] ?? '$0.00';
+        $total = $dato['suma_total_costo'] ?? '$0.00';
+
+        $x = $xInicial + ($columna * ($anchoTarjeta + $espacioHorizontal));
+
+        // Rectángulo exterior
+        $pdf->Rect($x, $y, $anchoTarjeta, $altoTarjeta);
+
+        // Título: orden
+        $pdf->SetXY($x + 2, $y + 2);
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->MultiCell($anchoTarjeta - 4, 5, $orden, 0, 'L');
+
+        // Línea horizontal después del título
+        $yActual = $pdf->GetY();
+        $pdf->Line($x, $yActual + 2, $x + $anchoTarjeta, $yActual + 2);
+
+        // GASTOS
+        $pdf->SetXY($x + 2, $yActual + 3);
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Cell(($anchoTarjeta - 4) / 2, 6, 'GASTOS', 0, 0, 'L');
+        $pdf->Cell(($anchoTarjeta - 4) / 2, 6, $gasto_obra, 0, 1, 'R');
+
+        // MANO DE OBRA
+        $pdf->SetX($x + 2);
+        $pdf->Cell(($anchoTarjeta - 4) / 2, 6, 'MANO DE OBRA', 0, 0, 'L');
+        $pdf->SetFont('Arial', 'U', 9);
+        $pdf->Cell(($anchoTarjeta - 4) / 2, 6, $costo_mano, 0, 1, 'R');
+
+        // TOTAL
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetX($x + 2);
+        $pdf->Cell($anchoTarjeta - 4, 6, $total, 0, 1, 'R');
+
+        // Avanzar a la siguiente columna
+        $columna++;
+        if ($columna == 3) {
+            $columna = 0;
+            $y += $altoTarjeta + 5; // Espacio entre filas
+        }
+    }
 }
-
-$costo_mano = $data_costos[0]['suma_costo_mano_obra'];
- $gasto_obra = $data_costos[0]['suma_gasto_en_obra'];
-$total_general =$data_costos[0]['suma_total_costo'];
-
-
-$pdf->Cell(0,10,"Costo Mano de Obra: $costo_mano",0,1);
-$pdf->Cell(0,10,"Gasto en Obra: $gasto_obra",0,1);
-$pdf->Cell(0,10,"Total General: $total_general",0,1);
-$pdf->Output();
-?>
-// Configurar cabeceras para indicar el tipo de contenido y el nombre de descarga
-$pdf->Output('I', $filename);
+// Generar PDF
+$pdf->Output('I', 'INFORME DE GASTOS Y MANO DE OBRA');

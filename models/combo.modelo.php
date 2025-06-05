@@ -79,7 +79,6 @@ class ModeloCombos
                 WHERE o.estado = true
                 AND EXTRACT(YEAR FROM o.fecha) = :anio
                 ORDER BY o.id DESC;");
-
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             $l->execute();
             return $l->fetchAll();
@@ -162,6 +161,26 @@ class ModeloCombos
             UNION ALL
             SELECT id, estado_obra AS nombre
             FROM tblestado_obra");
+            $l->execute();
+            return $l->fetchAll();
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlListarOrdenHorario($anio)
+    {
+        try {
+            $sql = "SELECT o.id AS id, o.nombre || ' ' || c.nombre AS nombre
+            FROM tblhorario h
+            JOIN tblorden o ON o.id = h.id_orden
+            JOIN tblclientes c ON c.id = o.id_cliente
+            WHERE 
+                EXTRACT(YEAR FROM h.fecha) = :anio
+            GROUP BY o.id, o.nombre, c.nombre
+            ORDER BY o.id;";
+            $l = Conexion::ConexionDB()->prepare($sql);
+            $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
