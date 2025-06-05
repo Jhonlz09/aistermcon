@@ -447,7 +447,7 @@
                 <div class="modal-body scroll-modal" style="padding: 1rem;">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-sm-6 d-flex" style="padding-bottom:.75rem;">
+                            <div class="col-sm-4 d-flex" style="padding-bottom:.75rem;">
                                 <label for="none" class=" combo">
                                     <i class="fas fa-file-pdf"></i> Tipo de informe</label>
                                 <div style="background-color:var(--primary-color-light)" class="tabs">
@@ -458,7 +458,7 @@
                                     <span style="width:50%;" class="glider"></span>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-8">
                                 <div class="mb-3" id="groupOrden">
                                     <label for="cboOrden_h" class="mb-0 combo">
                                         <i class="fas fa-person-digging"></i> Obra
@@ -466,8 +466,10 @@
                                     <!-- Selector de Orden -->
                                     <div class="row">
                                         <div class="col">
-                                            <select id="cboOrden_h" name="id_orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                            <select id="cboOrden_h" name="id_orden" class="cbo form-control select2 select2-success" multiple="multiple" data-dropdown-css-class="select2-dark" required>
                                             </select>
+                                            <!-- <select id="cboOrden_h" name="id_orden" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                            </select> -->
                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                         </div>
                                     </div>
@@ -717,6 +719,8 @@
         let mes = month;
         let id_horario_editar = 0;
         let estado_generar_orden = false;
+        let costosPorFecha = {};
+
         let estado_generar_fecha = false;
 
         let startDate = convertirFecha(new Date(anio, mes - 1, 1));
@@ -789,12 +793,10 @@
                 formInforme.classList.add('was-validated');
                 return;
             }
-            // inp_orden.value = $(cboOrden_h).val();
 
             const fechasSeleccionadas = calendarInstance2.context.selectedDates; // Esto depende de tu configuración
             console.log('fechasSeleccionadas', fechasSeleccionadas);
             document.getElementById('fechas_seleccionadas').value = fechasSeleccionadas.join(',');
-            // console.log('cboorden', $(cboOrden_h).val());
             // Redirigir según pestaña activa
             if (tabSelectedIn === '1') {
                 formInforme.action = 'PDF/pdf_informe_horario_orden.php';
@@ -847,10 +849,11 @@
             });
         });
 
-        $(cboOrden_h).on("change", function() {
+
+        $(cboOrden_h).change(function() {
             const id_orden = $(this).val();
             console.log('id_orden', id_orden);
-            if (id_orden != null) {
+            if (id_orden.length > 0) {
                 $.ajax({
                     url: "controllers/horario.controlador.php", // Reemplaza por la ruta real a tu controlador
                     method: "POST",
@@ -861,43 +864,52 @@
                     dataType: "json",
                     success: function(respuesta) {
                         const fechasSeleccionadas = respuesta.map(item => item.fecha);
-                        const costosPorFecha = {};
+                        costosPorFecha = {};
                         respuesta.forEach(item => {
                             costosPorFecha[item.fecha] = item.suma_total_costo;
                         });
-                        // console.log('costosPorFecha', costosPorFecha);
                         if (fechasSeleccionadas.length > 0) {
                             estado_generar_orden = false
                             btnGenerarInforme.disabled = estado_generar_orden;
                             const [anio, mes] = fechasSeleccionadas[0].split('-');
-                            calendarInstance2._costosPorFecha = costosPorFecha;
                             calendarInstance2.set({
-                                selectionDatesMode: 'multiple',
                                 selectedDates: fechasSeleccionadas,
-                                enabledDates: fechasSeleccionadas,
+                                disableAllDates: true,
+                                enableDates: fechasSeleccionadas,
                                 selectedMonth: parseInt(mes, 10) - 1,
                                 selectedYear: parseInt(anio, 10),
-                                // disableAllDates: true,
-                                // enabledDates: fechasSeleccionadas,
-
                             });
 
-                            // calendarInstance2.init(); // Redibuja para que aparezcan los valores
+                            calendarInstance2.update(); // Redibuja para que aparezcan los valores
 
                         } else {
                             mostrarToast('info', "Información", "fa-triangle-exclamation", 'No hay datos para la obra seleccionada', 2500);
-                            calendarInstance2._costosPorFecha = {}; // Limpiar
+                            costosPorFecha = {};
+
                             estado_generar_orden = true
                             btnGenerarInforme.disabled = estado_generar_orden;
                             calendarInstance2.set({
                                 selectedDates: [],
+                                enableDates: [],
                                 selectedMonth: new Date().getMonth(),
                                 selectedYear: new Date().getFullYear()
                             });
-                            // calendarInstance2.init();
+                            calendarInstance2.update();
                         }
                     }
                 });
+            } else {
+                costosPorFecha = {};
+                estado_generar_orden = true
+                btnGenerarInforme.disabled = estado_generar_orden;
+                calendarInstance2.set({
+                    selectedDates: [],
+                    enableDates: [],
+                    disableAllDates:true,
+                    selectedMonth: new Date().getMonth(),
+                    selectedYear: new Date().getFullYear()
+                });
+                calendarInstance2.update();
             }
 
 
@@ -1023,8 +1035,8 @@
         const options = {
             type: 'multiple',
             dateMin: '2025-01-01',
-            dateMax: '2025-12-31',
-            selectionYearsMode: false,
+            // dateMax: '2025-12-31',
+            // selectionYearsMode: false,
             inputMode: true,
             positionToInput: 'bottom',
             displayDatesOutside: false,
@@ -1062,6 +1074,67 @@
             <#ControlTime />
             <button id="btn-apply" class="btn btn-sm btn-primary" type="button">Aplicar</button>`
             },
+            onClickMonth(self, event) {
+                const month_ = self.context.selectedMonth; // 0 a 11 (enero = 0)
+                const year_ = self.context.selectedYear;
+                // console.log('evento',event)
+                // Crear la fecha de inicio del mes (YYYY-MM-DD)
+                if (self.context.selectedDates.length == 1) {
+                    return;
+                } else {
+                    const formattedStart = convertirFecha(new Date(year_, month_, 1));
+                    const formattedEnd = convertirFecha(new Date(year_, month_ + 1, 0));
+                    // Establecer las fechas en el componente
+
+                    self.set({
+                        selectedDates: [formattedStart, formattedEnd],
+                        selectedMonth: month_,
+                        selectedYear: year_
+                    });
+                    self.update();
+                }
+
+                const btnEl = self.context.mainElement.querySelector('#btn-apply');
+                if (!btnEl) return;
+
+                // Reemplaza el botón por una copia sin eventos previos
+                const newBtn = btnEl.cloneNode(true);
+                btnEl.replaceWith(newBtn);
+
+                // Agrega el evento click solo una vez
+                newBtn.addEventListener('click', () => {
+                    aplicarFiltroTable(self);
+                });
+            },
+            onClickYear(self, event) {
+                const year_ = self.context.selectedYear;
+
+                if (self.context.selectedDates.length == 1) {
+                    return;
+                } else {
+                    const formattedStart = `${year_}-01-01`;
+                    const formattedEnd = `${year_}-12-31`;
+                    self.set({
+                        selectedDates: [formattedStart, formattedEnd],
+                        selectedMonth: 0,
+                        selectedYear: year_
+                    });
+
+                    self.update();
+                }
+
+                const btnEl = self.context.mainElement.querySelector('#btn-apply');
+                if (!btnEl) return;
+
+                // Reemplaza el botón por una copia sin eventos previos
+                const newBtn = btnEl.cloneNode(true);
+                btnEl.replaceWith(newBtn);
+
+                // Agrega el evento click solo una vez
+                newBtn.addEventListener('click', () => {
+                    aplicarFiltroTable(self);
+                });
+            },
             onHide: function(self) {
                 i.value = txtFilter; // Asigna el valor actualizado
                 self.set({
@@ -1069,7 +1142,8 @@
                     selectedMonth: mes - 1,
                     selectedYear: anio
                 });
-                console.log('onHide', mes, anio);
+                console.log('onHide', startDate, endDate);
+
             },
             onInit(self) {
                 const btnEl = self.context.mainElement.querySelector('#btn-apply');
@@ -1132,22 +1206,41 @@
 
         const options2 = {
             type: 'multiple',
-            months: 2,
-            jumpMonths: 1,
-            dateMin: '2025-01-01',
-            dateMax: '2025-12-31',
+            selectionDatesMode: 'multiple',
+            // monthsToSwitch: 2,
+
+            // dateMin: '2025-01-01',
+            // dateMax: '2025-12-31',
+            disableAllDates: true,
             displayDatesOutside: false,
             locale: 'es',
-            selectionDatesMode: 'multiple',
             selectedTheme: 'light',
-            selectionYearsMode: false,
-            // onCreateDateEls(self, dateEl) {
-            //     const btnEl = dateEl.querySelector('[aria-selected="true"]');
-            //     console.log('onCreateDateEls', btnEl);
-            //     console.log('onCreateDateEls', dateEl);
-            //     if (!btnEl) return;
-            //     const fechaFormateada = btnEl.getAttribute('data-vc-date'); // ← esta es la fecha en 'YYYY-MM-DD'
-            // }
+
+            onCreateDateEls(self, dateEl) {
+                const btnEl = dateEl.querySelector('[data-vc-date-btn]');
+                if (!btnEl) return;
+
+                // Verificamos si el botón representa una fecha seleccionada
+                const isSelected = btnEl.getAttribute('aria-selected') === 'true';
+                if (!isSelected) return; // Solo modificamos si el día está seleccionado
+
+                // Tomamos la fecha desde el div contenedor
+                const fecha = dateEl.dataset.vcDate; // yyyy-mm-dd
+                const costo = costosPorFecha[fecha]; // Requiere que esta variable esté definida globalmente
+
+                if (costo) {
+                    const dia = btnEl.innerText;
+                    btnEl.style.flexDirection = 'column';
+                    btnEl.innerHTML = `
+      <span>${dia}</span>
+      <span style="font-size: .75rem; color:#fff;text-shadow:
+    -1px -1px 0 black,
+     1px -1px 0 black,
+    -1px  1px 0 black,
+     1px  1px 0 black;">${costo}</span>
+    `;
+                }
+            }
         };
 
         const options3 = {
@@ -1170,9 +1263,12 @@
             mes = parseInt(partes[1]);
             txtFilter = `${formatDate(startDate)} - ${formatDate(endDate)}`;
             i.value = txtFilter;
-            // console.log('aplicarFiltroTable', txtFilter, startDate, endDate);
-            tabla.ajax.reload(null, false);
-            tblGastos.ajax.reload(null, false);
+            tabla.ajax.reload(function() {
+                tabla.searchPanes.resizePanes();
+            }, false);
+            tblGastos.ajax.reload(function() {
+                tblGastos.searchPanes.resizePanes();
+            }, false);
             i.value = txtFilter; // Actualiza el valor del input con el rango seleccionado
             // self.update();
             self.hide(); // Cierra el calendario
@@ -1201,6 +1297,8 @@
         // console.log('Calendar initialized', calendarInstance);
         calendarInstance2 = new Calendar('#groupOrdenDate', options2);
         calendarInstance2.init();
+
+
 
         calendarInstance3 = new Calendar('#groupFechaDate', options3);
         calendarInstance3.init();
@@ -1340,7 +1438,6 @@
         //     // recarga tu tabla
         //     tabla.ajax.reload(function() {
         //         tabla.searchPanes.resizePanes();
-        //         // $('.dtsp-titleRow').remove();
         //     }, false);
         //     tblGastos.ajax.reload(function() {
         //         tblGastos.searchPanes.resizePanes();

@@ -31,17 +31,24 @@ class ModeloHorario
         }
     }
 
-    static public function mdlListarFechaGasto($id_orden)
+    static public function mdlListarFechaGasto($id_orden_array)
     {
         try {
-            $stmt = Conexion::ConexionDB()->prepare("SELECT DATE(fecha) AS fecha,
-                    COALESCE(SUM(total_costo), '$0.00') AS suma_total_costo
-                    FROM public.tblhorario
-                    WHERE id_orden = :id_orden
-                    GROUP BY DATE(fecha)
-                    ORDER BY fecha;");
-            $stmt->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
-            $stmt->execute();
+            // Construir los placeholders dinámicamente
+            $placeholders = implode(',', array_fill(0, count($id_orden_array), '?'));
+
+            $query = "SELECT DATE(fecha) AS fecha,
+                        COALESCE(SUM(total_costo), '0.00') AS suma_total_costo
+                        FROM public.tblhorario
+                        WHERE id_orden IN ($placeholders)
+                        GROUP BY DATE(fecha)
+                        ORDER BY fecha;";
+
+            $stmt = Conexion::ConexionDB()->prepare($query);
+
+            // Ejecutar con los valores del array directamente
+            $stmt->execute($id_orden_array);
+
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
