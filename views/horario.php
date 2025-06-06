@@ -113,8 +113,8 @@
                                             <th class="th-red">VAC</th>
                                             <th class="th-red">FR</th>
                                             <th class="th-green">MANO OBRA</th>
-                                            <th class="th-green">GASTO OBRA</th>
-                                            <th class="th-green">TOTAL COSTO</th>
+                                            <th class="th-green">GASTOS</th>
+                                            <th class="th-green">TOTAL</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -507,7 +507,7 @@
                 <div class="modal-footer justify-content-between">
                     <div class="col-auto">
                         <button disabled type="submit" id="btnGenerarInformePDF" class="btn bg-gradient-blue"><i class="fas fa-file-pdf"> </i><span class="button-text"> </span>Generar PDF</button>
-                        <button disabled type="submit" id="btnGenerarInformeXLS" class="btn bg-gradient-green"><i class="fas fa-file-xls"> </i><span class="button-text"> </span>Generar EXCEL</button>
+                        <button type="submit" id="btnGenerarInformeXLS" class="btn bg-gradient-green"><i class="fas fa-file-xls"> </i><span class="button-text"> </span>Generar EXCEL</button>
                     </div>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
@@ -811,6 +811,23 @@
 
                 formInforme.action = 'PDF/pdf_informe_horario_fechas.php';
             }
+            formInforme.submit();
+        });
+
+        btnGenerarInformeXls.addEventListener('click', function(e) {
+            e.preventDefault();
+            const inpFechasVal = document.getElementById('fechas_seleccionadas');
+            if (tabSelectedIn === '1') {
+                const fechasSeleccionadas = calendarInstance2.context.selectedDates;
+                inpFechasVal.value = fechasSeleccionadas.join(',');
+                document.getElementById('orden_seleccionadas').value = id_orden_seleccion.join(',');
+                formInforme.action = 'EXCEL/xls_informe_horario_orden.php';
+            } else {
+                const fechasSeleccionadas = calendarInstance3.context.selectedDates;
+                inpFechasVal.value = fechasSeleccionadas.join(',');
+                formInforme.action = 'EXCEL/xls_informe_horario_fechas.php';
+            }
+
             formInforme.submit();
         });
 

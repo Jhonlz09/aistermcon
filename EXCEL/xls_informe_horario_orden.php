@@ -26,18 +26,18 @@ $sheet->setTitle("Informe");
 $colInicio = 'A';
 $fila = 1;
 $columnasPorFila = 3;
-$anchoColumna = 25;
+$anchoColumna = 10;
 
 // Estilo para las tarjetas
 $styleTarjeta = [
     'borders' => [
         'allBorders' => [
-            'borderStyle' => Border::BORDER_THIN,
+            'borderStyle' => Border::BORDER_THICK,
         ],
     ],
     'alignment' => [
         'horizontal' => Alignment::HORIZONTAL_LEFT,
-        'vertical' => Alignment::VERTICAL_TOP,
+        'vertical' => Alignment::VERTICAL_CENTER,
         'wrapText' => true,
     ],
 ];
@@ -54,7 +54,7 @@ $styleTitulo = [
 ];
 
 $sheet->setCellValue('A1', 'INFORME DE GASTOS Y MANO DE OBRA POR ORDEN');
-$sheet->mergeCells('A1:I1');
+$sheet->mergeCells('A1:N1');
 $sheet->getStyle('A1')->applyFromArray($styleTitulo);
 $fila = 3;
 
@@ -63,49 +63,59 @@ if (empty($idOrden) || empty($fechasSeleccionadas)) {
     $sheet->setCellValue("A$fila", $mensaje);
 } else {
     $data_costos = ModeloHorario::mdlInformeHorarioOrden($idOrden, $fechasSeleccionadas);
-
     $colIndex = 0;
+    $rowBase = $fila;
+
     foreach ($data_costos as $dato) {
-        $colLetra = chr(ord('A') + ($colIndex * 3)); // A, D, G...
+        $colLetraBase = chr(ord('A') + ($colIndex * 5)); // A, F, K...
+
         $orden = $dato['orden'] ?? '';
         $gasto = $dato['suma_gasto_en_obra'] ?? '$0.00';
         $mano = $dato['suma_costo_mano_obra'] ?? '$0.00';
         $total = $dato['suma_total_costo'] ?? '$0.00';
 
-        // Cabecera (orden)
-        $sheet->setCellValue("$colLetra$fila", "ORDEN: $orden");
-        $sheet->mergeCells("$colLetra$fila:" . chr(ord($colLetra)+2) . "$fila");
-        $sheet->getStyle("$colLetra$fila")->getFont()->setBold(true);
+        // Establecer posiciones
+        $col1 = $colLetraBase;
+        $col2 = chr(ord($col1) + 1);
+        $col3 = chr(ord($col1) + 2);
+        $col4 = chr(ord($col1) + 3);
 
-        // Gasto en obra
-        $fila++;
-        $sheet->setCellValue("$colLetra$fila", "GASTOS");
-        $sheet->setCellValue(chr(ord($colLetra)+2) . "$fila", $gasto);
+        // Título ORDEN
+        $sheet->mergeCells("$col1$rowBase:$col4$rowBase");
+        $sheet->setCellValue("$col1$rowBase", "$orden");
+        $sheet->getStyle("$col1$rowBase")->applyFromArray($styleTarjeta);
+        $sheet->getStyle("$col1$rowBase")->getFont()->setBold(true);
 
-        // Mano de obra
-        $fila++;
-        $sheet->setCellValue("$colLetra$fila", "MANO DE OBRA");
-        $sheet->setCellValue(chr(ord($colLetra)+2) . "$fila", $mano);
+        // GASTOS
+        $sheet->mergeCells("$col1" . ($rowBase + 1) . ":$col3" . ($rowBase + 1));
+        $sheet->setCellValue("$col1" . ($rowBase + 1), "GASTOS");
+        $sheet->setCellValue("$col4" . ($rowBase + 1), $gasto);
 
-        // Total
-        $fila++;
-        $sheet->setCellValue("$colLetra$fila", "TOTAL");
-        $sheet->setCellValue(chr(ord($colLetra)+2) . "$fila", $total);
+        // MANO DE OBRA
+        $sheet->mergeCells("$col1" . ($rowBase + 2) . ":$col3" . ($rowBase + 2));
+        $sheet->setCellValue("$col1" . ($rowBase + 2), "MANO DE OBRA");
+        $sheet->setCellValue("$col4" . ($rowBase + 2), $mano);
 
-        // Aplicar estilos y ancho
-        foreach (range(0, 2) as $offset) {
-            $col = chr(ord($colLetra) + $offset);
-            $sheet->getColumnDimension($col)->setWidth($anchoColumna);
-            foreach (range($fila - 3, $fila) as $f) {
-                $sheet->getStyle("$col$f")->applyFromArray($styleTarjeta);
+        // TOTAL
+        $sheet->mergeCells("$col1" . ($rowBase + 3) . ":$col3" . ($rowBase + 3));
+        $sheet->setCellValue("$col1" . ($rowBase + 3), "");
+        $sheet->setCellValue("$col4" . ($rowBase + 3), $total);
+
+        // Aplicar bordes y estilos a toda la tarjeta (4x4)
+        foreach (range(0, 3) as $rOffset) {
+            $row = $rowBase + $rOffset;
+            foreach (range(0, 3) as $cOffset) {
+                $col = chr(ord($col1) + $cOffset);
+                $sheet->getStyle("$col$row")->applyFromArray($styleTarjeta);
+                $sheet->getColumnDimension($col)->setWidth($anchoColumna);
             }
         }
 
-        // Siguiente columna o fila
+        // Siguiente tarjeta
         $colIndex++;
         if ($colIndex === $columnasPorFila) {
             $colIndex = 0;
-            $fila += 5;
+            $rowBase += 6; // Espaciado entre filas de tarjetas
         }
     }
 }
