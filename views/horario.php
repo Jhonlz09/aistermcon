@@ -797,6 +797,7 @@
         btnGenerarInformePDF.addEventListener('click', function(e) {
             e.preventDefault();
             const inpFechasVal = document.getElementById('fechas_seleccionadas');
+            formInforme.setAttribute('target', '_blank');
             if (tabSelectedIn === '1') {
                 const fechasSeleccionadas = calendarInstance2.context.selectedDates; // Esto depende de tu configuración
                 inpFechasVal.value = fechasSeleccionadas.join(',');
@@ -817,6 +818,8 @@
         btnGenerarInformeXls.addEventListener('click', function(e) {
             e.preventDefault();
             const inpFechasVal = document.getElementById('fechas_seleccionadas');
+            formInforme.removeAttribute('target');
+
             if (tabSelectedIn === '1') {
                 const fechasSeleccionadas = calendarInstance2.context.selectedDates;
                 inpFechasVal.value = fechasSeleccionadas.join(',');
