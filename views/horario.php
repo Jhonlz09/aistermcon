@@ -432,7 +432,7 @@
                     <div class="col-auto" style="padding-block:.2rem">
                         <h4 class="modal-title text-wrap"><i class="fas fa-file-lines"></i> Generar Informe</h4>
                     </div>
-                    <div class="col">
+                    <div class="col" id="groupAnio">
                         <select id="cboAnioOrden" class="form-control select2 select2-light" data-dropdown-css-class="select2-dark">
                         </select>
                     </div>
@@ -476,16 +476,15 @@
                                     </div>
                                 </div>
                                 <div class="mb-3" id="groupFecha" style="display:none;">
-                                    <label for="cboMes_h" class="mb-0 combo">
-                                        <i class="fa-solid fa-calendar-range"></i> Meses
-                                    </label>
-                                    <div class="row">
+                                    <div class="row text-center">
                                         <div class="col">
-                                            <select id="cboMes_h" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
-                                                <option value="null">TODO</option>
-
-                                            </select>
-                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                            <strong>Gastos:</strong> <span id="valorGastos">0</span>
+                                        </div>
+                                        <div class="col">
+                                            <strong>Mano de Obra:</strong> <span id="valorManoObra">0</span>
+                                        </div>
+                                        <div class="col">
+                                            <strong>Total:</strong> <span id="valorTotal">0</span>
                                         </div>
                                     </div>
                                 </div>
@@ -733,39 +732,39 @@
         const tabsHorario = document.querySelectorAll('.rd-i');
         let tabSelectedIn = '1';
 
-        $(cboMes_h).on("change", function() {
-            let mesSeleccionado = this.value;
-            let anioActual = anioInfor;
+        // $(cboMes_h).on("change", function() {
+        //     let mesSeleccionado = this.value;
+        //     let anioActual = anioInfor;
 
-            if (mesSeleccionado === 'null') {
-                // Seleccionar todo el año
-                let fechaInicio = new Date(anioActual, 0, 1); // 1 de enero
-                let fechaFin = new Date(anioActual, 11, 31); // 31 de diciembre
+        //     if (mesSeleccionado === 'null') {
+        //         // Seleccionar todo el año
+        //         let fechaInicio = new Date(anioActual, 0, 1); // 1 de enero
+        //         let fechaFin = new Date(anioActual, 11, 31); // 31 de diciembre
 
-                calendarInstance3.set({
-                    selectedDates: [convertirFecha(fechaInicio), convertirFecha(fechaFin)],
-                    selectedMonth: 0, // Enero
-                    selectedYear: anioActual
-                });
-            } else {
-                // Selección mensual
-                let mes = parseInt(mesSeleccionado); // 1 a 12
+        //         calendarInstance3.set({
+        //             selectedDates: [convertirFecha(fechaInicio), convertirFecha(fechaFin)],
+        //             selectedMonth: 0, // Enero
+        //             selectedYear: anioActual
+        //         });
+        //     } else {
+        //         // Selección mensual
+        //         let mes = parseInt(mesSeleccionado); // 1 a 12
 
-                let fechaInicio = new Date(anioActual, mes - 1, 1);
-                let fechaFin = new Date(anioActual, mes, 0);
+        //         let fechaInicio = new Date(anioActual, mes - 1, 1);
+        //         let fechaFin = new Date(anioActual, mes, 0);
 
-                calendarInstance3.set({
-                    selectedDates: [convertirFecha(fechaInicio), convertirFecha(fechaFin)],
-                    selectedMonth: fechaInicio.getMonth(),
-                    selectedYear: anioActual
-                });
-            }
-        });
+        //         calendarInstance3.set({
+        //             selectedDates: [convertirFecha(fechaInicio), convertirFecha(fechaFin)],
+        //             selectedMonth: fechaInicio.getMonth(),
+        //             selectedYear: anioActual
+        //         });
+        //     }
+        // });
 
         tabsHorario.forEach(tab => {
             tab.addEventListener('change', function() {
                 tabSelectedIn = this.value;
-
+                const groupAnio = document.getElementById('groupAnio')
                 const groupOrden = document.getElementById('groupOrden');
                 const groupFecha = document.getElementById('groupFecha');
                 const groupOrdenDate = document.getElementById('groupOrdenDate');
@@ -777,12 +776,14 @@
                     groupFecha.style.display = 'none';
                     groupOrdenDate.style.display = 'block';
                     groupFechaDate.style.display = 'none';
+                    groupAnio.style.display = 'block'
                 } else {
                     btnGenerarInforme.disabled = estado_generar_fecha
                     groupOrden.style.display = 'none';
                     groupFecha.style.display = 'block';
                     groupOrdenDate.style.display = 'none';
                     groupFechaDate.style.display = 'block';
+                    groupAnio.style.display = 'none'
                 }
             });
         });
@@ -862,7 +863,7 @@
                             totalPorFecha[fecha] = total;
 
                             // Crear el contenido del tooltip
-                            popups[fecha] = {// Puedes personalizar esto
+                            popups[fecha] = { // Puedes personalizar esto
                                 html: `<div class="text-nowrap" >
                                     <strong>Gastos:</strong>
                                     ${gasto}<br>
@@ -1075,8 +1076,6 @@
             onClickMonth(self, event) {
                 const month_ = self.context.selectedMonth; // 0 a 11 (enero = 0)
                 const year_ = self.context.selectedYear;
-                // console.log('evento',event)
-                // Crear la fecha de inicio del mes (YYYY-MM-DD)
                 if (self.context.selectedDates.length == 1) {
                     return;
                 } else {
@@ -1146,7 +1145,6 @@
             onInit(self) {
                 const btnEl = self.context.mainElement.querySelector('#btn-apply');
                 if (!btnEl) return;
-
                 // Reemplaza el botón por una copia sin eventos previos
                 const newBtn = btnEl.cloneNode(true);
                 btnEl.replaceWith(newBtn);
@@ -1205,15 +1203,10 @@
         const options2 = {
             type: 'multiple',
             selectionDatesMode: 'multiple',
-            // monthsToSwitch: 2,
-
-            // dateMin: '2025-01-01',
-            // dateMax: '2025-12-31',
             disableAllDates: true,
             displayDatesOutside: false,
             locale: 'es',
             selectedTheme: 'light',
-
             onCreateDateEls(self, dateEl) {
                 const btnEl = dateEl.querySelector('[data-vc-date-btn]');
                 if (!btnEl) return;
@@ -1230,13 +1223,12 @@
                     const dia = btnEl.innerText;
                     btnEl.style.flexDirection = 'column';
                     btnEl.innerHTML = `
-      <span>${dia}</span>
-      <span style="font-size: .75rem; color:#fff;text-shadow:
-    -1px -1px 0 black,
-     1px -1px 0 black,
-    -1px  1px 0 black,
-     1px  1px 0 black;">${costo}</span>
-    `;
+                            <span>${dia}</span>
+                            <span style="font-size: .75rem; color:#fff;text-shadow:
+                            -1px -1px 0 black,
+                            1px -1px 0 black,
+                            -1px  1px 0 black,
+                            1px  1px 0 black;">${costo}</span>`;
                 }
             }
         };
@@ -1244,12 +1236,43 @@
         const options3 = {
             type: 'multiple',
             dateMin: '2025-01-01',
-            dateMax: '2025-12-31',
-            selectionYearsMode: false,
+            // dateMax: '2025-12-31',
             displayDatesOutside: false,
             selectionDatesMode: 'multiple-ranged',
             locale: 'es',
-            selectedTheme: 'light'
+            selectedTheme: 'light',
+            onClickMonth(self, event) {
+                const month_ = self.context.selectedMonth; // 0 a 11 (enero = 0)
+                const year_ = self.context.selectedYear;
+                if (self.context.selectedDates.length == 1) {
+                    return;
+                } else {
+                    const formattedStart = convertirFecha(new Date(year_, month_, 1));
+                    const formattedEnd = convertirFecha(new Date(year_, month_ + 1, 0));
+                    // Establecer las fechas en el componente
+                    self.set({
+                        selectedDates: [formattedStart, formattedEnd],
+                        selectedMonth: month_,
+                        selectedYear: year_
+                    });
+                    self.update();
+                }
+            },
+            onClickYear(self, event) {
+                const year_ = self.context.selectedYear;
+                if (self.context.selectedDates.length == 1) {
+                    return;
+                } else {
+                    const formattedStart = `${year_}-01-01`;
+                    const formattedEnd = `${year_}-12-31`;
+                    self.set({
+                        selectedDates: [formattedStart, formattedEnd],
+                        selectedMonth: 0,
+                        selectedYear: year_
+                    });
+                    self.update();
+                }
+            },
         };
 
         function aplicarFiltroTable(self) {
@@ -1301,13 +1324,13 @@
         calendarInstance3 = new Calendar('#groupFechaDate', options3);
         calendarInstance3.init();
 
-        $(cboMes_h).select2({
-            minimumResultsForSearch: -1,
-            width: '100%',
-            data: datos_meses,
-        });
+        // $(cboMes_h).select2({
+        //     minimumResultsForSearch: -1,
+        //     width: '100%',
+        //     data: datos_meses,
+        // });
 
-        setChange(cboMes_h, 'null');
+        // setChange(cboMes_h, 'null');
 
         function toggleCustomFilterButtons() {
             $('.dtsp-searchPane').each(function() {
