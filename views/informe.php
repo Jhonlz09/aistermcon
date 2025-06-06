@@ -55,7 +55,7 @@
                     <!-- /.card-header -->
                     <div class="card-body p-0">
                         <table id="tblInforme" class="table table-bordered table-striped" style="width:100%">
-                            <thead>
+                            <thead style="white-space:nowrap;">
                                 <tr>
                                     <th class="text-center">Nº</th>
                                     <th class="text-center">CÓDIGO</th>

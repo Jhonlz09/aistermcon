@@ -212,13 +212,13 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formNuevoS" class="needs-validation" autocomplete="off" novalidate>
+            <form id="formNuevoS" class="needs-validation" autocomplete="false" novalidate>
                 <div class="modal-body">
                     <input type="hidden" id="idS" value="">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="input-data">
-                                <input autocomplete="off" id="nombreS" class="input-nuevo" type="text" required>
+                                <input autocomplete="false" id="nombreS" class="input-nuevo" type="text" required>
                                 <label class="label"></label>
                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                             </div>
