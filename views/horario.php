@@ -476,7 +476,7 @@
                                     </div>
                                 </div>
                                 <div class="mb-3" id="groupFecha" style="display:none;">
-                                    <div class="row text-center">
+                                    <!-- <div class="row text-center">
                                         <div class="col">
                                             <strong>Gastos:</strong> <span id="valorGastos">0</span>
                                         </div>
@@ -486,7 +486,7 @@
                                         <div class="col">
                                             <strong>Total:</strong> <span id="valorTotal">0</span>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -505,7 +505,10 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button disabled type="submit" id="btnGenerarInforme" class="btn bg-gradient-green"><i class="fas fa-file-lines"> </i><span class="button-text"> </span>Generar informe</button>
+                    <div class="col-auto">
+                        <button disabled type="submit" id="btnGenerarInformePDF" class="btn bg-gradient-blue"><i class="fas fa-file-pdf"> </i><span class="button-text"> </span>Generar PDF</button>
+                        <button disabled type="submit" id="btnGenerarInformeXLS" class="btn bg-gradient-green"><i class="fas fa-file-xls"> </i><span class="button-text"> </span>Generar EXCEL</button>
+                    </div>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
@@ -727,7 +730,8 @@
         let endDate = convertirFecha(new Date(anio, mes, 0));
         const cboOrden_h = document.getElementById('cboOrden_h');
         const formInforme = document.getElementById('formInforme');
-        const btnGenerarInforme = document.getElementById('btnGenerarInforme');
+        const btnGenerarInformePDF = document.getElementById('btnGenerarInformePDF');
+        const btnGenerarInformeXls = document.getElementById('btnGenerarInformeXLS');
         let anioInfor = anio;
         const tabsHorario = document.querySelectorAll('.rd-i');
         let tabSelectedIn = '1';
@@ -771,14 +775,16 @@
                 const groupFechaDate = document.getElementById('groupFechaDate');
 
                 if (tabSelectedIn === '1') {
-                    btnGenerarInforme.disabled = estado_generar_orden
+                    btnGenerarInformePDF.disabled = estado_generar_orden
+                    btnGenerarInformeXls.disabled = estado_generar_orden
                     groupOrden.style.display = 'block';
                     groupFecha.style.display = 'none';
                     groupOrdenDate.style.display = 'block';
                     groupFechaDate.style.display = 'none';
                     groupAnio.style.display = 'block'
                 } else {
-                    btnGenerarInforme.disabled = estado_generar_fecha
+                    btnGenerarInformePDF.disabled = estado_generar_fecha
+                    // btnGenerarInformeXls.disabled = estado_generar_orden
                     groupOrden.style.display = 'none';
                     groupFecha.style.display = 'block';
                     groupOrdenDate.style.display = 'none';
@@ -788,8 +794,7 @@
             });
         });
 
-
-        btnGenerarInforme.addEventListener('click', function(e) {
+        btnGenerarInformePDF.addEventListener('click', function(e) {
             e.preventDefault();
             const inpFechasVal = document.getElementById('fechas_seleccionadas');
             if (tabSelectedIn === '1') {
@@ -874,7 +879,7 @@
                         });
                         if (fechasSeleccionadas.length > 0) {
                             estado_generar_orden = false
-                            btnGenerarInforme.disabled = estado_generar_orden;
+                            btnGenerarInformePDF.disabled = estado_generar_orden;
                             const [anio, mes] = fechasSeleccionadas[0].split('-');
                             calendarInstance2.set({
                                 selectedDates: fechasSeleccionadas,
@@ -892,7 +897,7 @@
                             totalPorFecha = {};
 
                             estado_generar_orden = true
-                            btnGenerarInforme.disabled = estado_generar_orden;
+                            btnGenerarInformePDF.disabled = estado_generar_orden;
                             calendarInstance2.set({
                                 selectedDates: [],
                                 enableDates: [],
@@ -906,7 +911,7 @@
             } else {
                 totalPorFecha = {};
                 estado_generar_orden = true
-                btnGenerarInforme.disabled = estado_generar_orden;
+                btnGenerarInformePDF.disabled = estado_generar_orden;
                 calendarInstance2.set({
                     selectedDates: [],
                     enableDates: [],
