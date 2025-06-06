@@ -507,7 +507,7 @@
                 <div class="modal-footer justify-content-between">
                     <div class="col-auto">
                         <button disabled type="submit" id="btnGenerarInformePDF" class="btn bg-gradient-blue"><i class="fas fa-file-pdf"> </i><span class="button-text"> </span>Generar PDF</button>
-                        <button type="submit" id="btnGenerarInformeXLS" class="btn bg-gradient-green"><i class="fas fa-file-xls"> </i><span class="button-text"> </span>Generar EXCEL</button>
+                        <button disabled type="submit" id="btnGenerarInformeXLS" class="btn bg-gradient-green"><i class="fas fa-file-xls"> </i><span class="button-text"> </span>Generar EXCEL</button>
                     </div>
                     <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
@@ -897,6 +897,7 @@
                         if (fechasSeleccionadas.length > 0) {
                             estado_generar_orden = false
                             btnGenerarInformePDF.disabled = estado_generar_orden;
+                            btnGenerarInformeXls.disabled = estado_generar_orden;
                             const [anio, mes] = fechasSeleccionadas[0].split('-');
                             calendarInstance2.set({
                                 selectedDates: fechasSeleccionadas,
@@ -915,6 +916,7 @@
 
                             estado_generar_orden = true
                             btnGenerarInformePDF.disabled = estado_generar_orden;
+                            btnGenerarInformeXls.disabled = estado_generar_orden;
                             calendarInstance2.set({
                                 selectedDates: [],
                                 enableDates: [],
@@ -929,6 +931,7 @@
                 totalPorFecha = {};
                 estado_generar_orden = true
                 btnGenerarInformePDF.disabled = estado_generar_orden;
+                btnGenerarInformeXls.disabled = estado_generar_orden;
                 calendarInstance2.set({
                     selectedDates: [],
                     enableDates: [],
