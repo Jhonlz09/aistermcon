@@ -18,6 +18,15 @@ $fechasSeleccionadas = isset($_POST['fechas_seleccionadas']) && !empty($_POST['f
     : [];
 class PDF extends FPDF
 {
+    // private $startDate;
+    // private $endDate;
+
+    // function Header()
+    // {
+    //     $this->SetFont('Arial', '', 9); // letra más pequeña
+    //
+    // }
+
     function Footer()
     {
         $this->SetY(-15);
@@ -32,16 +41,31 @@ $pdf->AddPage();
 $pdf->SetFont('Arial', '', 12);
 $pdf->SetTitle("INFORME DE GASTOS Y MANO DE OBRA");
 // Si no hay fechas seleccionadas o ID de orden inválido
-if (empty($fechasSeleccionadas) || empty($idOrden)) {
+if (empty($fechasSeleccionadas)) {
     $pdf->SetXY(10, 20);
     $pdf->Cell(0, 20, iconv('UTF-8', 'windows-1252', 'NO SE SELECCIONARON FECHAS'), 0, 0, 'C');
     $pdf->SetTitle("Advertencia", true);
 } else {
+    if (count($fechasSeleccionadas) === 1) {
+        $start = $end = $fechasSeleccionadas[0];
+    } elseif (count($fechasSeleccionadas) >= 2) {
+        // Ordenar por si acaso vienen desordenadas
+        sort($fechasSeleccionadas);
+        $start = $fechasSeleccionadas[0];
+        $end = $fechasSeleccionadas[1];
+    }
+
+    $startDate = DateTime::createFromFormat('Y-m-d', $start)->format('d/m/Y');
+    $endDate = DateTime::createFromFormat('Y-m-d', $end)->format('d/m/Y');
+
+
     $pdf->SetFont('Arial', 'B', 14);
-    $pdf->Cell(0, 10, 'INFORME DE GASTOS Y MANO DE OBRA POR ORDEN', 0, 1, 'C');
+    $pdf->Cell(0, 10, 'INFORME DE GASTOS Y MANO DE OBRA POR FECHAS', 0, 1, 'C');
+    $pdf->SetFont('Arial', '', 8);
+    $pdf->Cell(0, 5, iconv('UTF-8', 'windows-1252', 'DESDE ' . $startDate . ' HASTA ' . $endDate), 0, 1, 'C');
     $pdf->Ln(5);
     // Obtener datos desde el modelo
-    $data_costos = ModeloHorario::mdlInformeHorarioOrden($startDate, $endDate);
+    $data_costos = ModeloHorario::mdlInformeHorarioFecha($start, $end);
     $pdf->SetFont('Arial', '', 10);
 
     $margen = 10;

@@ -9,7 +9,7 @@ class ModeloHorario
         try {
             $sql = "SELECT h.id, split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
                 COALESCE(j.justificacion, o.nombre) AS orden,c.nombre AS cliente,
-                UPPER(TO_CHAR(h.fecha, 'TMDy DD TMMON')) AS fecha,h.hn_val::MONEY,h.hs_val::MONEY,
+                UPPER(TO_CHAR(h.fecha, 'TMDy DD TMMON YYYY')) AS fecha,h.hn_val::MONEY,h.hs_val::MONEY,
                 h.he_val::MONEY,h.ht_val::MONEY,h.adicional_1215::MONEY,h.decimo_tercer::MONEY,
                 h.decimo_cuarto::MONEY,h.vacaciones::MONEY,h.fondo_reserva::MONEY,h.costo_mano_obra,
                 h.gasto_en_obra,h.total_costo,h.id_empleado,h.id_orden,TO_CHAR(h.fecha, 'YYYY-MM-DD') AS fecha_val
@@ -38,6 +38,8 @@ class ModeloHorario
             $placeholders = implode(',', array_fill(0, count($id_orden_array), '?'));
 
             $query = "SELECT DATE(fecha) AS fecha,
+                        COALESCE(SUM(costo_mano_obra), '$0.00') AS suma_costo_mano_obra,
+                        COALESCE(SUM(gasto_en_obra), '$0.00') AS suma_gasto_en_obra,
                         COALESCE(SUM(total_costo), '0.00') AS suma_total_costo
                         FROM public.tblhorario
                         WHERE id_orden IN ($placeholders)

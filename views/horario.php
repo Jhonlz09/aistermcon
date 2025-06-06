@@ -720,7 +720,7 @@
         let id_horario_editar = 0;
         let estado_generar_orden = false;
         let id_orden_selecion = []
-        let costosPorFecha = {};
+        let totalPorFecha = {};
 
         let estado_generar_fecha = false;
 
@@ -790,21 +790,19 @@
 
         btnGenerarInforme.addEventListener('click', function(e) {
             e.preventDefault();
-            // if (!formInforme.checkValidity()) {
-            //     formInforme.classList.add('was-validated');
-            //     return;
-            // }
-            // Redirigir según pestaña activa
+            const inpFechasVal = document.getElementById('fechas_seleccionadas');
             if (tabSelectedIn === '1') {
                 const fechasSeleccionadas = calendarInstance2.context.selectedDates; // Esto depende de tu configuración
-                document.getElementById('fechas_seleccionadas').value = fechasSeleccionadas.join(',');
-                document.getElementById('orden_seleccionadas').value =  id_orden_seleccion.join(',');
-                console.log('FECHAS', document.getElementById('fechas_seleccionadas').value)
+                inpFechasVal.value = fechasSeleccionadas.join(',');
+                document.getElementById('orden_seleccionadas').value = id_orden_seleccion.join(',');
+                console.log('FECHAS', inpFechasVal.value)
                 console.log('orden value', document.getElementById('orden_seleccionadas').value)
                 formInforme.action = 'PDF/pdf_informe_horario_orden.php';
             } else {
                 const fechasSeleccionadas = calendarInstance3.context.selectedDates; // Esto depende de tu configuración
-                document.getElementById('fechas_seleccionadas').value = fechasSeleccionadas.join(',');
+                inpFechasVal.value = fechasSeleccionadas.join(',');
+                console.log('FECHAS', inpFechasVal.value)
+
                 formInforme.action = 'PDF/pdf_informe_horario_fechas.php';
             }
             formInforme.submit();
@@ -854,9 +852,24 @@
                     dataType: "json",
                     success: function(respuesta) {
                         const fechasSeleccionadas = respuesta.map(item => item.fecha);
-                        costosPorFecha = {};
+                        totalPorFecha = {};
+                        const popups = {};
                         respuesta.forEach(item => {
-                            costosPorFecha[item.fecha] = item.suma_total_costo;
+                            const fecha = item.fecha;
+                            const gasto = item.suma_gasto_en_obra;
+                            const costo = item.suma_costo_mano_obra;
+                            const total = item.suma_total_costo;
+                            totalPorFecha[fecha] = total;
+
+                            // Crear el contenido del tooltip
+                            popups[fecha] = {// Puedes personalizar esto
+                                html: `<div class="text-nowrap" >
+                                    <strong>Gastos:</strong>
+                                    ${gasto}<br>
+                                    <strong>Mano de obra:</strong>
+                                    ${costo}
+                                </div>`
+                            };
                         });
                         if (fechasSeleccionadas.length > 0) {
                             estado_generar_orden = false
@@ -868,13 +881,14 @@
                                 enableDates: fechasSeleccionadas,
                                 selectedMonth: parseInt(mes, 10) - 1,
                                 selectedYear: parseInt(anio, 10),
+                                popups: popups
                             });
 
                             calendarInstance2.update(); // Redibuja para que aparezcan los valores
 
                         } else {
                             mostrarToast('info', "Información", "fa-triangle-exclamation", 'No hay datos para la obra seleccionada', 2500);
-                            costosPorFecha = {};
+                            totalPorFecha = {};
 
                             estado_generar_orden = true
                             btnGenerarInforme.disabled = estado_generar_orden;
@@ -889,7 +903,7 @@
                     }
                 });
             } else {
-                costosPorFecha = {};
+                totalPorFecha = {};
                 estado_generar_orden = true
                 btnGenerarInforme.disabled = estado_generar_orden;
                 calendarInstance2.set({
@@ -914,18 +928,12 @@
         const formatDate = (dateStr) => {
             if (!dateStr) return '';
             const date = parseLocalDate(dateStr);
-
             if (isNaN(date)) return '';
-
             const day = date.getDate();
-            // console.log('day', day);
-            // console.log('date', date);
-            // console.log('dateStr', dateStr);
             const shortMonth = date.toLocaleString('es-ES', {
                 month: 'short'
-            }); // Ej: "jun."
-            const year = String(date.getFullYear()).slice(-2); // Últimos 2 dígitos
-
+            });
+            const year = String(date.getFullYear()); // Últimos 2 dígitos
             return `${day} ${capitalize(shortMonth)} ${year}`;
         };
 
@@ -1216,7 +1224,7 @@
 
                 // Tomamos la fecha desde el div contenedor
                 const fecha = dateEl.dataset.vcDate; // yyyy-mm-dd
-                const costo = costosPorFecha[fecha]; // Requiere que esta variable esté definida globalmente
+                const costo = totalPorFecha[fecha]; // Requiere que esta variable esté definida globalmente
 
                 if (costo) {
                     const dia = btnEl.innerText;
