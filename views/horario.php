@@ -90,7 +90,7 @@
                         <div class="tab-content" id="custom-tabs-four-tabContent">
                             <div class="tab-pane fade show active" id="custom-tabs-dia" role="tabpanel" aria-labelledby="custom-tabs-dia-tab">
                                 <table id="tblHorario" cellspacing="0" class="display table table-bordered table-striped w-100">
-                                    <thead>
+                                    <thead style="line-height:1.1;">
                                         <tr>
                                             <th rowspan="2" class="th-blue text-center">Nº</th>
                                             <th rowspan="2" class="th-blue">NOMBRES</th>
@@ -784,7 +784,7 @@
                     groupAnio.style.display = 'block'
                 } else {
                     btnGenerarInformePDF.disabled = estado_generar_fecha
-                    // btnGenerarInformeXls.disabled = estado_generar_orden
+                    btnGenerarInformeXls.disabled = false
                     groupOrden.style.display = 'none';
                     groupFecha.style.display = 'block';
                     groupOrdenDate.style.display = 'none';
