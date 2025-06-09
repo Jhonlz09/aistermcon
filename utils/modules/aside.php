@@ -55,7 +55,7 @@
                                                 <div id="div_orden" style="display:block;line-height:1">
                                                 <?php endif; ?>
                                                 <div class="row">
-                                                    <div class=" col-sm form-group ui-front">
+                                                    <div class=" col-sm form-group m-0 ui-front">
                                                         <label class="col-form-label combo" for="nro_orden">
                                                             <i class="fas fa-ticket"></i> Orden de trabajo</label>
                                                         <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_orden" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente" required>
@@ -66,9 +66,9 @@
                                                 </div>
                                                 </div>
                                                 <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
-                                                    <div class="form-group" id="div_proveedor" style="display:block;line-height:1">
+                                                    <div class="form-group m-0" id="div_proveedor" style="display:block;line-height:1">
                                                     <?php else : ?>
-                                                        <div class="form-group" id="div_proveedor" style="display:none;line-height:1">
+                                                        <div class="form-group m-0" id="div_proveedor" style="display:none;line-height:1">
                                                         <?php endif; ?>
                                                         <label id="lblP" class="mb-0 combo"><i class="fas fa-hand-holding-box"></i> Proveedor</label>
                                                         <div class="row">
@@ -81,7 +81,7 @@
                                                         </div>
                                                         <div class="form-group mb-0" id="div_return" style="display:none;line-height:1">
                                                             <div class="row">
-                                                                <div class="col-sm ui-front" style="margin-bottom:1.8rem">
+                                                                <div class="col-sm ui-front">
                                                                     <label class="col-form-label combo" for="nro_ordenEntrada">
                                                                         <i class="fas fas fa-ticket"></i> Orden de trabajo</label>
                                                                     <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_ordenEntrada" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente">
@@ -92,7 +92,7 @@
                                                         </div>
                                                         <div class="form-group mb-0" id="div_fab" style="display:none;line-height:1">
                                                             <div class="row">
-                                                                <div class="col-sm ui-front" style="margin-bottom:1.8rem">
+                                                                <div class="col-sm ui-front">
                                                                     <label class="col-form-label combo" for="nro_ordenFab">
                                                                         <i class="fas fas fa-ticket"></i> Orden de trabajo</label>
                                                                     <input style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="nro_ordenFab" oninput="formatInputOrden(this)" placeholder="Ingrese el nro. de orden o cliente" required>
@@ -104,7 +104,7 @@
                                                     </div>
                                             </div>
                                             <div class="row" style="line-height:1;">
-                                                <div id="div_fecha" class="col-sm-4" style="margin-bottom:1.8rem;">
+                                                <div id="div_fecha" class="col-sm-4">
                                                     <div class="form-group mb-0">
                                                         <label class="col-form-label combo" for="fecha">
                                                             <i class="fas fa-calendar"></i> Fecha inicio</label>
@@ -113,17 +113,17 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-4" id="div_retorno" style="display:none">
-                                                    <div class="form-group">
+                                                    <div class="form-group m-0">
                                                         <label class="col-form-label combo" for="fecha_retorno">
                                                             <i class="fas fa-calendar"></i> Fecha fin</label>
                                                         <input id="fecha_retorno" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                                                         <div class="invalid-feedback">*Campo obligatorio.</div>
                                                     </div>
                                                 </div>
-                                                <div id="card_nro_guiaFab" style="display:none;" class="col-sm form-group">
+                                                <div id="card_nro_guiaFab" style="display:none;" class="col-sm form-group m-0">
                                                     <label for="none" class="mb-0 combo d-flex justify-content-between align-items-center flex-wrap w-100" for="nro_guiaFab">
                                                         <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px">
-                                                            <i class="fas fa-ticket"></i> Nro. guia
+                                                            <i class="fas fa-list-ol"></i> Nro. Guia
                                                         </div>
                                                         <div class="d-flex flex-wrap align-items-center" style="font-size: 60%;">
                                                             <label for="isTrasFab" class="col-form-label text-nowrap" style="cursor:pointer;color:#616c7a; font-size: 140%;">
@@ -141,9 +141,9 @@
                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                 </div>
                                                 <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
-                                                    <div class="col" id="div_nrofac" style="display:block;margin-bottom:1.8rem">
+                                                    <div class="col" id="div_nrofac" style="display:block">
                                                     <?php else : ?>
-                                                        <div class="col" id="div_nrofac" style="display:none;margin-bottom:1.8rem">
+                                                        <div class="col" id="div_nrofac" style="display:none">
                                                         <?php endif; ?>
                                                         <div class="form-group mb-0" id="card_nro_fac">
                                                             <label class="col-form-label combo" for="nro_fac">
@@ -153,9 +153,9 @@
                                                         </div>
                                                         </div>
                                                         <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
-                                                            <div class="col-sm-4" id="div_nroguia" style="display:none;margin-bottom:1.8rem">
+                                                            <div class="col-sm-4" id="div_nroguia" style="display:none">
                                                             <?php else : ?>
-                                                                <div class="col-sm-4" id="div_nroguia" style="display:block;margin-bottom:1.8rem">
+                                                                <div class="col-sm-4" id="div_nroguia">
                                                                 <?php endif; ?>
                                                                 <div id="card_nro_guia" class="form-group mb-0">
                                                                     <label class="col-form-label combo" for="nro_guia">
@@ -170,9 +170,9 @@
                                                                 </div>
                                                                 </div>
                                                                 <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
-                                                                    <div class="col-sm-4" id="div_conductor" style="display:none;margin-bottom:1.8rem">
+                                                                    <div class="col-sm-4" id="div_conductor" style="display:none">
                                                                     <?php else : ?>
-                                                                        <div class="col-sm-4" id="div_conductor" style="display:block;margin-bottom:1.8rem">
+                                                                        <div class="col-sm-4" id="div_conductor" style="display:block">
                                                                         <?php endif; ?>
                                                                         <div id="card_conductor" class="form-group mb-0">
                                                                             <label id="lbl" class="mb-0 combo"><i class="fas fa-steering-wheel"></i> Transportista</label>
@@ -189,54 +189,85 @@
                                                                         </div>
                                                                         <!-- </form> -->
                                                                     </div>
-                                                                    <div class="row" style="line-height:1;" id="div_productos">
-                                                                        <div class="col-lg-8">
-                                                                            <div class="form-group ui-front">
-                                                                                <label class="col-form-label combo" for="codProducto">
-                                                                                    <i class="fas fa-arrow-up-a-z"></i> Productos</label>
-                                                                                <input style="border-bottom: 2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="codProducto" placeholder="Ingrese el nombre del producto">
-                                                                            </div>
-                                                                            <div class="col-md-9">
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-lg-4">
-                                                                            <div class="form-group">
-                                                                                <label class="col-form-label combo" for="codBarras">
-                                                                                    <i class="fas fa-barcode"></i> Cod. Barras</label>
-                                                                                <input inputmode='text' style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="codBarras" placeholder="Ingrese el código de barras" onkeypress="return evitarEnvio(event)">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div id="div_prod_fab" class="mb-2" style="display:none;">
-                                                                        <div class='row'>
-                                                                            <div class="col-auto">
-                                                                                <label class="mb-0" for="fab-1" style="font-weight:bold;text-wrap:nowrap;font-size:1.15rem;"><i class="fas fa-hammer-crash"></i> Productos fabricado</label>
-                                                                            </div>
-                                                                            <div class="col">
-                                                                                <span id="addProFab" class="btn btn-sm btn-outline-warning">
-                                                                                    <i class="fas fa-plus-circle"></i> Agregar
-                                                                                </span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+
+                                                            </div>
+                                                    </div>
+                                            </div>
+                                            <div class="card" id="div_productos" style="position: sticky;top:2%;z-index:6">
+                                                <div class="card-body" style="padding: 1.06em 1.25em">
+                                                    <div class="row" style="line-height:1;">
+                                                        <div class="col-lg-8">
+                                                            <div class="ui-front">
+                                                                <label class="col-form-label combo" for="codProducto">
+                                                                    <i class="fas fa-arrow-up-a-z"></i> Productos</label>
+                                                                <input style="border-bottom: 2px solid var(--select-border-bottom);" type="search" class="form-control form-control-sm" id="codProducto" placeholder="Ingrese el nombre del producto">
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4">
+                                                            <div class="">
+                                                                <label class="col-form-label combo" for="codBarras">
+                                                                    <i class="fas fa-barcode"></i> Cod. Barras</label>
+                                                                <input inputmode='text' style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="codBarras" placeholder="Ingrese el código de barras" onkeypress="return evitarEnvio(event)">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-body" style="padding: 1.06em 1.25em">
+                                                    <div id="div_prod_fab" class="mb-2" style="display:block;">
+                                                        <div class='row'>
+                                                            <div class="col-auto">
+                                                                <label class="mb-0" for="fab-1" style="font-weight:bold;text-wrap:nowrap;font-size:1.15rem;"><i class="fas fa-hammer-crash"></i> Productos fabricado</label>
+                                                            </div>
+                                                            <div class="col">
+                                                                <span id="addProFab" class="btn btn-sm btn-outline-warning">
+                                                                    <i class="fas fa-plus-circle"></i> Agregar
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                                        <div id="form-1" style="display: block" class="card-body form-container">
+                                                        <?php else : ?>
+                                                            <div id="form-1" class="card-body form-container">
+                                                            <?php endif; ?>
+                                                            <div class="table-responsive">
+                                                                <table id="tblCompra" class="table table-bordered w-100 table-striped">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th class="text-center">Nº</th>
+                                                                            <th></th>
+                                                                            <th>CANTIDAD</th>
+                                                                            <th>UNIDAD</th>
+                                                                            <th>P. UNIT.</th>
+                                                                            <th>P. TOT.</th>
+                                                                            <th>IVA</th>
+                                                                            <th>P. FINAL</th>
+                                                                            <th>DESCRIPCION</th>
+                                                                            <th class="text-center">ACCIONES</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                             </div>
                                                             <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
-                                                                <div id="form-1" style="display: block" class="card-body form-container">
+                                                                <div id="form-2" class="form-container">
                                                                 <?php else : ?>
-                                                                    <div id="form-1" class="card-body form-container">
+                                                                    <div id="form-2" style="display:block;" class="form-container">
                                                                     <?php endif; ?>
                                                                     <div class="table-responsive">
-                                                                        <table id="tblCompra" class="table table-bordered w-100 table-striped">
+                                                                        <table id="tblOut" class="table table-bordered w-100 table-striped">
                                                                             <thead>
                                                                                 <tr>
                                                                                     <th class="text-center">Nº</th>
                                                                                     <th></th>
                                                                                     <th>CANTIDAD</th>
                                                                                     <th>UNIDAD</th>
-                                                                                    <th>P. UNIT.</th>
-                                                                                    <th>P. TOT.</th>
-                                                                                    <th>IVA</th>
-                                                                                    <th>P. FINAL</th>
                                                                                     <th>DESCRIPCION</th>
                                                                                     <th class="text-center">ACCIONES</th>
                                                                                 </tr>
@@ -246,209 +277,191 @@
                                                                         </table>
                                                                     </div>
                                                                     </div>
-                                                                    <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
-                                                                        <div id="form-2" class="form-container">
-                                                                        <?php else : ?>
-                                                                            <div id="form-2" style="display:block;" class="form-container">
-                                                                            <?php endif; ?>
-                                                                            <div class="table-responsive">
-                                                                                <table id="tblOut" class="table table-bordered w-100 table-striped">
-                                                                                    <thead>
-                                                                                        <tr>
-                                                                                            <th class="text-center">Nº</th>
-                                                                                            <th></th>
-                                                                                            <th>CANTIDAD</th>
-                                                                                            <th>UNIDAD</th>
-                                                                                            <th>DESCRIPCION</th>
-                                                                                            <th class="text-center">ACCIONES</th>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </div>
-                                                                            </div>
-                                                                            <div id="form-6" class="form-container">
-                                                                                <div class="table-responsive">
-                                                                                    <table id="tblReturn" class="table table-bordered w-100 table-striped">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th class="text-center">Nº</th>
-                                                                                                <th>DESCRIPCION</th>
-                                                                                                <th>UNIDAD</th>
-                                                                                                <th>SALIDA</th>
-                                                                                                <th>ENTRADA</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div id="form-4" class="form-container">
-                                                                                <div class="table-responsive">
-                                                                                    <table id="tblDetalleSalida" class="table table-bordered w-100 table-striped">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th class="text-center">ID</th>
-                                                                                                <th class="text-center">CÓDIGO</th>
-                                                                                                <th class="text-center">CANTIDAD</th>
-                                                                                                <th class="text-center">UNIDAD</th>
-                                                                                                <th>DESCRIPCION</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div id="form-5" class="form-container">
-                                                                                <div class="table-responsive">
-                                                                                    <table id="tblDetalleCompra" class="table table-bordered w-100 table-striped">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th class="text-center">ID</th>
-                                                                                                <th class="text-center">CÓDIGO</th>
-                                                                                                <th class="text-center">CANTIDAD</th>
-                                                                                                <th class="text-center">UNIDAD</th>
-                                                                                                <th class="text-center">PRECIO UNIT.</th>
-                                                                                                <th>DESCRIPCION</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div id="form-3" class="form-container">
-                                                                                <div class="table-responsive">
-                                                                                    <table id="tblIn" class="table table-bordered w-100 table-striped">
-                                                                                        <thead>
-                                                                                            <th class="text-center">Nº</th>
-                                                                                            <th></th>
-                                                                                            <th>CANTIDAD</th>
-                                                                                            <th>UNIDAD</th>
-                                                                                            <th>DESCRIPCION</th>
-                                                                                            <th class="text-center">ACCIONES</th>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div id="form-7" class="form-container">
-                                                                                <div class="table-responsive">
-                                                                                    <table id="tblProdFab" class="table table-bordered w-100 table-striped">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>Nº</th>
-                                                                                                <th class="text-center">CANTIDAD</th>
-                                                                                                <th class="text-center">UNIDAD</th>
-                                                                                                <th class="text-nowrap">PRODUCTO FABRICADO</th>
-                                                                                                <th class="text-center">ACCIONES</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div id="form-8" class="form-container">
-                                                                                <div class="table-responsive">
-                                                                                    <table id="tblDetalleFab" class="table table-bordered w-100 table-striped">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>Nº</th>
-                                                                                                <th class="text-center">CANTIDAD</th>
-                                                                                                <th class="text-center">UNIDAD</th>
-                                                                                                <th class="text-nowrap">PRODUCTO FABRICADO</th>
-                                                                                                <th class="text-center">ACCIONES</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div id="form-9" class="form-container">
-                                                                                <div class="table-responsive">
-                                                                                    <table id="tblDetalleFabEntrada" class="table table-bordered w-100 table-striped">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>Nº</th>
-                                                                                                <th class="text-nowrap">PRODUCTO FABRICADO</th>
-                                                                                                <th class="text-center">UNIDAD</th>
-                                                                                                <th class="text-center">SALIDA</th>
-                                                                                                <th class="text-center">ENTRADA</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                </div>
-                                                    </div>
-                                                    <!-- /.card -->
-                                                    <div class="col-xl-3">
-                                                        <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
-                                                            <div class="card" id="card_person" style="display: none;">
-                                                            <?php else : ?>
-                                                                <div class="card" id="card_person" style="display: block;">
-                                                                <?php endif; ?>
-                                                                <div class="card-body" style="line-height:1.2;">
-                                                                    <div class="form-group" style="margin-bottom: 1.6rem;">
-                                                                        <label id="lbl" class="mb-0 combo"><i class="fa-solid fa-person-carry-box"></i> Despachado por</label>
-                                                                        <div class="row">
-                                                                            <div class="col-12">
-                                                                                <select id="cboDespachado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                                                                </select>
-                                                                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                                            </div>
+                                                                    <div id="form-6" class="form-container">
+                                                                        <div class="table-responsive">
+                                                                            <table id="tblReturn" class="table table-bordered w-100 table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th class="text-center">Nº</th>
+                                                                                        <th>DESCRIPCION</th>
+                                                                                        <th>UNIDAD</th>
+                                                                                        <th>SALIDA</th>
+                                                                                        <th>ENTRADA</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                </tbody>
+                                                                            </table>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="form-group" style="margin-bottom:1.6rem;">
-                                                                        <label id="lbl" class="mb-0 combo"><i class="fas fa-clipboard-check"></i> Autorizado por</label>
-                                                                        <div class="row">
-                                                                            <div class="col-12">
-                                                                                <select id="cboAutorizado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
-                                                                                </select>
-                                                                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                                            </div>
+                                                                    <div id="form-4" class="form-container">
+                                                                        <div class="table-responsive">
+                                                                            <table id="tblDetalleSalida" class="table table-bordered w-100 table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th class="text-center">ID</th>
+                                                                                        <th class="text-center">CÓDIGO</th>
+                                                                                        <th class="text-center">CANTIDAD</th>
+                                                                                        <th class="text-center">UNIDAD</th>
+                                                                                        <th>DESCRIPCION</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                </tbody>
+                                                                            </table>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="form-group">
-                                                                        <label id="lbl" class="mb-0 combo"><i class="fas fa-user-helmet-safety"></i> Responsable</label>
-                                                                        <div class="row">
-                                                                            <div class="col-12">
-                                                                                <select id="cboResponsable" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
-                                                                                </select>
-                                                                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                                                                            </div>
+                                                                    <div id="form-5" class="form-container">
+                                                                        <div class="table-responsive">
+                                                                            <table id="tblDetalleCompra" class="table table-bordered w-100 table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th class="text-center">ID</th>
+                                                                                        <th class="text-center">CÓDIGO</th>
+                                                                                        <th class="text-center">CANTIDAD</th>
+                                                                                        <th class="text-center">UNIDAD</th>
+                                                                                        <th class="text-center">PRECIO UNIT.</th>
+                                                                                        <th>DESCRIPCION</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                </tbody>
+                                                                            </table>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label combo" for="inpMotivo">
-                                                                            <i class="fas fa-clipboard-question"></i> Motivo</label>
-                                                                        <textarea style="border-bottom: 2px solid var(--select-border-bottom);background-color:#f6f6f6" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas"></textarea>
+                                                                    <div id="form-3" class="form-container">
+                                                                        <div class="table-responsive">
+                                                                            <table id="tblIn" class="table table-bordered w-100 table-striped">
+                                                                                <thead>
+                                                                                    <th class="text-center">Nº</th>
+                                                                                    <th></th>
+                                                                                    <th>CANTIDAD</th>
+                                                                                    <th>UNIDAD</th>
+                                                                                    <th>DESCRIPCION</th>
+                                                                                    <th class="text-center">ACCIONES</th>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="form-group" style="margin-bottom:.8rem;">
-                                                                        <label class="col-form-label combo mb-2" for="inp">
-                                                                            <i class="fa-solid fa-images"></i> Evidencia fotográfica</label>
-                                                                        <div class="dropzone">
+                                                                    <div id="form-7" class="form-container">
+                                                                        <div class="table-responsive">
+                                                                            <table id="tblProdFab" class="table table-bordered w-100 table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Nº</th>
+                                                                                        <th class="text-center">CANTIDAD</th>
+                                                                                        <th class="text-center">UNIDAD</th>
+                                                                                        <th class="text-nowrap">PRODUCTO FABRICADO</th>
+                                                                                        <th class="text-center">ACCIONES</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="form-8" class="form-container">
+                                                                        <div class="table-responsive">
+                                                                            <table id="tblDetalleFab" class="table table-bordered w-100 table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Nº</th>
+                                                                                        <th class="text-center">CANTIDAD</th>
+                                                                                        <th class="text-center">UNIDAD</th>
+                                                                                        <th class="text-nowrap">PRODUCTO FABRICADO</th>
+                                                                                        <th class="text-center">ACCIONES</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="form-9" class="form-container">
+                                                                        <div class="table-responsive">
+                                                                            <table id="tblDetalleFabEntrada" class="table table-bordered w-100 table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Nº</th>
+                                                                                        <th class="text-nowrap">PRODUCTO FABRICADO</th>
+                                                                                        <th class="text-center">UNIDAD</th>
+                                                                                        <th class="text-center">SALIDA</th>
+                                                                                        <th class="text-center">ENTRADA</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                </tbody>
+                                                                            </table>
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                        </div>
+                                                </div>
+                                                <!-- /.card -->
+
+
+                                                <div class="col-xl-3">
+                                                    <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                                        <div class="card" id="card_person" style="display: none;">
+                                                        <?php else : ?>
+                                                            <div class="card" id="card_person" style="display: block;">
+                                                            <?php endif; ?>
+                                                            <div class="card-body" style="line-height:1.2;">
+                                                                <div class="form-group" style="margin-bottom: 1.6rem;">
+                                                                    <label id="lbl" class="mb-0 combo"><i class="fa-solid fa-person-carry-box"></i> Despachado por</label>
+                                                                    <div class="row">
+                                                                        <div class="col-12">
+                                                                            <select id="cboDespachado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                                            </select>
+                                                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="card">
-                                                                    <div class="card-body">
-                                                                        <button type="button" id="btnGuardarGuia" style="margin-bottom:.75rem;background:var(--label-star) linear-gradient(180deg, var(--label-star), var(--label-new)) repeat-x;color:#fff" class="btn w-100"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                                                                        <button type="button" id="Cancelar" style="margin-bottom:.75rem;display:none" onclick="limpiar(this);" class="btn bg-gradient-navy w-100"><i class="fas fa-xmark"></i><span class="button-text"> </span>Cancelar </button>
-                                                                        <button type="button" id="Cerrar" onclick="first_control.click();" style="border-color:#d6d8df69" class="btn bg-gradient-light w-100"><i class="fas fa-right-from-bracket"></i><span class="button-text"> </span>Cerrar</button>
+                                                                <div class="form-group" style="margin-bottom:1.6rem;">
+                                                                    <label id="lbl" class="mb-0 combo"><i class="fas fa-clipboard-check"></i> Autorizado por</label>
+                                                                    <div class="row">
+                                                                        <div class="col-12">
+                                                                            <select id="cboAutorizado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
+                                                                            </select>
+                                                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label id="lbl" class="mb-0 combo"><i class="fas fa-user-helmet-safety"></i> Responsable</label>
+                                                                    <div class="row">
+                                                                        <div class="col-12">
+                                                                            <select id="cboResponsable" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
+                                                                            </select>
+                                                                            <div class="invalid-feedback">*Campo obligatorio.</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="col-form-label combo" for="inpMotivo">
+                                                                        <i class="fas fa-clipboard-question"></i> Motivo</label>
+                                                                    <textarea style="border-bottom: 2px solid var(--select-border-bottom);background-color:#f6f6f6" type="text" class="form-control form-control-sm" id="inpMotivo" placeholder="Traslado de herramientas"></textarea>
+                                                                </div>
+                                                                <div class="form-group" style="margin-bottom:.8rem;">
+                                                                    <label class="col-form-label combo mb-2" for="inp">
+                                                                        <i class="fa-solid fa-images"></i> Evidencia fotográfica</label>
+                                                                    <div class="dropzone">
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            </div>
+                                                            <div class="card">
+                                                                <div class="card-body">
+                                                                    <button type="button" id="btnGuardarGuia" style="margin-bottom:.75rem;background:var(--label-star) linear-gradient(180deg, var(--label-star), var(--label-new)) repeat-x;color:#fff" class="btn w-100"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                                                                    <button type="button" id="Cancelar" style="margin-bottom:.75rem;display:none" onclick="limpiar(this);" class="btn bg-gradient-navy w-100"><i class="fas fa-xmark"></i><span class="button-text"> </span>Cancelar </button>
+                                                                    <button type="button" id="Cerrar" onclick="first_control.click();" style="border-color:#d6d8df69" class="btn bg-gradient-light w-100"><i class="fas fa-right-from-bracket"></i><span class="button-text"> </span>Cerrar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
             </form>
         </div>
     </div>

@@ -2233,10 +2233,8 @@
             while (nextRowIndex >= 0 && nextRowIndex <= maxRow) {
                 const row = allRows[nextRowIndex];
                 if (!row) break;
-
                 let nextCell = row.children[nextCellIndex];
                 if (nextCellIndex < 0 || nextCellIndex > maxCell) break;
-
                 const input = nextCell.querySelector('input');
                 if (input) {
                     input.focus();
@@ -2316,8 +2314,6 @@
         });
 
         observer4.observe(container4);
-
-
         let lastSelectedIndex = null;
 
         $('#tblPersonH tbody').on('click', 'td.select-checkbox', function(e) {
@@ -2342,7 +2338,6 @@
             // Recorre todas las filas de la tabla
             tblEmpleadoH.rows().every(function() {
                 const data = this.data();
-
                 if (data.rol == rolSeleccionado) {
                     if (checked) {
                         this.select();
@@ -2513,21 +2508,16 @@
                 $('#editRow').hide();
                 $('#eliRow').hide();
                 $('#addRow').show();
-
             }
-
-            // if (totalRows === 0) {
-            //     $('#addRow').show();
-            // } else {
-            //     $('#addRow').hide();
-            // }
         });
 
         $('#chkAll').on('click', function() {
             if (this.checked) {
                 tblEmpleadoH.rows().select();
+                $('.fil-rol').prop('checked', true);
             } else {
                 tblEmpleadoH.rows().deselect();
+                $('.fil-rol').prop('checked', false);
             }
         });
 
@@ -2536,6 +2526,7 @@
                 tblPerson.rows().select();
             } else {
                 tblPerson.rows().deselect();
+
             }
         });
 

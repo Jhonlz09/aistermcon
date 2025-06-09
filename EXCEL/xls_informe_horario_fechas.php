@@ -122,8 +122,8 @@ if (empty($fechasSeleccionadas)) {
 }
 
 // Salida del archivo Excel
-header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header('Content-Disposition: attachment;filename="Informe_Horario.xlsx"');
+header('Content-Type:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+header('Content-Disposition:attachment;filename="Informe_Horario.xlsx"');
 header('Cache-Control: max-age=0');
 
 $writer = new Xlsx($spreadsheet);

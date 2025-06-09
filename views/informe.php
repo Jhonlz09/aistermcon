@@ -170,15 +170,23 @@
         rowGroup: {
             dataSrc: [9],
             startRender: function(rows, group) {
-                var collapsed = !!collapsedGroups[group];
+                let collapsed = !!collapsedGroups[group];
 
                 rows.nodes().each(function(r) {
                     $(r).toggleClass('collapsedrow', !collapsed);
                 });
 
-                var groupText = '<div class="d-flex justify-content-between align-items-center " style="cursor:pointer"><strong  class="pl-2" >' + group + ' (' + rows.count() + ')</strong><div class="txt-wrap-sm">' + '<form style="display:contents" action="PDF/pdf_informe_orden.php" class="form_pdf" method="POST" autocomplete="off" target="_blank"><input type="hidden" name="id_orden" class="input_boleta" value=""><button style="font-size:1.55rem;padding-inline:.5rem!important" type="submit" class="btn pt-0 pb-0 btn_pdf btn-row"><i class="fas fa-file-pdf"></i></button></form>' +
-                    '<form style="display:contents"  action="EXCEL/xls_informe_orden.php" class="form_xls" method="POST" autocomplete="off"><input type="hidden" name="id_orden" class="input_boleta" value=""><button title="Descargar resumen xls" style="font-size:1.55rem;padding-inline:.5rem!important"  type="submit" class="btn pt-0 pb-0 btn_excel btn-row"><i class="fas fa-file-xls"></i></button></form>' +
-                    ' </div></div>';
+                let groupText = `<div class="d-flex justify-content-between align-items-center" style="cursor:pointer">
+            <strong class="pl-2">${group} (${rows.count()})</strong>
+            <div class="txt-wrap-sm">
+                <button type="button" class="btn pt-0 pb-0 btn-row" data-action="pdf" style="font-size:1.55rem;padding-inline:.5rem!important">
+                    <i class="fas fa-file-pdf"></i>
+                </button>
+                <button type="button" class="btn pt-0 pb-0 btn-row" data-action="xls" title="Descargar resumen xls" style="font-size:1.55rem;padding-inline:.5rem!important">
+                    <i class="fas fa-file-xls"></i>
+                </button>
+            </div>
+        </div>`;
 
                 return $('<tr/>')
                     .append('<td colspan="9">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
@@ -326,7 +334,7 @@
         const form = document.getElementById('formInforme');
         const btnGuardar = document.getElementById('btnGuardar');
         const tabsIn = document.querySelectorAll('.tabs .rd-i');
-        let tabSelectedIn= '1';
+        let tabSelectedIn = '1';
 
         tabsIn.forEach(tab => {
             tab.addEventListener('change', function() {
@@ -418,30 +426,38 @@
 
         $(cboOrden_i).on("select2:select", function(e) {
             fabValue = e.params.data.fab; // Obtener la propiedad 'fab' directamente del objeto de datos
-            // if(fabValue){
-            //     isPdfFab.checked = true;
-            //     isPdfFab.disabled = false;
-            // }else{
-            //     isPdfFab.checked = false;
-            //     isPdfFab.disabled = true;
-            // }
         });
 
-        $('#tblInforme').on('submit', '.form_pdf', function(event) {
-            event.preventDefault(); // Evita el envío predeterminado del formulario
-            let id_orden = tabla.row($(this).closest('tr').next()).data()[11];
-            let input_pdf = $(this).find('.input_boleta');
-            input_pdf.val(id_orden);
-            this.submit(); // Envía el formulario actual
-        });
+        $('#tblInforme').on('click', '.btn-row', function(event) {
+            const btn = $(this);
+            const action = btn.data('action'); // "pdf" o "xls"
+            const isPdf = action === 'pdf';
+            const formAction = isPdf ? 'PDF/pdf_informe_orden_resumen.php' : 'EXCEL/xls_informe_orden.php';
 
-        $('#tblInforme').on('submit', '.form_xls', function(event) {
-            event.preventDefault(); // Evita el envío predeterminado del formulario
-            let id_orden = tabla.row($(this).closest('tr').next()).data()[11];
-            let input_pdf = $(this).find('.input_boleta');
-            input_pdf.val(id_orden);
-            console.log(input_pdf.val());
-            this.submit(); // Envía el formulario actual
+            // Busca la fila siguiente a la fila del grupo para obtener el id_orden
+            const id_orden = tabla.row(btn.closest('tr').next()).data()[11];
+            if (!id_orden) return;
+            // Crea el formulario dinámico
+            const form = $('<form>', {
+                action: formAction,
+                method: 'POST',
+                style: 'display:none'
+            });
+
+            if (isPdf) {
+                form.attr('target', '_blank'); // Solo aplica target="_blank" si es PDF
+            }
+
+            const input = $('<input>', {
+                type: 'hidden',
+                name: 'id_orden',
+                value: id_orden
+            });
+
+            form.append(input);
+            $('body').append(form);
+            form.submit();
+            form.remove(); // Limpia el DOM
         });
 
         $('#tblInforme').on('click', '#eliS', function() {

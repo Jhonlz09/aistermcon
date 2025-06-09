@@ -25,9 +25,8 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 try {
 
     $id_orden = $_POST['id_orden'];
-
     $datos_detalle = ModeloInforme::mdlInformeDetalleOrden($id_orden);
-    $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden);
+    $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden,null, true);
 
     $spreadsheet = new Spreadsheet();
     $spreadsheet->getDefaultStyle()->getFont()->setName('Arial')->setSize(11);
@@ -38,7 +37,6 @@ try {
     $sheet->mergeCells('A1:F1');
     $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('A1:F1')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-
     // Set the width of column A to 20
     $sheet->getColumnDimension('A')->setWidth(26);
     $sheet->getColumnDimension('B')->setWidth(69);
@@ -185,12 +183,9 @@ try {
     $sheet->getStyle('F8')->getAlignment()->setWrapText(true); // Add this line to adjust the text
     $sheet->getStyle('F8:F10')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
     $sheet->getStyle('F8')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FEA767');
-
     // Set the cell A11
     $row = 11; // Starting row for data
-
     foreach ($data_resumen as $res) {
-
         if ($res['fabricado']) {
             $sheet->setCellValue('A'. $row, 'PRODUCTO FABRICADO:');
             $sheet->setCellValue('B' . $row, $res['descripcion']);
@@ -198,7 +193,6 @@ try {
             $sheet->setCellValue('D' . $row, $res['cantidad_salida']);
             $sheet->setCellValue('E' . $row, $res['retorno']);
             $sheet->setCellValue('F' . $row, $res['utilizado']);
-
             $sheet->getStyle('A' . $row . ':F' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('632523');
             $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
             $sheet->getStyle('A' . $row . ':F' . $row)->getFont()->getColor()->setARGB('FFFFFF'); // Cambia 'FFFFFF' por el color que desees            
