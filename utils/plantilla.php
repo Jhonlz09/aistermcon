@@ -1369,7 +1369,16 @@
                         if (!searchBox.data("ui-autocomplete")) {
                             cargarAutocompletado(function(items) {
                                 searchBox.autocomplete({
-                                    source: items,
+                                    source: function(request, response) {
+                                        const input = request.term.toLowerCase().trim();
+                                        const palabras = input.split(/\s+/);
+
+                                        const resultados = items.filter(item => {
+                                            const label = item.label.toLowerCase();
+                                            return palabras.every(palabra => label.includes(palabra));
+                                        });
+                                        response(resultados);
+                                    },
                                     minLength: 3,
                                     autoFocus: true,
                                     focus: function() {
@@ -1410,7 +1419,17 @@
                             if (!searchBox.data("ui-autocomplete")) {
                                 cargarAutocompletado(function(items) {
                                     searchBox.autocomplete({
-                                        source: items,
+                                        source: function(request, response) {
+                                            const input = request.term.toLowerCase().trim();
+                                            const palabras = input.split(/\s+/);
+
+                                            const resultados = items.filter(item => {
+                                                const label = item.label.toLowerCase();
+                                                return palabras.every(palabra => label.includes(palabra));
+                                            });
+
+                                            response(resultados);
+                                        },
                                         minLength: 3,
                                         autoFocus: true,
                                         focus: function() {
