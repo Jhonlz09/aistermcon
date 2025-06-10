@@ -237,7 +237,6 @@ try {
     }
     // Set the active cell to A1
     $sheet->getStyle('A1')->getFont()->setBold(true);
-
     // $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
     $file_name = $datos_detalle[0]['orden_nro'] . '  ' . $datos_detalle[0]['cliente'] . '.xlsx';
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

@@ -217,7 +217,7 @@
                                             </div>
                                             <div class="card">
                                                 <div class="card-body" style="padding: 1.06em 1.25em">
-                                                    <div id="div_prod_fab" class="mb-2" style="display:block;">
+                                                    <div id="div_prod_fab" class="mb-2" style="display:none;">
                                                         <div class='row'>
                                                             <div class="col-auto">
                                                                 <label class="mb-0" for="fab-1" style="font-weight:bold;text-wrap:nowrap;font-size:1.15rem;"><i class="fas fa-hammer-crash"></i> Productos fabricado</label>
