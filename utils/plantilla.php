@@ -1725,9 +1725,20 @@
                 cargarAutocompletado(function(items) {
 
                     $(inputauto).autocomplete({
-                        source: items,
+                        // source: items,
                         autoFocus: true,
                         minLength: 3,
+                        source: function(request, response) {
+                            const input = request.term.toLowerCase().trim();
+                            const palabras = input.split(/\s+/);
+
+                            const resultados = items.filter(item => {
+                                const label = item.label.toLowerCase();
+                                return palabras.every(palabra => label.includes(palabra));
+                            });
+
+                            response(resultados);
+                        },
                         focus: function() {
                             return false;
                         },
