@@ -23,16 +23,13 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 
 try {
-
     $id_orden = $_POST['id_orden'];
     $datos_detalle = ModeloInforme::mdlInformeDetalleOrden($id_orden);
     $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden,null, true);
-
     $spreadsheet = new Spreadsheet();
     $spreadsheet->getDefaultStyle()->getFont()->setName('Arial')->setSize(11);
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->setTitle('RESUMEN');
-
     // Merge and center cells
     $sheet->mergeCells('A1:F1');
     $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -45,36 +42,30 @@ try {
     $sheet->getColumnDimension('E')->setWidth(15);
     $sheet->getColumnDimension('F')->setWidth(15);
     $sheet->getRowDimension(4)->setRowHeight(20.25);
-
     // Set the cell A1
     $sheet->setCellValue('A1', 'RESUMEN DE OBRA')->getStyle('A1')->getFont()->setSize(18);
     $sheet->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FEA767');
     $sheet->getStyle('A1:F1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
     // Set the cell A3
     $sheet->setCellValue('A3', 'CLIENTE:')->getStyle('A3')->getFont()->setBold(true);
     $sheet->getStyle('A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('A3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
     $sheet->getStyle('A3:F3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
     // Set the cell B3
     $sheet->mergeCells('B3:C3');
     $sheet->setCellValue('B3', $datos_detalle[0]['cliente'])->getStyle('B3')->getFont()->setSize(16);
     $sheet->getStyle('B3')->getFont()->setBold(true);
     $sheet->getStyle('B3:C3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('B3:C3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-
     // Set the cell D3
     $sheet->setCellValue('D3', 'FECHA INICIO:')->getStyle('D3')->getFont()->setBold(true);
     $sheet->getStyle('D3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('D3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-
     // Set the cell E3
     $sheet->mergeCells('E3:F3');
     $sheet->setCellValue('E3', $datos_detalle[0]['fecha_ini'])->getStyle('E3')->getFont()->setSize(12);
     $sheet->getStyle('E3:F3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('E3:F3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-
     // Set the cell A4
     $sheet->setCellValue('A4', 'RESPONSABLE DE OBRA:')->getStyle('A4')->getFont()->setBold(true);
     $sheet->getStyle('A4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);

@@ -636,7 +636,6 @@
                         ._trigger("select", null, {
                             item: selectedItem
                         });
-
                 } else {
                     // Crear un nuevo item con los datos disponibles
                     let nuevoItem = {

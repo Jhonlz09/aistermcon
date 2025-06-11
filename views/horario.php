@@ -2427,7 +2427,6 @@
                 focus: () => false,
                 select: handleAutocompleteSelect,
             });
-
             if (idSeleccionado != null) {
                 let selectedItem;
                 if (search) {
