@@ -361,7 +361,7 @@
                 mes = cboMeses.value;
             }
             tabla.ajax.reload(function() {
-                tblGastos.searchPanes.resizePanes();
+                tabla.searchPanes.resizePanes();
             }, false);
         });
 

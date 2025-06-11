@@ -205,7 +205,6 @@ class ModeloInventario
     {
         try {
             $conn = Conexion::ConexionDB();
-
             // Construir la consulta base
             $sql = "UPDATE tblinventario SET codigo=:codigo, descripcion=:des, stock=:sto, stock_min=:st_min, stock_mal=:st_mal, id_categoria=:cat, id_unidad=:uni, id_percha=:ubi";
             // Agregar el campo 'img' solo si no es null
@@ -236,8 +235,6 @@ class ModeloInventario
             $b->bindParam(":anio", $anio, PDO::PARAM_INT);
             $b->bindParam(":stock_ini", $st_ini, PDO::PARAM_INT);
             $b->execute();
-
-
             return array(
                 'status' => 'success',
                 'm' => 'El producto se editó correctamente'
