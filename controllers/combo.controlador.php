@@ -96,6 +96,13 @@ class ControladorCombos
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+    public function listarOrdenActivaHorario()
+    {
+
+        $data = ModeloCombos::listarOrdenActivaHorario();
+
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 
 if (isset($_POST['accion']) && $_POST['accion'] == 1) {
@@ -135,4 +142,7 @@ if (isset($_POST['accion']) && $_POST['accion'] == 1) {
     $data = new ControladorCombos();
     $data->anio = $_POST["anio"];
     $data->listarOrdenHorario();
+}else if (isset($_POST['accion']) && $_POST['accion'] == 13) {
+    $data = new ControladorCombos();
+    $data->listarOrdenActivaHorario();
 }

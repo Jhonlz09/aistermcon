@@ -808,14 +808,6 @@
                     } else {
                         stockInicialElement.textContent = '0.00';
                     }
-
-                    // Verificar si el elemento existe y data.stock_ini tiene un valor
-                    // const stockInicialElement = document.getElementById('stockInicial');
-                    // if (data.stock_ini !== undefined) {
-                    //     stockInicialElement.textContent = data.stock_ini;
-                    // } else {
-                    //     console.error('Elemento stockInicial no encontrado o data.stock_ini no definido');
-                    // }
                 })
                 .catch(error => {
                     console.error('Error:', error);

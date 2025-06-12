@@ -99,17 +99,6 @@ class ModeloCombos
         }
     }
 
-    // static public function mdlListarOrdenActivas()
-    // {
-    //     try {
-    //         $l = Conexion::ConexionDB()->prepare("SELECT o.id, o.nombre from tblorden o where o.obra_estado = true");
-    //         $l->execute();
-    //         return $l->fetchAll();
-    //     } catch (PDOException $e) {
-    //         return "Error en la consulta: " . $e->getMessage();
-    //     }
-    // }
-
     static public function mdlListarProductosFab()
     {
         try {
@@ -185,6 +174,28 @@ class ModeloCombos
             return $l->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function listarOrdenActivaHorario()
+    {
+        try {
+            $e = Conexion::ConexionDB()->prepare("SELECT o.id, 
+            o.nombre || ' ' || c.nombre AS descripcion,e.estado_obra AS estado_obra, 
+            EXTRACT(YEAR FROM o.fecha) AS anio 
+                FROM tblorden o 
+                JOIN tblclientes c ON o.id_cliente = c.id
+                JOIN tblestado_obra e ON o.estado_obra = e.id
+                WHERE o.estado = true 
+                AND o.estado_obra IN (0, 1, 2, 4)
+                ORDER BY o.id DESC;");
+            $e->execute();
+            return $e->fetchAll();
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
+            );
         }
     }
 }

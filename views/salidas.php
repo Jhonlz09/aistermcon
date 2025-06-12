@@ -754,14 +754,14 @@
                 guia = row[17],
                 fab = row[21],
                 tras = row[22],
+                orden = row[7],
+                cliente = row[8],
                 isfab = fab ? '7' : '3',
                 isfabValue = fab ? '9' : '6';
             // retorno = document.getElementById('radio-3');
             const radio = document.getElementById('radio-' + isfab);
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
-
             let selectedItem = items_orden.find(item => item.cod === id_orden);
-
             if (fab) {
                 if (selectedItem) {
                     // Asignamos el valor al input de autocompletado
@@ -771,6 +771,20 @@
                         .autocomplete("instance")
                         ._trigger("select", null, {
                             item: selectedItem
+                        });
+                } else {
+                    // Crear un nuevo item con los datos disponibles
+                    let nuevoItem = {
+                        cod: id_orden,
+                        label: `${orden}  ${cliente}`,
+                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                    };
+                    $(nro_ordenFab).val(nuevoItem.label);
+                    // Simular la selección del nuevo item en el autocompletado
+                    $(nro_ordenFab)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: nuevoItem
                         });
                 }
                 nro_guiaFab.value = guia;
@@ -788,6 +802,20 @@
                         ._trigger("select", null, {
                             item: selectedItem
                         });
+                } else {
+                    // Crear un nuevo item con los datos disponibles
+                    let nuevoItem = {
+                        cod: id_orden,
+                        label: `${orden}  ${cliente}`,
+                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                    };
+                    $(nro_ordenEntrada).val(nuevoItem.label);
+                    // Simular la selección del nuevo item en el autocompletado
+                    $(nro_ordenEntrada)
+                        .autocomplete("instance")
+                        ._trigger("select", null, {
+                            item: nuevoItem
+                        });
                 }
                 setChange(cboConductor, conductor)
                 nro_guiaEntrada.value = guia;
@@ -796,7 +824,6 @@
                 cargarImagenesDropzone(id_boleta)
                 dropzone.disable();
                 document.querySelector(".dropzone").classList.add("dropzone-disabled");
-
             }
             setChange(cboDespachado, despachado_id)
             setChange(cboResponsable, entrega)

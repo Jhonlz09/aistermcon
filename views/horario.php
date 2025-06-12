@@ -1418,8 +1418,47 @@
 
         const fecha_edit = document.getElementById('fecha_edit');
         const empleadosMap = new Map(datos_em.map(item => [item.cod, item]));
-        const ordenesMap = new Map(items_orden.map(item => [item.cod, item]));
+        let ordenesMap = new Map();
+        let ordenesArray = [];
+        // ordenesMap = new Map(items_orden.map(item => [item.cod, item]));
+        // console.log('irems_orden_map', items_orden)
 
+
+        // const listOrden = async () => {
+        //     try {
+        //         const response = await fetch('controllers/combo.controlador.php', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/x-www-form-urlencoded',
+        //             },
+        //             body: new URLSearchParams({
+        //                 accion: 13
+        //             })
+        //         });
+
+        //         if (!response.ok) {
+        //             throw new Error('Error en la solicitud');
+        //         }
+
+        //         const data = await response.json(); // Esto debe ser un array de objetos
+
+        //         // Creamos el Map usando una propiedad única como clave, por ejemplo 'id' o 'cod'
+        //         const map = new Map(data.map(item => [item.cod, item]));
+        //         console.log('map', map)
+        //         // Retornamos ambos
+        //         return map;
+
+        //     } catch (error) {
+        //         console.error('Error al obtener las órdenes activas:', error);
+        //         return map
+                
+        //     }
+        // };
+
+        // listOrden().then((map) => {
+        //     // ordenesArray = array;
+        //     ordenesMap = map;
+        // });
         // $(cboAnio).select2({
         //     width: '100%',
         //     data: datos_anio,
@@ -2160,8 +2199,9 @@
                 const idOrden = data._id_orden || null;
                 // Aplicar autocompletado al campo de obra
                 const $inputObra = $row.find(".obra");
-                // console.log('selectedItemOrden', selectedItemOrden);
-                aplicarAutocomplete($inputObra, items_orden, ordenesMap, idOrden);
+                // console.log('selectedItemOrden', idOrden);
+                // console.log('ordenesArray', items_orden);
+                aplicarAutocomplete($inputObra, ordenesArray, ordenesMap, idOrden);
             }
 
         });
@@ -2396,8 +2436,10 @@
             }).data().toArray();
 
             const filas = [];
+            // console.log('id_orden_horario', id_orden_horario)
+            // console.log(ordenesMap)
             const selectedItemOrden = ordenesMap.get(id_orden_horario) || null;
-
+            console.log(selectedItemOrden)
             if (selectedData.length > 0) {
                 for (const empleado of selectedData) {
                     const rowData = ['', '', '', dateH, 8, '', '', '', '', '', '', '', '', ''];
@@ -2431,6 +2473,7 @@
                 let selectedItem;
                 if (search) {
                     selectedItem = dataMap.get(idSeleccionado);
+                    console.log
                 } else {
                     selectedItem = idSeleccionado
                 }
@@ -2458,7 +2501,7 @@
                 return;
             }
 
-            const selectedItem = items_orden.find(item => item.cod === id_orden_horario);
+            const selectedItem = ordenesArray.find(item => item.cod === id_orden_horario);
             selectedRows.every(function() {
                 const $row = $(this.node());
                 // Actualizar campo fecha
@@ -2555,6 +2598,8 @@
         let id_orden_horario = 0;
 
         cargarAutocompletado(function(items) {
+            ordenesArray =items
+            ordenesMap = new Map(items.map(item => [item.cod, item]));
             $(nro_ordenHorario).autocomplete({
                 source: items,
                 minLength: 1,
@@ -2574,7 +2619,7 @@
                     item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
                 ).appendTo(ul);
             };
-        }, null, 'orden', 6);
+        }, null, 'combo', 13);
 
         tblEmpleadoH.on('deselect', function() {
             $('#chkAll').prop('checked', false);
@@ -2682,7 +2727,7 @@
             // console.log('idEmpleado', empleado_edit, orden_edit);
             tblHorarioE.ajax.reload(null, false);
             aplicarAutocomplete($('#empleado_edit'), datos_em, empleadosMap, idEmpleado, true);
-            aplicarAutocomplete($('#orden_edit'), items_orden, ordenesMap, idOrden, true);
+            aplicarAutocomplete($('#orden_edit'), ordenesArray, ordenesMap, idOrden, true);
         });
 
         formEditar.addEventListener('submit', function(e) {
@@ -2780,7 +2825,7 @@
             const isfabValue = fab ? '8' : '4';
             const radio = document.getElementById('radio-' + isfab);
             const cancelar = document.getElementById('Cancelar');
-            let selectedItem = items_orden.find(item => item.cod === id_orden);
+            let selectedItem = ordenesArray.find(item => item.cod === id_orden);
             if (fab) {
                 // isTrasFab.disabled = true;
                 if (selectedItem) {
