@@ -96,7 +96,7 @@
                                             <th rowspan="2" class="th-blue">NOMBRES</th>
                                             <th rowspan="2" class="th-blue">Nº DE ORDEN</th>
                                             <th rowspan="2" class="th-blue">CLIENTE</th>
-                                            <th colspan="4" class="th-purple">SUELDO Y SOBRETIEMPO</th>
+                                            <th colspan="4" class="th-purple" style="white-space:nowrap" >SUELDO Y SOBRETIEMPO</th>
                                             <th colspan="5" class="th-red">PREVISIONES</th>
                                             <th colspan="3" class="th-green">GENERAL</th>
                                             <!-- <th rowspan="2" class="th-green">GASTO EN OBRA</th> -->
@@ -538,7 +538,7 @@
             rightColumns: 1,
         },
         scrollX: true,
-        scrollY: 'calc(100vh - 455px)',
+        scrollY: 'calc(100vh - 430px)',
         rowGroup: {
             dataSrc: 4,
             startRender: function(rows, group) {
@@ -1842,7 +1842,7 @@
             autoWidth: false,
             paging: true,
             pageLength: 100,
-            scrollY: 'calc(100vh - 425px)',
+            scrollY: 'calc(100vh - 430px)',
             searchPanes: {
                 cascadePanes: true,
                 columns: [1, 2, 3], // columnas por las que filtrar
@@ -2784,6 +2784,7 @@
                             resp.m);
                         if (isSuccess) {
                             $('#modal').modal('hide');
+                            cargarCombo('Orden_h', '', 12, false, anioInfor);
                         }
                         if (tabla) {
                             tabla.ajax.reload(null, false);
@@ -2804,18 +2805,6 @@
         $('#tblHorario').on('click', '#editH', function() {
             let row = tabla.row($(this).closest('tr').next()).data()
             id_horario_editar = row[0];
-            // id_boleta_fab = row[10];
-            // const id_orden = row[11],
-            //     id_cliente = row[12],
-            //     fecha_id = row[13],
-            //     conductor = row[14],
-            //     despachado_id = row[15],
-            //     entrega = row[16],
-            //     fab = row[21],
-            //     tras = row[22],
-            //     orden = row[7],
-            //     cliente = row[8],
-            //     guia = row[17];
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
             const isfab = fab ? '7' : '2';
             const isfabValue = fab ? '8' : '4';
@@ -2833,7 +2822,6 @@
                         ._trigger("select", null, {
                             item: selectedItem
                         });
-
                 } else {
                     // Crear un nuevo item con los datos disponibles
                     let nuevoItem = {
@@ -2991,9 +2979,9 @@
                             isSuccess ? "Completado" : "Error",
                             isSuccess ? "fa-check" : "fa-xmark",
                             resp.m);
-
                         if (isSuccess) {
                             showHideFormSection('none', 'block', tblPerson, scrollPos);
+                            cargarCombo('Orden_h', '', 12, false, anioInfor);
                         }
                         if (tabla) {
                             tabla.ajax.reload(null, false);

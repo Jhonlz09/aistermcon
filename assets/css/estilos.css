@@ -1190,7 +1190,7 @@ tr.fila-anulada+tr.child {
 }
 
 #tblHorario tr.dtrg-start td {
-    box-shadow: 0 2px 8px rgb(0 0 0 / 58%);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 28%);
     position:sticky;
     top: 0; /* o ajusta si tienes headers sticky encima */
     z-index: 5; /* asegúrate que esté sobre otras filas */

@@ -214,7 +214,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlRegistrarFabricacionEntrada($datos)
+    static public function mdlRegistrarFabricacionEntrada($datos, $fecha_entrada)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -223,7 +223,6 @@ class ModeloRegistro
             if (!$productos) {
                 throw new Exception("Los datos de productos son inválidos.");
             }
-
             foreach ($productos as $producto) {
                 $cantidadFabricada = $producto['cantidad'];
                 $id_salida = $producto['id'];
@@ -509,9 +508,6 @@ class ModeloRegistro
         try {
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
-            // Insertar orden si es necesario
-            // $id_orden = self::insertarOrden($conexion, $orden, $cliente, $responsable, $fecha);
-            // Insertar boleta
             $id_boleta = self::insertarBoletaEntrada($conexion, $orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado);
             // Insertar salidas
             self::insertarEntradas($conexion, $id_boleta, $arr);
@@ -535,49 +531,6 @@ class ModeloRegistro
         }
     }
 
-    // static private function insertarOrden($conexion, $orden, $cliente, $responsable, $fecha)
-    // {
-    //     if ($orden == '') {
-    //         $stmtO = $conexion->prepare("INSERT INTO tblorden(id_cliente, id_encargado, fecha_ini) VALUES (:id_cliente, :responsable, now())");
-    //         $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
-    //         if ($responsable === null || $responsable == '') {
-    //             $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
-    //         } else {
-    //             $stmtO->bindParam(':responsable', $responsable, PDO::PARAM_INT);
-    //         }
-    //         $stmtO->execute();
-    //         return $conexion->lastInsertId();
-    //     } else {
-    //         $hora = date('H:i:s');
-    //         $fechaHora = $fecha . ' ' . $hora;
-    //         $anioActual = date('Y', strtotime($fecha));
-    //         $stmtVerificar = $conexion->prepare("SELECT id FROM tblorden WHERE nombre = :orden AND id_cliente = :cliente AND (EXTRACT(YEAR FROM fecha) = :anioActual OR estado_obra IN (0, 1))");
-    //         $stmtVerificar->bindParam(':orden', $orden, PDO::PARAM_STR);
-    //         $stmtVerificar->bindParam(':cliente', $cliente, PDO::PARAM_INT);
-    //         $stmtVerificar->bindParam(':anioActual', $anioActual, PDO::PARAM_INT);
-    //         $stmtVerificar->execute();
-    //         $resultadoVerificar = $stmtVerificar->fetch(PDO::FETCH_ASSOC);
-    //         if ($resultadoVerificar) {
-    //             $state = $conexion->prepare("UPDATE tblorden SET estado_obra=1, fecha_ini=:fecha  WHERE id = :id");
-    //             $state->bindParam(':id', $resultadoVerificar['id'], PDO::PARAM_INT);
-    //             $state->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
-    //             $state->execute();
-    //             return $resultadoVerificar['id'];
-    //         } else {
-    //             $stmtO = $conexion->prepare("INSERT INTO tblorden(nombre, id_cliente, id_encargado, fecha_ini) VALUES (:orden, :id_cliente, :responsable, now());");
-    //             $stmtO->bindParam(':orden', $orden, PDO::PARAM_STR);
-    //             $stmtO->bindParam(':id_cliente', $cliente, PDO::PARAM_INT);
-    //             if ($responsable === null || $responsable === '') {
-    //                 $stmtO->bindValue(':responsable', null, PDO::PARAM_NULL);
-    //             } else {
-    //                 $stmtO->bindParam(':responsable', $responsable, PDO::PARAM_INT);
-    //             }
-    //             $stmtO->execute();
-    //             return $conexion->lastInsertId();
-    //         }
-    //     }
-    // }
-
     static private function actualizarBoleta($conexion, $id_boleta, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, $tras = false)
     {
         $fechaHora = $fecha . ' ' . date('H:i:s');
@@ -585,6 +538,7 @@ class ModeloRegistro
         // Campos base a actualizar
         $campos = [
             'fecha = :fecha',
+            'fecha_retorno = :fecha_retorno',
             'id_orden = :orden',
             'nro_guia = :nro_guia',
             'id_conductor = :conductor',

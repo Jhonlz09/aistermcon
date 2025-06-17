@@ -618,6 +618,7 @@
                 tras = row[22],
                 orden = row[7],
                 cliente = row[8],
+                fecha_return = row[23],
                 guia = row[17];
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
             const isfab = fab ? '7' : '2';
@@ -656,6 +657,7 @@
                 isTrasFab.disabled = tras;
                 isTrasFab.checked = tras;
                 isTrasFab.dispatchEvent(new Event('click'));
+                fecha_retorno.value = fecha_return == '' ? null : fecha_return;
                 // console.log(row[22])
                 obtenerDatosProdFab(id_boleta, tras);
             } else {
@@ -754,6 +756,7 @@
                 guia = row[17],
                 fab = row[21],
                 tras = row[22],
+                fecha_return = row[23],
                 orden = row[7],
                 cliente = row[8],
                 isfab = fab ? '7' : '3',
@@ -819,7 +822,7 @@
                 }
                 setChange(cboConductor, conductor)
                 nro_guiaEntrada.value = guia;
-                fecha_retorno.value = fecha_hoy;
+                fecha_retorno.value = fecha_return == '' ? null : fecha_return;
                 tblReturn.ajax.reload(null, false);
                 cargarImagenesDropzone(id_boleta)
                 dropzone.disable();

@@ -127,7 +127,7 @@
                                                         </div>
                                                         <div class="d-flex flex-wrap align-items-center" style="font-size: 60%;">
                                                             <label for="isTrasFab" class="col-form-label text-nowrap" style="cursor:pointer;color:#616c7a; font-size: 140%;">
-                                                                <i class="fa-solid fa-truck-ramp-box"></i> Traslado de fabricación
+                                                                <i class="fa-solid fa-truck-ramp-box"></i> Tras.
                                                             </label>
                                                             <label class="switch-2 ml-2" for="isTrasFab" style="font-size: 112%;">
                                                                 <input class="switch__input" type="checkbox" id="isTrasFab" onkeydown="toggleWithEnter(event, this)" checked>

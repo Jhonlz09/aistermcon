@@ -116,9 +116,9 @@ class ajaxRegistro
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function registrarFabricacionEntrada($datos)
+    public function registrarFabricacionEntrada($datos, $fecha_entrada)
     {
-        $data = ModeloRegistro::mdlregistrarFabricacionEntrada($datos);
+        $data = ModeloRegistro::mdlregistrarFabricacionEntrada($datos, $fecha_entrada);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -167,6 +167,7 @@ if (isset($_POST["accion"])) {
         $registro->actualizarDatosFabricacion($_POST["datos"], $_POST["id_boleta"], $_POST["orden"], $_POST["nro_guia"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["fecha"],  $_POST["motivo"], $_POST['tras'], $imagenes);
     }else if ($accion == 13) {
         // $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : [];
-        $registro->registrarFabricacionEntrada($_POST["datos"]);
+        $registro->registrarFabricacionEntrada($_POST["datos"], $_POST["fecha_retorno"]);
+
     }
 }

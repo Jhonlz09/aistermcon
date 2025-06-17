@@ -14,7 +14,7 @@ class ModeloSalidas
                 LPAD(b.nro_guia::TEXT, 9, '0') as boleta, b.id as id_boleta, 
                 o.id as id_orden, c.id as id_cliente, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha,
                 b.id_conductor,b.id_despachado, b.id_responsable,b.nro_guia,b.motivo,
-                ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila, s.fabricado, b.fab, b.tras
+                ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila, s.fabricado, b.fab, b.tras, TO_CHAR(b.fecha_retorno, 'YYYY-MM-DD') AS fecha_retorno
                 FROM 
                 tblsalidas s
                 JOIN tblinventario i ON s.id_producto = i.id

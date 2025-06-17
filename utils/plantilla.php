@@ -2165,7 +2165,7 @@
                             }
                         });
                     } else if (selectedTab === '8') {
-                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
+                        let elementosAValidar = [fecha, fecha_retorno, nro_ordenFab, nro_guiaFab];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -2238,6 +2238,7 @@
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
                         formData.append('fecha', fecha.value);
+                        formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('accion', 12);
                         dropzone.getAcceptedFiles().forEach((file, index) => {
@@ -2269,7 +2270,7 @@
                             }
                         });
                     } else if (selectedTab === '9') {
-                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
+                        let elementosAValidar = [fecha, fecha_retorno, nro_ordenFab, nro_guiaFab];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -2321,8 +2322,6 @@
                             };
 
                             // if (hasError) return false;
-
-
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
                                 tablaSecundaria.rows().every(function() {
@@ -2352,15 +2351,7 @@
 
                         // console.log('DATOS MODIFICADOS ENVIADOS', datosPrincipales)
                         formData.append('datos', JSON.stringify(datosPrincipales));
-                        // formData.append('orden', id_orden_guia_fab);
-                        // formData.append('id_boleta', id_boleta_fab);
-                        // formData.append('tras', isTrasFab.checked);
-                        // formData.append('nro_guia', nro_guiaFab.value);
-                        // formData.append('conductor', cboConductor.value);
-                        // formData.append('despachado', cboDespachado.value);
-                        // formData.append('responsable', cboResponsable.value);
-                        // formData.append('fecha', fecha.value);
-                        // formData.append('motivo', motivo.value.trim().toUpperCase());
+                        formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('accion', 13);
                         dropzone.getAcceptedFiles().forEach((file, index) => {
                             if (!file.isExisting) {
@@ -2493,7 +2484,7 @@
                             div_nroguia.style.display = 'none';
                             div_nrofactura.style.display = 'none';
                             div_person.style.display = 'block';
-                            div_retorno.style.display = 'none';
+                            div_retorno.style.display = 'block';
                             card_nro_guia.style.display = 'none';
                             card_conductor.style.display = 'none';
                             card_conductorEntrada.style.display = 'none';
@@ -2503,7 +2494,6 @@
                             card_nro_fac.style.display = 'none';
                             card_nro_guiaFab.style.display = 'block';
                             div_prod_fab.style.display = 'block';
-                            // div_check_fab.style.display = 'block';
                             if (selectedTab === '8' || selectedTab === '9') {
                                 btnCancelarTrans.style.display = 'block';
                             } else {
