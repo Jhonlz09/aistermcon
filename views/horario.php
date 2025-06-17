@@ -2721,10 +2721,8 @@
             inputId.value = id_horario_editar || '';
             const idEmpleado = row["id_empleado"] || null;
             const idOrden = row["id_orden"] || null;
-            const fecha_horario = row["fecha_val"] || null;
-
+            const fecha_horario = row["fecha_val"] || null;  
             fecha_edit.value = fecha_horario || '';
-            // console.log('idEmpleado', empleado_edit, orden_edit);
             tblHorarioE.ajax.reload(null, false);
             aplicarAutocomplete($('#empleado_edit'), datos_em, empleadosMap, idEmpleado, true);
             aplicarAutocomplete($('#orden_edit'), ordenesArray, ordenesMap, idOrden, true);
@@ -2738,19 +2736,17 @@
             const id_empleado = $('#empleado_edit').attr('data-id') || null;
             const id_obra = $('#orden_edit').attr('data-id') || null;
             $(rows).each(function() {
-                const $row = $(this);
-                const hn = parseFloat($row.find('.hn').val()) || null;
-                const hs = parseFloat($row.find('.hs').val()) || null;
-                const he = parseFloat($row.find('.h100').val()) || null;
+                const $row = $(this),
+                hn = parseFloat($row.find('.hn').val()) || null,
+                hs = parseFloat($row.find('.hs').val()) || null,
+                he = parseFloat($row.find('.h100').val()) || null,
+                material = parseFloat($row.find('.material').val()) || null,
+                trans = parseFloat($row.find('.trans').val()) || null,
+                ali = parseFloat($row.find('.ali').val()) || null,
+                hosp = parseFloat($row.find('.hosp').val()) || null,
+                guard = parseFloat($row.find('.guard').val()) || null,
+                agua = parseFloat($row.find('.agua').val()) || null;
 
-                const material = parseFloat($row.find('.material').val()) || null;
-                const trans = parseFloat($row.find('.trans').val()) || null;
-                const ali = parseFloat($row.find('.ali').val()) || null;
-                const hosp = parseFloat($row.find('.hosp').val()) || null;
-                const guard = parseFloat($row.find('.guard').val()) || null;
-                const agua = parseFloat($row.find('.agua').val()) || null;
-
-                // if (id_empleado && id_obra && fecha) {
                 datos.push({
                     id_horario: id_horario_editar,
                     id_empleado,

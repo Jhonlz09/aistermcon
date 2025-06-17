@@ -421,7 +421,6 @@ class ModeloInventario
     JOIN tblorden o ON b.id_orden = o.id
     JOIN tblclientes c ON o.id_cliente = c.id
     WHERE s.id_producto = :id_producto
-        AND s.retorno <> 0
         AND EXTRACT(YEAR FROM b.fecha_retorno) = :anio
     UNION ALL
     -- Compras

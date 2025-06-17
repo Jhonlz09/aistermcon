@@ -693,7 +693,6 @@
             datos.append('fecha', fecha_act);
             // datos.append('estado', selectedEstado);
             datos.append('accion', accion);
-
             return datos;
         }
 
