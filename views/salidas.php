@@ -657,7 +657,7 @@
                 isTrasFab.disabled = tras;
                 isTrasFab.checked = tras;
                 isTrasFab.dispatchEvent(new Event('click'));
-                fecha_retorno.value = fecha_return == '' ? null : fecha_return;
+                fecha_retorno.value = fecha_return == '' ? '' : fecha_return;
                 // console.log(row[22])
                 obtenerDatosProdFab(id_boleta, tras);
             } else {
@@ -822,7 +822,6 @@
                 }
                 setChange(cboConductor, conductor)
                 nro_guiaEntrada.value = guia;
-                fecha_retorno.value = fecha_return == '' ? null : fecha_return;
                 tblReturn.ajax.reload(null, false);
                 cargarImagenesDropzone(id_boleta)
                 dropzone.disable();
@@ -830,7 +829,8 @@
             }
             setChange(cboDespachado, despachado_id)
             setChange(cboResponsable, entrega)
-
+            fecha.value = fecha_id
+            fecha_retorno.value = fecha_return == '' ? '' : fecha_return;
             motivo.value = motivo_text;
             radio.value = isfabValue;
             radio.checked = true;

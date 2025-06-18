@@ -2130,6 +2130,7 @@
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
                         formData.append('fecha', fecha.value);
+                        formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('accion', 11);
                         dropzone.getAcceptedFiles().forEach((file, index) => {
@@ -2351,6 +2352,7 @@
 
                         // console.log('DATOS MODIFICADOS ENVIADOS', datosPrincipales)
                         formData.append('datos', JSON.stringify(datosPrincipales));
+                        formData.append('id_boleta', id_boleta_fab);
                         formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('accion', 13);
                         dropzone.getAcceptedFiles().forEach((file, index) => {

@@ -214,34 +214,48 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlRegistrarFabricacionEntrada($datos, $fecha_entrada)
+    static public function mdlRegistrarFabricacionEntrada($datos, $fecha_entrada, $id_boleta)
     {
         try {
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
+
             $productos = json_decode($datos, true);
             if (!$productos) {
                 throw new Exception("Los datos de productos son inválidos.");
             }
+
             foreach ($productos as $producto) {
                 $cantidadFabricada = $producto['cantidad'];
                 $id_salida = $producto['id'];
                 $insumos = $producto['productos'];
-                $sqlSalida = "UPDATE tblsalidas SET retorno=:cantidad WHERE id=:id";
+
+                // Actualizar salida principal
+                $sqlSalida = "UPDATE tblsalidas SET retorno = :cantidad WHERE id = :id";
                 $stmtSalida = $conexion->prepare($sqlSalida);
                 $stmtSalida->bindParam(':id', $id_salida, PDO::PARAM_INT);
                 $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_STR);
                 $stmtSalida->execute();
+
+                // Actualizar insumos utilizados
                 foreach ($insumos as $insumo) {
                     $codigoInsumo = $insumo['codigo'];
                     $cantidadUtilizada = $insumo['cantidad'];
-                    $stmtStock = $conexion->prepare("UPDATE tblsalidas SET retorno=:cantidad WHERE id=:id");
-                    $stmtStock = $conexion->prepare($sqlSalida);
+
+                    $stmtStock = $conexion->prepare($sqlSalida); // Reutiliza la misma SQL
                     $stmtStock->bindParam(':id', $codigoInsumo, PDO::PARAM_INT);
                     $stmtStock->bindParam(':cantidad', $cantidadUtilizada, PDO::PARAM_STR);
                     $stmtStock->execute();
                 }
             }
+
+            // 🔄 Actualizar la fecha de retorno en tblboleta
+            $sqlBoleta = "UPDATE tblboleta SET fecha_retorno = :fecha_retorno WHERE id = :id_boleta";
+            $stmtBoleta = $conexion->prepare($sqlBoleta);
+            $stmtBoleta->bindParam(':fecha_retorno', $fecha_entrada);
+            $stmtBoleta->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+            $stmtBoleta->execute();
+
             $conexion->commit();
             return array(
                 'status' => 'success',
@@ -262,7 +276,8 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlActualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $tras, $img)
+
+    static public function mdlActualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $fecha_retorno, $motivo, $tras, $img)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -272,8 +287,7 @@ class ModeloRegistro
                 throw new Exception("Los datos de productos son inválidos.");
             }
             $tras = filter_var($tras, FILTER_VALIDATE_BOOLEAN);
-
-            self::actualizarBoleta($conexion, $id_boleta, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, $tras);
+            self::actualizarBoleta($conexion, $id_boleta, $orden, $fecha, $fecha_retorno, $nro_guia, $conductor, $despachado, $responsable, $motivo, $tras);
 
             foreach ($productos as $producto) {
                 $id_prod_fab = $producto['id'];
@@ -531,10 +545,9 @@ class ModeloRegistro
         }
     }
 
-    static private function actualizarBoleta($conexion, $id_boleta, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, $tras = false)
+    static private function actualizarBoleta($conexion, $id_boleta, $id_orden, $fecha, $fecha_retorno, $nro_guia, $conductor, $despachado, $responsable, $motivo, $tras = false)
     {
         $fechaHora = $fecha . ' ' . date('H:i:s');
-
         // Campos base a actualizar
         $campos = [
             'fecha = :fecha',
@@ -559,6 +572,7 @@ class ModeloRegistro
         $stmtB->bindParam(':orden', $id_orden, PDO::PARAM_INT);
         $stmtB->bindParam(':nro_guia', $nro_guia, PDO::PARAM_STR);
         $stmtB->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+        $stmtB->bindParam(':fecha_retorno', $fecha_retorno, PDO::PARAM_STR);
         $stmtB->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
 
         if ($tras) {
