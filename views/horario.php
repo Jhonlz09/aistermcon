@@ -1653,7 +1653,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control hn text-center"
                         value="${data || ''}">`;
                         }
@@ -1675,7 +1675,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         
                         class="form-control hs text-center"
                         value="${data || ''}">
@@ -1700,7 +1700,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control h100 text-center"
                         value="${data || ''}">
                          </div>`;
@@ -1751,7 +1751,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control trans text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -1771,7 +1771,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control ali text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -1791,7 +1791,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control hosp text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -1806,7 +1806,7 @@
                             return `$<input style="width:5rem" type="text" autocomplete="off"
                                 spellcheck="false" oninput="validarNumber(this,/[^0-9.]/g)"
                                 onpaste="validarPegado(this, event)" inputmode="numeric"
-                                maxlength="4" class="form-control guard text-center d-inline"
+                                maxlength="5" class="form-control guard text-center d-inline"
                                 value="${data || ''}">`;
                         }
                         return data;
@@ -1825,7 +1825,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control agua text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -1989,7 +1989,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control hn text-center"
                         value="${data || ''}">`;
                         }
@@ -2009,7 +2009,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         id="id${meta.row + 1}"
                         class="form-control hs text-center"
                         value="${data || ''}">`;
@@ -2030,7 +2030,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control h100 text-center"
                         value="${data || ''}">`;
                         }
@@ -2080,7 +2080,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control trans text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2100,7 +2100,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control ali text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2120,7 +2120,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control hosp text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2140,7 +2140,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control guard text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2160,7 +2160,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control agua text-center d-inline"
                         value="${data || ''}">`;
                         }
