@@ -19,44 +19,6 @@ class ajaxRegistro
         $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    
-   // public function registrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes)
-    // {
-    //     // Guardar la salida en la base de datos
-    //     $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $cliente, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo);
-
-    //     if ($data["status"] === "success") {
-    //         $idSalida = $data["id_salida"]; // Supongamos que esta función retorna el ID de la salida creada
-
-    //         // Directorio de almacenamiento para imágenes
-    //         $uploadDir = __DIR__ . "/uploads/salidas/";
-    //         if (!is_dir($uploadDir)) {
-    //             mkdir($uploadDir, 0777, true);
-    //         }
-
-    //         // Guardar cada imagen
-    //         if (!empty($imagenes["name"][0])) {
-    //             foreach ($imagenes["name"] as $index => $name) {
-    //                 $tmpName = $imagenes["tmp_name"][$index];
-    //                 $uniqueName = uniqid() . "_" . basename($name);
-    //                 $targetFile = $uploadDir . $uniqueName;
-
-    //                 if (move_uploaded_file($tmpName, $targetFile)) {
-    //                     // Guardar la relación en la base de datos
-    //                     ModeloRegistro::mdlGuardarImagenSalida($idSalida, $uniqueName);
-    //                 } else {
-    //                     echo json_encode([
-    //                         "status" => "error",
-    //                         "m" => "Error al subir la imagen $name"
-    //                     ]);
-    //                     return;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    // }
 
     public function registrarEntrada($datos, $orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado)
     {

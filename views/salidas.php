@@ -677,10 +677,6 @@
                         label: `${orden}  ${cliente}`,
                         value: id_orden // Esto depende de cómo lo uses en el autocomplete
                     };
-
-                    // Agregar el nuevo item a la lista de items del autocomplete
-                    // items_orden.push(nuevoItem);
-
                     // Asignar el valor al input
                     $(nro_orden).val(nuevoItem.label);
 
@@ -761,7 +757,6 @@
                 cliente = row[8],
                 isfab = fab ? '7' : '3',
                 isfabValue = fab ? '9' : '6';
-            // retorno = document.getElementById('radio-3');
             const radio = document.getElementById('radio-' + isfab);
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
             let selectedItem = items_orden.find(item => item.cod === id_orden);
@@ -823,6 +818,7 @@
                 setChange(cboConductor, conductor)
                 nro_guiaEntrada.value = guia;
                 tblReturn.ajax.reload(null, false);
+                fecha_retorno.value = fecha_return == '' ? '' : fecha_return;
                 cargarImagenesDropzone(id_boleta)
                 dropzone.disable();
                 document.querySelector(".dropzone").classList.add("dropzone-disabled");
@@ -830,7 +826,6 @@
             setChange(cboDespachado, despachado_id)
             setChange(cboResponsable, entrega)
             fecha.value = fecha_id
-            fecha_retorno.value = fecha_return == '' ? '' : fecha_return;
             motivo.value = motivo_text;
             radio.value = isfabValue;
             radio.checked = true;
