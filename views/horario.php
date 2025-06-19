@@ -1728,10 +1728,10 @@
                         type="text"
                         autocomplete="off"
                         spellcheck="false"
-                        oninput="validarNumber(this,/[^0-9.]/g, false, 3)"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control material text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2057,10 +2057,10 @@
                         type="text"
                         autocomplete="off"
                         spellcheck="false"
-                        oninput="validarNumber(this,/[^0-9.]/g, false, 3)"
+                        oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="4"
+                        maxlength="5"
                         class="form-control material text-center d-inline"
                         value="${data || ''}">`;
                         }
