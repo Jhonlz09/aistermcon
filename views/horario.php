@@ -1728,7 +1728,7 @@
                         type="text"
                         autocomplete="off"
                         spellcheck="false"
-                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        oninput="validarNumber(this,/[^0-9.]/g, false, 3)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
                         maxlength="4"
@@ -2047,7 +2047,7 @@
                         return data;
                     }
                 },
-                {
+                { 
                     targets: 8,
                     className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
@@ -2057,7 +2057,7 @@
                         type="text"
                         autocomplete="off"
                         spellcheck="false"
-                        oninput="validarNumber(this,/[^0-9.]/g)"
+                        oninput="validarNumber(this,/[^0-9.]/g, false, 3)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
                         maxlength="4"

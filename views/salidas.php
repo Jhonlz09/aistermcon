@@ -627,7 +627,6 @@
             const cancelar = document.getElementById('Cancelar');
             let selectedItem = items_orden.find(item => item.cod === id_orden);
             if (fab) {
-                // isTrasFab.disabled = true;
                 if (selectedItem) {
                     // Asignamos el valor al input de autocompletado
                     $(nro_ordenFab).val(selectedItem.label);
@@ -645,7 +644,6 @@
                         value: id_orden // Esto depende de cómo lo uses en el autocomplete
                     };
                     $(nro_ordenFab).val(nuevoItem.label);
-
                     // Simular la selección del nuevo item en el autocompletado
                     $(nro_ordenFab)
                         .autocomplete("instance")
@@ -658,7 +656,6 @@
                 isTrasFab.checked = tras;
                 isTrasFab.dispatchEvent(new Event('click'));
                 fecha_retorno.value = fecha_return == '' ? '' : fecha_return;
-                // console.log(row[22])
                 obtenerDatosProdFab(id_boleta, tras);
             } else {
                 if (selectedItem) {
@@ -679,8 +676,6 @@
                     };
                     // Asignar el valor al input
                     $(nro_orden).val(nuevoItem.label);
-
-                    // Simular la selección del nuevo item en el autocompletado
                     $(nro_orden)
                         .autocomplete("instance")
                         ._trigger("select", null, {
