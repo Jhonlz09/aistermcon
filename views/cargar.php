@@ -128,6 +128,26 @@
                                 </div>
                             </div>
                         </form>
+
+                        <form method="post" enctype="multipart/form-data" id="form_inv_ubi" class="needs-validation" novalidate>
+                            <div class="row align-items-end">
+                                <div class="col-md-10 pad-col">
+                                    <label for="fileInvUbi"><span style="margin-right:.5rem">Actualizar Ubicación</span>
+                                        <div class="download">
+                                            <a href="controllers/descargar_formato.php?archivo=FORMATO_PARA_ACT_UBICACION.xlsx">
+                                                <i class="fas fa-download"></i> Descargar formato
+                                            </a>
+                                        </div><!-- /.col -->
+                                    </label>
+                                    <input type="file" name="fileInvUbi" id="fileInvUbi" class="form-control" accept=".xls, .xlsx" required>
+                                    <div class="invalid-feedback no-margin">*Campo requerido.</div>
+                                    <div class="ten no-margin">*Debe selecionar un archivo .xls o .xlsx</div>
+                                </div>
+                                <div class="col-md-2 pad-col">
+                                    <button style="width:100%" type="submit" value="Cargar" class="btn btn-primary" id="btnCargarInv"><i class="fa-solid fa-arrow-up-from-bracket mr-2"></i><span style="display:inline-block;"> Cargar</span></button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -333,6 +353,7 @@
     $(document).ready(function() {
         const form_pro = document.getElementById('form_pro'),
             form_inv = document.getElementById('form_inv'),
+            form_inv_ubi = document.getElementById('form_inv_ubi'),
             form_cat = document.getElementById('form_cat'),
             form_und = document.getElementById('form_und'),
             form_ubi = document.getElementById('form_ubi'),
@@ -362,6 +383,12 @@
             e.preventDefault();
             let val = document.getElementById('fileInv');
             submitForm(this, val, 8,false, 'actualiza');
+        });
+
+        form_inv_ubi.addEventListener("submit", function(e) {
+            e.preventDefault();
+            let val = document.getElementById('fileInvUbi');
+            submitForm(this, val, 9,false, 'actualiza');
         });
 
         form_cat.addEventListener("submit", function(e) {

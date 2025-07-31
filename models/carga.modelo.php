@@ -143,6 +143,62 @@ class ModeloCarga
         }
     }
 
+    static public function mdlActualizacionInventarioUbicacion($file)
+    {
+        $resultados = [];
+        $registrados = 0;
+        try {
+            $doc = IOFactory::load($file['tmp_name'])->getSheet(0);
+            $numeroFilas = $doc->getHighestDataRow();
+            $repetidos = 0;
+            $vacios = 0;
+            $incorrectos = 0;
+            $noRegistrados = 0;
+            // CICLO FOR PARA REGISTROS DE PRODUCTOS
+            for ($i = 4; $i <= $numeroFilas; $i++) {
+                try {
+                    $codigo = strtoupper(trim($doc->getCell("A" . $i)->getValue()));
+                    $ubicacion = trim($doc->getCell("B" . $i)->getValue());
+                    $id_ubicacion = self::mdlObtenerId('tblubicacion',  $ubicacion);
+
+                    if ($id_ubicacion === null && !empty($ubicacion)) {
+                        $insertUbi = Conexion::ConexionDB()->prepare("INSERT INTO tblubicacion(nombre) VALUES (:ubi)");
+                        $insertUbi->bindParam(":ubi", $ubicacion, PDO::PARAM_STR);
+                        if ($insertUbi->execute()) {
+                            $id_ubicacion = self::mdlObtenerId('tblubicacion',  $ubicacion);
+                        }
+                    }
+                    $a = Conexion::ConexionDB()->prepare("UPDATE tblinventario SET id_percha=:ubi WHERE codigo=:cod");
+                    $a->bindParam(":cod", $codigo, PDO::PARAM_STR);
+                    $a->bindParam(":ubi", $id_ubicacion, PDO::PARAM_INT);
+                    if ($a->execute()) {
+                        $registrados++;
+                    }
+                } catch (PDOException $e) {
+                    if ($e->getCode() == '23505') {
+                        $repetidos++;
+                    } else if ($e->getCode() == '22P02') {
+                        $vacios++;
+                    } else {
+                        $incorrectos++;
+                    }
+                    $noRegistrados++;
+                }
+            }
+            $resultados = [
+                'registrados' => $registrados,
+                'noRegistrados' => $noRegistrados,
+                'repetidos' => $repetidos,
+                'vacios' => $vacios,
+                'incorrectos' => $incorrectos,
+            ];
+            return $resultados;
+        } catch (SpreadException $exception) {
+
+            return $resultados;
+        }
+    }
+
     static private function mdlObtenerId($tabla, $valor)
     {
         if (empty($valor)) {

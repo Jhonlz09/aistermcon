@@ -46,7 +46,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="search" id="_search"  onpaste="return trimPaste(event, this)" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search" onpaste="return trimPaste(event, this)" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>
@@ -364,6 +364,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
     </div>
 </div>
 
+
+
 <script>
     cargarCombo('Categoria');
     cargarCombo('Unidad');
@@ -402,6 +404,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             {
                 targets: 2,
                 responsivePriority: 1,
+                render: function(data, type, row) {
+                    return `<div>${data} <span class="badge badge-info right small" style="vertical-align:super;font-size:0.65em;cursor:pointer;" data-id="${row.id}" onclick="openMedidasModal(this)">6</span></div>`;
+                }
             },
             {
                 targets: 6,
@@ -649,8 +654,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             "lengthChange": false,
             "ordering": false,
             "autoWidth": false,
-            columnDefs: [
-                {
+            columnDefs: [{
                     targets: 2,
                     render: function(data, type, row) {
                         let resultado = row.producto_util ? '<span class="alert alert-default-dark mb-0"><i class="fas fa-hammer-crash"></i> FAB</span>' : '';
@@ -678,13 +682,13 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     targets: 5,
                     className: 'text-center',
                     render: function(data, type, row) {
-                        let resultado = row.compras ?? '-'; 
+                        let resultado = row.compras ?? '-';
                         let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-success" font-weight-bold">${formatR} </span>`;
                     }
                 },
                 {
-                    targets: 6, 
+                    targets: 6,
                     className: 'text-center',
                     responsivePriority: 3,
                     render: function(data, type, row) {

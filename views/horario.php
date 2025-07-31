@@ -96,7 +96,7 @@
                                             <th rowspan="2" class="th-blue">NOMBRES</th>
                                             <th rowspan="2" class="th-blue">Nº DE ORDEN</th>
                                             <th rowspan="2" class="th-blue">CLIENTE</th>
-                                            <th colspan="4" class="th-purple" style="white-space:nowrap" >SUELDO Y SOBRETIEMPO</th>
+                                            <th colspan="4" class="th-purple" style="white-space:nowrap">SUELDO Y SOBRETIEMPO</th>
                                             <th colspan="5" class="th-red">PREVISIONES</th>
                                             <th colspan="3" class="th-green">GENERAL</th>
                                             <!-- <th rowspan="2" class="th-green">GASTO EN OBRA</th> -->
@@ -1451,7 +1451,7 @@
         //     } catch (error) {
         //         console.error('Error al obtener las órdenes activas:', error);
         //         return map
-                
+
         //     }
         // };
 
@@ -1981,12 +1981,8 @@
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `<input
-                        style="width:5rem"
-                        autocomplete="off"
-                        spellcheck="false"
-                        type="text"
-                        oninput="validarNumber(this,/[^0-9.]/g)"
+                            return `<input style="width:5rem" autocomplete="off"
+                        spellcheck="false" type="text" oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
                         maxlength="5"
@@ -2047,7 +2043,7 @@
                         return data;
                     }
                 },
-                { 
+                {
                     targets: 8,
                     className: "text-center text-nowrap",
                     render: function(data, type, row, meta) {
@@ -2191,26 +2187,20 @@
             createdRow: function(row, data, dataIndex) {
                 const $row = $(row);
                 const idEmpleado = data._id_person_res || null; // ← aquí está el ID que pasaste
-
                 // Aplicar autocompletado al campo de empleado
                 const $inputEmpleado = $row.find(".empleado");
                 aplicarAutocomplete($inputEmpleado, datos_em, empleadosMap, idEmpleado, true);
-
                 const idOrden = data._id_orden || null;
                 // Aplicar autocompletado al campo de obra
                 const $inputObra = $row.find(".obra");
-                // console.log('selectedItemOrden', idOrden);
-                // console.log('ordenesArray', items_orden);
                 aplicarAutocomplete($inputObra, ordenesArray, ordenesMap, idOrden);
             }
-
         });
 
         $('#tblPersonH').on('change', '.cbo', function() {
             const valorSel = $(this).val();
             const textoSel = $(this).find('option:selected').text(); // <-- obtiene el texto visible
             const fila = $(this).closest('tr');
-
             if (valorSel !== '0') {
                 fila.css('background-color', '#fffbe1');
                 // Limpiar estilos heredados (si los habías puesto antes como 'inherit')
@@ -2371,7 +2361,6 @@
         });
 
         let lastSelectedIndexE = null;
-
         $('.select-all').on('change', function() {
             const rolSeleccionado = $(this).val();
             const checked = $(this).is(':checked');
@@ -2389,14 +2378,13 @@
         });
 
         $('a[data-toggle="pill"]').on('shown.bs.tab', function(e) {
-            let target = $(e.target).attr("href"); // Por ejemplo: #custom-tabs-orden
+            let target = $(e.target).attr("href");
             // Ajustar DataTable de la pestaña activa
             if (target === '#custom-tabs-dia') {
                 tablaActiva = tabla;
                 tabla.searchPanes.resizePanes();
                 $('.dtsp-titleRow').remove();
             } else if (target === '#custom-tabs-orden') {
-                // tblGastos.columns.adjust().draw();
                 tablaActiva = tblGastos;
                 tblGastos.searchPanes.resizePanes();
                 $('.dtsp-titleRow').remove();
@@ -2413,7 +2401,6 @@
             // Calcula el total
             let total_horas = hn + hs + h100;
             $row.find('.totalh').text(total_horas);
-
         });
 
         $('#tblPersonH').on('input keydown', '.hn, .hs, .h100', function() {
@@ -2426,7 +2413,6 @@
             // Calcula el total
             let total_horas = hn + hs + h100;
             $row.find('.totalh').text(total_horas);
-
         });
 
         $("#addRow").on("click", function() {
@@ -2434,7 +2420,6 @@
             let selectedData = tblEmpleadoH.rows({
                 selected: true
             }).data().toArray();
-
             const filas = [];
             // console.log('id_orden_horario', id_orden_horario)
             // console.log(ordenesMap)
@@ -2460,7 +2445,6 @@
             $('#chkAll').prop('checked', false);
         });
 
-
         function aplicarAutocomplete($input, sourceData, dataMap, idSeleccionado = null, search = false) {
             $input.autocomplete({
                 source: sourceData,
@@ -2473,9 +2457,8 @@
                 let selectedItem;
                 if (search) {
                     selectedItem = dataMap.get(idSeleccionado);
-                    console.log
                 } else {
-                    selectedItem = idSeleccionado
+                    selectedItem = idSeleccionado;
                 }
                 $input.val(selectedItem.label);
                 $input.autocomplete("instance")._trigger("select", null, {
@@ -2525,12 +2508,10 @@
         });
 
         $('#eliRow').on('click', function() {
-            // confirmarEliminar('esta(s)', 'filas', function(res) {
-            //     if (res) {
             let selectedRows = tblPerson.rows({
                 selected: true
             });
-            selectedRows.remove().draw(false); // Elimina y redibuja la tabla sin reiniciar la paginación
+            selectedRows.remove().draw(false);
         });
 
         tblPerson.on('draw', function() {
@@ -2568,7 +2549,6 @@
                 tblPerson.rows().select();
             } else {
                 tblPerson.rows().deselect();
-
             }
         });
 
@@ -2598,7 +2578,7 @@
         let id_orden_horario = 0;
 
         cargarAutocompletado(function(items) {
-            ordenesArray =items
+            ordenesArray = items
             ordenesMap = new Map(items.map(item => [item.cod, item]));
             $(nro_ordenHorario).autocomplete({
                 source: items,
@@ -2636,10 +2616,8 @@
             const selectedRows = tblEmpleadoH.rows({
                 selected: true
             }).count();
-
             // Solo marcar el checkbox "chkAll" si TODAS las filas (no solo las filtradas) están seleccionadas
             $('#chkAll').prop('checked', totalRows > 0 && selectedRows === totalRows);
-
             // Actualiza el contador en el span (puedes decidir si quieres que este cuente todas o solo las filtradas)
             $('#selected-person').text(selectedRows);
         });
@@ -2657,8 +2635,6 @@
 
         let scrollPos = 0;
         let scrollPositionTable = 0;
-
-
 
         btnReturn.addEventListener('click', () => showHideFormSection('none', 'block', tblPerson, scrollPos));
 
@@ -2721,7 +2697,7 @@
             inputId.value = id_horario_editar || '';
             const idEmpleado = row["id_empleado"] || null;
             const idOrden = row["id_orden"] || null;
-            const fecha_horario = row["fecha_val"] || null;  
+            const fecha_horario = row["fecha_val"] || null;
             fecha_edit.value = fecha_horario || '';
             tblHorarioE.ajax.reload(null, false);
             aplicarAutocomplete($('#empleado_edit'), datos_em, empleadosMap, idEmpleado, true);
@@ -2737,15 +2713,15 @@
             const id_obra = $('#orden_edit').attr('data-id') || null;
             $(rows).each(function() {
                 const $row = $(this),
-                hn = parseFloat($row.find('.hn').val()) || null,
-                hs = parseFloat($row.find('.hs').val()) || null,
-                he = parseFloat($row.find('.h100').val()) || null,
-                material = parseFloat($row.find('.material').val()) || null,
-                trans = parseFloat($row.find('.trans').val()) || null,
-                ali = parseFloat($row.find('.ali').val()) || null,
-                hosp = parseFloat($row.find('.hosp').val()) || null,
-                guard = parseFloat($row.find('.guard').val()) || null,
-                agua = parseFloat($row.find('.agua').val()) || null;
+                    hn = parseFloat($row.find('.hn').val()) || null,
+                    hs = parseFloat($row.find('.hs').val()) || null,
+                    he = parseFloat($row.find('.h100').val()) || null,
+                    material = parseFloat($row.find('.material').val()) || null,
+                    trans = parseFloat($row.find('.trans').val()) || null,
+                    ali = parseFloat($row.find('.ali').val()) || null,
+                    hosp = parseFloat($row.find('.hosp').val()) || null,
+                    guard = parseFloat($row.find('.guard').val()) || null,
+                    agua = parseFloat($row.find('.agua').val()) || null;
 
                 datos.push({
                     id_horario: id_horario_editar,
@@ -2812,7 +2788,6 @@
             const cancelar = document.getElementById('Cancelar');
             let selectedItem = ordenesArray.find(item => item.cod === id_orden);
             if (fab) {
-                // isTrasFab.disabled = true;
                 if (selectedItem) {
                     // Asignamos el valor al input de autocompletado
                     $(nro_ordenFab).val(selectedItem.label);
