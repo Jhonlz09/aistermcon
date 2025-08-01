@@ -89,7 +89,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
 <!-- Modal -->
 <div class="modal fade" id="modalI">
-    <div class="modal-dialog modal-xl ">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fa-solid fa-layer-plus"></i><span> Nuevo Producto</span></h4>
@@ -99,136 +99,172 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             </div>
             <form id="formNuevo" autocomplete="off" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div class="modal-body scroll-modal" style="padding-block:1rem .5rem;">
-                    <input type="hidden" id="id" value="">
-                    <div class="row" style="align-items:flex-start">
-                        <div class="col-sm-12">
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <div class="input-data">
-                                        <input autocomplete="off" id="codigo" name="codigo" class="input-nuevo" type="text" required>
-                                        <label class="label"><i class="fa-solid fa-barcode"></i> Código</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-9">
-                                    <div class="input-data">
-                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
-                                        <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col-sm-6" id="divStockIni">
-                                    <div class="input-data">
-                                        <?php echo  $id_user ? '' : '<span class="input-group-text" style="position:absolute;top:56%;right:12px"><i class="fas fa-lock"></i></span>'; ?>
-                                        <input autocomplete="off" id="stock_ini" name="stock_ini" class="input-nuevo" type="text" <?php echo  $id_user ? '' : 'readonly'; ?> onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)">
-                                        <label class="label"><i class="fas fa-boxes-stacked"></i> Cantidad Inicial</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-6 col">
-                                    <div class="input-data s1">
-                                        <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
-                                        <label class="label"><i class="fas fa-cubes"></i> Cantidad</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class=" input-data" style="margin-bottom:26px">
-                                        <input type="text" id="stock_min" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)" required>
-                                        <label style="font-size:21px" id="min" class="label"><i class="fas fa-box"></i> Cantidad Min.</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="input-data" style="margin-bottom:26px">
-                                        <input type="text" id="stock_mal" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)">
-                                        <label class="label"><i class="fas fa-hammer-crash"></i> Dañado</label>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label id="lblC" class="mb-0 combo"><i class="fa-solid fa-tags"></i> Categoría</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select id="cboCategoria" class="cbo modalB form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                        </select>
-                                        <div id="Categoria" class="invalid-feedback">*Campo obligatorio</div>
-                                    </div>
-                                    <div class="span-btn cat" style="padding-right:.5rem;">
-                                        <span class="new-span badge bg-gradient-dark" data-icon="fa-tags" data-value="Categoria" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                        <?php if ($_SESSION["editar3"]) : ?>
-                                            <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-tags" data-value="Categoria" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
-                                        <?php endif; ?>
-                                        <?php if ($_SESSION["eliminar3"]) : ?>
-                                            <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Categoria" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label id="lblU" class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select name="cboUnidad" id="cboUnidad" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                        </select>
-                                        <div id="Unidad" class="invalid-feedback">*Campo obligatorio</div>
-                                    </div>
-                                    <div class="span-btn u" style="padding-right:.5rem">
-                                        <span class="new-span badge bg-gradient-dark" data-icon="fa-ruler" data-value="Unidad" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                        <?php if ($_SESSION["editar3"]) : ?>
-                                            <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-ruler" data-value="Unidad" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
-                                        <?php endif; ?>
-                                        <?php if ($_SESSION["eliminar3"]) : ?>
-                                            <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Unidad" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="row flex-column-reverse flex-md-row">
-                                <div class="col-md-6 form-group">
-                                    <label class="combo" style="font-size: 1.15rem;"><i class="fas fa-image"></i> Imagen</label>
-                                    <input type="file" name="fileImg" id="fileImg" class="form-control" accept=".png, .jpg, .jpeg, .webp">
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group mb-4">
-                                        <label id="lblP" class="mb-0 combo"><i class="fa-solid fa-route"></i> Ubicación</label>
-                                        <div class="row">
-                                            <div class="col">
-                                                <select name="cboUbicacion" id="cboUbicacion" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                                </select>
-                                                <div id="Ubicacion" class="invalid-feedback">*Campo obligatorio</div>
+                    <ul class="nav nav-tabs" id="tabInventario" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="detalles-tab" data-toggle="pill" href="#detalles" role="tab" aria-selected="true">DETALLES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="medidas-tab" data-toggle="pill" href="#medidas" role="tab" aria-selected="false">MEDIDAS</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="tabInventarioContent">
+                        <div class="tab-pane fade show active" id="detalles" role="tabpanel">
+                            <input type="hidden" id="id" value="">
+                            <div class="row" style="align-items:flex-start">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <div class="input-data">
+                                                <input autocomplete="off" id="codigo" name="codigo" class="input-nuevo" type="text" required>
+                                                <label class="label"><i class="fa-solid fa-barcode"></i> Código</label>
+                                                <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
-                                            <div class="span-btn p" style="padding-right:.5rem;">
-                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal'><i class="fa-solid fa-plus"></i></span>
-                                                <?php if ($_SESSION["editar3"]) : ?>
-                                                    <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
-                                                <?php endif; ?>
-                                                <?php if ($_SESSION["eliminar3"]) : ?>
-                                                    <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Ubicacion" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
-                                                <?php endif; ?>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <div class="input-data">
+                                                <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                                <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
+                                                <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-sm-6" id="divStockIni">
+                                            <div class="input-data">
+                                                <?php echo  $id_user ? '' : '<span class="input-group-text" style="position:absolute;top:56%;right:12px"><i class="fas fa-lock"></i></span>'; ?>
+                                                <input autocomplete="off" id="stock_ini" name="stock_ini" class="input-nuevo" type="text" <?php echo  $id_user ? '' : 'readonly'; ?> onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)">
+                                                <label class="label"><i class="fas fa-boxes-stacked"></i> Cantidad Inicial</label>
+                                                <div class="invalid-feedback">*Campo obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xxl-6 col">
+                                            <div class="input-data s1">
+                                                <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
+                                                <label class="label"><i class="fas fa-cubes"></i> Cantidad</label>
+                                                <div class="invalid-feedback">*Campo obligatorio.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class=" input-data" style="margin-bottom:26px">
+                                                <input type="text" id="stock_min" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)" required>
+                                                <label style="font-size:21px" id="min" class="label"><i class="fas fa-box"></i> Cantidad Min.</label>
+                                                <div class="invalid-feedback">*Campo obligatorio.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="input-data" style="margin-bottom:26px">
+                                                <input type="text" id="stock_mal" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)">
+                                                <label class="label"><i class="fas fa-hammer-crash"></i> Dañado</label>
+                                                <div class="invalid-feedback">*Campo obligatorio.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label id="lblC" class="mb-0 combo"><i class="fa-solid fa-tags"></i> Categoría</label>
+                                        <div class="row">
+                                            <div class="col">
+                                                <select id="cboCategoria" class="cbo modalB form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                </select>
+                                                <div id="Categoria" class="invalid-feedback">*Campo obligatorio</div>
+                                            </div>
+                                            <div class="span-btn cat" style="padding-right:.5rem;">
+                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-tags" data-value="Categoria" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
+                                                <?php if ($_SESSION["editar3"]) : ?>
+                                                    <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-tags" data-value="Categoria" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
+                                                <?php endif; ?>
+                                                <?php if ($_SESSION["eliminar3"]) : ?>
+                                                    <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Categoria" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label id="lblU" class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
+                                        <div class="row">
+                                            <div class="col">
+                                                <select name="cboUnidad" id="cboUnidad" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                </select>
+                                                <div id="Unidad" class="invalid-feedback">*Campo obligatorio</div>
+                                            </div>
+                                            <div class="span-btn u" style="padding-right:.5rem">
+                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-ruler" data-value="Unidad" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
+                                                <?php if ($_SESSION["editar3"]) : ?>
+                                                    <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-ruler" data-value="Unidad" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
+                                                <?php endif; ?>
+                                                <?php if ($_SESSION["eliminar3"]) : ?>
+                                                    <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Unidad" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
 
                             </div>
-                            <!-- </div> -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row flex-column-reverse flex-md-row">
+                                        <div class="col-md-6 form-group">
+                                            <label class="combo" style="font-size: 1.15rem;"><i class="fas fa-image"></i> Imagen</label>
+                                            <input type="file" name="fileImg" id="fileImg" class="form-control" accept=".png, .jpg, .jpeg, .webp">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                <label id="lblP" class="mb-0 combo"><i class="fa-solid fa-route"></i> Ubicación</label>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <select name="cboUbicacion" id="cboUbicacion" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                        </select>
+                                                        <div id="Ubicacion" class="invalid-feedback">*Campo obligatorio</div>
+                                                    </div>
+                                                    <div class="span-btn p" style="padding-right:.5rem;">
+                                                        <span class="new-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal'><i class="fa-solid fa-plus"></i></span>
+                                                        <?php if ($_SESSION["editar3"]) : ?>
+                                                            <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
+                                                        <?php endif; ?>
+                                                        <?php if ($_SESSION["eliminar3"]) : ?>
+                                                            <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Ubicacion" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!-- </div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="medidas" role="tabpanel">
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Alto (m)</label>
+                                        <input type="number" step="0.01" min="0" id="medidaAlto" class="form-control" placeholder="Alto">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Ancho (m)</label>
+                                        <input type="number" step="0.01" min="0" id="medidaAncho" class="form-control" placeholder="Ancho">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Cantidad</label>
+                                        <input type="number" min="1" id="medidaCantidad" class="form-control" value="1" placeholder="Cantidad">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="btnAgregarMedida" class="btn btn-info mb-2"><i class="fa fa-plus"></i> Agregar Medida</button>
+                            <ul id="listaMedidasProducto" class="list-group mb-2"></ul>
                         </div>
                     </div>
                 </div>
@@ -364,6 +400,29 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
     </div>
 </div>
 
+<!-- Modal Medidas -->
+<div class="modal fade" id="modalMedidas" tabindex="-1" aria-labelledby="modalMedidasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-info">
+                <h5 class="modal-title" id="modalMedidasLabel"><i class="fas fa-ruler-combined"></i> Medidas del Producto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul id="listaMedidas" class="list-group">
+                    <!-- Aquí se cargan las medidas -->
+                </ul>
+                <div id="sinMedidas" class="text-center text-muted mt-2" style="display:none;">
+                    No hay medidas registradas para este producto.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fin Modal Medidas -->
+
 
 
 <script>
@@ -426,7 +485,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     let resultado = row.stock - row.stock_mal;
                     let stockMin = row.stock_min;
                     let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
-
                     let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                     return `<span style='font-size:1.3rem;text-wrap:nowrap' class="${comparacion} font-weight-bold">${formatR} </span>`;
                 }
@@ -591,6 +649,49 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         modalImage.src = imgSrc;
     }
 
+    // ...existing code...
+
+    function openMedidasModal(element) {
+        const idProducto = element.getAttribute('data-id');
+        const lista = document.getElementById('listaMedidas');
+        const sinMedidas = document.getElementById('sinMedidas');
+        lista.innerHTML = '';
+        sinMedidas.style.display = 'none';
+
+        // Llamada AJAX para obtener las medidas
+        fetch('controllers/inventario.controlador.php', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    accion: 20,
+                    id_producto: idProducto
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    data.forEach(medida => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        li.innerHTML = `
+                    <span>
+                        <i class="fas fa-ruler-vertical"></i> Alto: <b>${medida.alto}</b> &nbsp; 
+                        <i class="fas fa-ruler-horizontal"></i> Ancho: <b>${medida.ancho}</b>
+                    </span>
+                `;
+                        lista.appendChild(li);
+                    });
+                } else {
+                    sinMedidas.style.display = 'block';
+                }
+                $('#modalMedidas').modal('show');
+            })
+            .catch(() => {
+                lista.innerHTML = '';
+                sinMedidas.style.display = 'block';
+                $('#modalMedidas').modal('show');
+            });
+    }
+
 
     $(document).ready(function() {
         let anio = year;
@@ -609,6 +710,57 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 tabla.ajax.reload();
             }
         });
+
+        let medidasProducto = [];
+
+        document.getElementById('btnAgregarMedida').addEventListener('click', function() {
+            const alto = parseFloat(document.getElementById('medidaAlto').value);
+            const ancho = parseFloat(document.getElementById('medidaAncho').value);
+            const cantidad = parseInt(document.getElementById('medidaCantidad').value);
+
+            if (isNaN(alto) || isNaN(ancho) || isNaN(cantidad) || alto <= 0 || ancho <= 0 || cantidad <= 0) {
+                mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Completa todos los campos de la medida correctamente', 3000);
+                return;
+            }
+
+            const area_m2_total = alto * ancho * cantidad;
+
+            medidasProducto.push({
+                alto,
+                ancho,
+                cantidad_und: cantidad,
+                area_m2_total
+            });
+
+            actualizarListaMedidas();
+            document.getElementById('medidaAlto').value = '';
+            document.getElementById('medidaAncho').value = '';
+            document.getElementById('medidaCantidad').value = '1';
+        });
+
+        function actualizarListaMedidas() {
+            const lista = document.getElementById('listaMedidasProducto');
+            lista.innerHTML = '';
+            medidasProducto.forEach((m, idx) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `
+            <span>
+                <i class="fas fa-ruler-vertical"></i> Alto: <b>${m.alto}</b> &nbsp; 
+                <i class="fas fa-ruler-horizontal"></i> Ancho: <b>${m.ancho}</b> &nbsp;
+                <i class="fas fa-cubes"></i> UND: <b>${m.cantidad_und}</b> &nbsp;
+                <i class="fas fa-square"></i> Área Total: <b>${m.area_m2_total.toFixed(2)} m²</b>
+            </span>
+            <button type="button" class="btn btn-danger btn-sm" onclick="eliminarMedida(${idx})"><i class="fa fa-trash"></i></button>
+        `;
+                lista.appendChild(li);
+            });
+        }
+
+        function eliminarMedida(idx) {
+            medidasProducto.splice(idx, 1);
+            actualizarListaMedidas();
+        }
 
 
         if (!$.fn.DataTable.isDataTable('#tblInventario')) {
@@ -962,8 +1114,12 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             data.append('img', imgActual);
             data.append('oldCod', oldCod);
             data.append('accion', accion_inv);
+            data.append('medidas', JSON.stringify(medidasProducto));
+
             confirmarAccion(data, 'inventario', tabla, modalE, function(res) {
                 cargarAutocompletado();
+                medidasProducto = [];
+                actualizarListaMedidas();
             });
         });
 

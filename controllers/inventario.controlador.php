@@ -4,7 +4,7 @@ class ControladorInventario
 {
     public $id;
     public $codigo, $oldCod, $id_orden, $anio;
-    public $nombre, $unidad, $categoria, $percha, $stock, $stock_ini,$stock_min, $stock_mal, $img;
+    public $nombre, $unidad, $categoria, $percha, $stock, $stock_ini, $stock_min, $stock_mal, $img;
 
     static public function listarInventario()
     {
@@ -68,6 +68,13 @@ class ControladorInventario
             }
         }
         $data = ModeloInventario::mdlAgregarInventario($this->codigo, $this->nombre, $this->stock, $this->stock_min, $this->stock_mal, $this->categoria, $this->unidad, $this->percha, $img);
+        if (isset($_POST['medidas'])) {
+            $medidas = json_decode($_POST['medidas'], true);
+            if (is_array($medidas) && !empty($medidas)) {
+                ModeloInventario::mdlGuardarMedidasProducto($data['id_producto'], $medidas);
+            }
+        }
+
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -149,10 +156,15 @@ class ControladorInventario
 
         // Llamar a la función de modelo para editar el inventario
         $data = ModeloInventario::mdlEditarInventario($this->id, $this->codigo, $this->nombre, $this->stock, $this->stock_min, $this->stock_mal, $this->categoria, $this->unidad, $this->percha, $img, $this->stock_ini);
+
+        if (isset($_POST['medidas'])) {
+            $medidas = json_decode($_POST['medidas'], true);
+            if (is_array($medidas)) {
+                ModeloInventario::mdlGuardarMedidasProducto($this->id, $medidas, true);
+            }
+        }
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-
-
 
     public function editarInventarioFab()
     {
@@ -193,6 +205,12 @@ class ControladorInventario
     public function consultarStockIniAnio()
     {
         $data = ModeloInventario::mdlConsultarStockIniAnio($this->id, $this->anio);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function obtenerMedidasProducto()
+    {
+        $data = ModeloInventario::mdlObtenerMedidasProducto($this->id);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
@@ -257,9 +275,12 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->id = $_POST["id_producto"];
         $data->anio = $_POST["anio"];
         $data->consultarHistorialProducto();
-    }else if ($_POST["accion"] == 13) {
+    } else if ($_POST["accion"] == 13) {
         $data->id = $_POST["id_producto"];
         $data->anio = $_POST["anio"];
         $data->consultarStockIniAnio();
+    } else if ($_POST["accion"] == 20) {
+        $data->id = $_POST["id_producto"];
+        $data->obtenerMedidasProducto();
     }
 }
