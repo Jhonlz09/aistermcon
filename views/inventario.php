@@ -98,8 +98,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 </button>
             </div>
             <form id="formNuevo" autocomplete="off" enctype="multipart/form-data" class="needs-validation" novalidate>
-                <div class="modal-body scroll-modal" style="padding-block:1rem .5rem;">
-                    <ul class="nav nav-tabs" id="tabInventario" role="tablist">
+                <div class="modal-body scroll-modal" style="padding-block:.5rem .25rem;">
+                    <ul class="nav nav-tabs" id="tabInventario" role="tablist" style="margin-bottom:.5rem;">
                         <li class="nav-item">
                             <a class="nav-link active" id="detalles-tab" data-toggle="pill" href="#detalles" role="tab" aria-selected="true">DETALLES</a>
                         </li>
@@ -244,26 +244,30 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                         </div>
                         <div class="tab-pane fade" id="medidas" role="tabpanel">
                             <div class="row mt-3">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>Alto (m)</label>
-                                        <input type="number" step="0.01" min="0" id="medidaAlto" class="form-control" placeholder="Alto">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>Ancho (m)</label>
-                                        <input type="number" step="0.01" min="0" id="medidaAncho" class="form-control" placeholder="Ancho">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Cantidad</label>
                                         <input type="number" min="1" id="medidaCantidad" class="form-control" value="1" placeholder="Cantidad">
                                     </div>
                                 </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Alto (m)</label>
+                                        <input type="number" step="0.01" min="0" id="medidaAlto" class="form-control" placeholder="Alto">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Ancho (m)</label>
+                                        <input type="number" step="0.01" min="0" id="medidaAncho" class="form-control" placeholder="Ancho">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <button type="button" id="btnAgregarMedida" class="btn btn-info mb-2"><i class="fa fa-plus"></i> Agregar Medida</button>
+                                    </div>
+                                </div>
                             </div>
-                            <button type="button" id="btnAgregarMedida" class="btn btn-info mb-2"><i class="fa fa-plus"></i> Agregar Medida</button>
                             <ul id="listaMedidasProducto" class="list-group mb-2"></ul>
                         </div>
                     </div>

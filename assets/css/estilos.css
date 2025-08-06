@@ -1248,6 +1248,13 @@ svg {
     fill: currentColor
 }
 
+#medidas-tab.nav-link.active, #detalles-tab.nav-link.active{
+    color: var(--label-new);
+    background-color: #8f8f8f33;
+    border-bottom: 2px solid var(--label-new);
+    border-left: none;
+}
+
 #svg {
     height: 2rem;
     vertical-align: text-top;
