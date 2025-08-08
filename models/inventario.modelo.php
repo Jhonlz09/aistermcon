@@ -8,48 +8,24 @@ class ModeloInventario
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo, i.descripcion, 
-            c.nombre as categoria,u.nombre as unidad, p.nombre as percha, i.stock_mal, i.stock,
-            '' as acciones, i.stock_min,c.id as categoria_id,u.id as unidad_id,p.id as percha_id,
-            i.img, si.stock_ini
-                FROM tblinventario i 
-                JOIN tblcategoria c on c.id= i.id_categoria
-                JOIN tblunidad u on u.id= i.id_unidad
-                JOIN tblubicacion p on p.id= i.id_percha
-                LEFT JOIN tblstock_inicial si on si.id_producto = i.id
-                WHERE i.estado=true
-                ORDER BY id ASC");
+                c.nombre as categoria, u.nombre as unidad, p.nombre as percha, 
+                i.stock_mal, i.stock, '' as acciones, i.stock_min, 
+                c.id as categoria_id, u.id as unidad_id, p.id as percha_id,
+                i.img, si.stock_ini,
+                (
+                    SELECT COUNT(*) FROM tblmedidas_producto m WHERE m.id_producto = i.id
+                ) AS cantidad_medidas
+            FROM tblinventario i 
+            JOIN tblcategoria c on c.id= i.id_categoria
+            JOIN tblunidad u on u.id= i.id_unidad
+            JOIN tblubicacion p on p.id= i.id_percha
+            LEFT JOIN tblstock_inicial si on si.id_producto = i.id
+            WHERE i.estado=true
+            ORDER BY i.id ASC");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
-        }
-    }
-
-    public static function mdlGuardarMedidasProducto($id_producto, $medidas, $editar = false)
-    {
-        try {
-            $conn = Conexion::ConexionDB();
-            if ($editar) {
-                // Elimina las medidas anteriores
-                $conn->prepare("DELETE FROM tblmedidas_producto WHERE id_producto = :id_producto")
-                    ->execute([':id_producto' => $id_producto]);
-            }
-            foreach ($medidas as $m) {
-                $alto = $m['alto'];
-                $ancho = $m['ancho'];
-                $cantidad_und = $m['cantidad_und'];
-                $area_m2_total = $m['area_m2_total'];
-                $stmt = $conn->prepare("INSERT INTO tblmedidas_producto (id_producto, alto, ancho, cantidad_und, area_m2_total) VALUES (:id_producto, :alto, :ancho, :cantidad_und, :area_m2_total)");
-                $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
-                $stmt->bindParam(':alto', $alto);
-                $stmt->bindParam(':ancho', $ancho);
-                $stmt->bindParam(':cantidad_und', $cantidad_und, PDO::PARAM_INT);
-                $stmt->bindParam(':area_m2_total', $area_m2_total);
-                $stmt->execute();
-            }
-            return true;
-        } catch (PDOException $e) {
-            return false;
         }
     }
 
@@ -102,6 +78,74 @@ class ModeloInventario
             return $l->fetchAll();
         } catch (PDOException $e) {
             return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    public static function mdlObtenerMedidasProducto($id_producto)
+    {
+        try {
+            $e = Conexion::ConexionDB()->prepare("SELECT id, alto, ancho, cantidad, area_m2_total FROM tblmedidas_producto WHERE id_producto = :id_producto ORDER BY id ASC");
+            $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $e->execute();
+            return $e->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public static function mdlGuardarMedidasProducto($id_producto, $medidas, $editar = false)
+    {
+        try {
+            $conn = Conexion::ConexionDB();
+            if ($editar) {
+                $conn->prepare("DELETE FROM tblmedidas_producto WHERE id_producto = :id_producto")
+                    ->execute([':id_producto' => $id_producto]);
+            }
+            foreach ($medidas as $m) {
+                $alto = $m['alto'];
+                $ancho = $m['ancho'];
+                $cantidad = $m['cantidad'];
+                $area_m2_total = $m['area_m2_total'];
+                $stmt = $conn->prepare("INSERT INTO tblmedidas_producto (id_producto, alto, ancho, cantidad, area_m2_total) VALUES (:id_producto, :alto, :ancho, :cantidad, :area_m2_total)");
+                $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+                $stmt->bindParam(':alto', $alto);
+                $stmt->bindParam(':ancho', $ancho);
+                $stmt->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
+                $stmt->bindParam(':area_m2_total', $area_m2_total);
+                $stmt->execute();
+            }
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public static function mdlEditarMedidaProducto($id_medida, $alto, $ancho, $cantidad)
+    {
+        try {
+            $area_m2_total = $alto * $ancho * $cantidad;
+            $stmt = Conexion::ConexionDB()->prepare("UPDATE tblmedidas_producto SET alto=:alto, ancho=:ancho, cantidad=:cantidad, area_m2_total=:area_m2_total WHERE id=:id");
+            $stmt->bindParam(':id', $id_medida, PDO::PARAM_INT);
+            $stmt->bindParam(':alto', $alto);
+            $stmt->bindParam(':ancho', $ancho);
+            $stmt->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
+            $stmt->bindParam(':area_m2_total', $area_m2_total);
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public static function mdlEliminarMedidaProducto($id_medida)
+    {
+        try {
+            $stmt = Conexion::ConexionDB()->prepare("DELETE FROM tblmedidas_producto WHERE id=:id");
+            $stmt->bindParam(':id', $id_medida, PDO::PARAM_INT);
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            return false;
         }
     }
 
@@ -487,18 +531,6 @@ class ModeloInventario
                 'status' => 'danger',
                 'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
             );
-        }
-    }
-
-    public static function mdlObtenerMedidasProducto($id_producto)
-    {
-        try {
-            $e = Conexion::ConexionDB()->prepare("SELECT alto, ancho FROM tblmedidas_producto WHERE id_producto = :id_producto ORDER BY id ASC");
-            $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
-            $e->execute();
-            return $e->fetchAll();
-        } catch (PDOException $e) {
-            return [];
         }
     }
 }

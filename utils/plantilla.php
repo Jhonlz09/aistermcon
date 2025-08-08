@@ -2349,7 +2349,6 @@
                             datosPrincipales.push(filaPrincipal);
                         });
                         if (hasError) return;
-
                         // console.log('DATOS MODIFICADOS ENVIADOS', datosPrincipales)
                         formData.append('datos', JSON.stringify(datosPrincipales));
                         formData.append('id_boleta', id_boleta_fab);

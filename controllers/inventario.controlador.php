@@ -279,8 +279,21 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->id = $_POST["id_producto"];
         $data->anio = $_POST["anio"];
         $data->consultarStockIniAnio();
-    } else if ($_POST["accion"] == 20) {
+    }  else if ($_POST["accion"] == 21) { // Consultar medidas
         $data->id = $_POST["id_producto"];
-        $data->obtenerMedidasProducto();
+        echo json_encode(ModeloInventario::mdlObtenerMedidasProducto($data->id), JSON_UNESCAPED_UNICODE);
+    } else if ($_POST["accion"] == 22) { // Guardar medida
+        $id_producto = $_POST["id_producto"];
+        $medidas = json_decode($_POST["medidas"], true);
+        echo json_encode(ModeloInventario::mdlGuardarMedidasProducto($id_producto, $medidas), JSON_UNESCAPED_UNICODE);
+    } else if ($_POST["accion"] == 23) { // Editar medida
+        $id_medida = $_POST["id_medida"];
+        $alto = $_POST["alto"];
+        $ancho = $_POST["ancho"];
+        $cantidad_und = $_POST["cantidad_und"];
+        echo json_encode(ModeloInventario::mdlEditarMedidaProducto($id_medida, $alto, $ancho, $cantidad_und), JSON_UNESCAPED_UNICODE);
+    } else if ($_POST["accion"] == 24) { // Eliminar medida
+        $id_medida = $_POST["id_medida"];
+        echo json_encode(ModeloInventario::mdlEliminarMedidaProducto($id_medida), JSON_UNESCAPED_UNICODE);
     }
 }

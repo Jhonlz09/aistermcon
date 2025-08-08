@@ -264,7 +264,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <button type="button" id="btnAgregarMedida" class="btn btn-info mb-2"><i class="fa fa-plus"></i> Agregar Medida</button>
+                                        <button type="button" id="btnAgregarMedida" class="btn bg-gradient-green"><i class="fas fa fa-plus"></i><span class="button-text"> </span>Agregar Medida</button>
+
                                     </div>
                                 </div>
                             </div>
@@ -273,8 +274,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
         </div>
@@ -282,8 +283,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
     </div>
     <!-- /.modal-dialog -->
 </div>
-
-
 <!-- Modal -->
 <div class="modal fade" id="modalH">
     <div class="modal-dialog modal-xl modal-dialog-scrollable ">
@@ -303,29 +302,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 </button>
             </div>
             <div class="modal-body " style="padding-block:0rem .5rem;">
-                <!-- <div class="row mb-3">
-                    <div class="col-md-9">
-                        <label for="descripcionProducto" class="font-weight-bold">Descripción:</label>
-                        <span id="descripcionProducto">Producto genérico</span>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="stockInicial" class="font-weight-bold">Stock Inicial:</label>
-                        <span id="stockInicial">0</span>
-                    </div>
-                </div> -->
 
-                <!-- <div class="row mb-3">
-                    <div class="col-12 d-flex justify-content-between">
-                        <div>
-                            <label for="stockInicial" class="font-weight-bold">Stock Inicial:</label>
-                            <span id="stockInicial"></span>
-                        </div>
-                        <div>
-                            <label for="descripcionProducto" class="font-weight-bold">Descripción:</label>
-                            <span id="descripcionProducto"></span>
-                        </div>
-                    </div>
-                </div> -->
                 <div class="row sticky-content">
                     <div class="col-12 d-flex flex-column flex-md-row justify-content-between">
                         <div class="mb-2 mb-md-0">
@@ -403,24 +380,56 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         </div>
     </div>
 </div>
-
 <!-- Modal Medidas -->
 <div class="modal fade" id="modalMedidas" tabindex="-1" aria-labelledby="modalMedidasLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-gradient-info">
-                <h5 class="modal-title" id="modalMedidasLabel"><i class="fas fa-ruler-combined"></i> Medidas del Producto</h5>
+                <h5 class="modal-title" id="modalMedidasLabel"><i class="fas fa-ruler-combined"></i></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
+                <div class="row mt-3 pb-3">
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-cubes"></i></span>
+                            </div>
+                            <input style="border-bottom-width:1px;" type="number" min="1" id="modalMedidaCantidad" class="form-control" placeholder="Cantidad">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-arrows-up-down"></i></span>
+                            </div>
+                            <input style="border-bottom-width:1px;" type="number" step="0.01" min="0" id="modalMedidaAlto" class="form-control" placeholder="Alto (m)">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-arrows-left-right"></i></span>
+                            </div>
+                            <input style="border-bottom-width:1px;" type="number" step="0.01" min="0" id="modalMedidaAncho" class="form-control" placeholder="Ancho (m)">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="btnAgregarMedidaModal" class="btn bg-gradient-info w-100">
+                            <i class="fas fa-plus"></i> Agregar medida
+                        </button>
+                    </div>
+                </div>
                 <ul id="listaMedidas" class="list-group">
                     <!-- Aquí se cargan las medidas -->
                 </ul>
                 <div id="sinMedidas" class="text-center text-muted mt-2" style="display:none;">
                     No hay medidas registradas para este producto.
                 </div>
+
+
             </div>
         </div>
     </div>
@@ -468,7 +477,12 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 targets: 2,
                 responsivePriority: 1,
                 render: function(data, type, row) {
-                    return `<div>${data} <span class="badge badge-info right small" style="vertical-align:super;font-size:0.65em;cursor:pointer;" data-id="${row.id}" onclick="openMedidasModal(this)">6</span></div>`;
+                    let cantidad = row.cantidad_medidas;
+                    let span = '';
+                    if (cantidad && cantidad > 0) {
+                        span = `<span class="badge badge-info right" style="vertical-align:super;font-size:0.65em;cursor:pointer;" data-id="${row.id}" data-nombre="${row.descripcion}">${cantidad}</span>`;
+                    }
+                    return `<div>${data} ${span}</div>`;
                 }
             },
             {
@@ -653,48 +667,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         modalImage.src = imgSrc;
     }
 
-    // ...existing code...
-
-    function openMedidasModal(element) {
-        const idProducto = element.getAttribute('data-id');
-        const lista = document.getElementById('listaMedidas');
-        const sinMedidas = document.getElementById('sinMedidas');
-        lista.innerHTML = '';
-        sinMedidas.style.display = 'none';
-
-        // Llamada AJAX para obtener las medidas
-        fetch('controllers/inventario.controlador.php', {
-                method: 'POST',
-                body: new URLSearchParams({
-                    accion: 20,
-                    id_producto: idProducto
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    data.forEach(medida => {
-                        const li = document.createElement('li');
-                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                        li.innerHTML = `
-                    <span>
-                        <i class="fas fa-ruler-vertical"></i> Alto: <b>${medida.alto}</b> &nbsp; 
-                        <i class="fas fa-ruler-horizontal"></i> Ancho: <b>${medida.ancho}</b>
-                    </span>
-                `;
-                        lista.appendChild(li);
-                    });
-                } else {
-                    sinMedidas.style.display = 'block';
-                }
-                $('#modalMedidas').modal('show');
-            })
-            .catch(() => {
-                lista.innerHTML = '';
-                sinMedidas.style.display = 'block';
-                $('#modalMedidas').modal('show');
-            });
-    }
 
 
     $(document).ready(function() {
@@ -714,58 +686,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 tabla.ajax.reload();
             }
         });
-
-        let medidasProducto = [];
-
-        document.getElementById('btnAgregarMedida').addEventListener('click', function() {
-            const alto = parseFloat(document.getElementById('medidaAlto').value);
-            const ancho = parseFloat(document.getElementById('medidaAncho').value);
-            const cantidad = parseInt(document.getElementById('medidaCantidad').value);
-
-            if (isNaN(alto) || isNaN(ancho) || isNaN(cantidad) || alto <= 0 || ancho <= 0 || cantidad <= 0) {
-                mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Completa todos los campos de la medida correctamente', 3000);
-                return;
-            }
-
-            const area_m2_total = alto * ancho * cantidad;
-
-            medidasProducto.push({
-                alto,
-                ancho,
-                cantidad_und: cantidad,
-                area_m2_total
-            });
-
-            actualizarListaMedidas();
-            document.getElementById('medidaAlto').value = '';
-            document.getElementById('medidaAncho').value = '';
-            document.getElementById('medidaCantidad').value = '1';
-        });
-
-        function actualizarListaMedidas() {
-            const lista = document.getElementById('listaMedidasProducto');
-            lista.innerHTML = '';
-            medidasProducto.forEach((m, idx) => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.innerHTML = `
-            <span>
-                <i class="fas fa-ruler-vertical"></i> Alto: <b>${m.alto}</b> &nbsp; 
-                <i class="fas fa-ruler-horizontal"></i> Ancho: <b>${m.ancho}</b> &nbsp;
-                <i class="fas fa-cubes"></i> UND: <b>${m.cantidad_und}</b> &nbsp;
-                <i class="fas fa-square"></i> Área Total: <b>${m.area_m2_total.toFixed(2)} m²</b>
-            </span>
-            <button type="button" class="btn btn-danger btn-sm" onclick="eliminarMedida(${idx})"><i class="fa fa-trash"></i></button>
-        `;
-                lista.appendChild(li);
-            });
-        }
-
-        function eliminarMedida(idx) {
-            medidasProducto.splice(idx, 1);
-            actualizarListaMedidas();
-        }
-
 
         if (!$.fn.DataTable.isDataTable('#tblInventario')) {
             tabla = $("#tblInventario").DataTable({
@@ -901,7 +821,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
         setChange(cboAnio, anio);
 
-
         $(cboUnidad).select2({
             placeholder: 'SELECCIONE',
             width: '100%',
@@ -947,9 +866,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     const stockInicialElement = document.getElementById('stockInicial');
                     if (Array.isArray(data) && data.length > 0) {
                         const stock_ini_r = data[0].stock_ini || 0;
-
                         let r = stock_ini_r.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
                         stockInicialElement.textContent = r;
                     } else {
                         stockInicialElement.textContent = '0.00';
@@ -961,6 +878,182 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
         });
 
+        $(document).on('click', '#tblInventario tbody span.badge-info', function() {
+            const id_producto = $(this).data('id');
+            const nombre = $(this).data('nombre');
+            $('#modalMedidasLabel').html(`<i class="fas fa-ruler-combined"></i>  ${nombre}`);
+            $('#modalMedidas').modal('show');
+            cargarMedidasProducto(id_producto);
+            $('#modalMedidas').data('id_producto', id_producto);
+        });
+
+        var medidasProducto = []; // Array local para las medidas del producto
+
+        // Función para cargar medidas en el tab de medidas (cuando editas o creas un producto)
+        function cargarMedidasTab(id_producto) {
+            $.post('controllers/inventario.controlador.php', {
+                accion: 21,
+                id_producto
+            }, function(res) {
+                let data = [];
+                try {
+                    data = JSON.parse(res);
+                } catch {}
+                medidasProducto = Array.isArray(data) ? data : [];
+                actualizarListaMedidas();
+            });
+        }
+
+        function cargarMedidasProducto(id_producto) {
+            $.post('controllers/inventario.controlador.php', {
+                accion: 21,
+                id_producto
+            }, function(res) {
+                let data = [];
+                try {
+                    data = JSON.parse(res);
+                } catch {}
+                const lista = $('#listaMedidas');
+                lista.empty();
+                if (Array.isArray(data) && data.length > 0) {
+                    $('#sinMedidas').hide();
+                    data.forEach(m => {
+                        lista.append(`
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <b>Cantidad:</b> ${m.cantidad} | 
+                                <b>Alto:</b> ${m.alto}m | 
+                                <b>Ancho:</b> ${m.ancho}m | 
+                                <b>Área:</b> ${parseFloat(m.area_m2_total).toFixed(2)}m²
+                            </span>
+                            <button class="btn btn-danger btn-sm btnEliminarMedida" data-id="${m.id}"><i class="fa fa-trash"></i></button>
+                        </li>
+                    `);
+                    });
+                } else {
+                    $('#sinMedidas').show();
+                }
+            });
+        }
+
+        function actualizarListaMedidas() {
+            const lista = $('#listaMedidasProducto');
+            lista.empty();
+            if (medidasProducto.length > 0) {
+                medidasProducto.forEach((m) => {
+                    lista.append(`
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <b>Cantidad:</b> ${m.cantidad} | 
+                        <b>Alto:</b> ${m.alto}m | 
+                        <b>Ancho:</b> ${m.ancho}m | 
+                        <b>Área:</b> ${parseFloat(m.area_m2_total).toFixed(2)}m²
+                    </span>
+                    <button type="button" class="btn btn-danger btn-sm btnEliminarMedidaTab" data-id="${m.id}" title="Eliminar"><i class="fa fa-trash"></i></button>
+                </li>
+            `);
+                });
+            } else {
+                lista.append(`<li class="list-group-item text-center text-muted">No hay medidas registradas.</li>`);
+            }
+        }
+
+
+
+        $(document).on('click', '.btnEliminarMedidaTab', function() {
+            const id_medida = $(this).data('id');
+            confirmarEliminar('esta', 'medida', function(res) {
+                if (res) {
+                    $.post('controllers/inventario.controlador.php', {
+                        accion: 24,
+                        id_medida
+                    }, function() {
+                        const id_producto = $('#id').val();
+                        cargarMedidasTab(id_producto); // Recarga la lista desde BD
+                        accion_inv = 0;
+                        tabla.ajax.reload();
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.btnEliminarMedida', function() {
+            const id_medida = $(this).data('id');
+            confirmarEliminar('esta', 'medida', function(res) {
+                if (res) {
+                    $.post('controllers/inventario.controlador.php', {
+                        accion: 24,
+                        id_medida
+                    }, function() {
+                        const id_producto = $('#modalMedidas').data('id_producto');
+                        cargarMedidasProducto(id_producto);
+                        accion_inv = 0;
+                        tabla.ajax.reload();
+                    });
+                }
+            });
+        });
+
+        $('#btnAgregarMedidaModal').off('click').on('click', function() {
+            const id_producto = $('#modalMedidas').data('id_producto');
+            const cantidad = parseInt($('#modalMedidaCantidad').val()) || 0;
+            const alto = parseFloat($('#modalMedidaAlto').val()) || 0;
+            const ancho = parseFloat($('#modalMedidaAncho').val()) || 0;
+            if (cantidad > 0 && alto > 0 && ancho > 0) {
+                const area_m2_total = cantidad * alto * ancho;
+                const medidas = [{
+                    cantidad,
+                    alto,
+                    ancho,
+                    area_m2_total
+                }];
+                $.post('controllers/inventario.controlador.php', {
+                    accion: 22,
+                    id_producto,
+                    medidas: JSON.stringify(medidas)
+                }, function(res) {
+                    cargarMedidasProducto(id_producto);
+                    $('#modalMedidaCantidad').val('');
+                    $('#modalMedidaAlto').val('');
+                    $('#modalMedidaAncho').val('');
+                    accion_inv = 0;
+                    tabla.ajax.reload();
+                });
+            } else {
+                alert('Completa todos los campos correctamente.');
+            }
+        });
+
+        $('#btnAgregarMedida').on('click', function() {
+            const id_producto = $('#id').val(); // El id del producto actual
+            const cantidad = parseInt($('#medidaCantidad').val()) || 0;
+            const alto = parseFloat($('#medidaAlto').val()) || 0;
+            const ancho = parseFloat($('#medidaAncho').val()) || 0;
+            if (cantidad > 0 && alto > 0 && ancho > 0 && id_producto) {
+                const area_m2_total = cantidad * alto * ancho;
+                const medidas = [{
+                    cantidad,
+                    alto,
+                    ancho,
+                    area_m2_total
+                }];
+                $.post('controllers/inventario.controlador.php', {
+                    accion: 22,
+                    id_producto,
+                    medidas: JSON.stringify(medidas)
+                }, function(res) {
+                    cargarMedidasTab(id_producto); // Recarga la lista desde BD
+                    $('#medidaCantidad').val('1');
+                    $('#medidaAlto').val('');
+                    $('#medidaAncho').val('');
+                    accion_inv = 0;
+                    tabla.ajax.reload();
+                    // Recarga la tabla de inventario
+                });
+            } else {
+                alert('Completa todos los campos correctamente.');
+            }
+        });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === "Escape") {
@@ -1004,6 +1097,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     $(navbar).css('margin-right', '6px');
                 }
                 accion_inv = 1;
+                medidasProducto = [];
+                actualizarListaMedidas();
                 cambiarModal(span, ' Nuevo Producto', icon, 'fa-layer-plus', elements, 'bg-gradient-blue', 'bg-gradient-green', modalE, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
@@ -1018,8 +1113,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             });
         }
 
-
-
         $('#tblInventario tbody').on('click', '.btnEditar', function() {
             if (scroll) {
                 const navbar = document.getElementById('navbar-fix');
@@ -1027,6 +1120,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             }
             let row = obtenerFila(this, tabla);
             accion_inv = 2;
+            cargarMedidasTab(row["id"]);
             cambiarModal(span, ' Editar Producto', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modalE, 'modal-change', 'modal-new')
             select.forEach(function(s) {
                 s.classList.remove('select2-success');
