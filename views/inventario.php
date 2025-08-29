@@ -1031,12 +1031,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             const ancho = parseFloat($('#medidaAncho').val()) || 0;
             if (cantidad > 0 && alto > 0 && ancho > 0 && id_producto) {
                 const area_m2_total = cantidad * alto * ancho;
-                const medidas = [{
-                    cantidad,
-                    alto,
-                    ancho,
-                    area_m2_total
-                }];
+                const medidas = [{cantidad,alto,ancho,area_m2_total}];
                 $.post('controllers/inventario.controlador.php', {
                     accion: 22,
                     id_producto,

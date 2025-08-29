@@ -1,4 +1,5 @@
-<?php require_once "../utils/database/config.php";?>
+<?php require_once "../utils/database/config.php"; ?>
+
 <head>
     <title>Presupuestos</title>
 </head>
@@ -28,15 +29,17 @@
                     <div class="card-header">
                         <div class="col-12">
                             <div class="row">
-                                <div class="col col-p">
+                                <div class="col-auto col-p">
                                     <h3 class="card-title ">Listado de presupuestos</h3>
                                 </div>
-                                <div class="col-sm-8 p-0">
-                                    <div class="card-tools">
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
-                                        </div>
+                                <div class="col col-sm-auto mr-5">
+                                    <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                                    </select>
+                                </div>
+                                <div class="col-sm p-0">
+                                    <div style="margin-block:.4rem;height:33px;" class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search icon"></i></span>
+                                        <input autocomplete="off" style="border:none" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
                                     </div>
                                 </div>
                             </div>
@@ -44,16 +47,15 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-0">
-                        <table id="tblPresupuestos" class="table table-bordered table-striped">
+                        <table id="tblPresupuesto" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th class="text-center">Nº</th>
                                     <th>NRO. ORDEN</th>
                                     <th>CLIENTE</th>
                                     <th>DESCRIPCION</th>
-                                    <th>FECHA</th>
-                                    <th>PRECIO UNIT</th>
                                     <th>PRECIO IVA</th>
+                                    <th>PRECIO TOTAL</th>
                                     <th>ESTADO</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
@@ -123,29 +125,25 @@
                                         <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
-                                        <!-- <div class="invalid-feedback">*Campo obligatorio.</div> -->
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
+                                
+                            
                                 <div class="col-md-6 mb-3">
-                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
-                                    <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
-                                    <div class="ten no-margin">*Debe selecionar un archivo .pdf</div>
+                                    <label class="col-form-label combo" for="nota">
+                                        <i class="fas fa-note"></i> Nota</label>
+                                    <textarea style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);background-color:#d1d1d1" type="text" class="form-control" id="nota" placeholder="Observaciones..." spellcheck="false" data-ms-editor="true"></textarea>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group mb-3">
-                                        <label id="lblP" class="mb-0 combo"><i class="fas fa-user-helmet-safety"></i> Responsable </label>
-                                        <div class="row">
-                                            <div class="col">
-                                                <select id="cboRes" class="form-control select2 select2-success" multiple="multiple" data-dropdown-css-class="select2-dark" style="width: 100%;">
-                                                </select>
-                                                <!-- <div class="invalid-feedback">*Campo obligatorio</div> -->
-                                            </div>
-                                        </div>
-                                    </div>
+                            </div>
+                            <div class="row">
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="col-form-label combo" for="nota">
+                                        <i class="fas fa-note"></i> Nota</label>
+                                    <textarea style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);background-color:#d1d1d1" type="text" class="form-control" id="nota" placeholder="Observaciones..." spellcheck="false" data-ms-editor="true"></textarea>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -176,24 +174,16 @@
                         <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-chart-candlestick"></i></i> Estado</label>
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label style="border-left-width: 1px;" class="btn txt-ellipsis">
-                                <input type="radio" value="0" name="options" id="option_a1" autocomplete="off"> <i class="fas fa-clock"></i> En espera
+                                <input type="radio" value="0" name="options" id="option_a1" autocomplete="off"> <i class="fas fa-clock"></i> Pendiente
                             </label>
                             <label for="option_a2" class="btn txt-ellipsis">
-                                <input type="radio" value="1" name="options" id="option_a2" autocomplete="off"><i class="fas fa-person-digging"></i> En operacion
+                                <input type="radio" value="1" name="options" id="option_a2" autocomplete="off"><i class="fas fa-person-digging"></i> No aprobado
                             </label>
                             <label for="option_a3" class="btn txt-ellipsis">
-                                <input type="radio" value="2" name="options" id="option_a3" autocomplete="off"> <i class="fas fa-check-to-slot"></i> Finalizado
-                            </label>
-                            <label for="option_a4" class="btn txt-ellipsis">
-                                <input type="radio" value="3" name="options" id="option_a4" autocomplete="off"> <i class="fas fa-money-check-dollar"></i> Facturado
-                            </label>
-                            <label for="option_a5" style="border-right-width: 1px;" class="btn txt-ellipsis">
-                                <input type="radio" value="4" name="options" id="option_a5" autocomplete="off"> <i class="fas fa-award"></i> Garantía
+                                <input type="radio" value="2" name="options" id="option_a3" autocomplete="off"> <i class="fas fa-check-to-slot"></i> Aprobado
                             </label>
                         </div>
                     </div>
-
-
                     <div class="col-md-12 form-group">
                         <input type="hidden" id="inp_estado" value="">
                         <input type="hidden" id="id_orden_" value="">
@@ -205,37 +195,29 @@
                         </div>
                         <div id="div_fecha_ini" class="form-group mb-2">
                             <label class="col-form-label combo" for="fecha">
-                                <i class="fas fa-calendar"></i> Fecha de operación</label>
+                                <i class="fas fa-calendar"></i> Fecha de pendiente</label>
                             <input id="fecha_ini" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                             <div class="invalid-feedback">*Campo obligatorio.</div>
                         </div>
                         <div id="div_fecha_fin" class="form-group mb-2">
                             <label class="col-form-label combo" for="fecha">
-                                <i class="fas fa-calendar"></i> Fecha de finalización</label>
+                                <i class="fas fa-calendar"></i> Fecha de no aproado</label>
                             <input id="fecha_fin" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                             <div class="invalid-feedback">*Campo obligatorio.</div>
                         </div>
                         <div id="div_fecha_fac" class="form-group mb-2">
                             <label class="col-form-label combo" for="fecha">
-                                <i class="fas fa-calendar"></i> Fecha de facturación</label>
+                                <i class="fas fa-calendar"></i> Fecha de aprobado</label>
                             <input id="fecha_fac" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                             <div class="invalid-feedback">*Campo obligatorio.</div>
                         </div>
-                        <div id="div_fecha_gar" class="form-group mb-2">
-                            <label class="col-form-label combo" for="fecha">
-                                <i class="fas fa-calendar"></i> Fecha de garantía</label>
-                            <input id="fecha_gar" type="date" autocomplete="off" value="" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
-                            <div class="invalid-feedback">*Campo obligatorio.</div>
-                        </div>
                     </div>
-
                     <div class="col-md-12 mb-2">
                         <div>
                             <label class="col-form-label combo" for="nota">
                                 <i class="fas fa-note"></i> Nota</label>
                             <textarea style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);background-color:#d1d1d1" type="text" class="form-control" id="nota" placeholder="Observaciones..." spellcheck="false" data-ms-editor="true"></textarea>
                         </div>
-
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -269,7 +251,6 @@
         "deferRender": true,
         columnDefs: [{
                 targets: 0,
-                data: null,
                 render: function(data, type, row, meta) {
                     if (type === 'display') {
                         return meta.row + 1; // Devuelve el número de fila + 1
@@ -297,91 +278,102 @@
                 targets: 4,
                 className: "text-center",
                 "orderable": false,
-                render: function(data, type, row, full, meta) {
-                    let estado = row.estado_obra;
-                    let fecha_cre = row.fecha;
-                    let fecha_ini = row.fecha_ini === '' ? ' -' : row.fecha_ini;
-                    let fecha_fin = row.fecha_fin === '' ? ' -' : row.fecha_fin;
-                    let fecha_fac = row.fecha_fac === '' ? ' -' : row.fecha_fac;
-                    let fecha_gar = row.fecha_gar === '' ? ' -' : row.fecha_gar;
-                    let nota = row.nota ?? ' -'; // Asigna '-' si la nota está vacía
+                // render: function(data, type, row, full, meta) {
+                //     let estado = row.estado_obra;
+                //     let fecha_cre = row.fecha;
+                //     let fecha_ini = row.fecha_ini === '' ? ' -' : row.fecha_ini;
+                //     let fecha_fin = row.fecha_fin === '' ? ' -' : row.fecha_fin;
+                //     let fecha_fac = row.fecha_fac === '' ? ' -' : row.fecha_fac;
+                //     let fecha_gar = row.fecha_gar === '' ? ' -' : row.fecha_gar;
+                //     let nota = row.nota ?? ' -'; // Asigna '-' si la nota está vacía
 
-                    const tooltipText = {
-                        0: 'Fecha de creacion: ' + fecha_cre,
-                        1: 'Fecha de operación: ' + fecha_ini,
-                        2: 'Fecha de finalización: ' + fecha_fin,
-                        3: 'Fecha de facturación: ' + fecha_fac,
-                        4: 'Fecha de garantía: ' + fecha_gar,
-                        5: `<strong>NOTA:</strong> ${nota}` // Agrega "NOTA:" en negrita seguido del contenido de `nota`
-                    };
+                //     const tooltipText = {
+                //         0: 'Fecha de creacion: ' + fecha_cre,
+                //         1: 'Fecha de operación: ' + fecha_ini,
+                //         2: 'Fecha de finalización: ' + fecha_fin,
+                //         3: 'Fecha de facturación: ' + fecha_fac,
+                //         4: 'Fecha de garantía: ' + fecha_gar,
+                //         5: `<strong>NOTA:</strong> ${nota}` // Agrega "NOTA:" en negrita seguido del contenido de `nota`
+                //     };
 
-                    let concatenatedTooltipText = Object.values(tooltipText).join('<br>');
-                    let clase = estadoClases[estado] || 'default';
-                    let icon = estadoIcon[estado] || 'default';
-                    let texto = estadoText[estado] || 'default';
-                    // let tooltip = tooltipText[estado] || 'default';
-
-                    return `<span class='alert alert-default-${clase}' data-html='true' data-toggle='tooltip' title='${concatenatedTooltipText}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
-                }
+                //     let concatenatedTooltipText = Object.values(tooltipText).join('<br>');
+                //     let clase = estadoClases[estado] || 'default';
+                //     let icon = estadoIcon[estado] || 'default';
+                //     let texto = estadoText[estado] || 'default';
+                //     return `<span class='alert alert-default-${clase}' data-html='true' data-toggle='tooltip' title='${concatenatedTooltipText}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
+                // }
             },
             {
                 targets: 5,
                 "orderable": false,
                 responsivePriority: 2,
-                data: "acciones",
                 visible: mostrarCol ? true : false,
-                render: function(data, type, row, full, meta) {
-                    const estadoClases = {
-                        0: 'light',
-                        1: 'yellow',
-                        2: 'info',
-                        3: 'success',
-                        4: 'gray-dark'
-                    };
+                // render: function(data, type, row, full, meta) {
+                //     const estadoClases = {
+                //         0: 'light',
+                //         1: 'yellow',
+                //         2: 'info',
+                //         3: 'success',
+                //         4: 'gray-dark'
+                //     };
 
-                    let estado = row.estado_obra;
-                    let ruta = row.ruta;
-                    let clase = estadoClases[estado];
-                    // let btnEstado = estado === '0' ? '' : 'btnEstado';
-                    // let data_modal = estado == '3' ? '' : ""
-                    return (
-                        "<center style='white-space: nowrap;'>" +
-                        (editar ?
-                            " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
-                            " <i class='fa-solid fa-pencil'></i>" : "") +
-                        "</button> <button type='button' class='btn bg-gradient-" + clase + " btnEstado' data-target='#modal-date' data-toggle='modal'   title='Estado'>" +
-                        " <i class='fas fa-shuffle'></i>" +
-                        "</button>" +
-                        (eliminar ?
-                            " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
-                            " <i class='fa fa-trash'></i>" +
-                            "</button>" : "") +
-                        (ruta !== '' ?
-                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=uploads" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
-                            " <i class='fas fa-file-pdf'></i>" +
-                            "</a>" :
-                            " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +
-                            " <i class='fas fa-file-slash'></i>" +
-                            "</span>") +
-                        " </center>"
-                    );
-                },
+                //     let estado = row.estado_obra;
+                //     let ruta = row.ruta;
+                //     let clase = estadoClases[estado];
+                //     // let btnEstado = estado === '0' ? '' : 'btnEstado';
+                //     // let data_modal = estado == '3' ? '' : ""
+                //     return (
+                //         "<center style='white-space: nowrap;'>" +
+                //         (editar ?
+                //             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
+                //             " <i class='fa-solid fa-pencil'></i>" : "") +
+                //         "</button> <button type='button' class='btn bg-gradient-" + clase + " btnEstado' data-target='#modal-date' data-toggle='modal'   title='Estado'>" +
+                //         " <i class='fas fa-shuffle'></i>" +
+                //         "</button>" +
+                //         (eliminar ?
+                //             " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
+                //             " <i class='fa fa-trash'></i>" +
+                //             "</button>" : "") +
+                //         (ruta !== '' ?
+                //             " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=uploads" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
+                //             " <i class='fas fa-file-pdf'></i>" +
+                //             "</a>" :
+                //             " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +
+                //             " <i class='fas fa-file-slash'></i>" +
+                //             "</span>") +
+                //         " </center>"
+                //     );
+                // },
+            },
+            {
+                targets: 6,
+                orderable: false,
+            },
+            {
+                targets: 7,
+                orderable: false,
+
+            },
+            {
+                targets: 8,
+                orderable: false,
+                data: "acciones",
             },
         ],
     }
 
     $(document).ready(function() {
         let anio = year;
-
-        if (!$.fn.DataTable.isDataTable('#tblOrden')) {
-            tabla = $("#tblOrden").DataTable({
+        let estado_presupuesto = 'null';
+        if (!$.fn.DataTable.isDataTable('#tblPresupuesto')) {
+            tabla = $("#tblPresupuesto").DataTable({
                 "ajax": {
                     "url": "controllers/presupuesto.controlador.php",
                     "type": "POST",
                     "dataSrc": '',
                     data: function(data) {
                         data.anio = anio;
-                        data.id_estado = estado_filter;
+                        data.id_estado = estado_presupuesto;
                     }
                 },
                 ...configuracionTable
@@ -398,11 +390,11 @@
 
 
                 let tablaData = tabla.rows().data().toArray();
-                localStorage.setItem('orden', JSON.stringify(tablaData));
+                localStorage.setItem('presupuesto', JSON.stringify(tablaData));
             });
         }
 
-        $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboOrdenEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"></select> </div>  </div>');
+        $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboPreEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"><option value="null">TODO</option><option value="pendiente">PENDIENTE</option><option value="rechazado">NO APROBADO</option><option value="aprobado">APROBADO</option> </select> </div>  </div>');
 
         let accion = 0;
 
@@ -442,8 +434,7 @@
             orden_nro = document.getElementById('orden_nro'),
             cboClienteOrden = document.getElementById('cboClientesOrden'),
             fileInput = document.getElementById('fileOrden'),
-            cboOrdenEstadoFilter = document.getElementById('cboOrdenEstadoFilter');
-
+            cboPreEstadoFilter = document.getElementById('cboPreEstadoFilter');
 
         $(modal).on("shown.bs.modal", () => {
             orden_nro.focus();
@@ -459,9 +450,7 @@
             minimumResultsForSearch: -1,
         });
 
-        $('#cboRes').select2({})
 
-        cargarCombo('Res', '', 7)
 
         setChange(cboAnio, anio);
 
@@ -474,10 +463,9 @@
             tabla.ajax.reload();
         });
 
-        $(cboOrdenEstadoFilter).on("change", function() {
+        $(cboPreEstadoFilter).on("change", function() {
             // if (this.value !== 'null'){
-            estado_filter = this.value;
-            // console.log(estado_filter)
+            estado_presupuesto = this.value;
             accion = 0;
             tabla.ajax.reload();
         });
@@ -487,15 +475,12 @@
             data: datos_cliente
         })
 
-        console.log(datos_cliente)
-
-
-        $(cboOrdenEstadoFilter).select2({
+        $(cboPreEstadoFilter).select2({
             width: '100%',
             minimumResultsForSearch: -1,
         });
 
-        cargarCombo('OrdenEstadoFilter', estado_filter, 11);
+        // cargarCombo('PresupuestoEstadoFilter', estado_presupuesto, 11);
 
         $(cboClienteOrden).change(function() {
             estilosSelect2(this, 'lblCO')
@@ -527,28 +512,28 @@
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
                 div_fecha_new.style.display = '';
-                cambiarModal(span, ' Nueva Orden', icon, 'fa-ticket', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
+                cambiarModal(span, ' Nuevo Presupuesto ', icon, 'fa-money-check-dollar-pen', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
                 });
+
                 form.reset();
                 form.classList.remove('was-validated');
-                // nombre.disabled = false;
                 setChange(cboClienteOrden, 0);
             });
         }
 
-        $('#tblOrden tbody').on('click', '.btnEliminar', function() {
+        $('#tblPresupuesto tbody').on('click', '.btnEliminar', function() {
             const e = obtenerFila(this, tabla)
             accion = 3
             const id_ = e["id"];
             let src = new FormData();
             src.append('accion', accion);
             src.append('id', id_);
-            confirmarEliminar('esta', 'orden', function(r) {
+            confirmarEliminar('esta', 'presupuesto', function(r) {
                 if (r) {
-                    confirmarAccion(src, 'orden', tabla, '', function(r) {
+                    confirmarAccion(src, 'presupuesto', tabla, '', function(r) {
                         if (r) {
                             // cargarCombo('Orden', '', 3, true).then(datos_ => {
                             //     datos_orden = datos_;
@@ -561,12 +546,12 @@
             });
         });
 
-        $('#tblOrden tbody').on('click', '.btnEditar', function() {
+        $('#tblPresupuesto tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             accion = 2;
             // fechas_estados.style.display = '';
             div_fecha_new.style.display = 'none';
-            cambiarModal(span, ' Editar Orden', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            cambiarModal(span, ' Editar Presupuesto', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombre.value = row["descripcion"];
             // fecha_cre.value = convertirFecha(row["fecha"]);
@@ -577,7 +562,7 @@
             form.classList.remove('was-validated');
         });
 
-        $('#tblOrden tbody').on('click', '.btnEstado', function() {
+        $('#tblPresupuesto tbody').on('click', '.btnEstado', function() {
             let row = obtenerFila(this, tabla);
             accion = 5;
             nota.value = row["nota"];
@@ -594,7 +579,6 @@
             e.preventDefault();
             let estado_obra = radios[0].checked ? 0 : radios[1].checked ? 1 : radios[2].checked ? 2 : radios[3].checked ? 3 : 4;
             const fecha_estado = estado_obra === 0 ? fecha_cre : estado_obra === 1 ? fecha_ini : estado_obra === 2 ? fecha_fin : estado_obra === 3 ? fecha_fac : fecha_gar;
-
             if (!fecha_estado.checkValidity()) {
                 this.classList.add('was-validated');
                 return;

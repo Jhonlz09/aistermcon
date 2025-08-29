@@ -7,33 +7,36 @@ use PHPMailer\PHPMailer\Exception;
 
 require '../vendor/autoload.php'; // Asegúrate de cargar PHPMailer correctamente
 
-class ModeloOrden
+class ModeloPresupuesto
 {
-    static public function mdlListarOrden($anio, $estado)
+    static public function mdlListarPresupuesto($anio, $estado)
     {
         try {
-            $consulta = "SELECT o.id, o.nombre, 
+            $consulta = "SELECT p.id, p.nombre, 
                         c.nombre AS cliente, 
-                        o.descripcion,  
-                        o.estado_obra,
-                        '' AS acciones, 
-                        o.id_cliente, 
-                        o.pdf_orden, 
-                        TO_CHAR(o.fecha, 'DD/MM/YYYY') AS fecha, 
-                        COALESCE(TO_CHAR(o.fecha_ini, 'DD/MM/YYYY'), '') AS fecha_ini, 
-                        COALESCE(TO_CHAR(o.fecha_fin, 'DD/MM/YYYY'), '') AS fecha_fin, 
-                        COALESCE(TO_CHAR(o.fecha_fac, 'DD/MM/YYYY'), '') AS fecha_fac,
-                        COALESCE(TO_CHAR(o.fecha_gar, 'DD/MM/YYYY'), '') AS fecha_gar,
-                        o.nota
-                    FROM tblorden o
-                    JOIN tblestado_obra eo ON o.estado_obra = eo.id
-                    JOIN tblclientes c ON o.id_cliente = c.id
-                    WHERE o.estado = true 
-                    AND EXTRACT(YEAR FROM o.fecha) = :anio ";
+                        p.descripcion,  
+                        p.precio_iva,
+                        p.precio,
+                        p.state,
+                        p.pdf_pre, 
+                        TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
+                        COALESCE(TO_CHAR(p.fecha_pen, 'DD/MM/YYYY'), '') AS fecha_pen, 
+                        COALESCE(TO_CHAR(p.fecha_no, 'DD/MM/YYYY'), '') AS fecha_no, 
+                        COALESCE(TO_CHAR(p.fecha_apr, 'DD/MM/YYYY'), '') AS fecha_apr,
+                        p.nota, 
+                        p.estado,
+                        p.id_cliente, 
+                        '' AS acciones
+                    FROM tblpresupuesto p
+                    JOIN tblclientes c ON p.id_cliente = c.id
+                    WHERE p.estado = true
+                    AND EXTRACT(YEAR FROM p.fecha) = :anio ";
             if ($estado !== 'null') {
-                $consulta .= "AND o.estado_obra = :estado ";
+                $consulta .= "AND p.status = :estado ";
             }
-            $consulta .= "ORDER BY o.id;";
+            $consulta .= "ORDER BY p.id;";
+
+
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             if ($estado !== 'null') {
@@ -46,50 +49,50 @@ class ModeloOrden
         }
     }
 
-    // static public function mdlAgregarOrden($nombre, $id_cliente, $orden, $pdf_orden, $fecha)
+    // static public function mdlAgregarPresupuesto($nombre, $id_cliente, $presupuesto , $ruta, $fecha)
     // {
     //     try {
     //         // Conexión a la base de datos e inserción
     //         $conexion = Conexion::ConexionDB();
-    //         $a = $conexion->prepare("INSERT INTO tblorden(descripcion, id_cliente, nombre, pdf_orden, fecha, estado_obra) VALUES (:des, :id_cliente, :orden, :pdf_orden, :fecha, 0)");
+    //         $a = $conexion->prepare("INSERT INTO tblpresupuesto (descripcion, id_cliente, nombre, ruta, fecha, estado_obra) VALUES (:des, :id_cliente, :presupuesto , :ruta, :fecha, 0)");
     //         $a->bindParam(":des", $nombre, PDO::PARAM_STR);
-    //         $a->bindParam(":orden", $orden, PDO::PARAM_STR);
+    //         $a->bindParam(":presupuesto ", $presupuesto , PDO::PARAM_STR);
     //         $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
     //         $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
-    //         $a->bindParam(":pdf_orden", $pdf_orden, PDO::PARAM_STR);
+    //         $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
     //         $a->execute();
 
     //         // Si la inserción es exitosa, enviamos el correo
-    //         $correoEnviado = self::enviarCorreo($id_cliente, $nombre, $orden, $pdf_orden, $fecha);
+    //         $correoEnviado = self::enviarCorreo($id_cliente, $nombre, $presupuesto , $ruta, $fecha);
 
     //         // Devuelve la respuesta dependiendo del resultado del envío del correo
     //         if ($correoEnviado) {
     //             return array(
     //                 'status' => 'success',
-    //                 'm' => 'La orden de trabajo se agregó y se envió el correo correctamente.'
+    //                 'm' => 'La presupuesto  de trabajo se agregó y se envió el correo correctamente.'
     //             );
     //         } else {
     //             return array(
     //                 'status' => 'warning',
-    //                 'm' => 'La orden de trabajo se agregó, pero no se pudo enviar el correo.'
+    //                 'm' => 'La presupuesto  de trabajo se agregó, pero no se pudo enviar el correo.'
     //             );
     //         }
     //     } catch (PDOException $e) {
     //         if ($e->getCode() == '23505') {
     //             return array(
     //                 'status' => 'danger',
-    //                 'm' => 'La orden de trabajo ya existe para el cliente seleccionado.'
+    //                 'm' => 'La presupuesto  de trabajo ya existe para el cliente seleccionado.'
     //             );
     //         } else {
     //             return array(
     //                 'status' => 'danger',
-    //                 'm' => 'No se pudo agregar la orden de trabajo: ' . $e->getMessage()
+    //                 'm' => 'No se pudo agregar la presupuesto  de trabajo: ' . $e->getMessage()
     //             );
     //         }
     //     }
     // }
 
-    // static private function enviarCorreo($id_cliente, $nombre, $orden, $pdf_orden, $fecha)
+    // static private function enviarCorreo($id_cliente, $nombre, $presupuesto , $ruta, $fecha)
     // {
     //     $mail = new PHPMailer(true);
 
@@ -109,13 +112,13 @@ class ModeloOrden
 
     //         // Contenido del correo
     //         $mail->isHTML(true);
-    //         $mail->Subject = 'Nueva orden de trabajo abierta';
+    //         $mail->Subject = 'Nueva presupuesto  de trabajo abierta';
     //         $mail->Body = "
-    //         <h2>Detalles de la nueva orden:</h2>
+    //         <h2>Detalles de la nueva presupuesto :</h2>
     //         <p><strong>Cliente ID:</strong> {$id_cliente}</p>
     //         <p><strong>Nombre:</strong> {$nombre}</p>
-    //         <p><strong>Orden:</strong> {$orden}</p>
-    //         <p><strong>Ruta:</strong> {$pdf_orden}</p>
+    //         <p><strong>Presupuesto:</strong> {$presupuesto }</p>
+    //         <p><strong>Ruta:</strong> {$ruta}</p>
     //         <p><strong>Fecha:</strong> {$fecha}</p>";
 
     //         // Enviar el correo
@@ -129,21 +132,21 @@ class ModeloOrden
     // }
 
 
-    // static public function mdlAgregarOrden($nombre, $id_cliente, $orden, $pdf_orden, $fecha)
+    // static public function mdlAgregarPresupuesto($nombre, $id_cliente, $presupuesto , $ruta, $fecha)
     // {
     //     try {
     //         // Conexión a la base de datos e inserción
     //         $conexion = Conexion::ConexionDB();
-    //         $a = $conexion->prepare("INSERT INTO tblorden(descripcion, id_cliente, nombre, pdf_orden, fecha, estado_obra) VALUES (:des, :id_cliente, :orden, :pdf_orden, :fecha, 0)");
+    //         $a = $conexion->prepare("INSERT INTO tblpresupuesto (descripcion, id_cliente, nombre, ruta, fecha, estado_obra) VALUES (:des, :id_cliente, :presupuesto , :ruta, :fecha, 0)");
     //         $a->bindParam(":des", $nombre, PDO::PARAM_STR);
-    //         $a->bindParam(":orden", $orden, PDO::PARAM_STR);
+    //         $a->bindParam(":presupuesto ", $presupuesto , PDO::PARAM_STR);
     //         $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
     //         $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
-    //         $a->bindParam(":pdf_orden", $pdf_orden, PDO::PARAM_STR);
+    //         $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
     //         $a->execute();
 
     //         // Si la inserción es exitosa, enviamos el correo en segundo plano
-    //         self::enviarCorreoEnSegundoPlano($id_cliente, $nombre, $orden, $pdf_orden, $fecha);
+    //         self::enviarCorreoEnSegundoPlano($id_cliente, $nombre, $orden, $ruta, $fecha);
 
     //         return array(
     //             'status' => 'success',
@@ -164,35 +167,35 @@ class ModeloOrden
     //     }
     // }
 
-    static public function mdlAgregarOrden($nombre, $id_cliente, $cliente, $orden, $pdf_orden, $fecha)
+    static public function mdlAgregarPresupuesto($nombre, $id_cliente, $cliente, $presupuesto, $ruta, $fecha)
     {
         try {
             // Conexión a la base de datos e inserción
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblorden(descripcion, id_cliente, nombre, pdf_orden, fecha, estado_obra) VALUES (:des, :id_cliente, :orden, :pdf_orden, :fecha, 0)");
+            $a = $conexion->prepare("INSERT INTO tblpresupuesto(descripcion, id_cliente, nombre, pdf_pre, fecha, fecha) VALUES (:des, :id_cliente, :presupuesto, :ruta, :fecha)");
             $a->bindParam(":des", $nombre, PDO::PARAM_STR);
-            $a->bindParam(":orden", $orden, PDO::PARAM_STR);
+            $a->bindParam(":presupuesto", $presupuesto, PDO::PARAM_STR);
             $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
             $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
-            $a->bindParam(":pdf_orden", $pdf_orden, PDO::PARAM_STR);
+            $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
             $a->execute();
             // Ejecutar el envío de correo en segundo plano
-            self::enviarCorreoEnSegundoPlano($nombre, $orden, $fecha, $cliente);
+            self::enviarCorreoEnSegundoPlano($nombre, $presupuesto , $fecha, $cliente);
             // Respuesta al usuario
             return array(
                 'status' => 'success',
-                'm' => 'La orden de trabajo se agregó correctamente. Se esta procesando el envío del correo electrónico'
+                'm' => 'La presupuesto  de trabajo se agregó correctamente. Se esta procesando el envío del correo electrónico'
             );
         } catch (PDOException $e) {
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'La orden de trabajo ya existe para el cliente seleccionado.'
+                    'm' => 'La presupuesto  de trabajo ya existe para el cliente seleccionado.'
                 );
             } else {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo agregar la orden de trabajo: ' . $e->getMessage()
+                    'm' => 'No se pudo agregar la presupuesto  de trabajo: ' . $e->getMessage()
                 );
             }
         }
@@ -200,40 +203,37 @@ class ModeloOrden
 
 
 
-    static private function enviarCorreoEnSegundoPlano($descrip, $orden, $fecha, $cliente)
+    static private function enviarCorreoEnSegundoPlano($descrip, $presupuesto , $fecha, $cliente)
     {
         $scriptPath = escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'send_email.php');
         $usuario = $_SESSION['s_usuario']->nombres;
         // $id_cliente = escapeshellarg($id_cliente);
         $descrip = escapeshellarg($descrip);
-        $orden = escapeshellarg($orden);
+        $presupuesto  = escapeshellarg($presupuesto );
         $cliente = escapeshellarg($cliente);
         $fecha = escapeshellarg($fecha);
 
         // Comando para ejecutar en segundo plano
-        $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario > /dev/null 2>&1 &";
+        $command = "php $scriptPath $descrip $presupuesto  $fecha $cliente $usuario > /dev/null 2>&1 &";
         exec($command);
-
-        // Ejecutar en segundo plano usando popen
-        // pclose(popen("start /B " . $command, "r"));
     }
 
 
-    // static private function enviarCorreoEnSegundoPlano($id_cliente, $nombre, $orden, $pdf_orden, $fecha)
+    // static private function enviarCorreoEnSegundoPlano($id_cliente, $nombre, $presupuesto , $ruta, $fecha)
     // {
     //     // Ruta al script que enviará el correo
     //     // $scriptPath = escapeshellarg(__DIR__ . '/send_email.php');
     //     $scriptPath = escapeshellarg(str_replace('/', DIRECTORY_SEPARATOR, __DIR__ . '/send_email.php'));
 
-    //     // var_dump($scriptPath); // Esto te ayudará a ver la pdf_orden completa
+    //     // var_dump($scriptPath); // Esto te ayudará a ver la ruta completa
 
     //     $id_cliente = escapeshellarg($id_cliente);
     //     $nombre = escapeshellarg($nombre);
-    //     $orden = escapeshellarg($orden);
-    //     $pdf_orden = escapeshellarg($pdf_orden);
+    //     $presupuesto  = escapeshellarg($presupuesto );
+    //     $ruta = escapeshellarg($ruta);
     //     $fecha = escapeshellarg($fecha);
 
-    //     $command = "start /B php $scriptPath $id_cliente $nombre $orden $pdf_orden $fecha > NUL 2>&1";
+    //     $command = "start /B php $scriptPath $id_cliente $nombre $presupuesto  $ruta $fecha > NUL 2>&1";
     //     file_put_contents(__DIR__ . '/log.txt', $command . PHP_EOL, FILE_APPEND);
     //     // Ejecutar el comando en segundo plano
     //     exec($command); 
@@ -242,49 +242,49 @@ class ModeloOrden
 
 
 
-    static public function mdlEditarOrden($id, $nombre, $id_cliente, $orden, $pdf_orden)
+    static public function mdlEditarPresupuesto($id, $nombre, $id_cliente, $presupuesto , $ruta)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("UPDATE tblorden SET descripcion=:des,id_cliente=:id_cliente, nombre=:orden, pdf_orden=:pdf_orden WHERE id=:id");
+            $u = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET descripcion=:des, id_cliente=:id_cliente, nombre=:presupuesto, ruta=:ruta WHERE id=:id");
             $u->bindParam(":id", $id, PDO::PARAM_INT);
             $u->bindParam(":des", $nombre, PDO::PARAM_STR);
-            $u->bindParam(":orden", $orden, PDO::PARAM_STR);
+            $u->bindParam(":presupuesto ", $presupuesto , PDO::PARAM_STR);
             $u->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
-            $u->bindParam(":pdf_orden", $pdf_orden, PDO::PARAM_STR);
+            $u->bindParam(":ruta", $ruta, PDO::PARAM_STR);
             $u->execute();
             return array(
                 'status' => 'success',
-                'm' => 'La orden de trabajo se editó correctamente'
+                'm' => 'La presupuesto  de trabajo se editó correctamente'
             );
         } catch (PDOException $e) {
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'La orden de trabajo ya existe para el cliente seleccionado.'
+                    'm' => 'La presupuesto de trabajo ya existe para el cliente seleccionado.'
                 );
             } else {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo editar la orden de trabajo: ' . $e->getMessage()
+                    'm' => 'No se pudo editar la presupuesto  de trabajo: ' . $e->getMessage()
                 );
             }
         }
     }
 
-    public static function mdlEliminarOrden($id)
+    public static function mdlEliminarPresupuesto($id)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("UPDATE tblorden SET estado=false WHERE id=:id");
+            $e = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto  SET estado=false WHERE id=:id");
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->execute();
             return array(
                 'status' => 'success',
-                'm' => 'Se eliminó la orden de trbajo correctamente.'
+                'm' => 'Se eliminó la presupuesto  de trbajo correctamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo eliminar la orden de trabajo: ' . $e->getMessage()
+                'm' => 'No se pudo eliminar la presupuesto  de trabajo: ' . $e->getMessage()
             );
         }
     }
@@ -303,7 +303,7 @@ class ModeloOrden
                 '4' => 'fecha_gar'
             );
 
-            $consulta = "UPDATE tblorden SET estado_obra=:estado, nota=:nota ";
+            $consulta = "UPDATE tblpresupuesto  SET estado_obra=:estado, nota=:nota ";
             $consulta .= "," . $fechas[$estado] . " =:fecha ";
             $consulta .= "WHERE id=:id";
 
@@ -320,25 +320,25 @@ class ModeloOrden
             $e->execute();
             return array(
                 'status' => 'success',
-                'm' => 'Se actualizó el estado de la orden de trabajo corectamente.'
+                'm' => 'Se actualizó el estado de la presupuesto  de trabajo corectamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo actualizar el estado de la orden de trabajo: ' . $e->getMessage()
+                'm' => 'No se pudo actualizar el estado de la presupuesto  de trabajo: ' . $e->getMessage()
             );
         }
     }
 
 
-    public static function mdlBuscarOrdenes()
+    public static function mdlBuscarPresupuestoes()
     {
         try {
 
             $e = Conexion::ConexionDB()->prepare("SELECT o.id, 
             o.nombre || ' ' || c.nombre AS descripcion,e.estado_obra AS estado_obra, 
             EXTRACT(YEAR FROM o.fecha) AS anio 
-                FROM tblorden o 
+                FROM tblpresupuesto  o 
                 JOIN tblclientes c ON o.id_cliente = c.id
                 JOIN tblestado_obra e ON o.estado_obra = e.id
                 WHERE o.estado = true 
@@ -354,11 +354,11 @@ class ModeloOrden
         }
     }
 
-    public static function mdlObtenerIdOrden($nombre)
+    public static function mdlObtenerIdPresupuesto($nombre)
     {
         try {
             $e = Conexion::ConexionDB()->prepare("SELECT COALESCE((SELECT id_cliente 
-                FROM tblorden 
+                FROM tblpresupuesto  
                     WHERE nombre = :nombre 
                 AND (EXTRACT(YEAR FROM fecha) = :anioActual OR estado_obra IN (0, 1)) 
                 AND estado = true), 0) AS id_cliente;");
@@ -370,24 +370,24 @@ class ModeloOrden
             if ($e->getCode() == '21000') {
                 return array(
                     'status' => 'warning',
-                    'm' => 'Existen varios clientes asociados al numero de orden, por favor seleccione manualmente el cliente'
+                    'm' => 'Existen varios clientes asociados al numero de presupuesto , por favor seleccione manualmente el cliente'
                 );
             } else {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo consultar el nro. orden: ' . $e->getMessage()
+                    'm' => 'No se pudo consultar el nro. presupuesto : ' . $e->getMessage()
                 );
             }
         }
     }
 
-    public static function mdlIsPdfOrden($id_orden)
+    public static function mdlIsPdfPresupuesto($id_presupuesto )
     {
-        $e = Conexion::ConexionDB()->prepare("SELECT o.pdf_orden FROM tblorden o WHERE o.id = :id_orden");
-        $e->bindParam(':id_orden', $id_orden, PDO::PARAM_INT);
+        $e = Conexion::ConexionDB()->prepare("SELECT o.ruta FROM tblpresupuesto  o WHERE o.id = :id_presupuesto ");
+        $e->bindParam(':id_presupuesto ', $id_presupuesto , PDO::PARAM_INT);
 
         $e->execute();
         $r = $e->fetch(PDO::FETCH_ASSOC);
-        return $r['pdf_orden'];
+        return $r['ruta'];
     }
 }
