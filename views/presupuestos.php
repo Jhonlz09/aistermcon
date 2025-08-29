@@ -129,22 +129,36 @@
                                 </div>
                             </div>
                             <div class="row">
-                                
-                            
-                                <div class="col-md-6 mb-3">
-                                    <label class="col-form-label combo" for="nota">
-                                        <i class="fas fa-note"></i> Nota</label>
-                                    <textarea style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);background-color:#d1d1d1" type="text" class="form-control" id="nota" placeholder="Observaciones..." spellcheck="false" data-ms-editor="true"></textarea>
+                                <div class="col-md-6">
+                                    <div class="input-data mb-4">
+                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label class="label"><i class="fas fa-circle-dollar"></i> Precio <span style="font-size:60%;color: #666666ff;">(sin iva)</span> </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-data mb-4">
+                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <div class="line underline"></div>
+                                        <label class="label"><i class="fas fa-circle-dollar"></i> Precio <span style="font-size:60%;color: #666666ff;">(con iva)</span> </label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
-                                
+                                <div class="col-md-12 mb-3">
+                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
+                                    <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
+                                    <div class="ten no-margin">*Debe selecionar un archivo .pdf</div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="col-form-label combo" for="nota">
                                         <i class="fas fa-note"></i> Nota</label>
                                     <textarea style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);background-color:#d1d1d1" type="text" class="form-control" id="nota" placeholder="Observaciones..." spellcheck="false" data-ms-editor="true"></textarea>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -480,13 +494,9 @@
             minimumResultsForSearch: -1,
         });
 
-        // cargarCombo('PresupuestoEstadoFilter', estado_presupuesto, 11);
-
         $(cboClienteOrden).change(function() {
             estilosSelect2(this, 'lblCO')
         });
-
-
 
         radios.forEach(radio => {
             radio.addEventListener('change', function() {
@@ -497,9 +507,7 @@
                     3: div_fecha_fac,
                     4: div_fecha_gar
                 };
-
                 estado[this.value].style.display = '';
-
                 Object.values(estado).forEach((e, i) => {
                     if (i != this.value) {
                         e.style.display = 'none';
@@ -557,7 +565,6 @@
             // fecha_cre.value = convertirFecha(row["fecha"]);
             orden_nro.value = row["nombre"];
             fileInput.value = '';
-
             setChange(cboClienteOrden, row["id_cliente"]);
             form.classList.remove('was-validated');
         });

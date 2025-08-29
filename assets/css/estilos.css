@@ -275,12 +275,15 @@ input[type=file] {
 
 
 #cboEmpresaFilter+.select2-container.select2-container--default,
-#cboOrdenEstadoFilter+.select2-container.select2-container--default {
+#cboOrdenEstadoFilter+.select2-container.select2-container--default,
+#cboPreEstadoFilter+.select2-container.select2-container--default {
     max-width: calc(60% + 1rem);
     min-width: 120px;
 }
 
+
 #cboEmpresaFilter+.select2-container.select2-container--default .selection .select2-selection--single,
+#cboPreEstadoFilter+.select2-container.select2-container--default .selection .select2-selection--single,
 #cboOrdenEstadoFilter+.select2-container.select2-container--default .selection .select2-selection--single {
     border-bottom: none;
 }
@@ -1394,6 +1397,7 @@ svg {
     }
 
     #cboEmpresaFilter+.select2-container.select2-container--default,
+    #cboPreEstadoFilter+.select2-container.select2-container--default
     #cboOrdenEstadoFilter+.select2-container.select2-container--default {
         max-width: 100%;
         /* Puedes ajustar este valor según tus necesidades */
