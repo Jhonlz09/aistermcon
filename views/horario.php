@@ -1689,9 +1689,7 @@
                     className: "text-center",
                     render: function(data, type, row, meta) {
                         if (type === 'display') {
-                            return `
-                                    <div class="d-flex justify-content-center align-items-center" style="height:100%;">
-
+                            return `<div class="d-flex justify-content-center align-items-center" style="height:100%;">
                             <input
                         style="width:5rem"
                         type="text"
@@ -1731,7 +1729,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control material text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -1751,7 +1749,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control trans text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -1771,7 +1769,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control ali text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -1791,7 +1789,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control hosp text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -1806,7 +1804,7 @@
                             return `$<input style="width:5rem" type="text" autocomplete="off"
                                 spellcheck="false" oninput="validarNumber(this,/[^0-9.]/g)"
                                 onpaste="validarPegado(this, event)" inputmode="numeric"
-                                maxlength="5" class="form-control guard text-center d-inline"
+                                maxlength="6" class="form-control guard text-center d-inline"
                                 value="${data || ''}">`;
                         }
                         return data;
@@ -1825,7 +1823,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control agua text-center d-inline"
                         value="${data || ''}">`;
                         }

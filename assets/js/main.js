@@ -124,6 +124,7 @@ function limpiar(btn = false) {
     btn ? (btn.style.display = "none") : null;
     isTrasFab.disabled = false;
   }
+    dropzone.removeAllFilesWithoutServer(false);
 }
 
 function cargarOpcionesSelect(selectElement, value, size = "110%") {

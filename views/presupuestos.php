@@ -129,33 +129,53 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="input-data mb-4">
                                         <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fas fa-circle-dollar"></i> Precio <span style="font-size:60%;color: #666666ff;">(sin iva)</span> </label>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="input-data mb-4">
                                         <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fas fa-circle-dollar"></i> Precio <span style="font-size:60%;color: #666666ff;">(con iva)</span> </label>
                                     </div>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="col-form-label combo" for="nota">
+                                        <i class="fas fa-note"></i> Nota</label>
+                                    <textarea style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);background-color:#d1d1d1" type="text" class="form-control" id="nota" placeholder="Observaciones..." spellcheck="false" data-ms-editor="true"></textarea>
+                                </div>
                             </div>
-                            <div class="row">
+                            <!-- <div class="row">
                                 <div class="col-md-12 mb-3">
                                     <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
                                     <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
                                     <div class="ten no-margin">*Debe selecionar un archivo .pdf</div>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="row">
+                                <!-- Columna Orden de Trabajo -->
                                 <div class="col-md-6 mb-3">
-                                    <label class="col-form-label combo" for="nota">
-                                        <i class="fas fa-note"></i> Nota</label>
-                                    <textarea style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);background-color:#d1d1d1" type="text" class="form-control" id="nota" placeholder="Observaciones..." spellcheck="false" data-ms-editor="true"></textarea>
+                                    <label class="combo" style="font-size: 1.15rem;">
+                                        <i class="fa-solid fa-file-import"></i> Orden de Trabajo (PDF/Excel)
+                                    </label>
+                                    <div id="dropzone-orden" class="dropzone" style="min-height: 80px; background: #f6f6f6; border: 2px dashed #b3b3b3;">
+                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
+                                    </div>
+                                    <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
+                                </div>
+                                <!-- Columna Presupuestos -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="combo" style="font-size: 1.15rem;">
+                                        <i class="fa-solid fa-file-import"></i> Presupuestos (PDF/Excel)
+                                    </label>
+                                    <div id="dropzone-presupuesto" class="dropzone" style="min-height: 80px; background: #f6f6f6; border: 2px dashed #b3b3b3;">
+                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
+                                    </div>
+                                    <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
                                 </div>
                             </div>
 
@@ -408,6 +428,49 @@
             });
         }
 
+        function getFileIconSVG(file) {
+            // SVG PDF
+            const pdfSVG = `<svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#E53E3E"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">PDF</text></svg>`;
+            // SVG Excel
+            const excelSVG = `<svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#217346"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">XLS</text></svg>`;
+
+            if (file.type === "application/pdf") {
+                return pdfSVG;
+            }
+            if (
+                file.type === "application/vnd.ms-excel" ||
+                file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ) {
+                return excelSVG;
+            }
+            return "";
+        }
+
+        Dropzone.autoDiscover = false;
+        new Dropzone("#dropzone-orden", {
+            url: "/ruta/para/subir/orden",
+            autoProcessQueue: false,
+            acceptedFiles: ".pdf,.xls,.xlsx",
+            addRemoveLinks: true,
+            dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel",
+            init: function() {
+                this.on("addedfile", function(file) {
+                    // Busca el contenedor de imagen generado por Dropzone
+                    var dzImage = file.previewElement.querySelector('.dz-image');
+                    if (dzImage) {
+                        dzImage.innerHTML = getFileIconSVG(file);
+                    }
+                });
+            }
+        });
+        new Dropzone("#dropzone-presupuesto", {
+            url: "/ruta/para/subir/presupuesto",
+            acceptedFiles: ".pdf,.xls,.xlsx",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel"
+        });
+
         $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboPreEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"><option value="null">TODO</option><option value="pendiente">PENDIENTE</option><option value="rechazado">NO APROBADO</option><option value="aprobado">APROBADO</option> </select> </div>  </div>');
 
         let accion = 0;
@@ -635,7 +698,6 @@
 
             if (accion == 2) {
                 confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                    // cargarAutocompletado();
                     cargarAutocompletado(function(items) {
                         items_orden = items;
                         $('#nro_orden').autocomplete("option", "source", items);
@@ -669,7 +731,6 @@
                 id_cli = cboClienteOrden.value,
                 cli_name = cboClienteOrden.selectedIndex > 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '',
                 fecha_act = fecha_new.value;
-
             id_e = id.value;
             let datos = new FormData();
             datos.append('id', id_e);
@@ -678,9 +739,7 @@
             datos.append('orden', ord);
             datos.append('cliente', cli_name)
             datos.append('fecha', fecha_act);
-            // datos.append('estado', selectedEstado);
             datos.append('accion', accion);
-
             return datos;
         }
 
