@@ -158,7 +158,7 @@
                             </div> -->
                             <div class="row">
                                 <!-- Columna Orden de Trabajo -->
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-2">
                                     <label class="combo" style="font-size: 1.15rem;">
                                         <i class="fa-solid fa-file-import"></i> Orden de Trabajo (PDF/Excel)
                                     </label>
@@ -168,7 +168,7 @@
                                     <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
                                 </div>
                                 <!-- Columna Presupuestos -->
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-2">
                                     <label class="combo" style="font-size: 1.15rem;">
                                         <i class="fa-solid fa-file-import"></i> Presupuestos (PDF/Excel)
                                     </label>

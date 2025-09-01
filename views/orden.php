@@ -16,6 +16,14 @@
                         <i class="fa fa-plus"></i> Nuevo</button>
                 </div>
             <?php endif; ?>
+            <div class="col-auto" id="export-buttons">
+                <button id="btnExportExcel" class="btn btn-light">
+                    <i class="fa-regular fa-file-xls fa-xl" style="color: #0a8f00"></i> Exportar a Excel
+                </button>
+                <button id="btnExportPDF" class="btn btn-light">
+                    <i class="fa-regular fa-file-pdf fa-xl" style="color: #bd0000"></i> Exportar a PDF
+                </button>
+            </div>
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
 </section>
@@ -56,6 +64,7 @@
                                     <th>CLIENTE</th>
                                     <th>DESCRIPCION</th>
                                     <th>ESTADO</th>
+                                    <th>NOTA</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -325,11 +334,20 @@
                     let texto = estadoText[estado] || 'default';
                     // let tooltip = tooltipText[estado] || 'default';
 
+                    // Solo muestra el texto limpio para exportaciones
+
                     return `<span class='alert alert-default-${clase}' data-html='true' data-toggle='tooltip' title='${concatenatedTooltipText}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
+
                 }
             },
             {
                 targets: 5,
+                "data": "nota",
+                visible: false,
+            },
+
+            {
+                targets: 6,
                 "orderable": false,
                 responsivePriority: 2,
                 data: "acciones",
@@ -371,11 +389,131 @@
                     );
                 },
             },
+
         ],
+        buttons: [{
+                extend: "excelHtml5",
+                exportOptions: {
+                    columns: ":not(:last-child)",
+                    search: "applied",
+                    order: "applied",
+                    format: {
+                        body: function(data, row, column, node) {
+                            // Si es la columna ESTADO (ajusta el índice si es necesario)
+                            if (column === 4) {
+                                // Extrae solo el texto del HTML
+                                var div = document.createElement("div");
+                                div.innerHTML = data;
+                                return div.textContent || div.innerText || "";
+                            }
+                            return data;
+                        }
+                    },
+                },
+                text: "<i class='fa-regular fa-file-xls fa-xl'style='color: #0a8f00'></i>",
+                titleAttr: "Exportar a Excel",
+                title: "LISTADO DE ORDENES",
+                className: "btn btn-light",
+                format: {
+                        body: function(data, row, column, node) {
+                            // Si es la columna ESTADO (ajusta el índice si es necesario)
+                            if (column === 4) {
+                                // Extrae solo el texto del HTML
+                                var div = document.createElement("div");
+                                div.innerHTML = data;
+                                return div.textContent || div.innerText || "";
+                            }
+                            return data;
+                        }
+                    },
+            },
+            {
+                extend: "pdfHtml5",
+                exportOptions: {
+                    columns: ":visible:not(:last-child)",
+                    search: "applied",
+                    order: "applied",
+                },
+                text: "<i class='fa-regular fa-file-pdf fa-xl' style='color: #bd0000'></i>",
+                titleAttr: "Exportar a PDF",
+                className: "btn btn-light",
+                title: "LISTADO DE ORDENES",
+                customize: function(doc) {
+                    var now = new Date();
+                    var jsDate = now.getDate() + "/" + (now.getMonth() + 1) + "/" + now.getFullYear();
+                    doc.content.splice(0, 1);
+                    doc.pageMargins = [40, 90, 40, 50];
+                    doc["header"] = function() {
+                        return {
+                            columns: [{
+                                    alignment: "left",
+                                    text: "LISTADO DE ORDENES",
+                                    fontSize: 14,
+                                    margin: [20, 25],
+                                },
+                                {
+                                    alignment: "right",
+                                    margin: [20, 0],
+                                    text: ["Creado el: ", {
+                                        text: jsDate.toString()
+                                    }],
+                                },
+
+                            ],
+                            margin: 20,
+                        };
+                    };
+
+                    var objLayout = {};
+                    objLayout["hLineWidth"] = function(i) {
+                        return 1;
+                    };
+                    objLayout["vLineWidth"] = function(i) {
+                        return 0.5;
+                    };
+                    objLayout["hLineColor"] = function(i) {
+                        return "#aaa";
+                    };
+                    objLayout["vLineColor"] = function(i) {
+                        return "#aaa";
+                    };
+                    doc.content[0].layout = objLayout;
+
+                    doc["footer"] = function(page, pages) {
+                        return {
+                            columns: [{
+                                alignment: "right",
+                                text: [
+                                    "pag ",
+                                    {
+                                        text: page.toString()
+                                    },
+                                    " de ",
+                                    {
+                                        text: pages.toString()
+                                    },
+                                ],
+                            }, ],
+                            margin: [20, 10, 40, 10],
+                        };
+                    };
+                },
+            },
+        ]
     }
 
     $(document).ready(function() {
         let anio = year;
+
+        $('#btnExportExcel').on('click', function() {
+            tabla.button('.buttons-excel').trigger();
+        });
+        $('#btnExportPDF').on('click', function() {
+            tabla.button('.buttons-pdf').trigger();
+        });
+        $('#btnColVis').on('click', function() {
+            tabla.button('.buttons-colvis').trigger();
+        });
 
         if (!$.fn.DataTable.isDataTable('#tblOrden')) {
             tabla = $("#tblOrden").DataTable({

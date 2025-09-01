@@ -635,22 +635,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 },
             },
             {
-                extend: "print",
-                exportOptions: {
-                    columns: ":visible:not(:last-child)",
-                    search: "applied",
-                    order: "applied"
-                },
-                oSelectorOpts: {
-                    filter: "applied",
-                    order: "current"
-                },
-                text: "<i class='fa fa-print fa-xl'</i>",
-                titleAttr: "Imprimir",
-                className: "btn btn-light",
-                title: "LISTADO DE PRODUCTOS",
-            },
-            {
                 extend: "colvis",
                 className: "btn btn-light font-weight-bold",
                 columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
