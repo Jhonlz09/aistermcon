@@ -362,7 +362,7 @@
                     };
 
                     let estado = row.estado_obra;
-                    let ruta = row.ruta;
+                    let ruta = row.pdf_orden;
                     let clase = estadoClases[estado];
                     // let btnEstado = estado === '0' ? '' : 'btnEstado';
                     // let data_modal = estado == '3' ? '' : ""
@@ -414,7 +414,15 @@
                 titleAttr: "Exportar a Excel",
                 title: "LISTADO DE ORDENES",
                 className: "btn btn-light",
-                format: {
+
+            },
+            {
+                extend: "pdfHtml5",
+                exportOptions: {
+                    columns: ":not(:last-child)",
+                    search: "applied",
+                    order: "applied",
+                    format: {
                         body: function(data, row, column, node) {
                             // Si es la columna ESTADO (ajusta el índice si es necesario)
                             if (column === 4) {
@@ -426,13 +434,6 @@
                             return data;
                         }
                     },
-            },
-            {
-                extend: "pdfHtml5",
-                exportOptions: {
-                    columns: ":visible:not(:last-child)",
-                    search: "applied",
-                    order: "applied",
                 },
                 text: "<i class='fa-regular fa-file-pdf fa-xl' style='color: #bd0000'></i>",
                 titleAttr: "Exportar a PDF",
@@ -505,15 +506,7 @@
     $(document).ready(function() {
         let anio = year;
 
-        $('#btnExportExcel').on('click', function() {
-            tabla.button('.buttons-excel').trigger();
-        });
-        $('#btnExportPDF').on('click', function() {
-            tabla.button('.buttons-pdf').trigger();
-        });
-        $('#btnColVis').on('click', function() {
-            tabla.button('.buttons-colvis').trigger();
-        });
+
 
         if (!$.fn.DataTable.isDataTable('#tblOrden')) {
             tabla = $("#tblOrden").DataTable({
@@ -529,6 +522,8 @@
                 ...configuracionTable
             });
 
+
+
             tabla.on('draw.dt', function() {
                 if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
                     const b = document.body;
@@ -543,6 +538,14 @@
                 localStorage.setItem('orden', JSON.stringify(tablaData));
             });
         }
+
+
+        $('#btnExportExcel').on('click', function() {
+            tabla.button('.buttons-excel').trigger();
+        });
+        $('#btnExportPDF').on('click', function() {
+            tabla.button('.buttons-pdf').trigger();
+        });
 
         $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboOrdenEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"></select> </div>  </div>');
 

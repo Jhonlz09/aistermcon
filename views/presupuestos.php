@@ -162,8 +162,8 @@
                                     <label class="combo" style="font-size: 1.15rem;">
                                         <i class="fa-solid fa-file-import"></i> Orden de Trabajo (PDF/Excel)
                                     </label>
-                                    <div id="dropzone-orden" class="dropzone" style="min-height: 80px; background: #f6f6f6; border: 2px dashed #b3b3b3;">
-                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
+                                    <div id="dropzone-orden" class="dropzone" style="min-height:216px; background: #f6f6f6; border: 2px dashed #b3b3b3;">
+                                        <div style="margin-block:4.6em;" class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
                                     </div>
                                     <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
                                 </div>
@@ -172,8 +172,8 @@
                                     <label class="combo" style="font-size: 1.15rem;">
                                         <i class="fa-solid fa-file-import"></i> Presupuestos (PDF/Excel)
                                     </label>
-                                    <div id="dropzone-presupuesto" class="dropzone" style="min-height: 80px; background: #f6f6f6; border: 2px dashed #b3b3b3;">
-                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
+                                    <div id="dropzone-presupuesto" class="dropzone" style="min-height:216px; background: #f6f6f6; border: 2px dashed #b3b3b3;">
+                                        <div style="margin-block:4.6em;" class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
                                     </div>
                                     <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
                                 </div>
@@ -468,7 +468,16 @@
             acceptedFiles: ".pdf,.xls,.xlsx",
             autoProcessQueue: false,
             addRemoveLinks: true,
-            dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel"
+            dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel",
+            init: function() {
+                this.on("addedfile", function(file) {
+                    // Busca el contenedor de imagen generado por Dropzone
+                    var dzImage = file.previewElement.querySelector('.dz-image');
+                    if (dzImage) {
+                        dzImage.innerHTML = getFileIconSVG(file);
+                    }
+                });
+            }
         });
 
         $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboPreEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"><option value="null">TODO</option><option value="pendiente">PENDIENTE</option><option value="rechazado">NO APROBADO</option><option value="aprobado">APROBADO</option> </select> </div>  </div>');
