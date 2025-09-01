@@ -1729,7 +1729,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="6"
+                        maxlength="7"
                         class="form-control material text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2054,7 +2054,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="7"
                         class="form-control material text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2074,7 +2074,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control trans text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2094,7 +2094,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control ali text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2114,7 +2114,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control hosp text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2134,7 +2134,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control guard text-center d-inline"
                         value="${data || ''}">`;
                         }
@@ -2154,7 +2154,7 @@
                         oninput="validarNumber(this,/[^0-9.]/g)"
                         onpaste="validarPegado(this, event)"
                         inputmode="numeric"
-                        maxlength="5"
+                        maxlength="6"
                         class="form-control agua text-center d-inline"
                         value="${data || ''}">`;
                         }
