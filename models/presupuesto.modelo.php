@@ -12,27 +12,26 @@ class ModeloPresupuesto
     static public function mdlListarPresupuesto($anio, $estado)
     {
         try {
-            $consulta = "SELECT p.id, p.nombre, 
+            $consulta = "SELECT p.id, p.num_orden, 
                         c.nombre AS cliente, 
                         p.descripcion,  
                         p.precio_iva,
-                        p.precio,
-                        p.state,
-                        p.pdf_pre, 
-                        TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
-                        COALESCE(TO_CHAR(p.fecha_pen, 'DD/MM/YYYY'), '') AS fecha_pen, 
-                        COALESCE(TO_CHAR(p.fecha_no, 'DD/MM/YYYY'), '') AS fecha_no, 
-                        COALESCE(TO_CHAR(p.fecha_apr, 'DD/MM/YYYY'), '') AS fecha_apr,
-                        p.nota, 
+                        p.precio_total,
                         p.estado,
+                        p.pdf_ord, 
+                        p.xls_ord,
+                        p.pdf_pre, 
+                        p.xls_pre,
+                        TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
+                        p.nota, 
                         p.id_cliente, 
                         '' AS acciones
                     FROM tblpresupuesto p
                     JOIN tblclientes c ON p.id_cliente = c.id
-                    WHERE p.estado = true
+                    WHERE p.anulado = false
                     AND EXTRACT(YEAR FROM p.fecha) = :anio ";
             if ($estado !== 'null') {
-                $consulta .= "AND p.status = :estado ";
+                $consulta .= "AND p.estado = :estado ";
             }
             $consulta .= "ORDER BY p.id;";
 

@@ -155,8 +155,8 @@
                                                     <th class="text-center">CANT.</th>
                                                     <th>UND</th>
                                                     <th>DESCRIPCION</th>
-                                                    <th>P. TOTAL</th>
-                                                    <th class="text-nowrap">P. UNIT.</th>
+                                                    <th>P. UNIT.</th>
+                                                    <th class="text-nowrap">P. TOTAL</th>
                                                     <th class="text-center">ACCIONES</th>
                                                 </tr>
                                             </thead>
@@ -512,7 +512,7 @@
                     targets: 1, // Input para cantidad
                     className: "text-center",
                     render: function(data, type, row) {
-                        return `<input type="text" class="form-control text-center cantidad" value="${data || 1}" 
+                        return `<input type="text" class="form-control text-center d-inline cantidad" value="${data || 1}" 
                             style="width:72px;border-bottom-width:2px;padding:0;font-size:1.2rem" maxlength="6"
                             inputmode="numeric" onfocus="selecTexto(this)" autocomplete="off" oninput="validarNumber(this,/[^0-9.]/g)">`;
                     }
@@ -534,19 +534,21 @@
                     }
                 },
                 {
-                    targets: 4, // Input para precio total
-                    className: "text-center text-nowrap",
+                    targets: 4, // Input para precio unitario
+                    className: "text-center txt-wrap-sm",
                     render: function(data, type, row) {
-                        return `$<input type="text" class="form-control text-center d-inline precio_final" value="${data || ''}" 
-                            style="width:82px;border-bottom-width:2px;padding:0;font-size:1.2rem" maxlength="8"
-                            inputmode="numeric" onfocus="selecTexto(this)" autocomplete="off" oninput="validarNumber(this,/[^0-9.]/g)" onpaste="validarPegado(this, event)">`;
+                        return `$<input type="text" class="form-control text-center  d-inline precio_uni" value="${data || ''}" 
+            style="width:82px;border-bottom-width:2px;padding:0;font-size:1.2rem" maxlength="8"
+            inputmode="numeric" onfocus="selecTexto(this)" autocomplete="off" 
+            oninput="validarNumber(this,/[^0-9.]/g)" onpaste="validarPegado(this, event)">`;
                     }
                 },
                 {
-                    targets: 5, // Precio unitario
-                    className: "text-center",
+                    targets: 5, // Precio total (solo visual, calculado)
+                    className: "text-center text-nowrap",
                     render: function(data, type, row) {
-                        return `<span class="precio_uni">${data || '$0.00'}</span>`;
+                        // El precio total se calcula en el evento, aquí solo se muestra
+                        return `<span class="precio_final">${data || '0.00'}</span>`;
                     }
                 },
                 {
@@ -779,19 +781,19 @@
             }
         });
 
-        $('#tblSolicitud').on('input keydown paste', '.cantidad, .precio_final', function() {
+        $('#tblSolicitud').on('input keydown paste', '.cantidad, .precio_uni', function() {
             const $row = $(this).closest('tr');
             let cantidad = parseFloat($row.find('.cantidad').val()) || 0;
-            let precio = parseFloat($row.find('.precio_final').val()) || 0;
-            let pre_uni = 0; // Valor por defecto
+            let precio_unitario = parseFloat($row.find('.precio_uni').val()) || 0;
+            let precio = 0; // Valor por defecto
 
-            if (cantidad !== 0 && precio !== 0) {
+            if (cantidad !== 0 && precio_unitario !== 0) {
                 // Si ambos valores son distintos de cero, realizamos la operación
-                pre_uni = precio / cantidad;
+                precio = precio_unitario * cantidad;
             }
 
             // Mostrar el precio unitario
-            $row.find('.precio_uni').text('$' + pre_uni.toFixed(2));
+            $row.find('.precio_final').text('$' + precio.toFixed(2));
             actualizarSubtotal();
         });
 
@@ -803,7 +805,7 @@
             let precio_total = 0;
             // Itera sobre todas las filas y suma los precios finales
             $('#tblSolicitud tbody tr').each(function() {
-                let precio = parseFloat($(this).find('.precio_final').val()) || 0;
+                let precio = parseFloat($(this).find('.precio_final').text().replace(/[$,]/g, '')) || 0;
                 // let cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
                 precio_total += precio; // Sumar el precio total de cada fila
             });
@@ -1123,7 +1125,7 @@
 
                 if (subtotal !== 0) {
                     console.log('subtotal en solic compra', subtotal)
-                    clases.push('precio_final');
+                    clases.push('precio_uni');
                     formData.append('subtotal', subtotal);
                     formData.append('iva', iva);
                     formData.append('impuesto', impuestos);
@@ -1217,7 +1219,7 @@
                     let nuevaData = {};
 
                     // Obtén los valores actuales de las clases editables
-                    ['cantidad', 'id_unidad', 'descripcion', 'precio_final'].forEach(clase => {
+                    ['cantidad', 'id_unidad', 'descripcion', 'precio_uni'].forEach(clase => {
                         let input = row.node().querySelector('.' + clase);
                         nuevaData[clase] = input ? input.value.trim() : '';
                     });

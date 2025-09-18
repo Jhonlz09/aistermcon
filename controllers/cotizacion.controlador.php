@@ -61,12 +61,6 @@ class ControladorCotizacion
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    // public function actualizarCotizacion()
-    // {
-    //     $data = ModeloCotizacion::mdlActualizarFilasCotizacion($this->filas, $this->id, $this->subtotal, $this->total, $this->iva, $this->impuestos, $this->isIva, $this->isInputs, $this->isFilas, $this->comprador, $this->fecha, $this->id_prove, $this->desc);
-    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    // }
-
     public function actualizarCotizacion($params)
     {
        

@@ -54,9 +54,11 @@
                                     <th>NRO. ORDEN</th>
                                     <th>CLIENTE</th>
                                     <th>DESCRIPCION</th>
-                                    <th>PRECIO IVA</th>
-                                    <th>PRECIO TOTAL</th>
+                                    <th>PVP SIN IVA</th>
+                                    <th>PVP CON IVA</th>
                                     <th>ESTADO</th>
+                                    <th class="text-center"><i class="fas fa-tickets fa-lg"></i>ORDEN</th>
+                                    <th class="text-center"><i class="fas fa-money-check-dollar-pen fa-lg"></i> PRESUPUESTO </th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -382,20 +384,83 @@
             {
                 targets: 6,
                 orderable: false,
+                render: function(data, type, row, full, meta) {
+                    let clase = data === 'PENDIENTE' ? 'warning' : data === 'NO APROBADO' ? 'danger' : data === 'APROBADO' ? 'success' : 'secondary';
+                    return `<span class='alert alert-default-${clase}'>${data}</span>`;
+                }
             },
             {
                 targets: 7,
                 orderable: false,
+                render: function(data, type, row, full, meta) {
+                    let pdf_ord = row.pdf_ord;
+                    let xls_ord = row.xls_ord;
+                    let html = "";
 
+                    if (pdf_ord) {
+                        html += `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(pdf_ord)}&route=ordenes' target='_blank' style='font-size:1.4rem;padding:3px 6.8px;color:red' class='btn btnDescargar' title='PDF'>
+                        <i class='fas fa-file-pdf'></i>
+                    </a>`;
+                    }
+                    if (xls_ord) {
+                        html += `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(xls_ord)}&route=ordenes' target='_blank' style='font-size:1.4rem;padding:3px 6.8px;color:green' class='btn btnDescargar' title='Excel'>
+                        <i class='fas fa-file-excel'></i>
+                    </a>`;
+                    }
+                    if (!pdf_ord && !xls_ord) {
+                        html = `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn'>
+                        <i class='fas fa-file-slash'></i>
+                    </span>`;
+                    }
+                    return html;
+                }
             },
             {
                 targets: 8,
                 orderable: false,
-                data: "acciones",
+                render: function(data, type, row, full, meta) {
+                    let pdf_pre = row.pdf_pre;
+                    let xls_pre = row.xls_pre;
+                    let html = "";
+
+                    if (pdf_pre) {
+                        html += `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(pdf_pre)}&route=presupuestos' target='_blank' style='font-size:1.4rem;padding:3px 6.8px;color:#a3161f' class='btn btnDescargar' title='PDF'>
+                        <i class='fas fa-file-pdf'></i>
+                    </a>`;
+                    }
+                    if (xls_pre) {
+                        html += `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(xls_pre)}&route=presupuestos' target='_blank' style='font-size:1.4rem;padding:3px 6.8px;color:#155724' class='btn btnDescargar' title='Excel'>
+                        <i class='fas fa-file-xls'></i>
+                    </a>`;
+                    }
+                    if (!pdf_pre && !xls_pre) {
+                        html = `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn'>
+                        <i class='fas fa-file-slash'></i>
+                    </span>`;
+                    }
+                    return html;
+                }
+            },
+            {
+                targets: 9,
+                orderable: false,
+                render: function(data, type, row, full, meta) {
+                    let botones = '';
+                    if (editar) {
+                        botones += "<button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
+                            " <i class='fa-solid fa-pencil'></i>" +
+                            "</button>";
+                    }
+                    if (eliminar) {
+                        botones += "<button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
+                            " <i class='fa fa-trash'></i>" +
+                            "</button>";
+                    }
+                    return "<center style='white-space: nowrap;'>" + botones + "</center>";
+                }
             },
         ],
     }
-
     $(document).ready(function() {
         let anio = year;
         let estado_presupuesto = 'null';

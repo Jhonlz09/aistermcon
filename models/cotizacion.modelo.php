@@ -98,7 +98,7 @@ class ModeloCotizacion
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("SELECT c.id,cantidad, c.id_unidad, c.descripcion, c.precio_final::NUMERIC, c.precio_uni, '' as acciones, u.nombre FROM tbldetalle_cotizacion c
+            $a = $conexion->prepare("SELECT c.id,cantidad, c.id_unidad, c.descripcion, c.precio_uni::NUMERIC, c.precio_final, '' as acciones, u.nombre FROM tbldetalle_cotizacion c
             JOIN tblunidad u ON c.id_unidad= u.id  WHERE c.id_cotizacion=:id ORDER BY c.id");
             $a->bindParam(":id", $num_co, PDO::PARAM_INT);
             $a->execute();
@@ -188,7 +188,7 @@ class ModeloCotizacion
             SET cantidad = :cantidad,
                 id_unidad = :id_unidad,
                 descripcion = :descripcion,
-                precio_final = :precio_final
+                precio_uni = :precio_uni
             WHERE id = :id";
             // Actualizar las filas en tbldetalle_cotizacion
             foreach ($filas as $fila) {
@@ -197,7 +197,7 @@ class ModeloCotizacion
                 $a->bindParam(":cantidad", $fila['cantidad'], PDO::PARAM_STR);
                 $a->bindParam(":id_unidad", $fila['id_unidad'], PDO::PARAM_INT);
                 $a->bindParam(":descripcion", $fila['descripcion'], PDO::PARAM_STR);
-                $a->bindParam(":precio_final", $fila['precio_final'], PDO::PARAM_STR);
+                $a->bindParam(":precio_uni", $fila['precio_uni'], PDO::PARAM_STR);
                 $a->execute();
             }
             $consultaMotivo = "UPDATE tblcotizacion

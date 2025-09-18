@@ -89,11 +89,6 @@ class ajaxRegistro
         $data = ModeloRegistro::mdlActualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $fecha_retorno, $motivo,  $tras, $img);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    // public function editarFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img)
-    // {
-    //     $data = ModeloRegistro::mdlActualizarDatosFabricacion($datos, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $motivo, $img);
-    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    // }
 }
 
 if (isset($_POST["accion"])) {

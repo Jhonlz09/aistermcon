@@ -473,7 +473,7 @@ class ModeloRegistro
                 // list($cantidad, $unidad, $descripcion, $precio) = explode(',', $data);
                 $cantidad = isset($data['cantidad']) ? (float)$data['cantidad'] : 0;
                 $descripcion = isset($data['descripcion']) ? trim($data['descripcion']) : '';
-                $precio = isset($data['precio_final']) ? (float)$data['precio_final'] : 0;
+                $precio = isset($data['precio_uni']) ? (float)$data['precio_uni'] : 0;
 
                 if ($cantidad == 0) {
                     throw new Exception("La cantidad de los productos no puede ser 0");
@@ -779,9 +779,9 @@ class ModeloRegistro
             $cantidad = (float)$data['cantidad'];
             $unidad = $data['id_unidad'];
             $descripcion = mb_strtoupper(trim($data['descripcion']), 'UTF-8');
-            $precio = (float)$data['precio_final'];
+            $precio = (float)$data['precio_uni'];
 
-            $stm = $conexion->prepare("INSERT INTO tbldetalle_cotizacion(id_cotizacion, cantidad, id_unidad, descripcion, precio_final) VALUES(:id_cotizacion, :cantidad, :unidad, :descripcion, :precio)");
+            $stm = $conexion->prepare("INSERT INTO tbldetalle_cotizacion(id_cotizacion, cantidad, id_unidad, descripcion, precio_uni) VALUES(:id_cotizacion, :cantidad, :unidad, :descripcion, :precio)");
             $stm->bindParam(':id_cotizacion', $id_cotizacion, PDO::PARAM_INT);
             $stm->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
             $stm->bindParam(':unidad', $unidad, PDO::PARAM_INT);

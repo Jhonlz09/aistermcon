@@ -1460,41 +1460,6 @@ svg {
 
 }
 
-/* @media (min-width: 838px) and (max-width:860px) {
-    #select2-cboOrden-container .select2-selection__placeholder {
-        font-size: 1.06rem;
-    }
-
-} */
-
-/* @media (min-width: 825px) and (max-width:838px) {
-    #select2-cboOrden-container .select2-selection__placeholder {
-        font-size: 1.02rem;
-    }
-
-} */
-
-/* @media (min-width: 809px) and (max-width:824px) {
-    #select2-cboOrden-container .select2-selection__placeholder {
-        font-size: .98rem;
-    }
-
-} */
-
-/* @media (min-width: 779px) and (max-width:809px) {
-    #select2-cboOrden-container .select2-selection__placeholder {
-        font-size: 0.94rem;
-    }
-
-} */
-
-/* @media (min-width: 768px) and (max-width:779px) {
-    #select2-cboOrden-container .select2-selection__placeholder {
-        font-size: 0.9rem;
-    }
-
-} */
-
 .form-group label {
     font-size: 1.15rem;
     white-space: nowrap;
