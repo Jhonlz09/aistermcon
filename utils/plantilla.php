@@ -196,28 +196,28 @@
         </div>
         <script>
             const estadoClases = {
-                0: 'light',
-                1: 'warning',
-                2: 'info',
-                3: 'success',
-                4: 'dark'
+                'ESPERA': 'light',
+                'OPERACION': 'yellow',
+                'FINALIZADO': 'info',
+                'FACTURADO': 'success',
+                'GARANTIA': 'gray-dark'
             };
 
             const estadoIcon = {
-                0: 'clock',
-                1: 'person-digging',
-                2: 'check-to-slot',
-                3: 'money-check-dollar',
-                4: 'award'
+                'ESPERA': 'clock',
+                'OPERACION': 'person-digging',
+                'FINALIZADO': 'check-to-slot',
+                'FACTURADO': 'money-check-dollar',
+                'GARANTIA': 'award'
             };
 
-            const estadoText = {
-                0: 'EN ESPERA',
-                1: 'EN OPERACIÓN',
-                2: 'FINALIZADO',
-                3: 'FACTURADO',
-                4: 'GARANTÍA'
-            };
+            // const estadoText = {
+            //     0: 'ESPERA',
+            //     1: 'EN OPERACIÓN',
+            //     2: 'FINALIZADO',
+            //     3: 'FACTURADO',
+            //     4: 'GARANTÍA'
+            // };
 
             const body = document.querySelector('body'),
                 html = document.querySelector('html'),
@@ -854,12 +854,6 @@
                 });
                 cargarCombo('Clientes', '', 1, true).then(datos_ => {
                     datos_cliente = datos_;
-                    // $(cboClienteEntrada).select2({
-                    //     placeholder: 'SELECCIONE',
-                    //     width: '100%',
-                    //     data: datos_cliente
-                    // })
-                    // setChange(cboClienteEntrada, 0)
                 });
 
                 cargarCombo('Conductor', conductorPorDefecto, 2);

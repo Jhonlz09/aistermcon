@@ -311,9 +311,9 @@
                 className: "text-center",
                 "orderable": false,
                 render: function(data, type, row, full, meta) {
-                    let estado = row.estado_obra;
+                    let texto = row.estado;
                     let fecha_cre = row.fecha;
-                    let fecha_ini = row.fecha_ini === '' ? ' -' : row.fecha_ini;
+                    let fecha_ope = row.fecha_ope === '' ? ' -' : row.fecha_ope;
                     let fecha_fin = row.fecha_fin === '' ? ' -' : row.fecha_fin;
                     let fecha_fac = row.fecha_fac === '' ? ' -' : row.fecha_fac;
                     let fecha_gar = row.fecha_gar === '' ? ' -' : row.fecha_gar;
@@ -321,7 +321,7 @@
 
                     const tooltipText = {
                         0: 'Fecha de creacion: ' + fecha_cre,
-                        1: 'Fecha de operación: ' + fecha_ini,
+                        1: 'Fecha de operación: ' + fecha_ope,
                         2: 'Fecha de finalización: ' + fecha_fin,
                         3: 'Fecha de facturación: ' + fecha_fac,
                         4: 'Fecha de garantía: ' + fecha_gar,
@@ -329,9 +329,9 @@
                     };
 
                     let concatenatedTooltipText = Object.values(tooltipText).join('<br>');
-                    let clase = estadoClases[estado] || 'default';
-                    let icon = estadoIcon[estado] || 'default';
-                    let texto = estadoText[estado] || 'default';
+                    let clase = estadoClases[texto] || 'default';
+                    let icon = estadoIcon[texto] || 'default';
+                   
                     // let tooltip = tooltipText[estado] || 'default';
 
                     // Solo muestra el texto limpio para exportaciones
@@ -353,19 +353,9 @@
                 data: "acciones",
                 visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
-                    const estadoClases = {
-                        0: 'light',
-                        1: 'yellow',
-                        2: 'info',
-                        3: 'success',
-                        4: 'gray-dark'
-                    };
-
-                    let estado = row.estado_obra;
-                    let ruta = row.pdf_orden;
+                    let estado = row.estado;
+                    let ruta = row.pdf_ord;
                     let clase = estadoClases[estado];
-                    // let btnEstado = estado === '0' ? '' : 'btnEstado';
-                    // let data_modal = estado == '3' ? '' : ""
                     return (
                         "<center style='white-space: nowrap;'>" +
                         (editar ?
@@ -389,7 +379,6 @@
                     );
                 },
             },
-
         ],
         buttons: [{
                 extend: "excelHtml5",
@@ -414,7 +403,6 @@
                 titleAttr: "Exportar a Excel",
                 title: "LISTADO DE ORDENES",
                 className: "btn btn-light",
-
             },
             {
                 extend: "pdfHtml5",
@@ -632,7 +620,7 @@
             data: datos_cliente
         })
 
-        console.log(datos_cliente)
+        // console.log(datos_cliente)
 
 
         $(cboOrdenEstadoFilter).select2({
@@ -709,16 +697,14 @@
         $('#tblOrden tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             accion = 2;
-            // fechas_estados.style.display = '';
             div_fecha_new.style.display = 'none';
             cambiarModal(span, ' Editar Orden', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             nombre.value = row["descripcion"];
-            // fecha_cre.value = convertirFecha(row["fecha"]);
-            orden_nro.value = row["nombre"];
+            orden_nro.value = row["num_orden"];
             fileInput.value = '';
 
-            setChange(cboClienteOrden, row["id_cliente"]);
+            setChange(cboClienteOrden, row["cliente"]);
             form.classList.remove('was-validated');
         });
 

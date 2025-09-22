@@ -35,7 +35,6 @@ class ModeloPresupuesto
             }
             $consulta .= "ORDER BY p.id;";
 
-
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             if ($estado !== 'null') {
@@ -47,124 +46,6 @@ class ModeloPresupuesto
             return "Error en la consulta: " . $e->getMessage();
         }
     }
-
-    // static public function mdlAgregarPresupuesto($nombre, $id_cliente, $presupuesto , $ruta, $fecha)
-    // {
-    //     try {
-    //         // Conexión a la base de datos e inserción
-    //         $conexion = Conexion::ConexionDB();
-    //         $a = $conexion->prepare("INSERT INTO tblpresupuesto (descripcion, id_cliente, nombre, ruta, fecha, estado_obra) VALUES (:des, :id_cliente, :presupuesto , :ruta, :fecha, 0)");
-    //         $a->bindParam(":des", $nombre, PDO::PARAM_STR);
-    //         $a->bindParam(":presupuesto ", $presupuesto , PDO::PARAM_STR);
-    //         $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
-    //         $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
-    //         $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
-    //         $a->execute();
-
-    //         // Si la inserción es exitosa, enviamos el correo
-    //         $correoEnviado = self::enviarCorreo($id_cliente, $nombre, $presupuesto , $ruta, $fecha);
-
-    //         // Devuelve la respuesta dependiendo del resultado del envío del correo
-    //         if ($correoEnviado) {
-    //             return array(
-    //                 'status' => 'success',
-    //                 'm' => 'La presupuesto  de trabajo se agregó y se envió el correo correctamente.'
-    //             );
-    //         } else {
-    //             return array(
-    //                 'status' => 'warning',
-    //                 'm' => 'La presupuesto  de trabajo se agregó, pero no se pudo enviar el correo.'
-    //             );
-    //         }
-    //     } catch (PDOException $e) {
-    //         if ($e->getCode() == '23505') {
-    //             return array(
-    //                 'status' => 'danger',
-    //                 'm' => 'La presupuesto  de trabajo ya existe para el cliente seleccionado.'
-    //             );
-    //         } else {
-    //             return array(
-    //                 'status' => 'danger',
-    //                 'm' => 'No se pudo agregar la presupuesto  de trabajo: ' . $e->getMessage()
-    //             );
-    //         }
-    //     }
-    // }
-
-    // static private function enviarCorreo($id_cliente, $nombre, $presupuesto , $ruta, $fecha)
-    // {
-    //     $mail = new PHPMailer(true);
-
-    //     try {
-    //         // Configuración del servidor SMTP
-    //         $mail->isSMTP();
-    //         $mail->Host = 'smtp.gmail.com'; // Servidor SMTP
-    //         $mail->SMTPAuth = true;
-    //         $mail->Username = 'jdleon5@tes.edu.ec'; // Tu correo Gmail
-    //         $mail->Password = 'meteoro123'; // Contraseña de Gmail (o contraseña de aplicación)
-    //         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    //         $mail->Port = 587;
-
-    //         // Configuración del remitente y destinatario
-    //         $mail->setFrom('jdleon5@tes.edu.ec', 'Jhon Leon');
-    //         $mail->addAddress('jhonleon2001@gmail.com', 'Jhon Leon'); // Cambia por el correo del cliente o destinatario
-
-    //         // Contenido del correo
-    //         $mail->isHTML(true);
-    //         $mail->Subject = 'Nueva presupuesto  de trabajo abierta';
-    //         $mail->Body = "
-    //         <h2>Detalles de la nueva presupuesto :</h2>
-    //         <p><strong>Cliente ID:</strong> {$id_cliente}</p>
-    //         <p><strong>Nombre:</strong> {$nombre}</p>
-    //         <p><strong>Presupuesto:</strong> {$presupuesto }</p>
-    //         <p><strong>Ruta:</strong> {$ruta}</p>
-    //         <p><strong>Fecha:</strong> {$fecha}</p>";
-
-    //         // Enviar el correo
-    //         $mail->send();
-    //         return true;
-    //     } catch (Exception $e) {
-    //         // Manejo de errores al enviar el correo
-    //         error_log("Error al enviar el correo: {$mail->ErrorInfo}");
-    //         return false;
-    //     }
-    // }
-
-
-    // static public function mdlAgregarPresupuesto($nombre, $id_cliente, $presupuesto , $ruta, $fecha)
-    // {
-    //     try {
-    //         // Conexión a la base de datos e inserción
-    //         $conexion = Conexion::ConexionDB();
-    //         $a = $conexion->prepare("INSERT INTO tblpresupuesto (descripcion, id_cliente, nombre, ruta, fecha, estado_obra) VALUES (:des, :id_cliente, :presupuesto , :ruta, :fecha, 0)");
-    //         $a->bindParam(":des", $nombre, PDO::PARAM_STR);
-    //         $a->bindParam(":presupuesto ", $presupuesto , PDO::PARAM_STR);
-    //         $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
-    //         $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
-    //         $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
-    //         $a->execute();
-
-    //         // Si la inserción es exitosa, enviamos el correo en segundo plano
-    //         self::enviarCorreoEnSegundoPlano($id_cliente, $nombre, $orden, $ruta, $fecha);
-
-    //         return array(
-    //             'status' => 'success',
-    //             'm' => 'La orden de trabajo se agregó correctamente, el correo se está enviando en segundo plano.'
-    //         );
-    //     } catch (PDOException $e) {
-    //         if ($e->getCode() == '23505') {
-    //             return array(
-    //                 'status' => 'danger',
-    //                 'm' => 'La orden de trabajo ya existe para el cliente seleccionado.'
-    //             );
-    //         } else {
-    //             return array(
-    //                 'status' => 'danger',
-    //                 'm' => 'No se pudo agregar la orden de trabajo: ' . $e->getMessage()
-    //             );
-    //         }
-    //     }
-    // }
 
     static public function mdlAgregarPresupuesto($nombre, $id_cliente, $cliente, $presupuesto, $ruta, $fecha)
     {

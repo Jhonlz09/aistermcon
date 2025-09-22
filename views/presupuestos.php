@@ -56,7 +56,7 @@
                                     <th>DESCRIPCION</th>
                                     <th>PVP SIN IVA</th>
                                     <th>PVP CON IVA</th>
-                                    <th>ESTADO</th>
+                                    <th class="text-center">ESTADO</th>
                                     <th class="text-center"><i class="fas fa-tickets fa-lg"></i>ORDEN</th>
                                     <th class="text-center"><i class="fas fa-money-check-dollar-pen fa-lg"></i> PRESUPUESTO </th>
                                     <th class="text-center">ACCIONES</th>
@@ -133,14 +133,14 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="input-data mb-4">
-                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <input autocomplete="off" id="precioSinIva" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fas fa-circle-dollar"></i> Precio <span style="font-size:60%;color: #666666ff;">(sin iva)</span> </label>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="input-data mb-4">
-                                        <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
+                                        <input autocomplete="off" id="precioConIva" class="input-nuevo" type="text" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fas fa-circle-dollar"></i> Precio <span style="font-size:60%;color: #666666ff;">(con iva)</span> </label>
                                     </div>
@@ -314,72 +314,12 @@
                 targets: 4,
                 className: "text-center",
                 "orderable": false,
-                // render: function(data, type, row, full, meta) {
-                //     let estado = row.estado_obra;
-                //     let fecha_cre = row.fecha;
-                //     let fecha_ini = row.fecha_ini === '' ? ' -' : row.fecha_ini;
-                //     let fecha_fin = row.fecha_fin === '' ? ' -' : row.fecha_fin;
-                //     let fecha_fac = row.fecha_fac === '' ? ' -' : row.fecha_fac;
-                //     let fecha_gar = row.fecha_gar === '' ? ' -' : row.fecha_gar;
-                //     let nota = row.nota ?? ' -'; // Asigna '-' si la nota está vacía
-
-                //     const tooltipText = {
-                //         0: 'Fecha de creacion: ' + fecha_cre,
-                //         1: 'Fecha de operación: ' + fecha_ini,
-                //         2: 'Fecha de finalización: ' + fecha_fin,
-                //         3: 'Fecha de facturación: ' + fecha_fac,
-                //         4: 'Fecha de garantía: ' + fecha_gar,
-                //         5: `<strong>NOTA:</strong> ${nota}` // Agrega "NOTA:" en negrita seguido del contenido de `nota`
-                //     };
-
-                //     let concatenatedTooltipText = Object.values(tooltipText).join('<br>');
-                //     let clase = estadoClases[estado] || 'default';
-                //     let icon = estadoIcon[estado] || 'default';
-                //     let texto = estadoText[estado] || 'default';
-                //     return `<span class='alert alert-default-${clase}' data-html='true' data-toggle='tooltip' title='${concatenatedTooltipText}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
-                // }
             },
             {
                 targets: 5,
                 "orderable": false,
                 responsivePriority: 2,
                 visible: mostrarCol ? true : false,
-                // render: function(data, type, row, full, meta) {
-                //     const estadoClases = {
-                //         0: 'light',
-                //         1: 'yellow',
-                //         2: 'info',
-                //         3: 'success',
-                //         4: 'gray-dark'
-                //     };
-
-                //     let estado = row.estado_obra;
-                //     let ruta = row.ruta;
-                //     let clase = estadoClases[estado];
-                //     // let btnEstado = estado === '0' ? '' : 'btnEstado';
-                //     // let data_modal = estado == '3' ? '' : ""
-                //     return (
-                //         "<center style='white-space: nowrap;'>" +
-                //         (editar ?
-                //             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
-                //             " <i class='fa-solid fa-pencil'></i>" : "") +
-                //         "</button> <button type='button' class='btn bg-gradient-" + clase + " btnEstado' data-target='#modal-date' data-toggle='modal'   title='Estado'>" +
-                //         " <i class='fas fa-shuffle'></i>" +
-                //         "</button>" +
-                //         (eliminar ?
-                //             " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
-                //             " <i class='fa fa-trash'></i>" +
-                //             "</button>" : "") +
-                //         (ruta !== '' ?
-                //             " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=uploads" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
-                //             " <i class='fas fa-file-pdf'></i>" +
-                //             "</a>" :
-                //             " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +
-                //             " <i class='fas fa-file-slash'></i>" +
-                //             "</span>") +
-                //         " </center>"
-                //     );
-                // },
             },
             {
                 targets: 6,
@@ -449,10 +389,10 @@
                     if (editar) {
                         botones += "<button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
-                            "</button>";
+                            "</button> " + "<button type='button' class='btn bg-gradient-light btnEstado'  title='Cambiar estado'><i class='fas fa-chart-candlestick'></i></button>"; ;
                     }
                     if (eliminar) {
-                        botones += "<button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
+                        botones += " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
                             "</button>";
                     }
@@ -461,6 +401,7 @@
             },
         ],
     }
+
     $(document).ready(function() {
         let anio = year;
         let estado_presupuesto = 'null';
@@ -492,6 +433,27 @@
                 localStorage.setItem('presupuesto', JSON.stringify(tablaData));
             });
         }
+        let IVA = iva_config / 100;
+        const inputSinIva = document.getElementById("precioSinIva");
+        const inputConIva = document.getElementById("precioConIva");
+
+        inputSinIva.addEventListener("input", () => {
+            if (inputSinIva.value !== "") {
+                const valor = parseFloat(inputSinIva.value);
+                inputConIva.value = (valor * (1 + IVA)).toFixed(2);
+            } else {
+                inputConIva.value = "";
+            }
+        });
+
+        inputConIva.addEventListener("input", () => {
+            if (inputConIva.value !== "") {
+                const valor = parseFloat(inputConIva.value);
+                inputSinIva.value = (valor / (1 + IVA)).toFixed(2);
+            } else {
+                inputSinIva.value = "";
+            }
+        });
 
         function getFileIconSVG(file) {
             // SVG PDF
@@ -525,6 +487,25 @@
                     if (dzImage) {
                         dzImage.innerHTML = getFileIconSVG(file);
                     }
+
+                    // Contar archivos por tipo
+                    let pdfCount = 0,
+                        excelCount = 0;
+                    this.files.forEach(f => {
+                        if (f.type === "application/pdf") pdfCount++;
+                        if (
+                            f.type === "application/vnd.ms-excel" ||
+                            f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        ) excelCount++;
+                    });
+
+                    // Validar máximo 1 PDF y 1 Excel
+                    if ((file.type === "application/pdf" && pdfCount > 1) ||
+                        ((file.type === "application/vnd.ms-excel" || file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") && excelCount > 1) ||
+                        this.files.length > 2) {
+                        this.removeFile(file);
+                        alert("Solo puedes subir 1 archivo PDF y 1 archivo Excel por vez.");
+                    }
                 });
             }
         });
@@ -536,10 +517,25 @@
             dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel",
             init: function() {
                 this.on("addedfile", function(file) {
-                    // Busca el contenedor de imagen generado por Dropzone
                     var dzImage = file.previewElement.querySelector('.dz-image');
                     if (dzImage) {
                         dzImage.innerHTML = getFileIconSVG(file);
+                    }
+                    let pdfCount = 0,
+                        excelCount = 0;
+                    this.files.forEach(f => {
+                        if (f.type === "application/pdf") pdfCount++;
+                        if (
+                            f.type === "application/vnd.ms-excel" ||
+                            f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        ) excelCount++;
+                    });
+
+                    if ((file.type === "application/pdf" && pdfCount > 1) ||
+                        ((file.type === "application/vnd.ms-excel" || file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") && excelCount > 1) ||
+                        this.files.length > 2) {
+                        this.removeFile(file);
+                        alert("Solo puedes subir 1 archivo PDF y 1 archivo Excel por vez.");
                     }
                 });
             }
@@ -601,10 +597,7 @@
             minimumResultsForSearch: -1,
         });
 
-
-
         setChange(cboAnio, anio);
-
         $(cboAnio).on("change", function() {
             let a = this.options[this.selectedIndex].text
             if (a == anio) {
@@ -700,9 +693,11 @@
             id.value = row["id"];
             nombre.value = row["descripcion"];
             // fecha_cre.value = convertirFecha(row["fecha"]);
-            orden_nro.value = row["nombre"];
-            fileInput.value = '';
+            orden_nro.value = row["num_orden"];
+            inputConIva.value = row["precio_total"];
+            inputSinIva.value = row["precio_iva"];
             setChange(cboClienteOrden, row["id_cliente"]);
+           
             form.classList.remove('was-validated');
         });
 
