@@ -231,36 +231,37 @@ function formatInputOrden(input) {
   input.value = value;
 }
 
-function fetchOrderId(nombre, cbo) {
-  $.ajax({
-    url: "controllers/orden.controlador.php", // Cambia 'tu_script_php.php' por la ruta correcta de tu script PHP
-    type: "POST",
-    dataSrc: "",
-    data: {
-      nombre: nombre,
-      accion: 4,
-    },
-    cache: false,
-    dataType: "json",
-    success: function (response) {
-      const cboCli = document.getElementById(cbo);
-      let id_cli = response[0]["id_cliente"];
-      if (id_cli === 0) {
-        cboCli.disabled = false;
-      } else {
-        setChange(cboCli, id_cli);
-        cboCli.disabled = true;
-      }
-    },
-  });
-}
+// function fetchOrderId(nombre, cbo) {
+//   $.ajax({
+//     url: "controllers/orden.controlador.php", // Cambia 'tu_script_php.php' por la ruta correcta de tu script
+//     type: "POST",
+//     dataSrc: "",
+//     data: {
+//       nombre: nombre,
+//       accion: 4,
+//     },
+//     cache: false,
+//     dataType: "json",
+//     success: function (response) {
+//       const cboCli = document.getElementById(cbo);
+//       let id_cli = response[0]["id_cliente"];
+//       if (id_cli === 0) {
+//         cboCli.disabled = false;
+//       } else {
+//         setChange(cboCli, id_cli);
+//         cboCli.disabled = true;
+//       }
+//     },
+//   });
+// }
 
-function fetchOrderId(nombre, callback) {
+function fetchOrderId(nombre, fecha, callback) {
   $.ajax({
     url: "controllers/orden.controlador.php",
     type: "POST",
     data: {
       nombre: nombre,
+      fecha: fecha,
       accion: 4,
     },
     cache: false,

@@ -25,11 +25,10 @@ class ModeloOrden
                         COALESCE(TO_CHAR(o.fecha_fac, 'DD/MM/YYYY'), '') AS fecha_fac,
                         COALESCE(TO_CHAR(o.fecha_gar, 'DD/MM/YYYY'), '') AS fecha_gar,
                         o.nota
-                    FROM tblorden o
-                    JOIN tblpresupuesto p ON o.id = p.id
-                    JOIN tblclientes c ON p.id_cliente = c.id
-                    WHERE o.anulado = false 
-                    AND EXTRACT(YEAR FROM o.fecha) = :anio ";
+                            FROM tblorden o
+                                JOIN tblpresupuesto p ON o.id = p.id
+                                JOIN tblclientes c ON p.id_cliente = c.id
+                                WHERE o.anulado = false AND EXTRACT(YEAR FROM o.fecha) = :anio ";
             if ($estado !== 'null') {
                 $consulta .= "AND o.estado = :estado ";
             }
@@ -95,13 +94,12 @@ class ModeloOrden
         // Comando para ejecutar en segundo plano
         $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario > /dev/null 2>&1 &";
         exec($command);
-
     }
 
     static public function mdlEditarOrden($id, $nombre, $id_cliente, $orden, $pdf_orden)
     {
         try {
-            $u = Conexion::ConexionDB()->prepare("UPDATE tblorden SET descripcion=:des,id_cliente=:id_cliente, nombre=:orden, pdf_orden=:pdf_orden WHERE id=:id");
+            $u = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET descripcion=:des,id_cliente=:id_cliente, num_orden=:orden, pdf_ord=:pdf_orden WHERE id=:id");
             $u->bindParam(":id", $id, PDO::PARAM_INT);
             $u->bindParam(":des", $nombre, PDO::PARAM_STR);
             $u->bindParam(":orden", $orden, PDO::PARAM_STR);
@@ -152,11 +150,11 @@ class ModeloOrden
             $fechaHora = $fecha . ' ' . $hora;
 
             $fechas = array(
-                '0' => 'fecha',
-                '1' => 'fecha_ope',
-                '2' => 'fecha_fin',
-                '3' => 'fecha_fac',
-                '4' => 'fecha_gar'
+                'ESPERA' => 'fecha',
+                'OPERACION' => 'fecha_ope',
+                'FINALIZADO' => 'fecha_fin',
+                'FACTURADO' => 'fecha_fac',
+                'GARANTIA' => 'fecha_gar'
             );
 
             $consulta = "UPDATE tblorden SET estado=:estado, nota=:nota ";
@@ -210,18 +208,21 @@ class ModeloOrden
         }
     }
 
-    public static function mdlObtenerIdOrden($nombre)
+    public static function mdlObtenerIdOrden($nombre, $anio_actual)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("SELECT COALESCE((SELECT id_cliente 
-                FROM tblpresupuesto
-                    WHERE num_orden = :nombre 
-                AND (EXTRACT(YEAR FROM fecha) = :anioActual)
-                AND anulado = false), 0) AS id_cliente;");
-            $e->bindParam(":nombre", $nombre, PDO::PARAM_INT);
-            $e->bindParam(':anioActual', $anio_actual, PDO::PARAM_INT);
+            $anio_ = (int)date('Y', strtotime($anio_actual)); 
+            $e = Conexion::ConexionDB()->prepare("SELECT p.id_cliente,c.nombre
+                    FROM tblpresupuesto p
+                    JOIN tblclientes c ON p.id_cliente = c.id
+                    WHERE p.num_orden = :num_orden
+                        AND EXTRACT(YEAR FROM p.fecha) =  :anio
+                        AND p.anulado = false
+                    LIMIT 1;");
+            $e->bindParam(":num_orden", $nombre, PDO::PARAM_INT);
+            $e->bindParam(':anio', $anio_, PDO::PARAM_INT);
             $e->execute();
-            return $e->fetchAll();
+            return $e->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             if ($e->getCode() == '21000') {
                 return array(
@@ -239,11 +240,10 @@ class ModeloOrden
 
     public static function mdlIsPdfOrden($id_orden)
     {
-        $e = Conexion::ConexionDB()->prepare("SELECT o.pdf_orden FROM tblorden o WHERE o.id = :id_orden");
+        $e = Conexion::ConexionDB()->prepare("SELECT pdf_ord, fecha FROM tblpresupuesto WHERE id = :id_orden");
         $e->bindParam(':id_orden', $id_orden, PDO::PARAM_INT);
-
         $e->execute();
-        $r = $e->fetch(PDO::FETCH_ASSOC);
-        return $r['pdf_orden'];
+        $r = $e->fetchAll();
+        return $r[0];
     }
 }

@@ -77,7 +77,8 @@
     <script defer src="assets/plugins/jquery-tabledit/tabledit.min.js"></script>
     <script defer src="assets/plugins/chart.js/Chart.min.js"></script>
     <script defer src="assets/plugins/chart.js/ChartDataLabels.min.js"></script>
-
+    <!-- tinyMCE -->
+    <!-- <script defer src="assets/plugins/tinymce/tinymce.min.js"></script> -->
 </head>
 <?php if (isset($_SESSION['s_usuario'])) {
 ?>
@@ -197,7 +198,7 @@
         <script>
             const estadoClases = {
                 'ESPERA': 'light',
-                'OPERACION': 'yellow',
+                'OPERACION': 'warning',
                 'FINALIZADO': 'info',
                 'FACTURADO': 'success',
                 'GARANTIA': 'gray-dark'
@@ -210,14 +211,6 @@
                 'FACTURADO': 'money-check-dollar',
                 'GARANTIA': 'award'
             };
-
-            // const estadoText = {
-            //     0: 'ESPERA',
-            //     1: 'EN OPERACIÓN',
-            //     2: 'FINALIZADO',
-            //     3: 'FACTURADO',
-            //     4: 'GARANTÍA'
-            // };
 
             const body = document.querySelector('body'),
                 html = document.querySelector('html'),

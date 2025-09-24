@@ -17,16 +17,16 @@ class ControladorOrden
 
         if (isset($_FILES['fileOrden']) && $_FILES['fileOrden']['type'] === 'application/pdf') {
             $year = date("Y");
-            $uploadDir = '/var/www/uploads/';
+            $uploadDir = '/var/www/ordenes/';
             $fileName = basename($_FILES['fileOrden']['name']);
             $filePath = $uploadDir . $year . '/' . $fileName;
-           
+
             $fullNameFinal = $this->orden . '   ' . $this->cliente;
             // Generar un nombre único si el archivo ya existe
             $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
 
-            $savePath = $uploadDir . $year .'/'. $filePath;
-            $finalPath = $year .'/'. $filePath;
+            $savePath = $uploadDir . $year . '/' . $filePath;
+            $finalPath = $year . '/' . $filePath;
 
             if (move_uploaded_file($_FILES['fileOrden']['tmp_name'], $savePath)) {
                 // Archivo subido exitosamente
@@ -50,31 +50,34 @@ class ControladorOrden
         $existingPdf = ModeloOrden::mdlIsPdfOrden($this->id);
 
         if (isset($_FILES['fileOrden']) && $_FILES['fileOrden']['type'] === 'application/pdf') {
-            // $year = date("Y", strtotime($existingPdf['fecha_creacion'])); // Mantener el año de la creación
-            list($year, $oldFileName) = explode('/', $existingPdf);
-            $uploadDir = '/var/www/uploads/';
+            // $year = date("Y", strtotime($existingPdf['fecha_creacion']));
+            $uploadDir = '/var/www/ordenes/';
             $fileName = basename($_FILES['fileOrden']['name']);
-            $filePath = $uploadDir . $year . '/' . $fileName;
 
-            $fullNameFinal = $this->orden . '   ' . $this->cliente;
-            // Generar un nombre único si el archivo ya existe
-            if (file_exists($uploadDir . $existingPdf)) {
-                unlink($uploadDir . $existingPdf);
+            if ($existingPdf['pdf_ord'] == '') {
+                $year = date("Y", strtotime($existingPdf['fecha']));
+            } else {
+                list($year, $oldFileName) = explode('/', $existingPdf['pdf_ord']);
+                if (file_exists($uploadDir . $existingPdf['pdf_ord'])) {
+                    unlink($uploadDir . $existingPdf['pdf_ord']);
+                }
             }
+
+            $filePath = $uploadDir . $year . '/' . $fileName;
+            $fullNameFinal = $this->orden . '   ' . $this->cliente;
+
             $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
             $savePath = $uploadDir . $year . '/' . $filePath;
             $finalPath = $year . '/' . $filePath;
 
             if (move_uploaded_file($_FILES['fileOrden']['tmp_name'], $savePath)) {
-                
             } else {
-                echo json_encode(['status' => 'danger', 'm' => 'Error al subir el archivo. ' .$savePath ], JSON_UNESCAPED_UNICODE);
+                echo json_encode(['status' => 'danger', 'm' => 'Error al subir el archivo. ' . $savePath], JSON_UNESCAPED_UNICODE);
                 return;
             }
-
         } else {
             // Mantener la ruta del archivo actual si no se ha subido uno nuevo
-            $finalPath = $existingPdf;
+            $finalPath = $existingPdf['pdf_ord'];
         }
 
         $data = ModeloOrden::mdlEditarOrden($this->id, $this->descrip, $this->id_cliente, $this->orden, $finalPath);
@@ -105,13 +108,13 @@ class ControladorOrden
 
     public function cambiarEstadoOrden()
     {
-        $data = ModeloOrden::mdlCambiarEstado($this->id, $this->estado, $this->fecha, $this->nota );
+        $data = ModeloOrden::mdlCambiarEstado($this->id, $this->estado, $this->fecha, $this->nota);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     public function obtenerIdOrden()
     {
-        $data = ModeloOrden::mdlobtenerIdOrden($this->descrip);
+        $data = ModeloOrden::mdlobtenerIdOrden($this->descrip, $this->fecha);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -153,6 +156,7 @@ if (!isset($_POST["accion"])) {
     } else if ($_POST["accion"] == 4) {
         $data = new ControladorOrden();
         $data->descrip = $_POST["nombre"];
+        $data->fecha = $_POST["fecha"];
         $data->obtenerIdOrden();
     } else if ($_POST["accion"] == 5) {
         $data = new ControladorOrden();
@@ -161,7 +165,7 @@ if (!isset($_POST["accion"])) {
         $data->fecha = $_POST["fecha"];
         $data->nota = $_POST["nota"];
         $data->cambiarEstadoOrden();
-    }else if ($_POST["accion"] == 6) {
+    } else if ($_POST["accion"] == 6) {
         $data = new ControladorOrden();
         $data->buscarOrdenes();
     }

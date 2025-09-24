@@ -91,7 +91,7 @@
             <div class="modal-header bg-gradient-green">
                 <h4 class="modal-title"><i class="fas fa-ticket"></i><span> Nueva Orden</span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span>&times;</span>
                 </button>
             </div>
             <form id="formNuevo" autocomplete="off" enctype="multipart/form-data" class="needs-validation" novalidate>
@@ -123,9 +123,9 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-3 form-group mb-4" id="div_fecha_new">
-                                    <label class="combo" style="line-height:1.2;font-size: 1.15rem;" for="fecha_">
+                                    <label class="combo m-0" style="font-size:1.15rem;" for="fecha_">
                                         <i class="fas fa-calendar"></i> Fecha de creación</label>
-                                    <input id="fecha_new" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="height:30px;font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
+                                    <input id="fecha_new" type="date" autocomplete="off" value="<?php echo date('Y-m-d'); ?>" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" class="form-control form-control-sm" required>
                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                 </div>
                                 <div class="col-lg col-md-9">
@@ -185,21 +185,21 @@
                 <div class="modal-body">
                     <div class="col-md-12 mb-4">
                         <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-chart-candlestick"></i></i> Estado</label>
-                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <div id="div_radios" class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label style="border-left-width: 1px;" class="btn txt-ellipsis">
-                                <input type="radio" value="0" name="options" id="option_a1" autocomplete="off"> <i class="fas fa-clock"></i> En espera
+                                <input type="radio" value="ESPERA" name="options" id="option_a1" autocomplete="off"> <i class="fas fa-clock"></i> En espera
                             </label>
                             <label for="option_a2" class="btn txt-ellipsis">
-                                <input type="radio" value="1" name="options" id="option_a2" autocomplete="off"><i class="fas fa-person-digging"></i> En operacion
+                                <input type="radio" value="OPERACION" name="options" id="option_a2" autocomplete="off"><i class="fas fa-person-digging"></i> En operacion
                             </label>
                             <label for="option_a3" class="btn txt-ellipsis">
-                                <input type="radio" value="2" name="options" id="option_a3" autocomplete="off"> <i class="fas fa-check-to-slot"></i> Finalizado
+                                <input type="radio" value="FINALIZADO" name="options" id="option_a3" autocomplete="off"> <i class="fas fa-check-to-slot"></i> Finalizado
                             </label>
                             <label for="option_a4" class="btn txt-ellipsis">
-                                <input type="radio" value="3" name="options" id="option_a4" autocomplete="off"> <i class="fas fa-money-check-dollar"></i> Facturado
+                                <input type="radio" value="FACTURADO" name="options" id="option_a4" autocomplete="off"> <i class="fas fa-money-check-dollar"></i> Facturado
                             </label>
                             <label for="option_a5" style="border-right-width: 1px;" class="btn txt-ellipsis">
-                                <input type="radio" value="4" name="options" id="option_a5" autocomplete="off"> <i class="fas fa-award"></i> Garantía
+                                <input type="radio" value="GARANTIA" name="options" id="option_a5" autocomplete="off"> <i class="fas fa-award"></i> Garantía
                             </label>
                         </div>
                     </div>
@@ -331,10 +331,6 @@
                     let concatenatedTooltipText = Object.values(tooltipText).join('<br>');
                     let clase = estadoClases[texto] || 'default';
                     let icon = estadoIcon[texto] || 'default';
-                   
-                    // let tooltip = tooltipText[estado] || 'default';
-
-                    // Solo muestra el texto limpio para exportaciones
 
                     return `<span class='alert alert-default-${clase}' data-html='true' data-toggle='tooltip' title='${concatenatedTooltipText}'><i class='fas fa-${icon}'></i> ${texto}</span>`;
 
@@ -355,7 +351,8 @@
                 render: function(data, type, row, full, meta) {
                     let estado = row.estado;
                     let ruta = row.pdf_ord;
-                    let clase = estadoClases[estado];
+                    let clase = estadoClases[estado] == 'warning' ? 'yellow': estadoClases[estado];
+
                     return (
                         "<center style='white-space: nowrap;'>" +
                         (editar ?
@@ -369,7 +366,7 @@
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
                         (ruta !== '' ?
-                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=uploads" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
+                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=ordenes" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
                             " <i class='fas fa-file-pdf'></i>" +
                             "</a>" :
                             " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +
@@ -493,9 +490,6 @@
 
     $(document).ready(function() {
         let anio = year;
-
-
-
         if (!$.fn.DataTable.isDataTable('#tblOrden')) {
             tabla = $("#tblOrden").DataTable({
                 "ajax": {
@@ -549,7 +543,8 @@
             select = document.querySelectorAll('.modal-body select.select2'),
             btnNuevo = document.getElementById('btnNuevo');
 
-        const radios = document.querySelectorAll('input[name="options"]');
+        // const radios = document.querySelectorAll('input[name="options"]');
+        const radioGroup = document.getElementById('div_radios');
         const inp_estado = document.getElementById('inp_estado'),
             id_orden_ = document.getElementById('id_orden_'),
             fecha_new = document.getElementById('fecha_new'),
@@ -577,6 +572,13 @@
             fileInput = document.getElementById('fileOrden'),
             cboOrdenEstadoFilter = document.getElementById('cboOrdenEstadoFilter');
 
+        const estadoDivs = {
+            'ESPERA': div_fecha_cre,
+            'OPERACION': div_fecha_ini,
+            'FINALIZADO': div_fecha_fin,
+            'FACTURADO': div_fecha_fac,
+            'GARANTIA': div_fecha_gar
+        };
 
         $(modal).on("shown.bs.modal", () => {
             orden_nro.focus();
@@ -634,27 +636,28 @@
             estilosSelect2(this, 'lblCO')
         });
 
-
-
-        radios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                let estado = {
-                    0: div_fecha_cre,
-                    1: div_fecha_ini,
-                    2: div_fecha_fin,
-                    3: div_fecha_fac,
-                    4: div_fecha_gar
-                };
-
-                estado[this.value].style.display = '';
-
-                Object.values(estado).forEach((e, i) => {
-                    if (i != this.value) {
-                        e.style.display = 'none';
-                    }
-                });
+        function mostrarEstado(estado) {
+            Object.entries(estadoDivs).forEach(([key, div]) => {
+                div.style.display = (key === estado) ? '' : 'none';
             });
+        }
+
+        // delegación: un solo listener para todos los radios
+        radioGroup.addEventListener('change', (e) => {
+            if (e.target.name === 'options') {
+                mostrarEstado(e.target.value);
+            }
         });
+
+        // función para seleccionar un radio programáticamente
+        function seleccionarRadio(estado) {
+            const radio = radioGroup.querySelector(`input[name="options"][value="${estado}"]`);
+            radio.click();
+            // if (radio) {
+            //     radio.checked = true;
+            //     radio.dispatchEvent(new Event('change')); // dispara la lógica normal
+            // }
+        }
 
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
@@ -703,8 +706,9 @@
             nombre.value = row["descripcion"];
             orden_nro.value = row["num_orden"];
             fileInput.value = '';
-
-            setChange(cboClienteOrden, row["cliente"]);
+            setChange(cboClienteOrden, row["id_cliente"]);
+            //  let cli_name = cboClienteOrden.options[cboClienteOrden.selectedIndex].text;
+            // console.log(cli_name);
             form.classList.remove('was-validated');
         });
 
@@ -713,7 +717,8 @@
             accion = 5;
             nota.value = row["nota"];
             id_orden_.value = row["id"];
-            radios[row["estado_obra"]].click();
+            // console.log(row["estado"]);
+            seleccionarRadio(row["estado"]);
             fecha_cre.value = convertirFecha(row["fecha"]);
             fecha_ini.value = convertirFecha(row["fecha_ini"]);
             fecha_fin.value = convertirFecha(row["fecha_fin"]);
@@ -721,29 +726,67 @@
             fecha_gar.value = convertirFecha(row["fecha_gar"]);
         });
 
+        // formDate.addEventListener("submit", function(e) {
+        //     e.preventDefault();
+        //     let estado_obra = radios[0].checked ? 0 : radios[1].checked ? 1 : radios[2].checked ? 2 : radios[3].checked ? 3 : 4;
+        //     const fecha_estado = estado_obra === 0 ? fecha_cre : estado_obra === 1 ? fecha_ini : estado_obra === 2 ? fecha_fin : estado_obra === 3 ? fecha_fac : fecha_gar;
+
+        //     if (!fecha_estado.checkValidity()) {
+        //         this.classList.add('was-validated');
+        //         return;
+        //     }
+
+        //     // const estado = !(row["obra_estado"]);
+        //     let src = new FormData();
+        //     src.append('accion', accion);
+        //     src.append('id', id_orden_.value);
+        //     src.append('estado', estado_obra);
+        //     src.append('nota', nota.value)
+        //     src.append('fecha', fecha_estado.value);
+        //     confirmarAccion(src, 'orden', tabla, modal_date, function(r) {
+        //         if (r) {
+
+        //         }
+        //     }, 800);
+
+        // });
+
         formDate.addEventListener("submit", function(e) {
             e.preventDefault();
-            let estado_obra = radios[0].checked ? 0 : radios[1].checked ? 1 : radios[2].checked ? 2 : radios[3].checked ? 3 : 4;
-            const fecha_estado = estado_obra === 0 ? fecha_cre : estado_obra === 1 ? fecha_ini : estado_obra === 2 ? fecha_fin : estado_obra === 3 ? fecha_fac : fecha_gar;
 
+            // obtener el radio seleccionado dentro del form
+            const selectedRadio = this.querySelector('input[name="options"]:checked');
+
+            const estado_obra = selectedRadio.value; // "ESPERA", "OPERACION", etc.
+
+            // decidir qué campo de fecha usar
+            const fecha_estado = {
+                'ESPERA': fecha_cre,
+                'OPERACION': fecha_ini,
+                'FINALIZADO': fecha_fin,
+                'FACTURADO': fecha_fac,
+                'GARANTIA': fecha_gar
+            } [estado_obra];
+
+            // validar fecha
             if (!fecha_estado.checkValidity()) {
                 this.classList.add('was-validated');
                 return;
             }
 
-            // const estado = !(row["obra_estado"]);
-            let src = new FormData();
+            // preparar datos
+            const src = new FormData(this);
             src.append('accion', accion);
             src.append('id', id_orden_.value);
-            src.append('estado', estado_obra);
-            src.append('nota', nota.value)
+            src.append('estado', estado_obra); // ahora envías texto, no número
+            src.append('nota', nota.value);
             src.append('fecha', fecha_estado.value);
+
             confirmarAccion(src, 'orden', tabla, modal_date, function(r) {
                 if (r) {
-
+                    // aquí tu lógica después del éxito
                 }
             }, 800);
-
         });
 
         form.addEventListener("submit", function(e) {
@@ -775,7 +818,6 @@
 
             if (accion == 2) {
                 confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                    // cargarAutocompletado();
                     cargarAutocompletado(function(items) {
                         items_orden = items;
                         $('#nro_orden').autocomplete("option", "source", items);
@@ -784,11 +826,11 @@
                     }, null, 'orden', 6)
                 });
             } else {
-                fetchOrderId(datos.get('orden'), function(response) {
-                    console.log(response);
-                    if (response[0] != null) {
+                fetchOrderId(datos.get('orden'), datos.get('fecha'), function(response) {
+                    if (response && response.id_cliente != null) {
+                        mostrarConfirmacionExistente(datos, response);
+                    } else {
                         confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                            // cargarAutocompletado();
                             cargarAutocompletado(function(items) {
                                 items_orden = items;
                                 $('#nro_orden').autocomplete("option", "source", items);
@@ -796,18 +838,34 @@
                                 $('#nro_ordenFab').autocomplete("option", "source", items);
                             }, null, 'orden', 6)
                         });
-                    } else {
-                        mostrarConfirmacionExistente(datos);
                     }
                 });
             }
+
+
+            // fetchOrderId(datos.get('orden'), datos.get('fecha'), function(response) {
+            //     console.log(response);
+            //     if (response[0] != null) {
+            //         confirmarAccion(datos, 'orden', tabla, modal, function(r) {
+            //             // cargarAutocompletado();
+            //             cargarAutocompletado(function(items) {
+            //                 items_orden = items;
+            //                 $('#nro_orden').autocomplete("option", "source", items);
+            //                 $('#nro_ordenEntrada').autocomplete("option", "source", items);
+            //                 $('#nro_ordenFab').autocomplete("option", "source", items);
+            //             }, null, 'orden', 6)
+            //         });
+            //     } else {
+            //         mostrarConfirmacionExistente(datos);
+            //     }
+            // });
         });
 
         function obtenerDatosFormulario() {
             const nom = nombre.value.trim().toUpperCase(),
-                ord = orden_nro.value,
+                ord = orden_nro.value.trim(),
                 id_cli = cboClienteOrden.value,
-                cli_name = cboClienteOrden.selectedIndex > 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '',
+                cli_name = cboClienteOrden.options[cboClienteOrden.selectedIndex].text,
                 fecha_act = fecha_new.value;
 
             id_e = id.value;
@@ -823,9 +881,9 @@
             return datos;
         }
 
-        function mostrarConfirmacionExistente(datos) {
+        function mostrarConfirmacionExistente(datos, cliente) {
             Swal.fire({
-                title: "Esta orden de trabajo ya existe",
+                title: `Numero de orden ya existe para ${cliente.nombre}`,
                 text: "¿Estás seguro que deseas continuar?",
                 icon: "warning",
                 showCancelButton: true,
@@ -836,13 +894,20 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                        // Callback para acciones después de confirmarAccion si es necesario
+                        cargarAutocompletado(function(items) {
+                            items_orden = items;
+                            $('#nro_orden').autocomplete("option", "source", items);
+                            $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                            $('#nro_ordenFab').autocomplete("option", "source", items);
+                        }, null, 'orden', 6)
                     });
                 }
             });
         }
 
         function convertirFecha(fecha) {
+
+            if (!fecha) return '';
             // Dividir la fecha y la hora
             let [datePart, timePart] = fecha.split(' ');
 
