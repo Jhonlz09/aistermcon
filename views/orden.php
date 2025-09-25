@@ -504,8 +504,6 @@
                 ...configuracionTable
             });
 
-
-
             tabla.on('draw.dt', function() {
                 if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
                     const b = document.body;
@@ -520,7 +518,6 @@
                 localStorage.setItem('orden', JSON.stringify(tablaData));
             });
         }
-
 
         $('#btnExportExcel').on('click', function() {
             tabla.button('.buttons-excel').trigger();
@@ -720,7 +717,7 @@
             // console.log(row["estado"]);
             seleccionarRadio(row["estado"]);
             fecha_cre.value = convertirFecha(row["fecha"]);
-            fecha_ini.value = convertirFecha(row["fecha_ini"]);
+            fecha_ini.value = convertirFecha(row["fecha_ope"]);
             fecha_fin.value = convertirFecha(row["fecha_fin"]);
             fecha_fac.value = convertirFecha(row["fecha_fac"]);
             fecha_gar.value = convertirFecha(row["fecha_gar"]);
@@ -841,24 +838,6 @@
                     }
                 });
             }
-
-
-            // fetchOrderId(datos.get('orden'), datos.get('fecha'), function(response) {
-            //     console.log(response);
-            //     if (response[0] != null) {
-            //         confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-            //             // cargarAutocompletado();
-            //             cargarAutocompletado(function(items) {
-            //                 items_orden = items;
-            //                 $('#nro_orden').autocomplete("option", "source", items);
-            //                 $('#nro_ordenEntrada').autocomplete("option", "source", items);
-            //                 $('#nro_ordenFab').autocomplete("option", "source", items);
-            //             }, null, 'orden', 6)
-            //         });
-            //     } else {
-            //         mostrarConfirmacionExistente(datos);
-            //     }
-            // });
         });
 
         function obtenerDatosFormulario() {

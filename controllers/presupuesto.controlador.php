@@ -101,7 +101,7 @@ class ControladorPresupuesto
 
     public function cambiarEstadoPresupuesto()
     {
-        $data = ModeloPresupuesto::mdlCambiarEstado($this->id, $this->estado, $this->fecha, $this->nota );
+        $data = ModeloPresupuesto::mdlCambiarEstado($this->id, $this->estado);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -111,10 +111,40 @@ class ControladorPresupuesto
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function buscarPresupuestoes()
+     public function obtenerFilesOrden()
     {
-        $data = ModeloPresupuesto::mdlBuscarPresupuestoes();
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        $data = ModeloPresupuesto::mdlObtenerFilesOrden($this->id);
+
+        if (empty($data)) {
+            // Si no hay imágenes, retorna un arreglo vacío
+            echo json_encode([
+                'files' => [],
+            ]);
+            return;
+        }
+
+        // Si hay imágenes, retornarlas en el JSON
+        echo json_encode([
+            'files' => $data,
+        ]);
+    }
+
+    public function obtenerFilesPresupuesto()
+    {
+        $data = ModeloPresupuesto::mdlObtenerFilesPresupuesto($this->id);
+
+        if (empty($data)) {
+            // Si no hay imágenes, retorna un arreglo vacío
+            echo json_encode([
+                'files' => [],
+            ]);
+            return;
+        }
+
+        // Si hay imágenes, retornarlas en el JSON
+        echo json_encode([
+            'files' => $data,
+        ]);
     }
 }
 
@@ -153,11 +183,14 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
         $data->estado = $_POST["estado"];
-        $data->fecha = $_POST["fecha"];
-        $data->nota = $_POST["nota"];
         $data->cambiarEstadoPresupuesto();
-    }else if ($_POST["accion"] == 6) {
+    } else if ($_POST["accion"] == 6) {
         $data = new ControladorPresupuesto();
-        $data->buscarPresupuestoes();
-    }
+        $data->id = $_POST["id"];
+        $data->obtenerFilesOrden();
+    } else if ($_POST["accion"] == 7) {
+        $data = new ControladorPresupuesto();
+        $data->id = $_POST["id"];
+        $data->obtenerFilesPresupuesto();
+    } 
 }

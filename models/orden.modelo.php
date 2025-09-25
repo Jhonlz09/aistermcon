@@ -128,7 +128,7 @@ class ModeloOrden
     public static function mdlEliminarOrden($id)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("UPDATE tblorden SET estado=false WHERE id=:id");
+            $e = Conexion::ConexionDB()->prepare("UPDATE tblorden SET anulado=true WHERE id=:id");
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->execute();
             return array(
@@ -183,7 +183,6 @@ class ModeloOrden
             );
         }
     }
-
 
     public static function mdlBuscarOrdenes()
     {

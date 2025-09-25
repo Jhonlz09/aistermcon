@@ -38,12 +38,6 @@ class ControladorSalidas
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    // public function obtenerImgBoleta()
-    // {
-    //     $data = ModeloSalidas::mdlObtenerImgBoleta($this->id);
-    //     echo $data; 
-    // }
-
     public function obtenerImgBoleta()
     {
         $data = ModeloSalidas::mdlObtenerImgBoleta($this->id);
@@ -51,14 +45,14 @@ class ControladorSalidas
         if (empty($data)) {
             // Si no hay imágenes, retorna un arreglo vacío
             echo json_encode([
-                'imagenes' => [],
+                'files' => [],
             ]);
             return;
         }
 
         // Si hay imágenes, retornarlas en el JSON
         echo json_encode([
-            'imagenes' => $data,
+            'files' => $data,
         ]);
     }
 
@@ -94,13 +88,7 @@ if (!isset($_POST["accion"])) {
         $data->id = $_POST["id_boleta"];
         $data->nombres = $_POST["codigo"];
         $data->agregarSalida();
-    } //else if ($_POST["accion"] == 2){
-    //     $data = new ControladorSalidas();
-    //     $data->id = $_POST["id_empleado"];
-    //     $data->nombres = $_POST["nombres_empleado"];
-    //     $data->fecha = $_POST["fecha"];
-    //     $data->editarSalida();
-    else if ($_POST["accion"] == 3) {
+    } else if ($_POST["accion"] == 3) {
         $data = new ControladorSalidas();
         $data->id = $_POST["id"];
         $data->eliminarSalida();

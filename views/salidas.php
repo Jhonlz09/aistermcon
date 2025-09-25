@@ -694,7 +694,11 @@
             radio.dispatchEvent(new Event('change'));
             cancelar.style.display = 'block'
             first_control.click();
-            cargarImagenesDropzone(id_boleta);
+
+            let src = new FormData();
+            src.append('accion', 8);
+            src.append('boleta', id_boleta);
+            cargarFilesDropzone(src, dropzone, 'salidas', 'guia_img');
             dropzone.enable();
             if (eliminar) {
                 drop_element.classList.remove("dropzone-disabled");
@@ -703,32 +707,28 @@
             }
         });
 
-        function cargarImagenesDropzone(id_boleta) {
+        function cargarFilesDropzone(datos, drop, ruta, dir) {
             $.ajax({
-                url: 'controllers/salidas.controlador.php', // Ajusta esta URL a tu controlador PHP
+                url: 'controllers/'+ruta+'.controlador.php', // Ajusta esta URL a tu controlador PHP
                 type: 'POST',
                 "dataSrc": '',
-                data: {
-                    'boleta': id_boleta,
-                    'accion': 8
-                },
+                data: datos,
                 success: function(response) {
-                    dropzone.removeAllFilesWithoutServer();
+                    drop.removeAllFilesWithoutServer();
                     // Limpia los archivos existentes
                     response = JSON.parse(response);
-                    response.imagenes.forEach(imagen => {
+                    response.files.forEach(file => {
                         const mockFile = {
-                            name: imagen.nombre_imagen || "Imagen", // Puedes asignar un nombre genérico si no guardas el nombre original
+                            name: file.nombre_file || "file", // Puedes asignar un nombre genérico si no guardas el nombre original
                             size: 123456, // Valor genérico; Dropzone no valida este campo para imágenes precargadas
-                            ruta: imagen.nombre_imagen, // Ruta de la imagen en el servidor
+                            ruta: files.nombre_file, // Ruta de la imagen en el servidor
                             isExisting: true
                         };
-
                         // Añade la imagen simulando que ya está cargada
-                        dropzone.emit('addedfile', mockFile);
-                        dropzone.emit('thumbnail', mockFile, '/guia_img/' + imagen.nombre_imagen);
-                        dropzone.emit('complete', mockFile);
-                        dropzone.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
+                        drop.emit('addedfile', mockFile);
+                        drop.emit('thumbnail', mockFile, '/'+dir+'/' + files.nombre_file);
+                        drop.emit('complete', mockFile);
+                        drop.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
                     });
                 },
             });
@@ -814,7 +814,10 @@
                 nro_guiaEntrada.value = guia;
                 tblReturn.ajax.reload(null, false);
                 fecha_retorno.value = fecha_return == '' ? '' : fecha_return;
-                cargarImagenesDropzone(id_boleta)
+                let src = new FormData();
+                src.append('accion', 8);
+                src.append('boleta', id_boleta);
+                cargarFilesDropzone(src, dropzone, 'salidas', 'guia_img');
                 dropzone.disable();
                 document.querySelector(".dropzone").classList.add("dropzone-disabled");
             }

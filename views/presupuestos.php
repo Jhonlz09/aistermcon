@@ -326,7 +326,7 @@
                     if (editar) {
                         botones += "<button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
-                            "</button> " + "<div class='btn-group'><button type='button' class='btn bg-gradient-light btnEstado dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' title='Cambiar estado'><i class='fas fa-chart-candlestick'></i></button><div class='dropdown-menu dropdown-menu-right'><a class='dropdown-item estado-opcion' data-estado='aprobado' href='#'><i class='fas fa-file-check'></i> APROBADO</a><a class='dropdown-item estado-opcion' data-estado='pendiente' href='#'><i class='fas fa-clock'></i> PENDIENTE</a><a class='dropdown-item estado-opcion' data-estado='no_aprobado' href='#'><i class='fas fa-file-xmark'></i> NO APROBADO</a></div></div>";;
+                            "</button> " + "<div class='btn-group'><button type='button' class='btn bg-gradient-light btnEstado dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' title='Cambiar estado'><i class='fas fa-chart-candlestick'></i></button><div class='dropdown-menu dropdown-menu-right'><a class='dropdown-item estado-opcion' data-estado='APROBADO' href='#'><i class='fas fa-file-check'></i> APROBADO</a><a class='dropdown-item estado-opcion' data-estado='PENDIENTE' href='#'><i class='fas fa-clock'></i> PENDIENTE</a><a class='dropdown-item estado-opcion' data-estado='NO APROBADO' href='#'><i class='fas fa-file-xmark'></i> NO APROBADO</a></div></div>";;
                     }
                     if (eliminar) {
                         botones += " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
@@ -411,7 +411,7 @@
         }
 
         Dropzone.autoDiscover = false;
-        new Dropzone("#dropzone-orden", {
+        let dropzone_ord = new Dropzone("#dropzone-orden", {
             url: "/ruta/para/subir/orden",
             autoProcessQueue: false,
             acceptedFiles: ".pdf,.xls,.xlsx",
@@ -447,7 +447,7 @@
             }
         });
 
-        new Dropzone("#dropzone-presupuesto", {
+        let dropzone_pre = new Dropzone("#dropzone-presupuesto", {
             url: "/ruta/para/subir/presupuesto",
             acceptedFiles: ".pdf,.xls,.xlsx",
             autoProcessQueue: false,
@@ -479,7 +479,7 @@
             }
         });
 
-        $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap"><div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboPreEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"><option value="null">TODO</option><option value="pendiente">PENDIENTE</option><option value="rechazado">NO APROBADO</option><option value="aprobado">APROBADO</option> </select> </div></div>');
+        $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap"><div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboPreEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"><option value="null">TODO</option><option value="PENDIENTE">PENDIENTE</option><option value="NO APROBADO">NO APROBADO</option><option value="APROBADO">APROBADO</option> </select> </div></div>');
 
         let accion = 0;
         const modal = document.getElementById('modal'),
@@ -487,7 +487,6 @@
             span = document.querySelector('.modal-title span'),
             elements = document.querySelectorAll('.modal .bg-gradient-green'),
             form = document.getElementById('formNuevo'),
-            // formDate = document.getElementById('formDate'),
             icon = document.querySelector('.modal-title i'),
             select = document.querySelectorAll('.modal-body select.select2'),
             btnNuevo = document.getElementById('btnNuevo');
@@ -547,7 +546,6 @@
         });
 
         $(cboPreEstadoFilter).on("change", function() {
-            // if (this.value !== 'null'){
             estado_presupuesto = this.value;
             accion = 0;
             tabla.ajax.reload();
@@ -567,39 +565,14 @@
             estilosSelect2(this, 'lblCO')
         });
 
-        // radios.forEach(radio => {
-        //     radio.addEventListener('change', function() {
-        //         let estado = {
-        //             0: div_fecha_cre,
-        //             1: div_fecha_ini,
-        //             2: div_fecha_fin,
-        //             3: div_fecha_fac,
-        //             4: div_fecha_gar
-        //         };
-        //         estado[this.value].style.display = '';
-        //         Object.values(estado).forEach((e, i) => {
-        //             if (i != this.value) {
-        //                 e.style.display = 'none';
-        //             }
-        //         });
-        //     });
-        // });
-
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
-                // console.log('Nuevo click');
-                // const content_table = document.getElementById('content_table');
-                // const content_editor = document.getElementById('content_editor');
-                // content_editor.style.display = 'block';
-                // content_table.style.display = 'none';
-                // console.log('Nuevo click');
                 cambiarModal(span, ' Nuevo Presupuesto ', icon, 'fa-money-check-dollar-pen', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 select.forEach(function(s) {
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
                 });
-
                 form.reset();
                 form.classList.remove('was-validated');
                 setChange(cboClienteOrden, 0);
@@ -634,63 +607,40 @@
             precioSinIva.value = row["precio_iva"];
             setChange(cboClienteOrden, row["id_cliente"]);
             form.classList.remove('was-validated');
+            nota.value = row["nota"];
+            let datos = new FormData();
+            datos.append('accion', 6); // o el valor que corresponda en tu backend
+            datos.append('id', id); // el id del presupuesto a editar
+            cargarFilesDropzone(datos, dropzone_ord, 'presupuesto', 'ordenes');
+            let src = new FormData();
+            src.append('accion', 7); // o el valor que corresponda en tu backend
+            src.append('id', id); // el id del presupuesto a editar
+            cargarFilesDropzone(src, dropzone_pre, 'presupuesto', 'presupuestos');
         });
 
-        // $('#tblPresupuesto tbody').on('click', '.btnEstado', function() {
-        //     let row = obtenerFila(this, tabla);
-        //     accion = 5;
+        $('#tblPresupuesto tbody').on('click', '.estado-opcion', function(e) {
+            e.preventDefault();
+            const row = obtenerFila(this, tabla);
+            const id = row["id"];
+            const estado = $(this).data('estado');
 
-        //     id_orden_.value = row["id"];
-        //     // radios[row["estado_obra"]].click();
-        //     fecha_cre.value = convertirFecha(row["fecha"]);
-        //     fecha_ini.value = convertirFecha(row["fecha_ini"]);
-        //     fecha_fin.value = convertirFecha(row["fecha_fin"]);
-        //     fecha_fac.value = convertirFecha(row["fecha_fac"]);
-        //     fecha_gar.value = convertirFecha(row["fecha_gar"]);
-        // });
-
-        // formDate.addEventListener("submit", function(e) {
-        //     e.preventDefault();
-        //     let estado_obra = radios[0].checked ? 0 : radios[1].checked ? 1 : radios[2].checked ? 2 : radios[3].checked ? 3 : 4;
-        //     const fecha_estado = estado_obra === 0 ? fecha_cre : estado_obra === 1 ? fecha_ini : estado_obra === 2 ? fecha_fin : estado_obra === 3 ? fecha_fac : fecha_gar;
-        //     if (!fecha_estado.checkValidity()) {
-        //         this.classList.add('was-validated');
-        //         return;
-        //     }
-
-        //     // const estado = !(row["obra_estado"]);
-        //     let src = new FormData();
-        //     src.append('accion', accion);
-        //     src.append('id', id_orden_.value);
-        //     src.append('estado', estado_obra);
-        //     src.append('nota', nota.value)
-        //     src.append('fecha', fecha_estado.value);
-        //     confirmarAccion(src, 'orden', tabla, modal_date, function(r) {
-        //         if (r) {
-
-        //         }
-        //     }, 800);
-
-        // });
+            let data = new FormData();
+            data.append('id', id);
+            data.append('estado', estado);
+            data.append('accion', 5);
+            confirmarAccion(data, 'presupuesto', tabla, modal, function(r) {
+                cargarAutocompletado(function(items) {
+                    items_orden = items;
+                    $('#nro_orden').autocomplete("option", "source", items);
+                    $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                    $('#nro_ordenFab').autocomplete("option", "source", items);
+                }, null, 'orden', 6)
+            }, 800);
+        });
 
         form.addEventListener("submit", function(e) {
             e.preventDefault();
             let datos = obtenerDatosFormulario();
-            // const file = fileInput.files[0];
-
-            // Validar que el archivo es .pdf
-            // if (file && file.type !== "application/pdf") {
-            //     mostrarToast(
-            //         'warning',
-            //         'Advertencia',
-            //         'fa-triangle-exclamation',
-            //         'El archivo insertado no es valido, por favor inserta un archivo .pdf', 3000
-            //     )
-            //     return;
-            // } else if (file && file.type == "application/pdf") {
-            //     datos.append('fileOrden', file);
-            // }
-
             desc.disabled = desc.value === '';
 
             if (!this.checkValidity()) {
@@ -698,48 +648,32 @@
                 desc.disabled = false;
                 return;
             }
-
+            console.log(datos.get('orden_files'));
             if (accion == 2) {
 
-                
-                confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                    cargarAutocompletado(function(items) {
-                        items_orden = items;
-                        $('#nro_orden').autocomplete("option", "source", items);
-                        $('#nro_ordenEntrada').autocomplete("option", "source", items);
-                        $('#nro_ordenFab').autocomplete("option", "source", items);
-                    }, null, 'orden', 6)
-                });
+                // confirmarAccion(datos, 'presupuesto', tabla, modal, function(r) {
+                //     cargarAutocompletado(function(items) {
+                //         items_orden = items;
+                //         $('#nro_orden').autocomplete("option", "source", items);
+                //         $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                //         $('#nro_ordenFab').autocomplete("option", "source", items);
+                //     }, null, 'orden', 6)
+                // });
             } else {
-                fetchOrderId(datos.get('orden'), function(response) {
-                    console.log(response);
-
-                    if (response && response.id_cliente != null) {
-                        mostrarConfirmacionExistente(datos, response);
-                    } else {
-                        confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                            cargarAutocompletado(function(items) {
-                                items_orden = items;
-                                $('#nro_orden').autocomplete("option", "source", items);
-                                $('#nro_ordenEntrada').autocomplete("option", "source", items);
-                                $('#nro_ordenFab').autocomplete("option", "source", items);
-                            }, null, 'orden', 6)
-                        });
-                    }
-                    // if (response[0] != null) {
-                    //     confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                    //         // cargarAutocompletado();
-                    //         cargarAutocompletado(function(items) {
-                    //             items_orden = items;
-                    //             $('#nro_orden').autocomplete("option", "source", items);
-                    //             $('#nro_ordenEntrada').autocomplete("option", "source", items);
-                    //             $('#nro_ordenFab').autocomplete("option", "source", items);
-                    //         }, null, 'orden', 6)
-                    //     });
-                    // } else {
-                    //     mostrarConfirmacionExistente(datos);
-                    // }
-                });
+                // fetchOrderId(datos.get('orden'), function(response) {
+                //     if (response && response.id_cliente != null) {
+                //         mostrarConfirmacionExistente(datos, response);
+                //     } else {
+                //         confirmarAccion(datos, 'orden', tabla, modal, function(r) {
+                //             cargarAutocompletado(function(items) {
+                //                 items_orden = items;
+                //                 $('#nro_orden').autocomplete("option", "source", items);
+                //                 $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                //                 $('#nro_ordenFab').autocomplete("option", "source", items);
+                //             }, null, 'orden', 6)
+                //         });
+                //     }
+                // });
             }
         });
 
@@ -760,6 +694,16 @@
             datos.append('orden', ord);
             datos.append('cliente', cli_name)
             datos.append('fecha', fecha_act);
+            dropzone_ord.getAcceptedFiles().forEach((file, index) => {
+                if (!file.isExisting) {
+                    datos.append(`orden_files[${index}]`, file, file.name);
+                }
+            });
+            dropzone_pre.getAcceptedFiles().forEach((file, index) => {
+                if (!file.isExisting) {
+                    datos.append(`presupuesto_files[${index}]`, file, file.name);
+                }
+            });
             datos.append('accion', accion);
             return datos;
         }

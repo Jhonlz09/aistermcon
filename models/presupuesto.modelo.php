@@ -13,7 +13,7 @@ class ModeloPresupuesto
     {
         try {
             $consulta = "SELECT p.id, p.num_orden, 
-                        c.nombre AS cliente, 
+                        c.nombre AS cliente,
                         p.descripcion,  
                         p.precio_iva,
                         p.precio_total,
@@ -52,15 +52,14 @@ class ModeloPresupuesto
         try {
             // Conexión a la base de datos e inserción
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblpresupuesto(descripcion, id_cliente, nombre, pdf_pre, fecha, fecha) VALUES (:des, :id_cliente, :presupuesto, :ruta, :fecha)");
+            $a = $conexion->prepare("INSERT INTO tblpresupuesto(num_orden, descripcion, id_cliente, precio_iva, pdf_pre, pdf_ord, fecha) VALUES (:des, :id_cliente, :presupuesto, :pdf_ord, :fecha)");
             $a->bindParam(":des", $nombre, PDO::PARAM_STR);
             $a->bindParam(":presupuesto", $presupuesto, PDO::PARAM_STR);
             $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
-            $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
             $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
             $a->execute();
             // Ejecutar el envío de correo en segundo plano
-            self::enviarCorreoEnSegundoPlano($nombre, $presupuesto , $fecha, $cliente);
+            self::enviarCorreoEnSegundoPlano($nombre, $presupuesto, $fecha, $cliente);
             // Respuesta al usuario
             return array(
                 'status' => 'success',
@@ -83,13 +82,13 @@ class ModeloPresupuesto
 
 
 
-    static private function enviarCorreoEnSegundoPlano($descrip, $presupuesto , $fecha, $cliente)
+    static private function enviarCorreoEnSegundoPlano($descrip, $presupuesto, $fecha, $cliente)
     {
         $scriptPath = escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'send_email.php');
         $usuario = $_SESSION['s_usuario']->nombres;
         // $id_cliente = escapeshellarg($id_cliente);
         $descrip = escapeshellarg($descrip);
-        $presupuesto  = escapeshellarg($presupuesto );
+        $presupuesto  = escapeshellarg($presupuesto);
         $cliente = escapeshellarg($cliente);
         $fecha = escapeshellarg($fecha);
 
@@ -122,13 +121,13 @@ class ModeloPresupuesto
 
 
 
-    static public function mdlEditarPresupuesto($id, $nombre, $id_cliente, $presupuesto , $ruta)
+    static public function mdlEditarPresupuesto($id, $nombre, $id_cliente, $presupuesto, $ruta)
     {
         try {
             $u = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET descripcion=:des, id_cliente=:id_cliente, nombre=:presupuesto, ruta=:ruta WHERE id=:id");
             $u->bindParam(":id", $id, PDO::PARAM_INT);
             $u->bindParam(":des", $nombre, PDO::PARAM_STR);
-            $u->bindParam(":presupuesto ", $presupuesto , PDO::PARAM_STR);
+            $u->bindParam(":presupuesto ", $presupuesto, PDO::PARAM_STR);
             $u->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
             $u->bindParam(":ruta", $ruta, PDO::PARAM_STR);
             $u->execute();
@@ -169,70 +168,63 @@ class ModeloPresupuesto
         }
     }
 
-    public static function mdlCambiarEstado($id, $estado, $fecha, $nota)
+    public static function mdlCambiarEstado($id, $estado)
     {
         try {
-            $hora = date('H:i:s');
-            $fechaHora = $fecha . ' ' . $hora;
-
-            $fechas = array(
-                '0' => 'fecha',
-                '1' => 'fecha_ini',
-                '2' => 'fecha_fin',
-                '3' => 'fecha_fac',
-                '4' => 'fecha_gar'
-            );
-
-            $consulta = "UPDATE tblpresupuesto  SET estado_obra=:estado, nota=:nota ";
-            $consulta .= "," . $fechas[$estado] . " =:fecha ";
-            $consulta .= "WHERE id=:id";
-
+            $consulta = "UPDATE tblpresupuesto SET estado=:estado WHERE id=:id";
 
             $e = Conexion::ConexionDB()->prepare($consulta);
             $e->bindParam(":id", $id, PDO::PARAM_INT);
-            if ($nota === '') {
-                $e->bindValue(":nota", null, PDO::PARAM_NULL);
-            } else {
-                $e->bindParam(":nota", $nota, PDO::PARAM_STR);
-            }
-            $e->bindParam(":estado", $estado, PDO::PARAM_INT);
-            $e->bindParam(":fecha", $fechaHora, PDO::PARAM_STR);
+            $e->bindParam(":estado", $estado, PDO::PARAM_STR);
             $e->execute();
             return array(
                 'status' => 'success',
-                'm' => 'Se actualizó el estado de la presupuesto  de trabajo corectamente.'
+                'm' => 'Se editó el estado del presupuesto corectamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo actualizar el estado de la presupuesto  de trabajo: ' . $e->getMessage()
+                'm' => 'No se pudo editar el estado del presupuesto: ' . $e->getMessage()
             );
         }
     }
 
-
-    public static function mdlBuscarPresupuestoes()
+    static public function mdlObtenerFilesOrden($id)
     {
         try {
+            $l = Conexion::ConexionDB()->prepare("SELECT COALESCE(pdf_ord, xls_ord) as nombre_file
+            FROM tblpresupuesto 
+            WHERE id= :id");
 
-            $e = Conexion::ConexionDB()->prepare("SELECT o.id, 
-            o.nombre || ' ' || c.nombre AS descripcion,e.estado_obra AS estado_obra, 
-            EXTRACT(YEAR FROM o.fecha) AS anio 
-                FROM tblpresupuesto  o 
-                JOIN tblclientes c ON o.id_cliente = c.id
-                JOIN tblestado_obra e ON o.estado_obra = e.id
-                WHERE o.estado = true 
-                AND o.estado_obra IN (0, 1, 4)
-                ORDER BY o.id DESC;");
-            $e->execute();
-            return $e->fetchAll();
+            $l->bindParam(":id", $id, PDO::PARAM_INT);
+            $l->execute();
+            $files = $l->fetchAll(PDO::FETCH_ASSOC);
+
+            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
         } catch (PDOException $e) {
-            return array(
-                'status' => 'danger',
-                'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
-            );
+            // Retornar un mensaje de error descriptivo
+            return "Error en la consulta: " . $e->getMessage();
         }
     }
+
+    static public function mdlObtenerFilesPresupuesto($id)
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT COALESCE(pdf_pre, xls_pre) as nombre_file
+            FROM tblpresupuesto 
+            WHERE id= :id");
+
+            $l->bindParam(":id", $id, PDO::PARAM_INT);
+            $l->execute();
+            $files = $l->fetchAll(PDO::FETCH_ASSOC);
+
+            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
+        } catch (PDOException $e) {
+            // Retornar un mensaje de error descriptivo
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
 
     public static function mdlObtenerIdPresupuesto($nombre)
     {
@@ -261,10 +253,10 @@ class ModeloPresupuesto
         }
     }
 
-    public static function mdlIsPdfPresupuesto($id_presupuesto )
+    public static function mdlIsPdfPresupuesto($id_presupuesto)
     {
         $e = Conexion::ConexionDB()->prepare("SELECT o.ruta FROM tblpresupuesto  o WHERE o.id = :id_presupuesto ");
-        $e->bindParam(':id_presupuesto ', $id_presupuesto , PDO::PARAM_INT);
+        $e->bindParam(':id_presupuesto ', $id_presupuesto, PDO::PARAM_INT);
 
         $e->execute();
         $r = $e->fetch(PDO::FETCH_ASSOC);

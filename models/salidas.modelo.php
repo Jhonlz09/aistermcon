@@ -216,15 +216,15 @@ class ModeloSalidas
     static public function mdlObtenerImgBoleta($id_boleta)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT nombre_imagen
+            $l = Conexion::ConexionDB()->prepare("SELECT nombre_imagen as nombre_file
             FROM tblimg_salida 
             WHERE id_boleta = :id");
 
             $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
             $l->execute();
-            $imagenes = $l->fetchAll(PDO::FETCH_ASSOC);
+            $files = $l->fetchAll(PDO::FETCH_ASSOC);
 
-            return $imagenes ?: []; // Retorna un arreglo vacío si no hay resultados
+            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
         } catch (PDOException $e) {
             // Retornar un mensaje de error descriptivo
             return "Error en la consulta: " . $e->getMessage();
