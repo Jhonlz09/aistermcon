@@ -418,6 +418,8 @@
             addRemoveLinks: true,
             dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel",
             init: function() {
+                let removeAllFilesCalled = false;
+
                 this.on("addedfile", function(file) {
                     // Busca el contenedor de imagen generado por Dropzone
                     var dzImage = file.previewElement.querySelector('.dz-image');
@@ -444,6 +446,12 @@
                         alert("Solo puedes subir 1 archivo PDF y 1 archivo Excel por vez.");
                     }
                 });
+
+                this.removeAllFilesWithoutServer = function() {
+                    removeAllFilesCalled = true; // Indicamos que se ha llamado a removeAllFiles
+                    this.removeAllFiles(true); // Limpiar archivos del contenedor
+                    removeAllFilesCalled = false; // Resetear la bandera después de la limpieza
+                };
             }
         });
 
@@ -454,6 +462,8 @@
             addRemoveLinks: true,
             dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel",
             init: function() {
+                let removeAllFilesCalled = false;
+
                 this.on("addedfile", function(file) {
                     var dzImage = file.previewElement.querySelector('.dz-image');
                     if (dzImage) {
@@ -476,6 +486,38 @@
                         alert("Solo puedes subir 1 archivo PDF y 1 archivo Excel por vez.");
                     }
                 });
+
+                this.on("removedfile", function(file) {
+                    // Verificar si se llamó a removeAllFiles, en ese caso no hacer nada en el servidor
+                    if (removeAllFilesCalled) {
+                        // console.log("Archivo eliminado solo del contenedor, no del servidor.");
+                        return; // No realizar ninguna acción con el servidor
+                    }
+
+                    // Si el archivo es existente en el servidor, eliminarlo del servidor
+                    // if (file.isExisting) {
+                    //     $.ajax({
+                    //         url: 'controllers/salidas.controlador.php', // Ruta de tu controlador
+                    //         type: 'POST',
+                    //         data: {
+                    //             accion: 9,
+                    //             nombre_imagen: file.name // Nombre de la imagen a eliminar
+                    //         },
+                    //         success: function(response) {
+                    //             // console.log("Imagen eliminada del servidor:", response);
+                    //         }
+                    //     });
+                    // } else {
+                    //     console.log("Imagen no existente en el servidor, eliminada solo del cliente.");
+                    // }
+                });
+
+
+                this.removeAllFilesWithoutServer = function() {
+                    removeAllFilesCalled = true; // Indicamos que se ha llamado a removeAllFiles
+                    this.removeAllFiles(true); // Limpiar archivos del contenedor
+                    removeAllFilesCalled = false; // Resetear la bandera después de la limpieza
+                };
             }
         });
 
@@ -610,11 +652,12 @@
             nota.value = row["nota"];
             let datos = new FormData();
             datos.append('accion', 6); // o el valor que corresponda en tu backend
-            datos.append('id', id); // el id del presupuesto a editar
+            datos.append('id', id.value); // el id del presupuesto a editar
             cargarFilesDropzone(datos, dropzone_ord, 'presupuesto', 'ordenes');
+            console.log('ilegil inviquition');
             let src = new FormData();
             src.append('accion', 7); // o el valor que corresponda en tu backend
-            src.append('id', id); // el id del presupuesto a editar
+            src.append('id', id.value); // el id del presupuesto a editar
             cargarFilesDropzone(src, dropzone_pre, 'presupuesto', 'presupuestos');
         });
 

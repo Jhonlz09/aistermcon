@@ -192,9 +192,9 @@ class ModeloPresupuesto
     static public function mdlObtenerFilesOrden($id)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT COALESCE(pdf_ord, xls_ord) as nombre_file
-            FROM tblpresupuesto 
-            WHERE id= :id");
+            $l = Conexion::ConexionDB()->prepare("SELECT unnest(array[pdf_ord, xls_ord]) AS nombre_file
+                    FROM tblpresupuesto
+                    WHERE id = :id");
 
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             $l->execute();
@@ -210,9 +210,9 @@ class ModeloPresupuesto
     static public function mdlObtenerFilesPresupuesto($id)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT COALESCE(pdf_pre, xls_pre) as nombre_file
-            FROM tblpresupuesto 
-            WHERE id= :id");
+            $l = Conexion::ConexionDB()->prepare("SELECT unnest(array[pdf_pre, xls_pre]) AS nombre_file
+                FROM tblpresupuesto
+                WHERE id = :id");
 
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             $l->execute();

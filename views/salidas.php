@@ -707,32 +707,7 @@
             }
         });
 
-        function cargarFilesDropzone(datos, drop, ruta, dir) {
-            $.ajax({
-                url: 'controllers/'+ruta+'.controlador.php', // Ajusta esta URL a tu controlador PHP
-                type: 'POST',
-                "dataSrc": '',
-                data: datos,
-                success: function(response) {
-                    drop.removeAllFilesWithoutServer();
-                    // Limpia los archivos existentes
-                    response = JSON.parse(response);
-                    response.files.forEach(file => {
-                        const mockFile = {
-                            name: file.nombre_file || "file", // Puedes asignar un nombre genérico si no guardas el nombre original
-                            size: 123456, // Valor genérico; Dropzone no valida este campo para imágenes precargadas
-                            ruta: files.nombre_file, // Ruta de la imagen en el servidor
-                            isExisting: true
-                        };
-                        // Añade la imagen simulando que ya está cargada
-                        drop.emit('addedfile', mockFile);
-                        drop.emit('thumbnail', mockFile, '/'+dir+'/' + files.nombre_file);
-                        drop.emit('complete', mockFile);
-                        drop.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
-                    });
-                },
-            });
-        }
+        
 
         $('#tblSalidas').on('click', '#editR', function() {
             row = tabla.row($(this).closest('tr').next()).data()

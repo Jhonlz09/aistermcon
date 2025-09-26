@@ -124,7 +124,7 @@ function limpiar(btn = false) {
     btn ? (btn.style.display = "none") : null;
     isTrasFab.disabled = false;
   }
-    dropzone.removeAllFilesWithoutServer(false);
+  dropzone.removeAllFilesWithoutServer(false);
 }
 
 function cargarOpcionesSelect(selectElement, value, size = "110%") {
@@ -155,7 +155,7 @@ function cargarCombo(id, s, a = 1, isDataCbo = false, anio = null) {
       success: function (respuesta) {
         let dataCbo = [];
         let options = "";
-        for (let index = 0; index < respuesta.length;index++) {
+        for (let index = 0; index < respuesta.length; index++) {
           options += `<option value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
           if (anio !== null) {
             let text = respuesta[index][1]; // Nombre del elemento
@@ -229,6 +229,45 @@ function formatInputOrden(input) {
   }
 
   input.value = value;
+}
+
+function cargarFilesDropzone(datos, drop, ruta, isImg) {
+  $.ajax({
+    url: 'controllers/' + ruta + '.controlador.php', // Ajusta esta URL a tu controlador PHP
+    type: 'POST',
+    "dataSrc": '',
+    dataType: 'json',
+    contentType: false,
+    processData: false,
+    data: datos,
+    success: function (response) {
+      drop.removeAllFilesWithoutServer();
+      console.log(response);
+      response.files.forEach(file => {
+
+        const getFileType = (filename) => {
+          if (filename.endsWith('.pdf')) return 'application/pdf';
+          if (filename.endsWith('.xls')) return 'application/vnd.ms-excel';
+          if (filename.endsWith('.xlsx')) return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+          return '';
+        };
+        const mockFile = {
+          name: file.nombre_file || "file", // Puedes asignar un nombre genérico si no guardas el nombre original
+          size: 123456, // Valor genérico; Dropzone no valida este campo 
+          type: getFileType(file.nombre_file),
+          ruta: file.nombre_file, // Ruta de la imagen en el servidor
+          isExisting: true
+        };
+        drop.emit('addedfile', mockFile);
+        if(isImg){
+        drop.emit('complete', mockFile);
+
+        }
+        // drop.emit('thumbnail', mockFile, '/' + dir + '/' + file.nombre_file);
+        drop.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
+      });
+    },
+  });
 }
 
 // function fetchOrderId(nombre, cbo) {
