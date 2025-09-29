@@ -12,20 +12,10 @@ class ModeloPresupuesto
     static public function mdlListarPresupuesto($anio, $estado)
     {
         try {
-            $consulta = "SELECT p.id, p.num_orden, 
-                        c.nombre AS cliente,
-                        p.descripcion,  
-                        p.precio_iva,
-                        p.precio_total,
-                        p.estado,
-                        p.pdf_ord, 
-                        p.xls_ord,
-                        p.pdf_pre, 
-                        p.xls_pre,
-                        TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
-                        p.nota, 
-                        p.id_cliente, 
-                        '' AS acciones
+            $consulta = "SELECT p.id, p.num_orden,c.nombre AS cliente,p.descripcion,  
+                        p.precio_iva,p.precio_total,p.estado,p.pdf_ord,p.xls_ord,
+                        p.pdf_pre,p.xls_pre,TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
+                        p.nota, p.id_cliente, '' AS acciones
                     FROM tblpresupuesto p
                     JOIN tblclientes c ON p.id_cliente = c.id
                     WHERE p.anulado = false
@@ -47,40 +37,47 @@ class ModeloPresupuesto
         }
     }
 
-    static public function mdlAgregarPresupuesto($nombre, $id_cliente, $cliente, $presupuesto, $ruta, $fecha)
+    static public function mdlAgregarPresupuesto($descrip, $id_cliente, $cliente, $presupuesto, $pdf_pre, $pdf_ord, $xls_pre, $xls_ord, $fecha, $precio_iva, $precio_total, $nota)
     {
         try {
-            // Conexión a la base de datos e inserción
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblpresupuesto(num_orden, descripcion, id_cliente, precio_iva, pdf_pre, pdf_ord, fecha) VALUES (:des, :id_cliente, :presupuesto, :pdf_ord, :fecha)");
-            $a->bindParam(":des", $nombre, PDO::PARAM_STR);
-            $a->bindParam(":presupuesto", $presupuesto, PDO::PARAM_STR);
+            $a = $conexion->prepare(
+                "INSERT INTO tblpresupuesto(num_orden, descripcion, id_cliente, precio_iva, precio_total,pdf_pre, pdf_ord, xls_pre, xls_ord, fecha, nota) VALUES (:num_orden, :descripcion, :id_cliente, :precio_iva, :precio_total,:pdf_pre, :pdf_ord, :xls_pre, :xls_ord, :fecha, :nota)"
+            );
+            $a->bindParam(":num_orden", $presupuesto, PDO::PARAM_STR);
+            $a->bindParam(":descripcion", $descrip, PDO::PARAM_STR);
             $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
-            $a->bindParam(":ruta", $ruta, PDO::PARAM_STR);
+            $a->bindParam(":precio_iva", $precio_iva, PDO::PARAM_STR);
+            $a->bindParam(":precio_total", $precio_total, PDO::PARAM_STR);
+            $a->bindParam(":pdf_pre", $pdf_pre, PDO::PARAM_STR);
+            $a->bindParam(":pdf_ord", $pdf_ord, PDO::PARAM_STR);
+            $a->bindParam(":xls_pre", $xls_pre, PDO::PARAM_STR);
+            $a->bindParam(":xls_ord", $xls_ord, PDO::PARAM_STR);
+            $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
+            $a->bindParam(":nota", $nota, PDO::PARAM_STR);
             $a->execute();
-            // Ejecutar el envío de correo en segundo plano
-            self::enviarCorreoEnSegundoPlano($nombre, $presupuesto, $fecha, $cliente);
-            // Respuesta al usuario
+
+            // Enviar correo en segundo plano
+            // self::enviarCorreoEnSegundoPlano($descrip, $presupuesto, $fecha, $cliente);
+
             return array(
                 'status' => 'success',
-                'm' => 'La presupuesto  de trabajo se agregó correctamente. Se esta procesando el envío del correo electrónico'
+                'm' => 'El presupuesto se agregó correctamente.'
             );
         } catch (PDOException $e) {
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'La presupuesto  de trabajo ya existe para el cliente seleccionado.'
+                    'm' => 'La presupuesto ya existe para el cliente seleccionado.'
                 );
             } else {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo agregar la presupuesto  de trabajo: ' . $e->getMessage()
+                    'm' => 'No se pudo agregar la presupuesto ' . $e->getMessage()
                 );
             }
         }
     }
-
-
 
     static private function enviarCorreoEnSegundoPlano($descrip, $presupuesto, $fecha, $cliente)
     {
@@ -97,30 +94,6 @@ class ModeloPresupuesto
         exec($command);
     }
 
-
-    // static private function enviarCorreoEnSegundoPlano($id_cliente, $nombre, $presupuesto , $ruta, $fecha)
-    // {
-    //     // Ruta al script que enviará el correo
-    //     // $scriptPath = escapeshellarg(__DIR__ . '/send_email.php');
-    //     $scriptPath = escapeshellarg(str_replace('/', DIRECTORY_SEPARATOR, __DIR__ . '/send_email.php'));
-
-    //     // var_dump($scriptPath); // Esto te ayudará a ver la ruta completa
-
-    //     $id_cliente = escapeshellarg($id_cliente);
-    //     $nombre = escapeshellarg($nombre);
-    //     $presupuesto  = escapeshellarg($presupuesto );
-    //     $ruta = escapeshellarg($ruta);
-    //     $fecha = escapeshellarg($fecha);
-
-    //     $command = "start /B php $scriptPath $id_cliente $nombre $presupuesto  $ruta $fecha > NUL 2>&1";
-    //     file_put_contents(__DIR__ . '/log.txt', $command . PHP_EOL, FILE_APPEND);
-    //     // Ejecutar el comando en segundo plano
-    //     exec($command); 
-    // }
-
-
-
-
     static public function mdlEditarPresupuesto($id, $nombre, $id_cliente, $presupuesto, $ruta)
     {
         try {
@@ -133,18 +106,18 @@ class ModeloPresupuesto
             $u->execute();
             return array(
                 'status' => 'success',
-                'm' => 'La presupuesto  de trabajo se editó correctamente'
+                'm' => 'La presupuesto se editó correctamente'
             );
         } catch (PDOException $e) {
             if ($e->getCode() == '23505') {
                 return array(
                     'status' => 'danger',
-                    'm' => 'La presupuesto de trabajo ya existe para el cliente seleccionado.'
+                    'm' => 'La presupuesto ya existe para el cliente seleccionado.'
                 );
             } else {
                 return array(
                     'status' => 'danger',
-                    'm' => 'No se pudo editar la presupuesto  de trabajo: ' . $e->getMessage()
+                    'm' => 'No se pudo editar la presupuesto ' . $e->getMessage()
                 );
             }
         }
@@ -261,5 +234,44 @@ class ModeloPresupuesto
         $e->execute();
         $r = $e->fetch(PDO::FETCH_ASSOC);
         return $r['ruta'];
+    }
+
+    static public function mdlEliminarFilePresupuesto($id, $ruta, $ext)
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET " . ($ext === 'pdf' ? 'pdf_pre' : 'xls_pre') . " = NULL
+            WHERE id = :id");
+
+            $l->bindParam(":id", $id, PDO::PARAM_INT);
+            if ($l->execute()) {
+                $uploadDir = "var/www/presupuestos/"; // Directorio donde están las imágenes
+                $filePath = $uploadDir . $ruta;
+
+                if (file_exists($filePath)) {
+                    unlink($filePath); // Eliminar archivo
+                }
+            };
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlEliminarFileOrden($id, $ruta, $ext)
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET " . ($ext === 'pdf' ? 'pdf_ord' : 'xls_ord') . " = NULL WHERE id = :id");
+
+            $l->bindParam(":id", $id, PDO::PARAM_INT);
+            if ($l->execute()) {
+                $uploadDir = "var/www/ordenes/"; // Directorio donde están las imágenes
+                $filePath = $uploadDir . $ruta;
+
+                if (file_exists($filePath)) {
+                    unlink($filePath); // Eliminar archivo
+                }
+            };
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
+        }
     }
 }

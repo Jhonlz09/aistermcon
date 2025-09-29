@@ -7,47 +7,55 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Verificar si el usuario está autenticado
 if (!(isset($_SESSION['s_usuario']))) {
     header("Location: /aistermcon");
     exit();
 }
 
-// Obtener el nombre del archivo desde la URL
-try{
+try {
     $route = $_GET['file'];
     $dir = $_GET['route'];
-    
+
     $file = basename($_GET['file']);
     $file_path = '/var/www/' . $dir . '/' . $route;
-    
-    // Verificar si el archivo existe
-    if (file_exists($file_path)) {
-        // Crear una instancia de FPDI
+
+    if (!file_exists($file_path)) {
+        die("El archivo no existe: " . htmlspecialchars($file));
+    }
+
+    $ext = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+
+    if ($ext === 'pdf') {
+        // PDF: mostrar en navegador usando FPDI
         $pdf = new Fpdi();
-    
-        // Cargar el PDF existente
         $pdf->setSourceFile($file_path);
-    
-        // Obtener el número total de páginas en el archivo PDF
         $pageCount = $pdf->setSourceFile($file_path);
-    
-        // Importar todas las páginas del PDF
         for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-            $pdf->AddPage(); // Añadir una nueva página al documento
-            $tplId = $pdf->importPage($pageNo); // Importar la página actual
-            $pdf->useTemplate($tplId); // Usar la plantilla importada
+            $pdf->AddPage();
+            $tplId = $pdf->importPage($pageNo);
+            $pdf->useTemplate($tplId);
         }
-    
-        // Modificar los metadatos
         $pdf->SetTitle(iconv('UTF-8', 'windows-1252', $file));
-    
         $pdf->Output('I', htmlspecialchars($file), true);
         exit;
     } else {
-        die("El archivo no existe: " . htmlspecialchars($file));
+        // Excel u otro: forzar descarga
+        $mimeTypes = [
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
+        $mime = isset($mimeTypes[$ext]) ? $mimeTypes[$ext] : 'application/octet-stream';
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: ' . $mime);
+        header('Content-Disposition: attachment; filename="' . basename($file_path) . '"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($file_path));
+        readfile($file_path);
+        exit;
     }
-    
-}catch (Exception $e) {
-    die("Error al generar el PDF: " . $e->getMessage());
+} catch (Exception $e) {
+    die("Error al descargar el archivo: " . $e->getMessage());
 }

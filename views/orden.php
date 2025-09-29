@@ -365,7 +365,7 @@
                             " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
-                        (ruta !== '' ?
+                        (ruta !== null ?
                             " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=ordenes" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
                             " <i class='fas fa-file-pdf'></i>" +
                             "</a>" :
@@ -667,7 +667,7 @@
                 });
                 form.reset();
                 form.classList.remove('was-validated');
-                // nombre.disabled = false;
+                nombre.disabled = false;
                 setChange(cboClienteOrden, 0);
             });
         }
@@ -703,6 +703,7 @@
             nombre.value = row["descripcion"];
             orden_nro.value = row["num_orden"];
             fileInput.value = '';
+            nombre.disabled = false;
             setChange(cboClienteOrden, row["id_cliente"]);
             //  let cli_name = cboClienteOrden.options[cboClienteOrden.selectedIndex].text;
             // console.log(cli_name);

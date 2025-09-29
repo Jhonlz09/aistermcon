@@ -368,6 +368,9 @@
                 cambiarModal(span, ' Nuevo Proveedor', icon, 'fa-hand-holding-box', elements, 'bg-gradient-blue', 'bg-gradient-green', modal, 'modal-new', 'modal-change')
                 form.reset();
                 form.classList.remove('was-validated');
+                correo.disabled = false;
+                telefono.disabled = false;
+                ruc.disabled = false;
 
             });
         }
@@ -409,8 +412,9 @@
             direccion.value = row["direccion"];
             telefono.value = row["telefono"];
             correo.value = row["correo"];
-            // correo.disabled = false;
-            // telefono.disabled = false;
+            correo.disabled = false;
+            telefono.disabled = false;
+            ruc.disabled = false;
             form.classList.remove('was-validated');
         });
 

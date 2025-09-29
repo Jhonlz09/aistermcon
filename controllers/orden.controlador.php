@@ -13,7 +13,7 @@ class ControladorOrden
 
     public function agregarOrden()
     {
-        $finalPath = '';
+        $finalPath = null;
 
         if (isset($_FILES['fileOrden']) && $_FILES['fileOrden']['type'] === 'application/pdf') {
             $year = date("Y");
@@ -21,7 +21,7 @@ class ControladorOrden
             $fileName = basename($_FILES['fileOrden']['name']);
             $filePath = $uploadDir . $year . '/' . $fileName;
 
-            $fullNameFinal = $this->orden . '   ' . $this->cliente;
+            $fullNameFinal = 'OT '.$this->orden . '   ' . $this->cliente;
             // Generar un nombre único si el archivo ya existe
             $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
 
@@ -50,7 +50,6 @@ class ControladorOrden
         $existingPdf = ModeloOrden::mdlIsPdfOrden($this->id);
 
         if (isset($_FILES['fileOrden']) && $_FILES['fileOrden']['type'] === 'application/pdf') {
-            // $year = date("Y", strtotime($existingPdf['fecha_creacion']));
             $uploadDir = '/var/www/ordenes/';
             $fileName = basename($_FILES['fileOrden']['name']);
 
@@ -64,7 +63,7 @@ class ControladorOrden
             }
 
             $filePath = $uploadDir . $year . '/' . $fileName;
-            $fullNameFinal = $this->orden . '   ' . $this->cliente;
+            $fullNameFinal = 'OT '.$this->orden . '   ' . $this->cliente;
 
             $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
             $savePath = $uploadDir . $year . '/' . $filePath;

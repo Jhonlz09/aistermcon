@@ -3,7 +3,7 @@ require_once "../models/presupuesto.modelo.php";
 
 class ControladorPresupuesto
 {
-    public $id, $descrip, $id_cliente, $estado, $presupuesto, $anio, $filePresupuesto, $cliente, $fecha, $nota;
+    public $id, $descrip, $id_cliente, $estado, $presupuesto, $anio, $cliente, $fecha, $precio_iva, $precio_total, $nota, $ext, $ruta;
 
     public function listarPresupuesto()
     {
@@ -13,32 +13,83 @@ class ControladorPresupuesto
 
     public function agregarPresupuesto()
     {
-        $finalPath = '';
-        if (isset($_FILES['filePresupuesto']) && $_FILES['filePresupuesto']['type'] === 'application/pdf') {
-            $year = date("Y");
-            $uploadDir = '/var/www/presupuestos/';
-            $fileName = basename($_FILES['filePresupuesto']['name']);
-            $filePath = $uploadDir . $year . '/' . $fileName;
-            $fullNameFinal = $this->presupuesto . '   ' . $this->cliente;
-            $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
+        $year = date("Y");
+        $uploadDirPres = "/var/www/presupuestos/$year/";
+        $uploadDirOrd = "/var/www/ordenes/$year/";
 
-            $savePath = $uploadDir . $year .'/'. $filePath;
-            $finalPath = $year .'/'. $filePath;
+        // if (!is_dir($uploadDirPres)) mkdir($uploadDirPres, 0777, true);
+        // if (!is_dir($uploadDirOrd)) mkdir($uploadDirOrd, 0777, true);
 
-            if (move_uploaded_file($_FILES['filePresupuesto']['tmp_name'], $savePath)) {
-                // Archivo subido exitosamente
-            } else {
-                $error = error_get_last();
-                $errorMessage = 'Error al subir el archivo.';
-                if ($error !== null) {
-                    $errorMessage .= ' Detalles: ' . $error['message'] . ' en ' . $error['file'] . ' línea ' . $error['line'];
+        $pdf_pre = $xls_pre = $pdf_ord = $xls_ord = null;
+
+        // Procesar archivos de presupuesto
+        if (isset($_FILES['presupuesto_files'])) {
+            $files = $_FILES['presupuesto_files'];
+            $baseName = 'PPT ' . $this->presupuesto . '   ' . $this->cliente;
+            if (is_array($files['name'])) {
+                for ($i = 0; $i < count($files['name']); $i++) {
+                    $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
+                    $filePath = $uploadDirPres . $baseName . '.' . $ext;
+                    $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
+                    $dest = $uploadDirPres . $uniqueFileName;
+                    if (move_uploaded_file($files['tmp_name'][$i], $dest)) {
+                        if ($ext === 'pdf') $pdf_pre = "$year/$uniqueFileName";
+                        if ($ext === 'xls' || $ext === 'xlsx') $xls_pre = "$year/$uniqueFileName";
+                    }
                 }
-                echo json_encode(['status' => 'danger', 'm' => $errorMessage]);
-                return;
+            } else {
+                $ext = strtolower(pathinfo($files['name'], PATHINFO_EXTENSION));
+                $filePath = $uploadDirPres . $baseName . '.' . $ext;
+                $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
+                $dest = $uploadDirPres . $uniqueFileName;
+                if (move_uploaded_file($files['tmp_name'], $dest)) {
+                    if ($ext === 'pdf') $pdf_pre = "$year/$uniqueFileName";
+                    if ($ext === 'xls' || $ext === 'xlsx') $xls_pre = "$year/$uniqueFileName";
+                }
             }
         }
 
-        $data = ModeloPresupuesto::mdlAgregarPresupuesto($this->descrip, $this->id_cliente, $this->cliente, $this->presupuesto, $finalPath, $this->fecha);
+        // Procesar archivos de orden
+        if (isset($_FILES['orden_files'])) {
+            $files = $_FILES['orden_files'];
+            $baseName = 'OT ' . $this->presupuesto . '   ' . $this->cliente;
+            if (is_array($files['name'])) {
+                for ($i = 0; $i < count($files['name']); $i++) {
+                    $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
+                    $filePath = $uploadDirOrd . $baseName . '.' . $ext;
+                    $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
+                    $dest = $uploadDirOrd . $uniqueFileName;
+                    if (move_uploaded_file($files['tmp_name'][$i], $dest)) {
+                        if ($ext === 'pdf') $pdf_ord = "$year/$uniqueFileName";
+                        if ($ext === 'xls' || $ext === 'xlsx') $xls_ord = "$year/$uniqueFileName";
+                    }
+                }
+            } else {
+                $ext = strtolower(pathinfo($files['name'], PATHINFO_EXTENSION));
+                $filePath = $uploadDirOrd . $baseName . '.' . $ext;
+                $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
+                $dest = $uploadDirOrd . $uniqueFileName;
+                if (move_uploaded_file($files['tmp_name'], $dest)) {
+                    if ($ext === 'pdf') $pdf_ord = "$year/$uniqueFileName";
+                    if ($ext === 'xls' || $ext === 'xlsx') $xls_ord = "$year/$uniqueFileName";
+                }
+            }
+        }
+
+        $data = ModeloPresupuesto::mdlAgregarPresupuesto(
+            $this->descrip,
+            $this->id_cliente,
+            $this->cliente,
+            $this->presupuesto,
+            $pdf_pre,
+            $pdf_ord,
+            $xls_pre,
+            $xls_ord,
+            $this->fecha,
+            $this->precio_iva,
+            $this->precio_total,
+            $this->nota
+        );
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -53,7 +104,7 @@ class ControladorPresupuesto
             $fileName = basename($_FILES['filePresupuesto']['name']);
             $filePath = $uploadDir . $year . '/' . $fileName;
             $fullNameFinal = $this->presupuesto . '   ' . $this->cliente;
-            // Generar un nombre único si el archivo ya existe
+            // Generar un descrip único si el archivo ya existe
             if (file_exists($uploadDir . $existingPdf)) {
                 unlink($uploadDir . $existingPdf);
             }
@@ -62,12 +113,10 @@ class ControladorPresupuesto
             $finalPath = $year . '/' . $filePath;
 
             if (move_uploaded_file($_FILES['filePresupuesto']['tmp_name'], $savePath)) {
-                
             } else {
-                echo json_encode(['status' => 'danger', 'm' => 'Error al subir el archivo. ' .$savePath ], JSON_UNESCAPED_UNICODE);
+                echo json_encode(['status' => 'danger', 'm' => 'Error al subir el archivo. ' . $savePath], JSON_UNESCAPED_UNICODE);
                 return;
             }
-
         } else {
             // Mantener la ruta del archivo actual si no se ha subido uno nuevo
             $finalPath = $existingPdf;
@@ -89,7 +138,7 @@ class ControladorPresupuesto
             $uniqueFilePath =  $full . '_' . $counter . '.' . $extension;
             $counter++;
         }
-        // Devuelve el nombre original si no hubo conflictos
+        // Devuelve el descrip original si no hubo conflictos
         return $uniqueFilePath;
     }
 
@@ -111,7 +160,7 @@ class ControladorPresupuesto
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-     public function obtenerFilesOrden()
+    public function obtenerFilesOrden()
     {
         $data = ModeloPresupuesto::mdlObtenerFilesOrden($this->id);
 
@@ -146,6 +195,18 @@ class ControladorPresupuesto
             'files' => $data,
         ]);
     }
+    public function eliminarFilePresupuesto()
+    {
+        $data = ModeloPresupuesto::mdlEliminarFilePresupuesto($this->id, $this->ruta, $this->ext);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+    public function eliminarFileOrden()
+    {
+        $data = ModeloPresupuesto::mdlEliminarFileOrden($this->id, $this->ruta, $this->ext);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+  
+    
 }
 
 if (!isset($_POST["accion"])) {
@@ -156,16 +217,19 @@ if (!isset($_POST["accion"])) {
 } else {
     if ($_POST["accion"] == 1) {
         $data = new ControladorPresupuesto();
-        $data->descrip = $_POST["nombre"];
+        $data->descrip = $_POST["des"];
         $data->presupuesto = $_POST["presupuesto"];
         $data->id_cliente = $_POST["id_cliente"];
         $data->cliente = $_POST["cliente"];
         $data->fecha = $_POST["fecha"];
+        $data->precio_iva = $_POST["precio_sin_iva"];
+        $data->precio_total = $_POST["precio_con_iva"];
+        $data->nota = $_POST["nota"];
         $data->agregarPresupuesto();
     } else if ($_POST["accion"] == 2) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
-        $data->descrip = $_POST["nombre"];
+        $data->descrip = $_POST["des"];
         $data->presupuesto = $_POST["presupuesto"];
         $data->id_cliente = $_POST["id_cliente"];
         $data->cliente = $_POST["cliente"];
@@ -177,7 +241,7 @@ if (!isset($_POST["accion"])) {
         $data->eliminarPresupuesto();
     } else if ($_POST["accion"] == 4) {
         $data = new ControladorPresupuesto();
-        $data->descrip = $_POST["nombre"];
+        $data->descrip = $_POST["descrip"];
         $data->obtenerIdPresupuesto();
     } else if ($_POST["accion"] == 5) {
         $data = new ControladorPresupuesto();
@@ -192,5 +256,17 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
         $data->obtenerFilesPresupuesto();
-    } 
+    } else if ($_POST["accion"] == 8) {
+        $data = new ControladorPresupuesto();
+        $data->id = $_POST["id"];
+        $data->ruta = $_POST["ruta"];
+        $data->ext = $_POST["ext"];
+        $data->eliminarFilePresupuesto();
+    }else if ($_POST["accion"] == 9) {
+        $data = new ControladorPresupuesto();
+        $data->id = $_POST["id"];
+        $data->ruta = $_POST["ruta"];
+        $data->ext = $_POST["ext"];
+        $data->eliminarFileOrden();
+    }
 }

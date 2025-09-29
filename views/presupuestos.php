@@ -169,7 +169,7 @@
                                     <label class="combo" style="font-size: 1.15rem;">
                                         <i class="fa-solid fa-file-import"></i> Orden de Trabajo (PDF/Excel)
                                     </label>
-                                    <div id="dropzone-orden" class="dropzone" style="min-height:216px; background: #f6f6f6; border: 2px dashed #b3b3b3;">
+                                    <div id="dropzone-orden" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
                                         <div style="margin-block:4.6em;" class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
                                     </div>
                                     <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
@@ -179,7 +179,7 @@
                                     <label class="combo" style="font-size: 1.15rem;">
                                         <i class="fa-solid fa-file-import"></i> Presupuestos (PDF/Excel)
                                     </label>
-                                    <div id="dropzone-presupuesto" class="dropzone" style="min-height:216px; background: #f6f6f6; border: 2px dashed #b3b3b3;">
+                                    <div id="dropzone-presupuesto" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
                                         <div style="margin-block:4.6em;" class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
                                     </div>
                                     <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
@@ -267,7 +267,7 @@
             {
                 targets: 7,
                 orderable: false,
-                className: "text-center",
+                className: "text-center text-nowrap",
                 render: function(data, type, row) {
                     const {
                         pdf_ord,
@@ -395,9 +395,9 @@
 
         function getFileIconSVG(file) {
             // SVG PDF
-            const pdfSVG = `<svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#E53E3E"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">PDF</text></svg>`;
+            const pdfSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#E53E3E"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">PDF</text></svg>`;
             // SVG Excel
-            const excelSVG = `<svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#217346"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">XLS</text></svg>`;
+            const excelSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#217346"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">XLS</text></svg>`;
             if (file.type === "application/pdf") {
                 return pdfSVG;
             }
@@ -444,6 +444,33 @@
                         this.files.length > 2) {
                         this.removeFile(file);
                         alert("Solo puedes subir 1 archivo PDF y 1 archivo Excel por vez.");
+                    }
+                });
+
+                this.on("removedfile", function(file) {
+                    console.log(file.name);
+                    if (removeAllFilesCalled) {
+                        return; // No realizar ninguna acción con el servidor
+                    }
+
+
+                    if (file.isExisting) {
+                        $.ajax({
+                            url: 'controllers/presupuesto.controlador.php', // Ruta de tu controlador
+                            type: 'POST',
+                            data: {
+                                accion: 9,
+                                id: $('#id').val(),
+                                ext: file.name.split('.').pop(), // Extensión del archivo
+                                ruta: file.name // Nombre de la imagen a eliminar
+                            },
+                            success: function(response) {
+                                tabla.ajax.reload(null, false); // Recargar la tabla sin resetear la paginación
+                                // console.log("Documento eliminada del servidor:", response);
+                            }
+                        });
+                    } else {
+                        console.log("Documento no existente en el servidor, eliminada solo del cliente.");
                     }
                 });
 
@@ -616,8 +643,14 @@
                     s.classList.add('select2-success');
                 });
                 form.reset();
+                precioConIva.disabled = false
+                precioSinIva.disabled = false
+                desc.disabled = false
                 form.classList.remove('was-validated');
                 setChange(cboClienteOrden, 0);
+
+                dropzone_ord.removeAllFilesWithoutServer();
+                dropzone_pre.removeAllFilesWithoutServer();
             });
         }
 
@@ -640,6 +673,9 @@
         $('#tblPresupuesto tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             accion = 2;
+            precioConIva.disabled = false
+            precioSinIva.disabled = false
+            desc.disabled = false
             div_fecha_new.style.display = 'none';
             cambiarModal(span, ' Editar Presupuesto', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
@@ -654,7 +690,6 @@
             datos.append('accion', 6); // o el valor que corresponda en tu backend
             datos.append('id', id.value); // el id del presupuesto a editar
             cargarFilesDropzone(datos, dropzone_ord, 'presupuesto', 'ordenes');
-            console.log('ilegil inviquition');
             let src = new FormData();
             src.append('accion', 7); // o el valor que corresponda en tu backend
             src.append('id', id.value); // el id del presupuesto a editar
@@ -685,13 +720,17 @@
             e.preventDefault();
             let datos = obtenerDatosFormulario();
             desc.disabled = desc.value === '';
+            precioConIva.disabled = precioConIva.value === '';
+            precioSinIva.disabled = precioSinIva.value === '';
 
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
                 desc.disabled = false;
+                precioConIva.disabled = false;
+                precioSinIva.disabled = false;
                 return;
             }
-            console.log(datos.get('orden_files'));
+            console.log(datos.get('orden_files[0]'));
             if (accion == 2) {
 
                 // confirmarAccion(datos, 'presupuesto', tabla, modal, function(r) {
@@ -703,20 +742,20 @@
                 //     }, null, 'orden', 6)
                 // });
             } else {
-                // fetchOrderId(datos.get('orden'), function(response) {
-                //     if (response && response.id_cliente != null) {
-                //         mostrarConfirmacionExistente(datos, response);
-                //     } else {
-                //         confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                //             cargarAutocompletado(function(items) {
-                //                 items_orden = items;
-                //                 $('#nro_orden').autocomplete("option", "source", items);
-                //                 $('#nro_ordenEntrada').autocomplete("option", "source", items);
-                //                 $('#nro_ordenFab').autocomplete("option", "source", items);
-                //             }, null, 'orden', 6)
-                //         });
-                //     }
-                // });
+                fetchOrderId(datos.get('orden'), datos.get('fecha'), function(response) {
+                    if (response && response.id_cliente != null) {
+                        mostrarConfirmacionExistente(datos, response);
+                    } else {
+                        confirmarAccion(datos, 'presupuesto', tabla, modal, function(r) {
+                            cargarAutocompletado(function(items) {
+                                items_orden = items;
+                                $('#nro_orden').autocomplete("option", "source", items);
+                                $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                                $('#nro_ordenFab').autocomplete("option", "source", items);
+                            }, null, 'orden', 6)
+                        });
+                    }
+                });
             }
         });
 
@@ -734,7 +773,7 @@
             datos.append('precio_sin_iva', precioSinIva.value === '' ? 0 : parseFloat(precioSinIva.value).toFixed(2));
             datos.append('precio_con_iva', precioConIva.value === '' ? 0 : parseFloat(precioConIva.value).toFixed(2));
             datos.append('nota', nota.value.trim().toUpperCase());
-            datos.append('orden', ord);
+            datos.append('presupuesto', ord);
             datos.append('cliente', cli_name)
             datos.append('fecha', fecha_act);
             dropzone_ord.getAcceptedFiles().forEach((file, index) => {

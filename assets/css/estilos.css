@@ -105,6 +105,65 @@ body.dark-mode {
 
 }
 
+.dropzone.dropzone-inline {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    height: 123.33px;
+    background: #f3f3f3;
+    border: 2px dashed #b3b3b3;
+    padding: 10px;
+
+}
+.dropzone.dropzone-inline .dz-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 8px 0 0;
+    width: 100px;
+    min-width: 90px;
+    background: linear-gradient(to bottom, #eee, #ddd);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px #0001;
+    /* padding: 8px 4px 4px 4px; */
+}
+.dropzone.dropzone-inline .dz-image {
+    width: 100%!important;
+    height: 2.5rem!important;
+    /* margin: 0 auto 6px auto; */
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+    border-radius: 8px!important;
+    background: linear-gradient(to bottom, #dcdcdc, #c7c7c7);
+}
+.dropzone.dropzone-inline .dz-details {
+    width: 100%;
+    text-align: center;
+    padding: .8rem .5rem .1rem 2.5rem!important;
+}
+
+.dropzone.dropzone-inline .dz-filename {
+    font-size: 0.95em;
+    color: #666;
+    word-break: break-all;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+}
+
+.dropzone.dropzone-inline .dz-size{
+    display: none!important;
+}
+.dropzone.dropzone-inline .dz-remove {
+    margin-top: .75rem;
+    
+    color: #a3161f;
+    cursor: pointer;
+}
+
 .ri5-sr-only {
     position: absolute;
     clip: rect(1px, 1px, 1px, 1px);
