@@ -13,8 +13,8 @@ class ModeloPresupuesto
     {
         try {
             $consulta = "SELECT p.id, p.num_orden,c.nombre AS cliente,p.descripcion,  
-                        p.precio_iva,p.precio_total,p.estado,p.pdf_ord,p.xls_ord,
-                        p.pdf_pre,p.xls_pre,TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
+                        p.precio_iva,p.precio_total,p.estado,p.pdf_pre,p.xls_pre,p.pdf_ord,
+                        p.xls_ord,TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
                         p.nota, p.id_cliente, '' AS acciones
                     FROM tblpresupuesto p
                     JOIN tblclientes c ON p.id_cliente = c.id

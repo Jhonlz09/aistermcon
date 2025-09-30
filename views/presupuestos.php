@@ -57,8 +57,10 @@
                                     <th>PVP SIN IVA</th>
                                     <th>PVP CON IVA</th>
                                     <th class="text-center">ESTADO</th>
-                                    <th class="text-center"><i class="fas fa-tickets fa-lg"></i> ORDEN</th>
-                                    <th class="text-center"><i class="fas fa-money-check-dollar-pen fa-lg"></i> PRESUPUESTO </th>
+                                    <th class="text-center"><i class="fas fa-tickets fa-lg"></i> OT</th>
+                                    <th class="text-center"><i class="fas fa-money-check-dollar-pen fa-lg"></i> PPTO</th>
+                                    <th class="text-center"><i class="fa-solid fa-file-invoice-dollar"></i> OC</th>
+                                    <th class="text-center"><i class="fa-solid fa-clipboard-check"></i> AE</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -170,19 +172,42 @@
                                         <i class="fa-solid fa-file-import"></i> Orden de Trabajo (PDF/Excel)
                                     </label>
                                     <div id="dropzone-orden" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
-                                        <div style="margin-block:4.6em;" class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
+                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
                                     </div>
                                     <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
                                 </div>
                                 <!-- Columna Presupuestos -->
                                 <div class="col-md-6 mb-2">
-                                    <label class="combo" style="font-size: 1.15rem;">
-                                        <i class="fa-solid fa-file-import"></i> Presupuestos (PDF/Excel)
+                                    <label class="combo" style="font-size:1.15rem;">
+                                        <i class="fa-solid fa-file-import"></i> Presupuesto (PDF/Excel)
                                     </label>
                                     <div id="dropzone-presupuesto" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
-                                        <div style="margin-block:4.6em;" class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
+                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
                                     </div>
                                     <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Columna Orden de Compra -->
+                                <div class="col-md-6 mb-2">
+                                    <label class="combo" style="font-size: 1.15rem;">
+                                        <i class="fa-solid fa-file-import"></i> Orden de Compra (PDF/IMG)
+                                    </label>
+                                    <div id="dropzone-oc" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
+                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/IMG</div>
+                                    </div>
+                                    <small class="text-muted">*Solo archivos PDF o Imagen (.pdf, .jpg, .jpeg, .png)</small>
+                                </div>
+                                <!-- Columna Acta de Entrega -->
+                                <div class="col-md-6 mb-2">
+                                    <label class="combo" style="font-size:1.15rem;">
+                                        <i class="fa-solid fa-file-import"></i> Acta de entrega (PDF/Word)
+                                    </label>
+                                    <div id="dropzone-ae" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
+                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/WORD</div>
+                                    </div>
+                                    <small class="text-muted">*Solo archivos PDF o Imagen (.pdf, .doc, .docx)</small>
                                 </div>
                             </div>
 
@@ -270,6 +295,30 @@
                 className: "text-center text-nowrap",
                 render: function(data, type, row) {
                     const {
+                        pdf_pre,
+                        xls_pre
+                    } = row;
+
+                    const btn = (file, color, icon, title) => {
+                        if (file) {
+                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=presupuestos' target='_blank' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
+                        }
+
+                        return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
+                    };
+
+                    return (
+                        btn(pdf_pre, "#a3161f", "fa-file-pdf", "Pdf") +
+                        btn(xls_pre, "#155724", "fa-file-xls", "Excel")
+                    );
+                }
+            },
+            {
+                targets: 8,
+                orderable: false,
+                className: "text-center text-nowrap",
+                render: function(data, type, row) {
+                    const {
                         pdf_ord,
                         xls_ord
                     } = row;
@@ -295,9 +344,8 @@
                 }
             },
             {
-                targets: 8,
+                targets: 9,
                 orderable: false,
-                className: "text-center",
                 render: function(data, type, row) {
                     const {
                         pdf_pre,
@@ -319,7 +367,31 @@
                 }
             },
             {
-                targets: 9,
+                targets: 10,
+                orderable: false,
+                render: function(data, type, row) {
+                    const {
+                        pdf_ae,
+                        doc_ae
+                    } = row;
+
+                    const btn = (file, color, icon, title) => {
+                        if (file) {
+                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=presupuestos' target='_blank' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
+                        }
+
+                        return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
+                    };
+
+                    return (
+                        btn(pdf_pre, "#a3161f", "fa-file-pdf", "Pdf") +
+                        btn(xls_pre, "#004598ff", "fa-file-doc", "Word")
+                    );
+                }
+            },
+
+            {
+                targets: 11,
                 orderable: false,
                 render: function(data, type, row, full, meta) {
                     let botones = '';
@@ -395,9 +467,11 @@
 
         function getFileIconSVG(file) {
             // SVG PDF
-            const pdfSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#E53E3E"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">PDF</text></svg>`;
+            const pdfSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#de0000ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">PDF</text></svg>`;
             // SVG Excel
-            const excelSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#217346"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">XLS</text></svg>`;
+            const excelSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#059500ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">XLS</text></svg>`;
+            const imgSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#004ca3ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" font-weight="bold">IMG</text></svg>`;
+            const wordSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#0045cfff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" font-weight="bold">DOC</text></svg>`;
             if (file.type === "application/pdf") {
                 return pdfSVG;
             }
@@ -407,11 +481,20 @@
             ) {
                 return excelSVG;
             }
-            return "";
+            if (
+                file.type === "application/msword" ||
+                file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ) {
+                return wordSVG;
+            }
+            if (file.type.startsWith("image/")) {
+                return null; // Para imágenes, se usará la miniatura real
+            }
+            return imgSVG;
         }
 
         Dropzone.autoDiscover = false;
-        let dropzone_ord = new Dropzone("#dropzone-orden", {
+        let drop_ord = new Dropzone("#dropzone-orden", {
             url: "/ruta/para/subir/orden",
             autoProcessQueue: false,
             acceptedFiles: ".pdf,.xls,.xlsx",
@@ -482,7 +565,7 @@
             }
         });
 
-        let dropzone_pre = new Dropzone("#dropzone-presupuesto", {
+        let drop_pre = new Dropzone("#dropzone-presupuesto", {
             url: "/ruta/para/subir/presupuesto",
             acceptedFiles: ".pdf,.xls,.xlsx",
             autoProcessQueue: false,
@@ -537,6 +620,112 @@
                     // } else {
                     //     console.log("Imagen no existente en el servidor, eliminada solo del cliente.");
                     // }
+                });
+
+
+                this.removeAllFilesWithoutServer = function() {
+                    removeAllFilesCalled = true; // Indicamos que se ha llamado a removeAllFiles
+                    this.removeAllFiles(true); // Limpiar archivos del contenedor
+                    removeAllFilesCalled = false; // Resetear la bandera después de la limpieza
+                };
+            }
+        });
+
+        let drop_oc = new Dropzone("#dropzone-oc", {
+            url: "/ruta/para/subir/presupuesto",
+            acceptedFiles: ".pdf,.jpg,.jpeg,.png, .webp",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel",
+            init: function() {
+                let removeAllFilesCalled = false;
+                this.on("addedfile", function(file) {
+                    var dzImage = file.previewElement.querySelector('.dz-image');
+                    if (dzImage) {
+                        if (file.type === "application/pdf") {
+                            dzImage.innerHTML = getFileIconSVG(file);
+                        } else if (file.type.startsWith("image/")) {
+                            // Mostrar miniatura real de la imagen
+                            var reader = new FileReader();
+                            reader.onload = function(e) {
+                                dzImage.innerHTML = `<img src="${e.target.result}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" alt="preview">`;
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            dzImage.innerHTML = getFileIconSVG(file) || "";
+                        }
+                    }
+                    let pdfCount = 0;
+                    this.files.forEach(f => {
+                        if (f.type === "application/pdf") pdfCount++;
+                    });
+
+                    if ((file.type === "application/pdf" && pdfCount > 1)) {
+                        this.removeFile(file);
+                        alert("Solo puedes subir 1 archivo PDF por vez.");
+                    }
+                });
+
+                this.on("removedfile", function(file) {
+                    // Verificar si se llamó a removeAllFiles, en ese caso no hacer nada en el servidor
+                    if (removeAllFilesCalled) {
+                        // console.log("Archivo eliminado solo del contenedor, no del servidor.");
+                        return; // No realizar ninguna acción con el servidor
+                    }
+                });
+
+
+                this.removeAllFilesWithoutServer = function() {
+                    removeAllFilesCalled = true; // Indicamos que se ha llamado a removeAllFiles
+                    this.removeAllFiles(true); // Limpiar archivos del contenedor
+                    removeAllFilesCalled = false; // Resetear la bandera después de la limpieza
+                };
+            }
+        });
+
+        let drop_ae = new Dropzone("#dropzone-ae", {
+            url: "/ruta/para/subir/presupuesto",
+            acceptedFiles: ".pdf,.doc,.docx",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Word",
+            init: function() {
+                let removeAllFilesCalled = false;
+                this.on("addedfile", function(file) {
+                    var dzImage = file.previewElement.querySelector('.dz-image');
+                    if (dzImage) {
+                        if (file.type === "application/pdf") {
+                            dzImage.innerHTML = getFileIconSVG(file);
+                        } else if (
+                            file.type === "application/msword" ||
+                            file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                            dzImage.innerHTML = getFileIconSVG(file);
+                        }
+                    }
+                    let pdfCount = 0,
+                        wordCount = 0;
+                    this.files.forEach(f => {
+                        if (f.type === "application/pdf") pdfCount++;
+                        if (
+                            f.type === "application/msword" ||
+                            f.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        ) wordCount++;
+                    });
+
+                    if ((file.type === "application/pdf" && pdfCount > 1) ||
+                        ((file.type === "application/msword" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && wordCount > 1) ||
+                        this.files.length > 2) {
+                        this.removeFile(file);
+                        alert("Solo puedes subir 1 archivo PDF y 1 archivo Word por vez.");
+                    }
+                });
+
+                this.on("removedfile", function(file) {
+                    // Verificar si se llamó a removeAllFiles, en ese caso no hacer nada en el servidor
+                    if (removeAllFilesCalled) {
+                        // console.log("Archivo eliminado solo del contenedor, no del servidor.");
+                        return; // No realizar ninguna acción con el servidor
+                    }
                 });
 
 
@@ -649,8 +838,10 @@
                 form.classList.remove('was-validated');
                 setChange(cboClienteOrden, 0);
 
-                dropzone_ord.removeAllFilesWithoutServer();
-                dropzone_pre.removeAllFilesWithoutServer();
+                drop_ord.removeAllFilesWithoutServer();
+                drop_pre.removeAllFilesWithoutServer();
+                drop_oc.removeAllFilesWithoutServer();
+                drop_ae.removeAllFilesWithoutServer();
             });
         }
 
@@ -689,11 +880,11 @@
             let datos = new FormData();
             datos.append('accion', 6); // o el valor que corresponda en tu backend
             datos.append('id', id.value); // el id del presupuesto a editar
-            cargarFilesDropzone(datos, dropzone_ord, 'presupuesto', 'ordenes');
+            cargarFilesDropzone(datos, drop_ord, 'presupuesto', 'ordenes');
             let src = new FormData();
             src.append('accion', 7); // o el valor que corresponda en tu backend
             src.append('id', id.value); // el id del presupuesto a editar
-            cargarFilesDropzone(src, dropzone_pre, 'presupuesto', 'presupuestos');
+            cargarFilesDropzone(src, drop_pre, 'presupuesto', 'presupuestos');
         });
 
         $('#tblPresupuesto tbody').on('click', '.estado-opcion', function(e) {
@@ -776,12 +967,12 @@
             datos.append('presupuesto', ord);
             datos.append('cliente', cli_name)
             datos.append('fecha', fecha_act);
-            dropzone_ord.getAcceptedFiles().forEach((file, index) => {
+            drop_ord.getAcceptedFiles().forEach((file, index) => {
                 if (!file.isExisting) {
                     datos.append(`orden_files[${index}]`, file, file.name);
                 }
             });
-            dropzone_pre.getAcceptedFiles().forEach((file, index) => {
+            drop_pre.getAcceptedFiles().forEach((file, index) => {
                 if (!file.isExisting) {
                     datos.append(`presupuesto_files[${index}]`, file, file.name);
                 }
