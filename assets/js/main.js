@@ -259,8 +259,8 @@ function cargarFilesDropzone(datos, drop, ruta, isImg) {
           isExisting: true
         };
         drop.emit('addedfile', mockFile);
-        if(isImg){
-        drop.emit('complete', mockFile);
+        if (isImg) {
+          drop.emit('complete', mockFile);
 
         }
         // drop.emit('thumbnail', mockFile, '/' + dir + '/' + file.nombre_file);
@@ -527,6 +527,60 @@ function convertirArray(arr) {
     return arr;
   }
 }
+// function parsePgArray(pgArrayStr) {
+//     if (!pgArrayStr || pgArrayStr === '{}') return [];
+
+//     // Extrae todo lo que esté entre comillas simples o dobles
+//     const matches = pgArrayStr.match(/(['"])(.*?)\1/g);
+
+//     if (!matches) return [];
+
+//     // Quita las comillas externas y trim
+//     return matches.map(s => s.slice(1, -1).trim());
+// }
+
+function parsePgArray(pgArrayStr) {
+    if (!pgArrayStr) return [];
+
+    // Quita las llaves iniciales y finales
+    let str = pgArrayStr.replace(/^{|}$/g, '').trim();
+    if (!str) return [];
+
+    const arr = [];
+    let current = '';
+    let inQuotes = false;
+    let quoteChar = '';
+
+    for (let i = 0; i < str.length; i++) {
+        const c = str[i];
+
+        // Detecta inicio/final de comillas simples o dobles
+        if ((c === '"' || c === "'") && !inQuotes) {
+            inQuotes = true;
+            quoteChar = c;
+            continue;
+        } else if (c === quoteChar && inQuotes) {
+            inQuotes = false;
+            quoteChar = '';
+            continue;
+        }
+
+        // Si es coma fuera de comillas, termina elemento
+        if (c === ',' && !inQuotes) {
+            arr.push(current.trim());
+            current = '';
+        } else {
+            current += c;
+        }
+    }
+
+    if (current) arr.push(current.trim());
+
+    // Quita comillas simples internas sobrantes
+    console.log(arr.map(s => s.replace(/^'+|'+$/g, '').trim()));
+    return arr.map(s => s.replace(/^'+|'+$/g, '').trim());
+}
+
 
 function validarNumber(input, regex, ten = false, decimal = 2) {
   input.value = input.value.replace(regex, "");

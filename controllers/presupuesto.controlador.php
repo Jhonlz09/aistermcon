@@ -16,11 +16,13 @@ class ControladorPresupuesto
         $year = date("Y");
         $uploadDirPres = "/var/www/presupuestos/$year/";
         $uploadDirOrd = "/var/www/ordenes/$year/";
+        $uploadDirActs = "/var/www/actas_entrega/$year/";
+        $uploadDirOrdCom = "/var/www/orden_compra/$year/";
 
         // if (!is_dir($uploadDirPres)) mkdir($uploadDirPres, 0777, true);
         // if (!is_dir($uploadDirOrd)) mkdir($uploadDirOrd, 0777, true);
 
-        $pdf_pre = $xls_pre = $pdf_ord = $xls_ord = null;
+        $pdf_pre = $xls_pre = $pdf_ord = $xls_ord = $doc_ae = $pdf_ae = $pdf_oc_arr = $img_oc_arr = null;
 
         // Procesar archivos de presupuesto
         if (isset($_FILES['presupuesto_files'])) {
@@ -45,6 +47,32 @@ class ControladorPresupuesto
                 if (move_uploaded_file($files['tmp_name'], $dest)) {
                     if ($ext === 'pdf') $pdf_pre = "$year/$uniqueFileName";
                     if ($ext === 'xls' || $ext === 'xlsx') $xls_pre = "$year/$uniqueFileName";
+                }
+            }
+        }
+
+        if (isset($_FILES['actas_files'])) {
+            $files = $_FILES['actas_files'];
+            $baseName = 'AE ' . $this->presupuesto . '   ' . $this->cliente;
+            if (is_array($files['name'])) {
+                for ($i = 0; $i < count($files['name']); $i++) {
+                    $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
+                    $filePath = $uploadDirActs . $baseName . '.' . $ext;
+                    $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
+                    $dest = $uploadDirActs . $uniqueFileName;
+                    if (move_uploaded_file($files['tmp_name'][$i], $dest)) {
+                        if ($ext === 'pdf') $pdf_ae = "$year/$uniqueFileName";
+                        if ($ext === 'doc' || $ext === 'docx') $doc_ae = "$year/$uniqueFileName";
+                    }
+                }
+            } else {
+                $ext = strtolower(pathinfo($files['name'], PATHINFO_EXTENSION));
+                $filePath = $uploadDirActs . $baseName . '.' . $ext;
+                $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
+                $dest = $uploadDirActs . $uniqueFileName;
+                if (move_uploaded_file($files['tmp_name'], $dest)) {
+                    if ($ext === 'pdf') $pdf_ae = "$year/$uniqueFileName";
+                    if ($ext === 'doc' || $ext === 'docx') $doc_ae = "$year/$uniqueFileName";
                 }
             }
         }
@@ -76,6 +104,58 @@ class ControladorPresupuesto
             }
         }
 
+        if (isset($_FILES['orden_compra_files'])) {
+            $files = $_FILES['orden_compra_files'];
+            $baseName = $this->presupuesto . '   ' . $this->cliente;
+
+            // Arrays para almacenar rutas relativas (ej: 2025/archivo.pdf)
+            $pdf_oc_arr = [];
+            $img_oc_arr = [];
+
+            // Manejar múltiples archivos
+            if (is_array($files['name'])) {
+                for ($i = 0; $i < count($files['name']); $i++) {
+                    $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
+                    $filePath = $uploadDirOrdCom . $baseName . '.' . $ext;
+                    $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
+                    $dest = $uploadDirOrdCom . $uniqueFileName;
+
+                    if (move_uploaded_file($files['tmp_name'][$i], $dest)) {
+                        if ($ext === 'pdf') {
+                            $pdf_oc_arr[] = "$year/$uniqueFileName";
+                        } elseif (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                            $img_oc_arr[] = "$year/$uniqueFileName";
+                        }
+                    }
+                }
+            } else {
+                // Un solo archivo
+                $ext = strtolower(pathinfo($files['name'], PATHINFO_EXTENSION));
+                $filePath = $uploadDirOrdCom . $baseName . '.' . $ext;
+                $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
+                $dest = $uploadDirOrdCom . $uniqueFileName;
+
+                if (move_uploaded_file($files['tmp_name'], $dest)) {
+                    if ($ext === 'pdf') {
+                        $pdf_oc_arr[] = "$year/$uniqueFileName";
+                    } elseif (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                        $img_oc_arr[] = "$year/$uniqueFileName";
+                    }
+                }
+            }
+
+            // Convertir arrays a formato PostgreSQL TEXT[]
+            $pdf_oc = '{' . implode(',', array_map(function ($v) {
+                return '"' . $v . '"';
+            }, $pdf_oc_arr)) . '}';
+
+            $img_oc = '{' . implode(',', array_map(function ($v) {
+                return '"' . $v . '"';
+            }, $img_oc_arr)) . '}';
+        }
+
+
+
         $data = ModeloPresupuesto::mdlAgregarPresupuesto(
             $this->descrip,
             $this->id_cliente,
@@ -85,6 +165,10 @@ class ControladorPresupuesto
             $pdf_ord,
             $xls_pre,
             $xls_ord,
+            $doc_ae,
+            $pdf_ae,
+            $pdf_oc,
+            $img_oc,
             $this->fecha,
             $this->precio_iva,
             $this->precio_total,
@@ -205,8 +289,6 @@ class ControladorPresupuesto
         $data = ModeloPresupuesto::mdlEliminarFileOrden($this->id, $this->ruta, $this->ext);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-  
-    
 }
 
 if (!isset($_POST["accion"])) {
@@ -262,7 +344,7 @@ if (!isset($_POST["accion"])) {
         $data->ruta = $_POST["ruta"];
         $data->ext = $_POST["ext"];
         $data->eliminarFilePresupuesto();
-    }else if ($_POST["accion"] == 9) {
+    } else if ($_POST["accion"] == 9) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
         $data->ruta = $_POST["ruta"];

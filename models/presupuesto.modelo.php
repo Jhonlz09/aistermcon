@@ -14,7 +14,7 @@ class ModeloPresupuesto
         try {
             $consulta = "SELECT p.id, p.num_orden,c.nombre AS cliente,p.descripcion,  
                         p.precio_iva,p.precio_total,p.estado,p.pdf_pre,p.xls_pre,p.pdf_ord,
-                        p.xls_ord,TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
+                        p.xls_ord,p.pdf_ae,p.doc_ae, p.pdf_oc, p.img_oc, TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
                         p.nota, p.id_cliente, '' AS acciones
                     FROM tblpresupuesto p
                     JOIN tblclientes c ON p.id_cliente = c.id
@@ -37,12 +37,12 @@ class ModeloPresupuesto
         }
     }
 
-    static public function mdlAgregarPresupuesto($descrip, $id_cliente, $cliente, $presupuesto, $pdf_pre, $pdf_ord, $xls_pre, $xls_ord, $fecha, $precio_iva, $precio_total, $nota)
+    static public function mdlAgregarPresupuesto($descrip, $id_cliente, $cliente, $presupuesto, $pdf_pre, $pdf_ord, $xls_pre, $xls_ord, $doc_ae, $pdf_ae, $pdf_oc, $img_oc, $fecha, $precio_iva, $precio_total, $nota)
     {
         try {
             $conexion = Conexion::ConexionDB();
             $a = $conexion->prepare(
-                "INSERT INTO tblpresupuesto(num_orden, descripcion, id_cliente, precio_iva, precio_total,pdf_pre, pdf_ord, xls_pre, xls_ord, fecha, nota) VALUES (:num_orden, :descripcion, :id_cliente, :precio_iva, :precio_total,:pdf_pre, :pdf_ord, :xls_pre, :xls_ord, :fecha, :nota)"
+                "INSERT INTO tblpresupuesto(num_orden, descripcion, id_cliente, precio_iva, precio_total,pdf_pre, pdf_ord, xls_pre, xls_ord, pdf_ae, doc_ae, pdf_oc, img_oc, fecha, nota) VALUES (:num_orden, :descripcion, :id_cliente, :precio_iva, :precio_total,:pdf_pre, :pdf_ord, :xls_pre, :xls_ord, :pdf_ae, :doc_ae, :pdf_oc, :img_oc, :fecha, :nota)"
             );
             $a->bindParam(":num_orden", $presupuesto, PDO::PARAM_STR);
             $a->bindParam(":descripcion", $descrip, PDO::PARAM_STR);
@@ -53,6 +53,10 @@ class ModeloPresupuesto
             $a->bindParam(":pdf_ord", $pdf_ord, PDO::PARAM_STR);
             $a->bindParam(":xls_pre", $xls_pre, PDO::PARAM_STR);
             $a->bindParam(":xls_ord", $xls_ord, PDO::PARAM_STR);
+            $a->bindParam(":doc_ae", $doc_ae, PDO::PARAM_STR);
+            $a->bindParam(":pdf_ae", $pdf_ae, PDO::PARAM_STR);
+            $a->bindParam(":pdf_oc", $pdf_oc, PDO::PARAM_STR);
+            $a->bindParam(":img_oc", $img_oc, PDO::PARAM_STR);
             $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
             $a->bindParam(":nota", $nota, PDO::PARAM_STR);
             $a->execute();
@@ -126,17 +130,17 @@ class ModeloPresupuesto
     public static function mdlEliminarPresupuesto($id)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto  SET estado=false WHERE id=:id");
+            $e = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET anulado=true WHERE id=:id");
             $e->bindParam(":id", $id, PDO::PARAM_INT);
             $e->execute();
             return array(
                 'status' => 'success',
-                'm' => 'Se eliminó la presupuesto  de trbajo correctamente.'
+                'm' => 'Se eliminó la presupuesto correctamente.'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo eliminar la presupuesto  de trabajo: ' . $e->getMessage()
+                'm' => 'No se pudo eliminar la presupuesto: ' . $e->getMessage()
             );
         }
     }

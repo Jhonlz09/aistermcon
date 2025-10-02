@@ -118,6 +118,11 @@ body.dark-mode {
 
 }
 
+td.child.tdArchivo br,
+.dtr-data br {
+    display: none !important;
+}
+
 .dropzone.dropzone-inline .dz-preview {
     display: flex;
     flex-direction: column;

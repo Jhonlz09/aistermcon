@@ -57,10 +57,10 @@
                                     <th>PVP SIN IVA</th>
                                     <th>PVP CON IVA</th>
                                     <th class="text-center">ESTADO</th>
+                                    <th class="text-center"><i class="fas fa-money-check-dollar-pen fa-lg"></i> PPT</th>
                                     <th class="text-center"><i class="fas fa-tickets fa-lg"></i> OT</th>
-                                    <th class="text-center"><i class="fas fa-money-check-dollar-pen fa-lg"></i> PPTO</th>
-                                    <th class="text-center"><i class="fa-solid fa-file-invoice-dollar"></i> OC</th>
-                                    <th class="text-center"><i class="fa-solid fa-clipboard-check"></i> AE</th>
+                                    <th class="text-center"><i class="fa-solid fa-file-invoice-dollar fa-lg"></i> OC</th>
+                                    <th class="text-center"><i class="fa-solid fa-clipboard-check fa-lg"></i> AE</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
                             </thead>
@@ -166,22 +166,23 @@
                                 </div>
                             </div> -->
                             <div class="row">
-                                <!-- Columna Orden de Trabajo -->
-                                <div class="col-md-6 mb-2">
-                                    <label class="combo" style="font-size: 1.15rem;">
-                                        <i class="fa-solid fa-file-import"></i> Orden de Trabajo (PDF/Excel)
-                                    </label>
-                                    <div id="dropzone-orden" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
-                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
-                                    </div>
-                                    <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
-                                </div>
+
                                 <!-- Columna Presupuestos -->
                                 <div class="col-md-6 mb-2">
                                     <label class="combo" style="font-size:1.15rem;">
                                         <i class="fa-solid fa-file-import"></i> Presupuesto (PDF/Excel)
                                     </label>
                                     <div id="dropzone-presupuesto" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
+                                        <div class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
+                                    </div>
+                                    <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
+                                </div>
+                                <!-- Columna Orden de Trabajo -->
+                                <div class="col-md-6 mb-2">
+                                    <label class="combo" style="font-size: 1.15rem;">
+                                        <i class="fa-solid fa-file-import"></i> Orden de Trabajo (PDF/Excel)
+                                    </label>
+                                    <div id="dropzone-orden" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
                                         <div class="dz-message">Arrastra aquí o haz clic para subir PDF/Excel</div>
                                     </div>
                                     <small class="text-muted">*Solo archivos PDF o Excel (.pdf, .xls, .xlsx)</small>
@@ -224,6 +225,42 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<!-- Modal para ver PDFs -->
+<div class="modal fade" id="modalVerPDFs" tabindex="-1" role="dialog" aria-labelledby="modalVerPDFsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-blue">
+                <h5 class="modal-title" id="modalVerPDFsLabel"><i class="fa fa-file-pdf"></i> Archivos PDF</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="contenedorPDFs">
+                <!-- Aquí se insertarán los iframes de los PDFs -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalVerImg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="carouselPreview" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators"></ol>
+                    <div class="carousel-inner"></div>
+                    <a class="carousel-control-prev" href="#carouselPreview" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Anterior</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselPreview" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Siguiente</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     var mostrarCol = true;
@@ -235,6 +272,7 @@
             autoHide: 'leave'
         }
     });
+
 
     configuracionTable = {
         "responsive": true,
@@ -292,104 +330,111 @@
             {
                 targets: 7,
                 orderable: false,
-                className: "text-center text-nowrap",
+                className: "text-center td-archivo",
                 render: function(data, type, row) {
                     const {
                         pdf_pre,
                         xls_pre
                     } = row;
 
-                    const btn = (file, color, icon, title) => {
+                    const btn = (file, color, icon, title, target) => {
                         if (file) {
-                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=presupuestos' target='_blank' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
+                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=presupuestos' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
                         }
 
                         return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
                     };
 
                     return (
-                        btn(pdf_pre, "#a3161f", "fa-file-pdf", "Pdf") +
-                        btn(xls_pre, "#155724", "fa-file-xls", "Excel")
+                        btn(pdf_pre, "#a3161f", "fa-file-pdf", "Pdf", "_blank") +
+                        "<br>" +
+                        btn(xls_pre, "#155724", "fa-file-xls", "Excel", "")
                     );
                 }
             },
             {
                 targets: 8,
                 orderable: false,
-                className: "text-center text-nowrap",
+                className: "text-center td-archivo",
                 render: function(data, type, row) {
                     const {
                         pdf_ord,
                         xls_ord
                     } = row;
-                    const btn = (file, color, icon, title) => {
+                    const btn = (file, color, icon, title, target) => {
                         if (file) {
-                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=ordenes' target='_blank'
-                   style='font-size:1.4rem;padding:3px 6.8px;color:${color}'
-                   class='btn btnDescargar'
-                   title='${title}'>
-                    <i class='fas ${icon}'></i>
-                </a>`;
+                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=ordenes' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar'
+                            title='${title}'> <i class='fas ${icon}'></i></a>`;
                         }
-                        return `
-            <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'>
-                <i class='fas ${icon}'></i>
-            </span>`;
+                        return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
                     };
-
                     return (
-                        btn(pdf_ord, "#a3161f", "fa-file-pdf", "Pdf") +
-                        btn(xls_ord, "#155724", "fa-file-xls", "Excel")
+                        btn(pdf_ord, "#a3161f", "fa-file-pdf", "Pdf", "_blank") +
+                        "<br>" +
+                        btn(xls_ord, "#155724", "fa-file-xls", "Excel", "")
                     );
                 }
             },
             {
                 targets: 9,
                 orderable: false,
+                className: "text-center td-archivo",
                 render: function(data, type, row) {
-                    const {
-                        pdf_pre,
-                        xls_pre
-                    } = row;
+                    const pdfArr = parsePgArray(row.pdf_oc);
+                    const imgArr = parsePgArray(row.img_oc);
+                    // Badges
+                    const pdfBadge = pdfArr.length > 0 ? `<span class="badge badge-info navbar-badge">${pdfArr.length}</span>` : '';
+                    const imgBadge = imgArr.length > 0 ? `<span class="badge badge-info navbar-badge">${imgArr.length}</span>` : '';
 
-                    const btn = (file, color, icon, title) => {
-                        if (file) {
-                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=presupuestos' target='_blank' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
+                    const pdfIcon = `<i class='fas fa-file-pdf'>${pdfBadge}</i>`;
+                    const imgIcon = `<i class='fas fa-file-jpg'>${imgBadge}</i>`;
+
+                    // Función para crear botón
+                    const btn = (arr, icon, color, title) => {
+                        if (!arr || arr.length === 0) {
+                            return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'>${icon}</span>`;
                         }
 
-                        return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
+
+
+                        const archivosStr = encodeURIComponent(JSON.stringify(arr));
+
+                        return `<button type="button" 
+                    onclick="window.verArchivosModal(JSON.parse(decodeURIComponent('${archivosStr}')))" 
+                    style="font-size:1.4rem;padding:3px 4px;width:32.41px;color:${color}" 
+                    class="btn btnDescargar" 
+                    title="${title}">
+                    ${icon}
+                </button>`;
                     };
 
-                    return (
-                        btn(pdf_pre, "#a3161f", "fa-file-pdf", "Pdf") +
-                        btn(xls_pre, "#155724", "fa-file-xls", "Excel")
-                    );
+                    return btn(pdfArr, pdfIcon, "#a3161f", "PDF") + "<br>" + btn(imgArr, imgIcon, "#c98600ff", "Img");
                 }
             },
             {
                 targets: 10,
                 orderable: false,
+                className: "text-center td-archivo",
                 render: function(data, type, row) {
                     const {
                         pdf_ae,
                         doc_ae
                     } = row;
 
-                    const btn = (file, color, icon, title) => {
+                    const btn = (file, color, icon, title, target) => {
                         if (file) {
-                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=presupuestos' target='_blank' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
+                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=actas_entrega' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
                         }
-
                         return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
                     };
 
                     return (
-                        btn(pdf_pre, "#a3161f", "fa-file-pdf", "Pdf") +
-                        btn(xls_pre, "#004598ff", "fa-file-doc", "Word")
+                        btn(pdf_ae, "#a3161f", "fa-file-pdf", "Pdf", '_blank') +
+                        "<br>" +
+                        btn(doc_ae, "#004598ff", "fa-file-doc", "Word", '')
                     );
                 }
             },
-
             {
                 targets: 11,
                 orderable: false,
@@ -398,20 +443,122 @@
                     if (editar) {
                         botones += "<button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
-                            "</button> " + "<div class='btn-group'><button type='button' class='btn bg-gradient-light btnEstado dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' title='Cambiar estado'><i class='fas fa-chart-candlestick'></i></button><div class='dropdown-menu dropdown-menu-right'><a class='dropdown-item estado-opcion' data-estado='APROBADO' href='#'><i class='fas fa-file-check'></i> APROBADO</a><a class='dropdown-item estado-opcion' data-estado='PENDIENTE' href='#'><i class='fas fa-clock'></i> PENDIENTE</a><a class='dropdown-item estado-opcion' data-estado='NO APROBADO' href='#'><i class='fas fa-file-xmark'></i> NO APROBADO</a></div></div>";;
+                            "</button> " + "<div class='btn-group'><button type='button' class='btn bg-gradient-light btnEstado dropdown-toggle' data-toggle='dropdown' data-display='static' aria-haspopup='true' aria-expanded='false' title='Cambiar estado'><i class='fas fa-chart-candlestick'></i></button><div class='dropdown-menu dropdown-menu-xl-right'><a class='dropdown-item estado-opcion' data-estado='APROBADO' href='#'><i class='fas fa-file-check'></i> APROBADO</a><a class='dropdown-item estado-opcion' data-estado='PENDIENTE' href='#'><i class='fas fa-clock'></i> PENDIENTE</a><a class='dropdown-item estado-opcion' data-estado='NO APROBADO' href='#'><i class='fas fa-file-xmark'></i> NO APROBADO</a></div></div>";;
                     }
                     if (eliminar) {
                         botones += " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
                             "</button>";
                     }
-                    return "<center style='white-space: nowrap;'>" + botones + "</center>";
+                    return "<center style='white-space:nowrap'>" + botones + "</center>";
                 }
             },
         ],
     }
 
+    window.verArchivosModal = function(archivos) {
+        if (!archivos || archivos.length === 0) {
+            alert("No hay archivos para mostrar.");
+            return;
+        }
+
+        // Detecta tipo por extensión del primer archivo
+        const ext = archivos[0].toLowerCase().split('.').pop();
+        const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+        const isPdf = ext === 'pdf';
+
+        if (isPdf) {
+            // 🔹 Manejo de PDFs con cache para evitar recarga
+            const contenedor = document.getElementById('contenedorPDFs');
+
+            // Hash único por conjunto de archivos
+            const hash = archivos.join('|');
+
+            // Revisamos si ya existe un contenedor cacheado para estos archivos
+            let cachedDiv = document.querySelector(`#contenedorPDFs div[data-hash='${hash}']`);
+
+            if (!cachedDiv) {
+                // Si no existe, creamos el contenido
+                cachedDiv = document.createElement('div');
+                cachedDiv.dataset.hash = hash;
+                cachedDiv.classList.add('pdf-group');
+                cachedDiv.style.display = 'flex';
+                cachedDiv.style.flexWrap = 'wrap';
+                cachedDiv.style.gap = '1rem';
+                cachedDiv.style.justifyContent = 'center';
+
+
+                archivos.forEach(file => {
+                    const url = `/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=orden_compra`;
+
+                    const wrapper = document.createElement('div');
+                    wrapper.style.flex = '1 1 45%';
+                    wrapper.style.minWidth = '350px';
+                    wrapper.style.maxWidth = '600px';
+                    wrapper.style.marginBottom = '10px';
+
+                    const iframe = document.createElement('iframe');
+                    iframe.src = url;
+                    iframe.style.width = '100%';
+                    iframe.style.height = '400px';
+                    iframe.style.border = '1px solid #ccc';
+                    iframe.style.borderRadius = '8px';
+                    iframe.frameBorder = '0';
+
+                    const btnDiv = document.createElement('div');
+                    btnDiv.style.textAlign = 'center';
+                    btnDiv.style.marginTop = '5px';
+                    btnDiv.innerHTML = `<a href="${url}" target="_blank" class="btn btn-primary btn-sm">
+                                        <i class="fa fa-external-link"></i> Abrir en nueva pestaña
+                                    </a>`;
+
+                    wrapper.appendChild(iframe);
+                    wrapper.appendChild(btnDiv);
+                    cachedDiv.appendChild(wrapper);
+                });
+
+                contenedor.appendChild(cachedDiv);
+            }
+
+            // Ocultamos todos los grupos y mostramos solo el seleccionado
+            document.querySelectorAll('#contenedorPDFs .pdf-group').forEach(div => div.style.display = 'none');
+            cachedDiv.style.display = 'flex';
+
+
+            $('#modalVerPDFs').modal('show');
+        }
+
+        if (isImage) {
+            // 🔹 Manejo de imágenes en carrusel
+            const indicators = document.querySelector('#carouselPreview .carousel-indicators');
+            const inner = document.querySelector('#carouselPreview .carousel-inner');
+            indicators.innerHTML = '';
+            inner.innerHTML = '';
+
+            archivos.forEach((file, index) => {
+                const url = `/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=orden_compra`;
+
+                indicators.innerHTML += `
+                <li data-target="#carouselPreview" data-slide-to="${index}" ${index === 0 ? 'class="active"' : ''}></li>
+            `;
+
+                inner.innerHTML += `
+                <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                    <img src="${url}" class="d-block w-100" style="max-height:500px;object-fit:contain;" alt="Imagen ${index+1}">
+                </div>
+            `;
+            });
+
+            $('#modalVerImg').modal('show');
+        }
+    };
+
+
+
     $(document).ready(function() {
+
+
+
         let anio = year;
         let estado_presupuesto = 'null';
         if (!$.fn.DataTable.isDataTable('#tblPresupuesto')) {
@@ -443,27 +590,6 @@
             });
         }
         let IVA = iva_config / 100;
-
-
-
-
-        // tinymce.init({
-        //     selector: 'textarea#basic-example',
-        //     height: 500,
-        //     license_key: 'gpl',
-        //     plugins: [
-        //         'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-        //         'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-        //         'insertdatetime', 'media', 'table', 'help', 'wordcount'
-        //     ],
-        //     toolbar: 'undo redo | blocks | ' +
-        //         'bold italic backcolor | alignleft aligncenter ' +
-        //         'alignright alignjustify | bullist numlist outdent indent | ' +
-        //         'removeformat | help',
-        //     content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
-        // });
-
-
 
         function getFileIconSVG(file) {
             // SVG PDF
@@ -636,7 +762,7 @@
             acceptedFiles: ".pdf,.jpg,.jpeg,.png, .webp",
             autoProcessQueue: false,
             addRemoveLinks: true,
-            dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel",
+            dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/JPG/PNG",
             init: function() {
                 let removeAllFilesCalled = false;
                 this.on("addedfile", function(file) {
@@ -885,6 +1011,10 @@
             src.append('accion', 7); // o el valor que corresponda en tu backend
             src.append('id', id.value); // el id del presupuesto a editar
             cargarFilesDropzone(src, drop_pre, 'presupuesto', 'presupuestos');
+            let src2 = new FormData();
+            src2.append('accion', 8); // o el valor que corresponda en tu
+            src2.append('id', id.value); // el id del presupuesto a editar
+            cargarFilesDropzone(src2, drop_ae, 'presupuesto', 'actas_entrega');
         });
 
         $('#tblPresupuesto tbody').on('click', '.estado-opcion', function(e) {
@@ -977,6 +1107,19 @@
                     datos.append(`presupuesto_files[${index}]`, file, file.name);
                 }
             });
+
+            drop_ae.getAcceptedFiles().forEach((file, index) => {
+                if (!file.isExisting) {
+                    datos.append(`actas_files[${index}]`, file, file.name);
+                }
+            });
+
+            drop_oc.getAcceptedFiles().forEach((file, index) => {
+                if (!file.isExisting) {
+                    datos.append(`orden_compra_files[${index}]`, file, file.name);
+                }
+            });
+
             datos.append('accion', accion);
             return datos;
         }
