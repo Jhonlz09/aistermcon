@@ -23,7 +23,7 @@ class ModeloPresupuesto
             if ($estado !== 'null') {
                 $consulta .= "AND p.estado = :estado ";
             }
-            $consulta .= "ORDER BY p.id;";
+            $consulta .= "ORDER BY p.id DESC;";
 
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
@@ -184,6 +184,42 @@ class ModeloPresupuesto
         }
     }
 
+    static public function mdlObtenerTodosLosArchivos($id)
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare(" SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_ord, xls_ord], NULL)) AS nombre_file, 'ord' AS tipo
+            FROM tblpresupuesto
+            WHERE id = :id
+
+            UNION ALL
+
+            SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_pre, xls_pre], NULL)) AS nombre_file, 'ppt' AS tipo
+            FROM tblpresupuesto
+            WHERE id = :id
+
+            UNION ALL
+
+            SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_ae, doc_ae], NULL)) AS nombre_file, 'ae' AS tipo
+            FROM tblpresupuesto
+            WHERE id = :id
+
+            UNION ALL
+
+            SELECT unnest(pdf_oc || img_oc) AS nombre_file, 'oc' AS tipo
+            FROM tblpresupuesto
+            WHERE id = :id");
+
+            $l->bindParam(":id", $id, PDO::PARAM_INT);
+            $l->execute();
+            $files = $l->fetchAll(PDO::FETCH_ASSOC);
+
+            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
+        } catch (PDOException $e) {
+            // Retornar un mensaje de error descriptivo
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
     static public function mdlObtenerFilesPresupuesto($id)
     {
         try {
@@ -202,6 +238,39 @@ class ModeloPresupuesto
         }
     }
 
+    static public function mdlObtenerFilesActaEntrega($id)
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT unnest(array[pdf_ae, doc_ae]) AS nombre_file
+                FROM tblpresupuesto
+                WHERE id = :id");
+
+            $l->bindParam(":id", $id, PDO::PARAM_INT);
+            $l->execute();
+            $files = $l->fetchAll(PDO::FETCH_ASSOC);
+
+            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
+        } catch (PDOException $e) {
+            // Retornar un mensaje de error descriptivo
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlObtenerFilesOrdenCompra($id)
+    {
+        try {
+            $l = Conexion::ConexionDB()->prepare("SELECT unnest(pdf_oc || img_oc) AS nombre_file
+                    FROM tblpresupuesto WHERE id =:id");
+
+            $l->bindParam(":id", $id, PDO::PARAM_INT);
+            $l->execute();
+            $files = $l->fetchAll(PDO::FETCH_ASSOC);
+            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
+        } catch (PDOException $e) {
+            // Retornar un mensaje de error descriptivo
+            return "Error en la consulta: " . $e->getMessage();
+        }
+    }
 
     public static function mdlObtenerIdPresupuesto($nombre)
     {
@@ -260,22 +329,54 @@ class ModeloPresupuesto
         }
     }
 
-    static public function mdlEliminarFileOrden($id, $ruta, $ext)
+    // static public function mdlEliminarFileOrden($id, $ruta, $ext, $carpeta)
+    // {
+    //     try {
+    //         $l = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET " . ($ext === 'pdf' ? 'pdf_ord' : 'xls_ord') . " = NULL WHERE id = :id");
+
+    //         $l->bindParam(":id", $id, PDO::PARAM_INT);
+    //         if ($l->execute()) {
+    //             $uploadDir = "var/www/". $carpeta. "/" ; // Directorio donde están las imágenes
+    //             $filePath = $uploadDir . $ruta;
+
+    //             if (file_exists($filePath)) {
+    //                 unlink($filePath); // Eliminar archivo
+    //             }
+    //         };
+    //     } catch (PDOException $e) {
+    //         return "Error en la consulta: " . $e->getMessage();
+    //     }
+    // }
+
+    static public function mdlEliminarArchivo($id, $ruta, $ext, $carpeta, $tipo)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET " . ($ext === 'pdf' ? 'pdf_ord' : 'xls_ord') . " = NULL WHERE id = :id");
+            $columnas = [
+                'ppt' => ['pdf' => 'pdf_pre', 'xls' => 'xls_pre', 'xlsx' => 'xls_pre'],
+                'ord' => ['pdf' => 'pdf_ord', 'xls' => 'xls_ord', 'xlsx' => 'xls_ord'],
+                'ae' => ['pdf' => 'pdf_ae', 'doc' => 'doc_ae', 'docx' => 'doc_ae'],
+            ];
 
-            $l->bindParam(":id", $id, PDO::PARAM_INT);
-            if ($l->execute()) {
-                $uploadDir = "var/www/ordenes/"; // Directorio donde están las imágenes
-                $filePath = $uploadDir . $ruta;
+            if (!isset($columnas[$tipo][$ext])) {
+                throw new Exception("Tipo de archivo no soportado para eliminación: $tipo / $ext");
+            }
 
-                if (file_exists($filePath)) {
-                    unlink($filePath); // Eliminar archivo
-                }
-            };
+            $columna = $columnas[$tipo][$ext];
+
+            // 🔸 Limpia la columna correspondiente
+            $sql = "UPDATE tblpresupuesto SET {$columna} = NULL WHERE id = :id";
+            $stmt = Conexion::ConexionDB()->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // 🔸 Eliminar el archivo físico (ajusta base dir según tu estructura)
+            $baseDir = '/var/www/' . $carpeta . '/';
+            $filePath = $baseDir . $ruta;
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
         } catch (PDOException $e) {
-            return "Error en la consulta: " . $e->getMessage();
+            return "Error en la eliminación: " . $e->getMessage();
         }
     }
 }

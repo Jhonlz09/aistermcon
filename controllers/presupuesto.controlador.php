@@ -3,7 +3,7 @@ require_once "../models/presupuesto.modelo.php";
 
 class ControladorPresupuesto
 {
-    public $id, $descrip, $id_cliente, $estado, $presupuesto, $anio, $cliente, $fecha, $precio_iva, $precio_total, $nota, $ext, $ruta;
+    public $id, $descrip, $id_cliente, $estado, $presupuesto, $anio, $cliente, $fecha, $precio_iva, $precio_total, $nota, $ext, $ruta, $carpeta, $tipo;
 
     public function listarPresupuesto()
     {
@@ -244,9 +244,9 @@ class ControladorPresupuesto
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function obtenerFilesOrden()
+    public function obtenerFiles()
     {
-        $data = ModeloPresupuesto::mdlObtenerFilesOrden($this->id);
+        $data = ModeloPresupuesto::mdlObtenerTodosLosArchivos($this->id);
 
         if (empty($data)) {
             // Si no hay imágenes, retorna un arreglo vacío
@@ -262,31 +262,62 @@ class ControladorPresupuesto
         ]);
     }
 
-    public function obtenerFilesPresupuesto()
-    {
-        $data = ModeloPresupuesto::mdlObtenerFilesPresupuesto($this->id);
+    // public function obtenerFilesPresupuesto()
+    // {
+    //     $data = ModeloPresupuesto::mdlObtenerFilesPresupuesto($this->id);
+    //     if (empty($data)) {
+    //         // Si no hay imágenes, retorna un arreglo vacío
+    //         echo json_encode([
+    //             'files' => [],
+    //         ]);
+    //         return;
+    //     }
 
-        if (empty($data)) {
-            // Si no hay imágenes, retorna un arreglo vacío
-            echo json_encode([
-                'files' => [],
-            ]);
-            return;
-        }
+    //     // Si hay imágenes, retornarlas en el JSON
+    //     echo json_encode([
+    //         'files' => $data,
+    //     ]);
+    // }
 
-        // Si hay imágenes, retornarlas en el JSON
-        echo json_encode([
-            'files' => $data,
-        ]);
-    }
+    // public function obtenerFilesActaEntrega()
+    // {
+    //     $data = ModeloPresupuesto::mdlObtenerFilesActaEntrega($this->id);
+
+    //     if (empty($data)) {
+    //         // Si no hay imágenes, retorna un arreglo vacío
+    //         echo json_encode(['files' => [],]);
+    //         return;
+    //     }
+    //     // Si hay imágenes, retornarlas en el JSON
+    //     echo json_encode([
+    //         'files' => $data,
+    //     ]);
+    // }
+
+    // public function obtenerFilesOrdenCompra()
+    // {
+    //     $data = ModeloPresupuesto::mdlObtenerFilesOrdenCompra($this->id);
+
+    //     if (empty($data)) {
+    //         // Si no hay imágenes, retorna un arreglo vacío
+    //         echo json_encode(['files' => [],]);
+    //         return;
+    //     }
+    //     // Si hay imágenes, retornarlas en el JSON
+    //     echo json_encode([
+    //         'files' => $data,
+    //     ]);
+    // }
+
     public function eliminarFilePresupuesto()
     {
         $data = ModeloPresupuesto::mdlEliminarFilePresupuesto($this->id, $this->ruta, $this->ext);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-    public function eliminarFileOrden()
+
+    public function eliminarFiles()
     {
-        $data = ModeloPresupuesto::mdlEliminarFileOrden($this->id, $this->ruta, $this->ext);
+        $data = ModeloPresupuesto::mdlEliminarArchivo($this->id, $this->ruta, $this->ext,$this->carpeta, $this->tipo);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
@@ -333,22 +364,34 @@ if (!isset($_POST["accion"])) {
     } else if ($_POST["accion"] == 6) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
-        $data->obtenerFilesOrden();
-    } else if ($_POST["accion"] == 7) {
-        $data = new ControladorPresupuesto();
-        $data->id = $_POST["id"];
-        $data->obtenerFilesPresupuesto();
-    } else if ($_POST["accion"] == 8) {
+        $data->obtenerFiles();
+     } //else if ($_POST["accion"] == 7) {
+    //     $data = new ControladorPresupuesto();
+    //     $data->id = $_POST["id"];
+    //     $data->obtenerFilesPresupuesto();
+   // } 
+   else if ($_POST["accion"] == 8) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
         $data->ruta = $_POST["ruta"];
         $data->ext = $_POST["ext"];
         $data->eliminarFilePresupuesto();
-    } else if ($_POST["accion"] == 9) {
+    } 
+     else if ($_POST["accion"] == 9) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
         $data->ruta = $_POST["ruta"];
         $data->ext = $_POST["ext"];
-        $data->eliminarFileOrden();
-    }
+        $data->carpeta = $_POST["carpeta"];
+        $data->tipo = $_POST["tipo"];
+        $data->eliminarFiles();
+     } //else if ($_POST["accion"] == 10) {
+    //     $data = new ControladorPresupuesto();
+    //     $data->id = $_POST["id"];
+    //     $data->obtenerFilesActaEntrega();
+    // } else if ($_POST["accion"] == 11) {
+    //     $data = new ControladorPresupuesto();
+    //     $data->id = $_POST["id"];
+    //     $data->obtenerFilesOrdenCompra();
+    // }
 }

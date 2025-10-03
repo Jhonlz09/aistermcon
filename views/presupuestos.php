@@ -242,7 +242,7 @@
     </div>
 </div>
 <div class="modal fade" id="modalVerImg" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-body">
                 <div id="carouselPreview" class="carousel slide" data-ride="carousel">
@@ -364,7 +364,7 @@
                     const btn = (file, color, icon, title, target) => {
                         if (file) {
                             return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=ordenes' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar'
-                            title='${title}'> <i class='fas ${icon}'></i></a>`;
+                            title='${title}'><i class='fas ${icon}'></i></a>`;
                         }
                         return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
                     };
@@ -394,21 +394,15 @@
                         if (!arr || arr.length === 0) {
                             return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'>${icon}</span>`;
                         }
-
-
-
                         const archivosStr = encodeURIComponent(JSON.stringify(arr));
 
                         return `<button type="button" 
                     onclick="window.verArchivosModal(JSON.parse(decodeURIComponent('${archivosStr}')))" 
                     style="font-size:1.4rem;padding:3px 4px;width:32.41px;color:${color}" 
-                    class="btn btnDescargar" 
-                    title="${title}">
-                    ${icon}
-                </button>`;
+                    class="btn btnDescargar" title="${title}">${icon}</button>`;
                     };
 
-                    return btn(pdfArr, pdfIcon, "#a3161f", "PDF") + "<br>" + btn(imgArr, imgIcon, "#c98600ff", "Img");
+                    return btn(pdfArr, pdfIcon, "#a3161f", "PDF") + "<br>" + btn(imgArr, imgIcon, "#962d96", "Img");
                 }
             },
             {
@@ -443,12 +437,12 @@
                     if (editar) {
                         botones += "<button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
-                            "</button> " + "<div class='btn-group'><button type='button' class='btn bg-gradient-light btnEstado dropdown-toggle' data-toggle='dropdown' data-display='static' aria-haspopup='true' aria-expanded='false' title='Cambiar estado'><i class='fas fa-chart-candlestick'></i></button><div class='dropdown-menu dropdown-menu-xl-right'><a class='dropdown-item estado-opcion' data-estado='APROBADO' href='#'><i class='fas fa-file-check'></i> APROBADO</a><a class='dropdown-item estado-opcion' data-estado='PENDIENTE' href='#'><i class='fas fa-clock'></i> PENDIENTE</a><a class='dropdown-item estado-opcion' data-estado='NO APROBADO' href='#'><i class='fas fa-file-xmark'></i> NO APROBADO</a></div></div>";;
+                            "</button> ";
                     }
                     if (eliminar) {
                         botones += " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
                             " <i class='fa fa-trash'></i>" +
-                            "</button>";
+                            "</button> " + "<div class='btn-group'><button style='padding-inline:.5rem' type='button' class='btn bg-gradient-light btnEstado dropdown-toggle' data-toggle='dropdown' data-display='static' aria-haspopup='true' aria-expanded='false' title='Cambiar estado'><i class='fas fa-chart-candlestick'></i></button><div class='dropdown-menu dropdown-menu-xl-right'><a class='dropdown-item estado-opcion' data-estado='APROBADO' href='#'><i class='fas fa-file-check'></i> APROBADO</a><a class='dropdown-item estado-opcion' data-estado='PENDIENTE' href='#'><i class='fas fa-clock'></i> PENDIENTE</a><a class='dropdown-item estado-opcion' data-estado='NO APROBADO' href='#'><i class='fas fa-file-xmark'></i> NO APROBADO</a></div></div>";
                     }
                     return "<center style='white-space:nowrap'>" + botones + "</center>";
                 }
@@ -552,9 +546,6 @@
             $('#modalVerImg').modal('show');
         }
     };
-
-
-
     $(document).ready(function() {
 
 
@@ -641,10 +632,7 @@
                         excelCount = 0;
                     this.files.forEach(f => {
                         if (f.type === "application/pdf") pdfCount++;
-                        if (
-                            f.type === "application/vnd.ms-excel" ||
-                            f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        ) excelCount++;
+                        if (f.type === "application/vnd.ms-excel" || f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") excelCount++;
                     });
 
                     // Validar máximo 1 PDF y 1 Excel
@@ -662,24 +650,24 @@
                         return; // No realizar ninguna acción con el servidor
                     }
 
-
                     if (file.isExisting) {
                         $.ajax({
-                            url: 'controllers/presupuesto.controlador.php', // Ruta de tu controlador
+                            url: 'controllers/files.controlador.php',
                             type: 'POST',
                             data: {
-                                accion: 9,
+                                accion: 'eliminar',
                                 id: $('#id').val(),
-                                ext: file.name.split('.').pop(), // Extensión del archivo
-                                ruta: file.name // Nombre de la imagen a eliminar
+                                ruta: file.ruta,
+                                ext: file.name.split('.').pop().toLowerCase(),
+                                tipo: file.tipo // 👈 Esto viene desde el mockFile
                             },
-                            success: function(response) {
-                                tabla.ajax.reload(null, false); // Recargar la tabla sin resetear la paginación
-                                // console.log("Documento eliminada del servidor:", response);
-                            }
+                            success: function(resp) {
+                                console.log(`🗑️ Archivo eliminado: ${file.name}`, resp);
+                                tabla.ajax.reload(null, false);
+                            },
                         });
                     } else {
-                        console.log("Documento no existente en el servidor, eliminada solo del cliente.");
+                        console.log(`Archivo ${file.name} eliminado solo del cliente (no existente en servidor).`);
                     }
                 });
 
@@ -768,8 +756,10 @@
                 this.on("addedfile", function(file) {
                     var dzImage = file.previewElement.querySelector('.dz-image');
                     if (dzImage) {
-                        if (file.type === "application/pdf") {
-                            dzImage.innerHTML = getFileIconSVG(file);
+                        if (file.type === "") {
+                            const imageUrl = `/aistermcon/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=orden_compra`;
+                            dzImage.innerHTML = `<img src="${imageUrl}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;"alt="preview">`;
+                            // dzImage.innerHTML = `<img src="C:/var/www/orden_compra/${file.ruta}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" alt="preview">`;
                         } else if (file.type.startsWith("image/")) {
                             // Mostrar miniatura real de la imagen
                             var reader = new FileReader();
@@ -820,14 +810,9 @@
                 this.on("addedfile", function(file) {
                     var dzImage = file.previewElement.querySelector('.dz-image');
                     if (dzImage) {
-                        if (file.type === "application/pdf") {
-                            dzImage.innerHTML = getFileIconSVG(file);
-                        } else if (
-                            file.type === "application/msword" ||
-                            file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-                            dzImage.innerHTML = getFileIconSVG(file);
-                        }
+                        dzImage.innerHTML = getFileIconSVG(file);
                     }
+
                     let pdfCount = 0,
                         wordCount = 0;
                     this.files.forEach(f => {
@@ -905,13 +890,11 @@
             }
         });
 
-        $(modal).on("shown.bs.modal", () => {
-            orden_nro.focus();
-        });
+        // 
 
-        $(modal_date).on("shown.bs.modal", () => {
-            btnConfirmar.focus();
-        });
+        // $(modal_date).on("shown.bs.modal", () => {
+        //     btnConfirmar.focus();
+        // });
 
         $(cboAnio).select2({
             width: '110%',
@@ -1003,26 +986,104 @@
             setChange(cboClienteOrden, row["id_cliente"]);
             form.classList.remove('was-validated');
             nota.value = row["nota"];
-            let datos = new FormData();
-            datos.append('accion', 6); // o el valor que corresponda en tu backend
-            datos.append('id', id.value); // el id del presupuesto a editar
-            cargarFilesDropzone(datos, drop_ord, 'presupuesto', 'ordenes');
             let src = new FormData();
             src.append('accion', 7); // o el valor que corresponda en tu backend
             src.append('id', id.value); // el id del presupuesto a editar
-            cargarFilesDropzone(src, drop_pre, 'presupuesto', 'presupuestos');
-            let src2 = new FormData();
-            src2.append('accion', 8); // o el valor que corresponda en tu
-            src2.append('id', id.value); // el id del presupuesto a editar
-            cargarFilesDropzone(src2, drop_ae, 'presupuesto', 'actas_entrega');
+            cargarTodosLosArchivos(id.value);
+
+            // cargarFilesDropzone(src, drop_pre, 'presupuesto', 'presupuestos');
+            // let datos = new FormData();
+            // datos.append('accion', 6); // o el valor que corresponda en tu backend
+            // datos.append('id', id.value); // el id del presupuesto a editar
+            // cargarFilesDropzoneOneCall(datos, drop_ord, 'presupuesto', 'ordenes');
+
+
+            // let src3 = new FormData();
+            // src3.append('accion', 11); // o el valor que corresponda en tu
+            // src3.append('id', id.value); // el id del presupuesto a editar
+            // cargarFilesDropzone(src3, drop_oc, 'presupuesto', 'orden_compra');
+            // let src2 = new FormData();
+            // src2.append('accion', 10); // o el valor que corresponda en tu
+            // src2.append('id', id.value); // el id del presupuesto a editar
+            // cargarFilesDropzone(src2, drop_ae, 'presupuesto', 'actas_entrega');
         });
+
+        function cargarTodosLosArchivos(id) {
+            drop_pre.removeAllFilesWithoutServer();
+            drop_ord.removeAllFilesWithoutServer();
+            drop_ae.removeAllFilesWithoutServer();
+            drop_oc.removeAllFilesWithoutServer();
+            $.ajax({
+                url: 'controllers/presupuesto.controlador.php',
+                type: 'POST',
+                dataType: 'json',
+                // "dataSrc": '',
+                // contentType: false,
+                // processData: false,
+                data: {
+                    'accion': 6,
+                    'id': id
+                },
+                success: function(response) {
+                    console.log('📁 Archivos cargados:', response);
+
+                    if (!response.files || !Array.isArray(response.files)) return;
+                    response.files.forEach(file => {
+                        const filename = file.nombre_file.split('/').pop();
+                        const ext = filename.split('.').pop().toLowerCase();
+
+                        // Tipos MIME para que Dropzone lo interprete bien
+                        const extMap = {
+                            pdf: 'application/pdf',
+                            xls: 'application/vnd.ms-excel',
+                            xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            doc: 'application/msword',
+                            docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                        };
+
+                        const type = extMap[ext] || ``;
+
+                        // Simulamos el archivo existente
+                        const mockFile = {
+                            name: filename,
+                            size: 123456, // puedes poner tamaño real si lo deseas
+                            type: type,
+                            ruta: file.nombre_file,
+                            isExisting: true
+                        };
+
+                        // Asignamos al Dropzone correcto según 'tipo'
+                        switch (file.tipo) {
+                            case 'ppt':
+                                agregarMockFile(drop_pre, mockFile);
+                                break;
+                            case 'ord':
+                                agregarMockFile(drop_ord, mockFile);
+                                break;
+                            case 'ae':
+                                agregarMockFile(drop_ae, mockFile);
+                                break;
+                            case 'oc':
+                                agregarMockFile(drop_oc, mockFile);
+                                break;
+                        }
+                    });
+                },
+            });
+        }
+
+        // Función auxiliar para añadir archivos simulados al Dropzone
+        function agregarMockFile(drop, mockFile) {
+            drop.emit('addedfile', mockFile);
+            drop.emit('complete', mockFile);
+            drop.files.push(mockFile);
+        }
 
         $('#tblPresupuesto tbody').on('click', '.estado-opcion', function(e) {
             e.preventDefault();
             const row = obtenerFila(this, tabla);
             const id = row["id"];
             const estado = $(this).data('estado');
-
             let data = new FormData();
             data.append('id', id);
             data.append('estado', estado);
@@ -1053,7 +1114,6 @@
             }
             console.log(datos.get('orden_files[0]'));
             if (accion == 2) {
-
                 // confirmarAccion(datos, 'presupuesto', tabla, modal, function(r) {
                 //     cargarAutocompletado(function(items) {
                 //         items_orden = items;

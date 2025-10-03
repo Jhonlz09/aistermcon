@@ -526,7 +526,7 @@
             tabla.button('.buttons-pdf').trigger();
         });
 
-        $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboOrdenEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"></select> </div>  </div>');
+        $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap" > <div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboOrdenEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"><option value="null">TODO</option><option value="ESPERA">ESPERA</option><option value="OPERACION">OPERACION</option><option value="FINALIZADO">FINALIZADO</option><option value="FACTURADO">FACTURADO</option><option value="GARANTIA">GARANTIA</option></select></div></div>');
 
         let accion = 0;
 
@@ -627,7 +627,7 @@
             minimumResultsForSearch: -1,
         });
 
-        cargarCombo('OrdenEstadoFilter', estado_filter, 11);
+        // cargarCombo('OrdenEstadoFilter', estado_filter, 11);
 
         $(cboClienteOrden).change(function() {
             estilosSelect2(this, 'lblCO')

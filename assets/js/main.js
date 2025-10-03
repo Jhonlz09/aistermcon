@@ -231,7 +231,8 @@ function formatInputOrden(input) {
   input.value = value;
 }
 
-function cargarFilesDropzone(datos, drop, ruta, isImg) {
+function cargarFilesDropzone(datos, drop, ruta) {
+  drop.removeAllFilesWithoutServer();
   $.ajax({
     url: 'controllers/' + ruta + '.controlador.php', // Ajusta esta URL a tu controlador PHP
     type: 'POST',
@@ -241,32 +242,37 @@ function cargarFilesDropzone(datos, drop, ruta, isImg) {
     processData: false,
     data: datos,
     success: function (response) {
-      drop.removeAllFilesWithoutServer();
       console.log(response);
       response.files.forEach(file => {
-
-        const getFileType = (filename) => {
-          if (filename.endsWith('.pdf')) return 'application/pdf';
-          if (filename.endsWith('.xls')) return 'application/vnd.ms-excel';
-          if (filename.endsWith('.xlsx')) return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-          return '';
+        if (!file.nombre_file) return; // Si no hay nombre de archivo, saltar
+        const filename = file.nombre_file.split('/').pop();
+        file
+        // Map de extensiones conocidas
+        const extMap = {
+          pdf: 'application/pdf',
+          xls: 'application/vnd.ms-excel',
+          xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          doc: 'application/msword',
+          docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         };
+
+        const ext = filename.split('.').pop().toLowerCase();
+        const type = extMap[ext] || ''; // Si no coincide, se envía como imagen
+
         const mockFile = {
-          name: file.nombre_file || "file", // Puedes asignar un nombre genérico si no guardas el nombre original
-          size: 123456, // Valor genérico; Dropzone no valida este campo 
-          type: getFileType(file.nombre_file),
-          ruta: file.nombre_file, // Ruta de la imagen en el servidor
+          name: filename,
+          size: 123456,
+          type: type,
+          ruta: file.nombre_file,
+          tipo: file.tipo,
           isExisting: true
         };
+        console.log(mockFile);
         drop.emit('addedfile', mockFile);
-        if (isImg) {
-          drop.emit('complete', mockFile);
-
-        }
-        // drop.emit('thumbnail', mockFile, '/' + dir + '/' + file.nombre_file);
-        drop.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
+        drop.emit('complete', mockFile);
+        drop.files.push(mockFile);
       });
-    },
+    }
   });
 }
 
@@ -540,45 +546,45 @@ function convertirArray(arr) {
 // }
 
 function parsePgArray(pgArrayStr) {
-    if (!pgArrayStr) return [];
+  if (!pgArrayStr) return [];
 
-    // Quita las llaves iniciales y finales
-    let str = pgArrayStr.replace(/^{|}$/g, '').trim();
-    if (!str) return [];
+  // Quita las llaves iniciales y finales
+  let str = pgArrayStr.replace(/^{|}$/g, '').trim();
+  if (!str) return [];
 
-    const arr = [];
-    let current = '';
-    let inQuotes = false;
-    let quoteChar = '';
+  const arr = [];
+  let current = '';
+  let inQuotes = false;
+  let quoteChar = '';
 
-    for (let i = 0; i < str.length; i++) {
-        const c = str[i];
+  for (let i = 0; i < str.length; i++) {
+    const c = str[i];
 
-        // Detecta inicio/final de comillas simples o dobles
-        if ((c === '"' || c === "'") && !inQuotes) {
-            inQuotes = true;
-            quoteChar = c;
-            continue;
-        } else if (c === quoteChar && inQuotes) {
-            inQuotes = false;
-            quoteChar = '';
-            continue;
-        }
-
-        // Si es coma fuera de comillas, termina elemento
-        if (c === ',' && !inQuotes) {
-            arr.push(current.trim());
-            current = '';
-        } else {
-            current += c;
-        }
+    // Detecta inicio/final de comillas simples o dobles
+    if ((c === '"' || c === "'") && !inQuotes) {
+      inQuotes = true;
+      quoteChar = c;
+      continue;
+    } else if (c === quoteChar && inQuotes) {
+      inQuotes = false;
+      quoteChar = '';
+      continue;
     }
 
-    if (current) arr.push(current.trim());
+    // Si es coma fuera de comillas, termina elemento
+    if (c === ',' && !inQuotes) {
+      arr.push(current.trim());
+      current = '';
+    } else {
+      current += c;
+    }
+  }
 
-    // Quita comillas simples internas sobrantes
-    console.log(arr.map(s => s.replace(/^'+|'+$/g, '').trim()));
-    return arr.map(s => s.replace(/^'+|'+$/g, '').trim());
+  if (current) arr.push(current.trim());
+
+  // Quita comillas simples internas sobrantes
+  console.log(arr.map(s => s.replace(/^'+|'+$/g, '').trim()));
+  return arr.map(s => s.replace(/^'+|'+$/g, '').trim());
 }
 
 
