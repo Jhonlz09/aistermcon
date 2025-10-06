@@ -651,21 +651,7 @@
                     }
 
                     if (file.isExisting) {
-                        $.ajax({
-                            url: 'controllers/files.controlador.php',
-                            type: 'POST',
-                            data: {
-                                accion: 'eliminar',
-                                id: $('#id').val(),
-                                ruta: file.ruta,
-                                ext: file.name.split('.').pop().toLowerCase(),
-                                tipo: file.tipo // 👈 Esto viene desde el mockFile
-                            },
-                            success: function(resp) {
-                                console.log(`🗑️ Archivo eliminado: ${file.name}`, resp);
-                                tabla.ajax.reload(null, false);
-                            },
-                        });
+                        eliminarArchivo(file, 'ordenes');
                     } else {
                         console.log(`Archivo ${file.name} eliminado solo del cliente (no existente en servidor).`);
                     }
@@ -712,30 +698,13 @@
                 });
 
                 this.on("removedfile", function(file) {
-                    // Verificar si se llamó a removeAllFiles, en ese caso no hacer nada en el servidor
+                    console.log(file.name);
                     if (removeAllFilesCalled) {
-                        // console.log("Archivo eliminado solo del contenedor, no del servidor.");
                         return; // No realizar ninguna acción con el servidor
                     }
 
-                    // Si el archivo es existente en el servidor, eliminarlo del servidor
-                    // if (file.isExisting) {
-                    //     $.ajax({
-                    //         url: 'controllers/salidas.controlador.php', // Ruta de tu controlador
-                    //         type: 'POST',
-                    //         data: {
-                    //             accion: 9,
-                    //             nombre_imagen: file.name // Nombre de la imagen a eliminar
-                    //         },
-                    //         success: function(response) {
-                    //             // console.log("Imagen eliminada del servidor:", response);
-                    //         }
-                    //     });
-                    // } else {
-                    //     console.log("Imagen no existente en el servidor, eliminada solo del cliente.");
-                    // }
+                    if (file.isExisting) eliminarArchivo(file, 'presupuestos');
                 });
-
 
                 this.removeAllFilesWithoutServer = function() {
                     removeAllFilesCalled = true; // Indicamos que se ha llamado a removeAllFiles
@@ -771,23 +740,24 @@
                             dzImage.innerHTML = getFileIconSVG(file) || "";
                         }
                     }
-                    let pdfCount = 0;
-                    this.files.forEach(f => {
-                        if (f.type === "application/pdf") pdfCount++;
-                    });
+                    // let pdfCount = 0;
+                    // this.files.forEach(f => {
+                    //     if (f.type === "application/pdf") pdfCount++;
+                    // });
 
-                    if ((file.type === "application/pdf" && pdfCount > 1)) {
-                        this.removeFile(file);
-                        alert("Solo puedes subir 1 archivo PDF por vez.");
-                    }
+                    // if ((file.type === "application/pdf" && pdfCount > 1)) {
+                    //     this.removeFile(file);
+                    //     alert("Solo puedes subir 1 archivo PDF por vez.");
+                    // }
                 });
 
                 this.on("removedfile", function(file) {
-                    // Verificar si se llamó a removeAllFiles, en ese caso no hacer nada en el servidor
+                    console.log(file.name);
                     if (removeAllFilesCalled) {
-                        // console.log("Archivo eliminado solo del contenedor, no del servidor.");
                         return; // No realizar ninguna acción con el servidor
                     }
+
+                    if (file.isExisting) eliminarArchivo(file, 'orden_compra');
                 });
 
 
@@ -832,11 +802,12 @@
                 });
 
                 this.on("removedfile", function(file) {
-                    // Verificar si se llamó a removeAllFiles, en ese caso no hacer nada en el servidor
+                    console.log(file.name);
                     if (removeAllFilesCalled) {
-                        // console.log("Archivo eliminado solo del contenedor, no del servidor.");
                         return; // No realizar ninguna acción con el servidor
                     }
+
+                    if (file.isExisting) eliminarArchivo(file, 'actas_entrega');
                 });
 
 
@@ -850,6 +821,27 @@
 
         $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap"><div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboPreEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"><option value="null">TODO</option><option value="PENDIENTE">PENDIENTE</option><option value="NO APROBADO">NO APROBADO</option><option value="APROBADO">APROBADO</option> </select> </div></div>');
 
+        function eliminarArchivo(file, carpeta = '') {
+            $.ajax({
+                url: 'controllers/presupuesto.controlador.php',
+                type: 'POST',
+                data: {
+                    accion: 9,
+                    id: $('#id').val(),
+                    ruta: file.ruta,
+                    ext: file.name.split('.').pop().toLowerCase(),
+                    carpeta: carpeta,
+                    tipo: file.tipo // 👈 viene desde el mockFile
+                },
+                success: function(resp) {
+                    console.log(`🗑️ Archivo eliminado: ${file.name}`, resp);
+                    tabla.ajax.reload(null, false);
+                },
+                error: function(xhr, status, error) {
+                    console.error(`❌ Error al eliminar el archivo: ${file.name}`, error);
+                }
+            });
+        }
         let accion = 0;
         const modal = document.getElementById('modal'),
             modal_date = document.getElementById('modal-date'),
@@ -961,7 +953,7 @@
             let src = new FormData();
             src.append('accion', accion);
             src.append('id', id_);
-            confirmarEliminar('esta', 'presupuesto', function(r) {
+            confirmarEliminar('este', 'presupuesto', function(r) {
                 if (r) {
                     confirmarAccion(src, 'presupuesto', tabla, '', function(r) {
                         if (r) {}
@@ -981,8 +973,10 @@
             id.value = row["id"];
             desc.value = row["descripcion"];
             orden_nro.value = row["num_orden"];
-            precioConIva.value = row["precio_total"];
-            precioSinIva.value = row["precio_iva"];
+            precioConIva.value = parseFloat(row["precio_total"].replace(/[$,]/g, ''));
+            precioSinIva.value = parseFloat(row["precio_iva"].replace(/[$,]/g, ''));
+            // precioConIva.value = row["precio_total"];
+            // precioSinIva.value = row["precio_iva"];
             setChange(cboClienteOrden, row["id_cliente"]);
             form.classList.remove('was-validated');
             nota.value = row["nota"];
@@ -1049,6 +1043,7 @@
                             size: 123456, // puedes poner tamaño real si lo deseas
                             type: type,
                             ruta: file.nombre_file,
+                            tipo: file.tipo, // 👈 para saber a qué Dropzone pertenece
                             isExisting: true
                         };
 
@@ -1112,18 +1107,18 @@
                 precioSinIva.disabled = false;
                 return;
             }
-            console.log(datos.get('orden_files[0]'));
             if (accion == 2) {
-                // confirmarAccion(datos, 'presupuesto', tabla, modal, function(r) {
-                //     cargarAutocompletado(function(items) {
-                //         items_orden = items;
-                //         $('#nro_orden').autocomplete("option", "source", items);
-                //         $('#nro_ordenEntrada').autocomplete("option", "source", items);
-                //         $('#nro_ordenFab').autocomplete("option", "source", items);
-                //     }, null, 'orden', 6)
-                // });
+                confirmarAccion(datos, 'presupuesto', tabla, modal, function(r) {
+                    // cargarAutocompletado(function(items) {
+                    //     items_orden = items;
+                    //     $('#nro_orden').autocomplete("option", "source", items);
+                    //     $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                    //     $('#nro_ordenFab').autocomplete("option", "source", items);
+                    // }, null, 'orden', 6)
+                });
             } else {
-                fetchOrderId(datos.get('orden'), datos.get('fecha'), function(response) {
+                fetchOrderId(datos.get('presupuesto'), new Date(datos.get('fecha')).getFullYear(), function(response) {
+                    console.log('Respuesta de fetchOrderId:', response);
                     if (response && response.id_cliente != null) {
                         mostrarConfirmacionExistente(datos, response);
                     } else {
@@ -1179,14 +1174,32 @@
                     datos.append(`orden_compra_files[${index}]`, file, file.name);
                 }
             });
-
             datos.append('accion', accion);
             return datos;
         }
 
-        function mostrarConfirmacionExistente(datos) {
+        // function mostrarConfirmacionExistente(datos) {
+        //     Swal.fire({
+        //         title: "Esta orden de trabajo ya existe",
+        //         text: "¿Estás seguro que deseas continuar?",
+        //         icon: "warning",
+        //         showCancelButton: true,
+        //         allowOutsideClick: false,
+        //         allowEscapeKey: false,
+        //         confirmButtonText: "Sí, continuar",
+        //         cancelButtonText: "Cancelar",
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             confirmarAccion(datos, 'orden', tabla, modal, function(r) {
+        //                 // Callback para acciones después de confirmarAccion si es necesario
+        //             });
+        //         }
+        //     });
+        // }
+
+         function mostrarConfirmacionExistente(datos, cliente) {
             Swal.fire({
-                title: "Esta orden de trabajo ya existe",
+                title: `Numero de orden ya existe para '${cliente.nombre}'`,
                 text: "¿Estás seguro que deseas continuar?",
                 icon: "warning",
                 showCancelButton: true,
@@ -1196,8 +1209,13 @@
                 cancelButtonText: "Cancelar",
             }).then((result) => {
                 if (result.isConfirmed) {
-                    confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-                        // Callback para acciones después de confirmarAccion si es necesario
+                    confirmarAccion(datos, 'presupuesto', tabla, modal, function(r) {
+                        cargarAutocompletado(function(items) {
+                            items_orden = items;
+                            $('#nro_orden').autocomplete("option", "source", items);
+                            $('#nro_ordenEntrada').autocomplete("option", "source", items);
+                            $('#nro_ordenFab').autocomplete("option", "source", items);
+                        }, null, 'orden', 6)
                     });
                 }
             });

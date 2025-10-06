@@ -824,7 +824,7 @@
                     }, null, 'orden', 6)
                 });
             } else {
-                fetchOrderId(datos.get('orden'), datos.get('fecha'), function(response) {
+                fetchOrderId(datos.get('orden'), new Date(datos.get('fecha')).getFullYear(), function(response) {
                     if (response && response.id_cliente != null) {
                         mostrarConfirmacionExistente(datos, response);
                     } else {
@@ -856,14 +856,13 @@
             datos.append('orden', ord);
             datos.append('cliente', cli_name)
             datos.append('fecha', fecha_act);
-            // datos.append('estado', selectedEstado);
             datos.append('accion', accion);
             return datos;
         }
 
         function mostrarConfirmacionExistente(datos, cliente) {
             Swal.fire({
-                title: `Numero de orden ya existe para ${cliente.nombre}`,
+                title: `Numero de orden ya existe para '${cliente.nombre}'`,
                 text: "¿Estás seguro que deseas continuar?",
                 icon: "warning",
                 showCancelButton: true,

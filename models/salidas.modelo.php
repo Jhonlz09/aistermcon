@@ -7,24 +7,24 @@ class ModeloSalidas
     static public function mdlListarSalidas($anio, $mes)
     {
         try {
-            $consulta = "SELECT s.id, i.codigo, 
-                i.descripcion,  u.nombre AS unidad,
-                o.nombre || ' '|| c.nombre  || ' - '|| LPAD(b.nro_guia::TEXT, 9, '0') || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY HH24:MI') AS grupo, 
-                s.cantidad_salida,s.retorno, o.nombre as orden, c.nombre as cliente,
-                LPAD(b.nro_guia::TEXT, 9, '0') as boleta, b.id as id_boleta, 
-                o.id as id_orden, c.id as id_cliente, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha,
-                b.id_conductor,b.id_despachado, b.id_responsable,b.nro_guia,b.motivo,
-                ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila, s.fabricado, b.fab, b.tras, TO_CHAR(b.fecha_retorno, 'YYYY-MM-DD') AS fecha_retorno
-                FROM 
-                tblsalidas s
-                JOIN tblinventario i ON s.id_producto = i.id
-                JOIN tblboleta b ON s.id_boleta = b.id
-                JOIN tblorden o ON b.id_orden = o.id
-                JOIN tblclientes c ON c.id = o.id_cliente
-                JOIN tblunidad u ON i.id_unidad = u.id
-                WHERE 
-                    EXTRACT(YEAR FROM b.fecha) = :anio 
-                    AND s.id_producto_fab IS NULL ";
+            $consulta = "SELECT s.id,i.codigo,i.descripcion, u.nombre AS unidad,
+    p.num_orden || ' ' || c.nombre || ' - ' || LPAD(b.nro_guia::TEXT, 9, '0') || ' - ' || 
+    TO_CHAR(b.fecha, 'DD/MM/YYYY HH24:MI') AS grupo,s.cantidad_salida,
+    s.retorno,p.num_orden AS orden, c.nombre AS cliente,LPAD(b.nro_guia::TEXT, 9, '0') AS boleta,b.id AS id_boleta, o.id AS id_orden, 
+    c.id AS id_cliente, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha, b.id_conductor,
+    b.id_despachado, b.id_responsable,b.nro_guia,b.motivo,
+    ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila,s.fabricado, 
+    b.fab, b.tras, TO_CHAR(b.fecha_retorno, 'YYYY-MM-DD') AS fecha_retorno
+        FROM tblsalidas s
+            JOIN tblinventario i ON s.id_producto = i.id
+            JOIN tblboleta b ON s.id_boleta = b.id
+            JOIN tblorden o ON b.id_orden = o.id
+            JOIN tblpresupuesto p ON o.id = p.id              
+            JOIN tblclientes c ON p.id_cliente = c.id         
+            JOIN tblunidad u ON i.id_unidad = u.id
+        WHERE 
+            EXTRACT(YEAR FROM b.fecha) = :anio
+                AND s.id_producto_fab IS NULL ";
             if ($mes !== '') {
                 $consulta .= "AND EXTRACT(MONTH FROM b.fecha) = :mes ";
             }
@@ -108,27 +108,6 @@ class ModeloSalidas
         }
     }
 
-    // public static function mdlEliminarSalida($id)
-    // {
-    //     try {
-    //         $pdo = Conexion::ConexionDB();
-
-    //         // Preparar la consulta para eliminar de tblboleta (esto eliminará también las entradas relacionadas en tblsalidas)
-    //         $e = $pdo->prepare("DELETE FROM tblboleta WHERE id = :id");
-    //         $e->bindParam(":id", $id, PDO::PARAM_INT);
-    //         $e->execute();
-    //         return array(
-    //             'status' => 'success',
-    //             'm' => 'Se eliminó la guía de remision correctamente.'
-    //         );
-    //     } catch (PDOException $e) {
-    //         return array(
-    //             'status' => 'danger',
-    //             'm' => 'No se pudo eliminar la guia: ' . $e->getMessage()
-    //         );
-    //     }
-    // }
-
     public static function mdlEliminarSalida($id)
     {
         try {
@@ -167,8 +146,6 @@ class ModeloSalidas
         }
     }
 
-
-
     static public function mdlBuscarBoletaPDF($id_boleta)
     {
         try {
@@ -177,7 +154,6 @@ class ModeloSalidas
                 FROM tblsalidas s
                 JOIN tblinventario i ON s.id_producto = i.id
                 JOIN tblboleta b ON s.id_boleta = b.id 
-                JOIN tblorden o ON b.id_orden = o.id
                 JOIN tblunidad u ON i.id_unidad = u.id
                 WHERE b.id = :id
                 AND s.id_producto_fab IS NULL");
@@ -190,28 +166,6 @@ class ModeloSalidas
             return "Error en la consulta: " . $e->getMessage();
         }
     }
-
-
-    // static public function mdlObtenerImgBoleta($id_boleta)
-    // {
-    //     try {
-    //         $l = Conexion::ConexionDB()->prepare("SELECT nombre_imagen
-    //         FROM tblimg_salida 
-    //         WHERE id_boleta = :id");
-
-    //         $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
-    //         $l->execute();
-    //         $imagenes = $l->fetchAll(PDO::FETCH_ASSOC);
-
-    //         if ($imagenes) {
-    //             return json_encode(['imagenes' => $imagenes]);
-    //         } else {
-    //             return json_encode(['imagenes' => []]); // Retorna un arreglo vacío si no hay imágenes
-    //         }
-    //     } catch (PDOException $e) {
-    //         return "Error en la consulta: " . $e->getMessage();
-    //     }
-    // }
 
     static public function mdlObtenerImgBoleta($id_boleta)
     {
@@ -262,7 +216,6 @@ class ModeloSalidas
             FROM tblsalidas s
             JOIN tblinventario i ON s.id_producto = i.id
             JOIN tblboleta b ON s.id_boleta = b.id 
-            JOIN tblorden o ON b.id_orden = o.id
             JOIN tblunidad u ON i.id_unidad = u.id
                 WHERE b.id=:id
             ORDER BY b.fecha ASC, s.id");
@@ -284,7 +237,7 @@ class ModeloSalidas
                 FROM tblsalidas s
                 JOIN tblinventario i ON s.id_producto = i.id
                 JOIN tblboleta b ON s.id_boleta = b.id 
-                JOIN tblorden o ON b.id_orden = o.id
+                
                 JOIN tblunidad u ON i.id_unidad = u.id
                     WHERE b.id=:id AND s.fabricado = true
                 ORDER BY b.fecha ASC, s.id");
@@ -304,7 +257,6 @@ class ModeloSalidas
             FROM tblsalidas s
             JOIN tblinventario i ON s.id_producto = i.id
             JOIN tblboleta b ON s.id_boleta = b.id 
-            JOIN tblorden o ON b.id_orden = o.id
             JOIN tblunidad u ON i.id_unidad = u.id
                 WHERE b.id= :id
             ORDER BY b.fecha ASC, s.id;");

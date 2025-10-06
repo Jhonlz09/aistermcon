@@ -639,7 +639,6 @@
             });
 
             dzInstance.on("removedfile", function(file) {
-                // Verificar si se llamó a removeAllFiles, en ese caso no hacer nada en el servidor
                 if (removeAllFilesCalled) {
                     // console.log("Archivo eliminado solo del contenedor, no del servidor.");
                     return; // No realizar ninguna acción con el servidor

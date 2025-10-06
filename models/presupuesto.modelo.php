@@ -98,32 +98,186 @@ class ModeloPresupuesto
         exec($command);
     }
 
-    static public function mdlEditarPresupuesto($id, $nombre, $id_cliente, $presupuesto, $ruta)
+    // static public function mdlEditarPresupuesto($id, $nombre, $id_cliente, $presupuesto, $ruta)
+    // {
+    //     try {
+    //         $u = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET descripcion=:des, id_cliente=:id_cliente, nombre=:presupuesto, ruta=:ruta WHERE id=:id");
+    //         $u->bindParam(":id", $id, PDO::PARAM_INT);
+    //         $u->bindParam(":des", $nombre, PDO::PARAM_STR);
+    //         $u->bindParam(":presupuesto ", $presupuesto, PDO::PARAM_STR);
+    //         $u->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
+    //         $u->bindParam(":ruta", $ruta, PDO::PARAM_STR);
+    //         $u->execute();
+    //         return array(
+    //             'status' => 'success',
+    //             'm' => 'La presupuesto se editó correctamente'
+    //         );
+    //     } catch (PDOException $e) {
+    //         if ($e->getCode() == '23505') {
+    //             return array(
+    //                 'status' => 'danger',
+    //                 'm' => 'La presupuesto ya existe para el cliente seleccionado.'
+    //             );
+    //         } else {
+    //             return array(
+    //                 'status' => 'danger',
+    //                 'm' => 'No se pudo editar la presupuesto ' . $e->getMessage()
+    //             );
+    //         }
+    //     }
+    // }
+
+    // static public function mdlEditarPresupuesto(
+    //     $id,
+    //     $descrip,
+    //     $id_cliente,
+    //     $cliente,
+    //     $presupuesto,
+    //     $pdf_pre,
+    //     $pdf_ord,
+    //     $xls_pre,
+    //     $xls_ord,
+    //     $doc_ae,
+    //     $pdf_ae,
+    //     $pdf_oc_arr,
+    //     $img_oc_arr,
+    //     $fecha,
+    //     $precio_iva,
+    //     $precio_total,
+    //     $nota
+    // ) {
+    //     try {
+    //         $conexion = Conexion::ConexionDB();
+
+    //         $sql = "UPDATE tblpresupuesto SET 
+    //         num_orden = :num_orden,
+    //         descripcion = :descripcion,
+    //         id_cliente = :id_cliente,
+    //         precio_iva = :precio_iva,
+    //         precio_total = :precio_total,
+    //         fecha = :fecha,
+    //         nota = :nota";
+
+    //         // 🔸 Solo actualizar campos de archivos si llegaron nuevos
+    //         if ($pdf_pre) $sql .= ", pdf_pre = :pdf_pre";
+    //         if ($pdf_ord) $sql .= ", pdf_ord = :pdf_ord";
+    //         if ($xls_pre) $sql .= ", xls_pre = :xls_pre";
+    //         if ($xls_ord) $sql .= ", xls_ord = :xls_ord";
+    //         if ($doc_ae)  $sql .= ", doc_ae = :doc_ae";
+    //         if ($pdf_ae)  $sql .= ", pdf_ae = :pdf_ae";
+
+    //         $sql .= " WHERE id = :id";
+
+    //         $stmt = $conexion->prepare($sql);
+    //         $stmt->bindParam(":num_orden", $presupuesto);
+    //         $stmt->bindParam(":descripcion", $descrip);
+    //         $stmt->bindParam(":id_cliente", $id_cliente);
+    //         $stmt->bindParam(":precio_iva", $precio_iva);
+    //         $stmt->bindParam(":precio_total", $precio_total);
+    //         $stmt->bindParam(":fecha", $fecha);
+    //         $stmt->bindParam(":nota", $nota);
+    //         $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+
+    //         if ($pdf_pre) $stmt->bindParam(":pdf_pre", $pdf_pre);
+    //         if ($pdf_ord) $stmt->bindParam(":pdf_ord", $pdf_ord);
+    //         if ($xls_pre) $stmt->bindParam(":xls_pre", $xls_pre);
+    //         if ($xls_ord) $stmt->bindParam(":xls_ord", $xls_ord);
+    //         if ($doc_ae)  $stmt->bindParam(":doc_ae", $doc_ae);
+    //         if ($pdf_ae)  $stmt->bindParam(":pdf_ae", $pdf_ae);
+
+    //         $stmt->execute();
+
+    //         // 📌 Actualizar arrays de pdf_oc y img_oc con array_append
+    //         if (!empty($pdf_oc_arr)) {
+    //             $arraySQL = "UPDATE tblpresupuesto SET pdf_oc = COALESCE(pdf_oc, '{}')";
+    //             foreach ($pdf_oc_arr as $ruta) {
+    //                 $arraySQL .= " || array['$ruta']";
+    //             }
+    //             $arraySQL .= " WHERE id = $id";
+    //             $conexion->exec($arraySQL);
+    //         }
+
+    //         if (!empty($img_oc_arr)) {
+    //             $arraySQL = "UPDATE tblpresupuesto SET img_oc = COALESCE(img_oc, '{}')";
+    //             foreach ($img_oc_arr as $ruta) {
+    //                 $arraySQL .= " || array['$ruta']";
+    //             }
+    //             $arraySQL .= " WHERE id = $id";
+    //             $conexion->exec($arraySQL);
+    //         }
+
+    //         return ['status' => 'success', 'm' => 'Presupuesto actualizado correctamente.'];
+    //     } catch (PDOException $e) {
+    //         return ['status' => 'danger', 'm' => 'Error al editar: ' . $e->getMessage()];
+    //     }
+    // }
+
+
+    static public function mdlEditarPresupuesto($id, $descrip, $id_cliente, $cliente, $presupuesto, $pdf_pre, $pdf_ord, $xls_pre, $xls_ord, $doc_ae, $pdf_ae, $pdf_oc, $img_oc, $fecha, $precio_iva, $precio_total, $nota)
+   
     {
+
         try {
-            $u = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET descripcion=:des, id_cliente=:id_cliente, nombre=:presupuesto, ruta=:ruta WHERE id=:id");
-            $u->bindParam(":id", $id, PDO::PARAM_INT);
-            $u->bindParam(":des", $nombre, PDO::PARAM_STR);
-            $u->bindParam(":presupuesto ", $presupuesto, PDO::PARAM_STR);
-            $u->bindParam(":id_cliente", $id_cliente, PDO::PARAM_STR);
-            $u->bindParam(":ruta", $ruta, PDO::PARAM_STR);
-            $u->execute();
-            return array(
-                'status' => 'success',
-                'm' => 'La presupuesto se editó correctamente'
-            );
-        } catch (PDOException $e) {
-            if ($e->getCode() == '23505') {
-                return array(
-                    'status' => 'danger',
-                    'm' => 'La presupuesto ya existe para el cliente seleccionado.'
-                );
-            } else {
-                return array(
-                    'status' => 'danger',
-                    'm' => 'No se pudo editar la presupuesto ' . $e->getMessage()
-                );
+            //  var_dump( $id, $descrip, $id_cliente, $cliente, $presupuesto, $pdf_pre, $pdf_ord, $xls_pre, $xls_ord, $doc_ae, $pdf_ae, $pdf_oc, $img_oc, $fecha, $precio_iva, $precio_total, $nota);
+            $conexion = Conexion::ConexionDB();
+
+            $campos = [
+                "num_orden = :num_orden",
+                "descripcion = :descripcion",
+                "id_cliente = :id_cliente",
+                "precio_iva = :precio_iva",
+                "precio_total = :precio_total",
+                "fecha = :fecha",
+                "nota = :nota"
+            ];
+
+            // Solo agregar columnas de archivo si hay valor nuevo
+            $binds = [
+                ":num_orden" => $presupuesto,
+                ":descripcion" => $descrip,
+                ":id_cliente" => $id_cliente,
+                ":precio_iva" => $precio_iva,
+                ":precio_total" => $precio_total,
+                ":fecha" => $fecha,
+                ":nota" => $nota,
+                ":id" => $id
+            ];
+
+            $archivos = [
+                'pdf_pre' => $pdf_pre,
+                'pdf_ord' => $pdf_ord,
+                'xls_pre' => $xls_pre,
+                'xls_ord' => $xls_ord,
+                'doc_ae'  => $doc_ae,
+                'pdf_ae'  => $pdf_ae,
+                'pdf_oc'  => $pdf_oc,
+                'img_oc'  => $img_oc
+            ];
+
+            foreach ($archivos as $col => $valor) {
+                if (!is_null($valor)) {
+                    // Para pdf_oc y img_oc → concatenar arrays existentes
+                    if (in_array($col, ['pdf_oc', 'img_oc'])) {
+                        $campos[] = "$col = COALESCE($col, '{}') || :$col";
+                    } else {
+                        $campos[] = "$col = :$col";
+                    }
+                    $binds[":$col"] = $valor;
+                }
             }
+
+            $sql = "UPDATE tblpresupuesto SET " . implode(", ", $campos) . " WHERE id = :id";
+            $stmt = $conexion->prepare($sql);
+
+            foreach ($binds as $k => $v) {
+                $stmt->bindValue($k, $v);
+            }
+            // var_dump($stmt);
+            $stmt->execute();
+
+            return ['status' => 'success', 'm' => 'El presupuesto se actualizó correctamente.'];
+        } catch (PDOException $e) {
+            return ['status' => 'danger', 'm' => 'Error al actualizar: ' . $e->getMessage()];
         }
     }
 
@@ -351,30 +505,50 @@ class ModeloPresupuesto
     static public function mdlEliminarArchivo($id, $ruta, $ext, $carpeta, $tipo)
     {
         try {
+            $db = Conexion::ConexionDB();
+
+            // 📌 Mapeo de columnas normales
             $columnas = [
                 'ppt' => ['pdf' => 'pdf_pre', 'xls' => 'xls_pre', 'xlsx' => 'xls_pre'],
                 'ord' => ['pdf' => 'pdf_ord', 'xls' => 'xls_ord', 'xlsx' => 'xls_ord'],
-                'ae' => ['pdf' => 'pdf_ae', 'doc' => 'doc_ae', 'docx' => 'doc_ae'],
+                'ae'  => ['pdf' => 'pdf_ae', 'doc' => 'doc_ae', 'docx' => 'doc_ae'],
             ];
 
-            if (!isset($columnas[$tipo][$ext])) {
-                throw new Exception("Tipo de archivo no soportado para eliminación: $tipo / $ext");
+            if ($tipo === 'oc') {
+                if ($ext === 'pdf') {
+                    $columna = 'pdf_oc';
+                } else {
+                    $columna = 'img_oc';
+                }
+
+                // Eliminar la ruta específica del array en PostgreSQL
+                $sql = "UPDATE tblpresupuesto 
+                    SET {$columna} = array_remove({$columna}, :ruta)
+                    WHERE id = :id";
+                $stmt = $db->prepare($sql);
+                $stmt->bindParam(':ruta', $ruta, PDO::PARAM_STR);
+                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                $stmt->execute();
+            } else {
+                // 🧠 CASO NORMAL: columnas simples
+                if (!isset($columnas[$tipo][$ext])) {
+                    throw new Exception("Tipo de archivo no soportado: $tipo / $ext");
+                }
+                $columna = $columnas[$tipo][$ext];
+                $sql = "UPDATE tblpresupuesto SET {$columna} = NULL WHERE id = :id";
+                $stmt = $db->prepare($sql);
+                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                $stmt->execute();
             }
 
-            $columna = $columnas[$tipo][$ext];
-
-            // 🔸 Limpia la columna correspondiente
-            $sql = "UPDATE tblpresupuesto SET {$columna} = NULL WHERE id = :id";
-            $stmt = Conexion::ConexionDB()->prepare($sql);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-
-            // 🔸 Eliminar el archivo físico (ajusta base dir según tu estructura)
+            // 🧹 Eliminar archivo físico
             $baseDir = '/var/www/' . $carpeta . '/';
             $filePath = $baseDir . $ruta;
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
+
+            return true;
         } catch (PDOException $e) {
             return "Error en la eliminación: " . $e->getMessage();
         }

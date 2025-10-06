@@ -210,7 +210,7 @@ class ModeloOrden
     public static function mdlObtenerIdOrden($nombre, $anio_actual)
     {
         try {
-            $anio_ = (int)date('Y', strtotime($anio_actual)); 
+            // $anio_ = (int)date('Y', strtotime($anio_actual));
             $e = Conexion::ConexionDB()->prepare("SELECT p.id_cliente,c.nombre
                     FROM tblpresupuesto p
                     JOIN tblclientes c ON p.id_cliente = c.id
@@ -218,22 +218,15 @@ class ModeloOrden
                         AND EXTRACT(YEAR FROM p.fecha) =  :anio
                         AND p.anulado = false
                     LIMIT 1;");
-            $e->bindParam(":num_orden", $nombre, PDO::PARAM_INT);
-            $e->bindParam(':anio', $anio_, PDO::PARAM_INT);
+            $e->bindParam(":num_orden", $nombre, PDO::PARAM_STR);
+            $e->bindParam(':anio', $anio_actual, PDO::PARAM_INT);
             $e->execute();
             return $e->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            if ($e->getCode() == '21000') {
-                return array(
-                    'status' => 'warning',
-                    'm' => 'Existen varios clientes asociados al numero de orden, por favor seleccione manualmente el cliente'
-                );
-            } else {
-                return array(
-                    'status' => 'danger',
-                    'm' => 'No se pudo consultar el nro. orden: ' . $e->getMessage()
-                );
-            }
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo consultar el nro. orden: ' . $e->getMessage()
+            );
         }
     }
 
