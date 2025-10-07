@@ -123,12 +123,12 @@ class ModeloRegistro
             $fechaHora = $fecha . ' ' . $hora;
 
             // Actualizamos el estado y la fecha_ini
-            $stmt = $conexion->prepare("UPDATE tblorden SET estado_obra = 1, fecha_ini = :fecha WHERE id = :orden");
+            $stmt = $conexion->prepare("UPDATE tblorden SET estado = 'OPERACION', fecha_ope = :fecha WHERE id = :orden");
             $stmt->bindParam(':orden', $orden, PDO::PARAM_INT);
             $stmt->bindParam(":fecha", $fechaHora, PDO::PARAM_STR);
         } else {
             // Solo actualizamos el estado si fecha_ini no es NULL
-            $stmt = $conexion->prepare("UPDATE tblorden SET estado_obra = 1 WHERE id = :orden");
+            $stmt = $conexion->prepare("UPDATE tblorden SET estado = 'OPERACION' WHERE id = :orden");
             $stmt->bindParam(':orden', $orden, PDO::PARAM_INT);
         }
 

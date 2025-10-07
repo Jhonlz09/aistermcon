@@ -11,7 +11,7 @@ class ModeloInicio
             COALESCE((SELECT COUNT(*) FROM tblinventario WHERE estado=true AND fabricado=false), 0) AS pro,
             COALESCE((SELECT COUNT(*) FROM tblfactura f WHERE EXTRACT(YEAR FROM f.fecha) = :anio), 0) AS com,
             COUNT(*) AS mov,
-            COALESCE((SELECT COUNT(*) FROM tblorden o WHERE o.estado=true AND EXTRACT(YEAR FROM o.fecha) = :anio AND o.estado_obra=1), 0) AS ope
+            COALESCE((SELECT COUNT(*) FROM tblorden o WHERE o.anulado=false AND EXTRACT(YEAR FROM o.fecha) = :anio AND o.estado='OPERACION'), 0) AS ope
             FROM
                 tblboleta b
             WHERE EXTRACT(YEAR FROM b.fecha) = :anio;");
@@ -31,7 +31,8 @@ class ModeloInicio
             $sql = "SELECT c.nombre AS cliente, COUNT(*) AS salidas 
                 FROM public.tblboleta b
                     JOIN tblorden o ON b.id_orden = o.id
-                    JOIN tblclientes c ON o.id_cliente = c.id
+					JOIN tblpresupuesto p ON p.id = o.id
+                    JOIN tblclientes c ON p.id_cliente = c.id
                 WHERE EXTRACT(YEAR FROM b.fecha) = :anio";
             // Agregar condición del mes si $mes no es 0
             if ($mes != 0) {
@@ -58,15 +59,15 @@ class ModeloInicio
     static public function mdlGraficoCategorias($categoria)
     {
         try {
-            $a = Conexion::ConexionDB()->prepare("SELECT o.nombre || ' '|| cl.nombre   as cliente, 
+            $a = Conexion::ConexionDB()->prepare("SELECT p.num_orden || ' '|| cl.nombre   as cliente, 
             COUNT(s.id_producto) AS salidas
             FROM tblclientes cl
-            JOIN tblorden o ON cl.id = o.id_cliente
-            JOIN tblboleta b ON o.id = b.id_orden 
+			JOIN tblpresupuesto p ON p.id_cliente = cl.id
+            JOIN tblboleta b ON p.id = b.id_orden 
             JOIN tblsalidas s ON b.id = s.id_boleta AND s.retorno IS NULL
             JOIN tblinventario i ON s.id_producto = i.id AND i.id_categoria = :cat
             JOIN tblcategoria c ON c.id = i.id_categoria
-            GROUP BY cl.nombre, o.nombre;");
+            GROUP BY cl.nombre, p.num_orden;");
 
             $a->bindParam(":cat", $categoria, PDO::PARAM_INT);
             // $a->bindParam(":anio", $anio, PDO::PARAM_INT);

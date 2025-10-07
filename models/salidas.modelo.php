@@ -307,14 +307,15 @@ class ModeloSalidas
             $l = Conexion::ConexionDB()->prepare("SELECT b.id,
             TO_CHAR(b.fecha, 'DD/MM/YYYY') AS fecha,
             TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') AS fecha_retorno,
-            o.nombre AS orden,c.nombre AS cliente,COALESCE(c.ruc, e.cedula) AS ruc,c.direccion AS direccion_cliente,
+            pr.num_orden AS orden,c.nombre AS cliente,COALESCE(c.ruc, e.cedula) AS ruc,c.direccion AS direccion_cliente,
             c.telefono AS cliente_telefono,b.motivo,e_despachado.nombre AS despachado,
             e_responsable.nombre AS responsable,e.apellido || ' ' || e.nombre AS conductor,
             e.cedula AS cedula_conductor,e.telefono AS telefono_conductor,p.nombre AS placa,
             LPAD(b.nro_guia::TEXT, 9, '0') AS id_boleta, b.fab
                 FROM tblboleta b
                 JOIN tblorden o ON b.id_orden = o.id
-                JOIN tblclientes c ON c.id = o.id_cliente
+				JOIN tblpresupuesto pr ON pr.id = o.id
+                JOIN tblclientes c ON c.id = pr.id_cliente
                 LEFT JOIN tblempleado_placa e_conductor ON e_conductor.id = b.id_conductor
                 LEFT JOIN tblempleado e_despachado ON e_despachado.id = b.id_despachado
                 LEFT JOIN tblempleado e_responsable ON e_responsable.id = b.id_responsable

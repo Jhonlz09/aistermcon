@@ -113,57 +113,6 @@
     </div>
 </div>
 
-<!-- <script>
-    let productos = {
-        1: [{
-                nombre: "Grupo Tornillería",
-                cantidad: 2,
-                materiales: [{
-                        descripcion: "TORNILLO BCP",
-                        unidad: "UND",
-                        salida: 100,
-                        entrada: 50
-                    },
-                    {
-                        descripcion: "ARANDELA METÁLICA",
-                        unidad: "UND",
-                        salida: 40,
-                        entrada: 20
-                    }
-                ]
-            },
-            {
-                nombre: "Grupo Placas",
-                cantidad: 2,
-                materiales: [{
-                    descripcion: "PLACA METÁLICA",
-                    unidad: "UND",
-                    salida: 30,
-                    entrada: 15
-                }]
-            },
-            {
-                nombre: "Grupo Tornillería",
-                cantidad: 25,
-                materiales: [{
-                        descripcion: "TORNILLO BCP",
-                        unidad: "UND",
-                        salida: 100,
-                        entrada: 50
-                    },
-                    {
-                        descripcion: "ARANDELA METÁLICA",
-                        unidad: "UND",
-                        salida: 40,
-                        entrada: 20
-                    }
-                ]
-            },
-        ]
-    };
-</script> -->
-
-<!-- <script src="assets/plugins/datatables-scroller/js/dataTables.scroller.min.js" type="text/javascript"></script> -->
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar4"] || $_SESSION["eliminar4"] ?>';
     var crear = '<?php echo $_SESSION["crear4"] ?>';

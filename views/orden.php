@@ -351,7 +351,7 @@
                 render: function(data, type, row, full, meta) {
                     let estado = row.estado;
                     let ruta = row.pdf_ord;
-                    let clase = estadoClases[estado] == 'warning' ? 'yellow': estadoClases[estado];
+                    let clase = estadoClases[estado] == 'warning' ? 'yellow' : estadoClases[estado];
 
                     return (
                         "<center style='white-space: nowrap;'>" +
@@ -490,6 +490,7 @@
 
     $(document).ready(function() {
         let anio = year;
+
         if (!$.fn.DataTable.isDataTable('#tblOrden')) {
             tabla = $("#tblOrden").DataTable({
                 "ajax": {
@@ -568,7 +569,8 @@
             cboClienteOrden = document.getElementById('cboClientesOrden'),
             fileInput = document.getElementById('fileOrden'),
             cboOrdenEstadoFilter = document.getElementById('cboOrdenEstadoFilter');
-
+           
+            cboOrdenEstadoFilter.value = estado_filter;
         const estadoDivs = {
             'ESPERA': div_fecha_cre,
             'OPERACION': div_fecha_ini,

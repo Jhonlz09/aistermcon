@@ -189,13 +189,13 @@ class ModeloOrden
         try {
 
             $e = Conexion::ConexionDB()->prepare("SELECT o.id, 
-            o.nombre || ' ' || c.nombre AS descripcion,e.estado_obra AS estado_obra, 
+            p.num_orden || ' ' || c.nombre AS descripcion,o.estado AS estado_obra, 
             EXTRACT(YEAR FROM o.fecha) AS anio 
                 FROM tblorden o 
-                JOIN tblclientes c ON o.id_cliente = c.id
-                JOIN tblestado_obra e ON o.estado_obra = e.id
-                WHERE o.estado = true 
-                AND o.estado_obra IN (0, 1, 4)
+				JOIN tblpresupuesto p ON p.id = o.id
+                JOIN tblclientes c ON p.id_cliente = c.id
+                WHERE o.anulado = false 
+                AND o.estado IN ('ESPERA', 'OPERACION', 'GARANTIA')
                 ORDER BY o.id DESC;");
             $e->execute();
             return $e->fetchAll();

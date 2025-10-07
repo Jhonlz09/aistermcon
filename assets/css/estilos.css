@@ -519,30 +519,30 @@ font-size: 1rem;
     color: #007904;
 }
 
-a.dropdown-item[data-estado="no_aprobado"]:hover {
+a.dropdown-item[data-estado="NO APROBADO"]:hover {
     color: #d32f2f;
     font-weight: bold;
 }
 
-a.dropdown-item[data-estado="aprobado"]:hover {
+a.dropdown-item[data-estado="APROBADO"]:hover {
     color: #2e7d32;
     font-weight: bold;
 }
 
-a.dropdown-item[data-estado="pendiente"]:hover {
+a.dropdown-item[data-estado="PENDIENTE"]:hover {
     color: #dbaf00;
     font-weight: bold;
 }
 
-a.dropdown-item[data-estado="no_aprobado"]:active {
+a.dropdown-item[data-estado="NO APROBADO"]:active {
     background-color: #ba0000 !important;
 }
 
-a.dropdown-item[data-estado="aprobado"]:active {
+a.dropdown-item[data-estado="APROBADO"]:active {
     background: #2e7d32 !important;
 }
 
-a.dropdown-item[data-estado="pendiente"]:active {
+a.dropdown-item[data-estado="PENDIENTE"]:active {
     background: #dbaf00 !important;
 }
 

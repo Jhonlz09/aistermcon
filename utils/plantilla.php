@@ -852,7 +852,7 @@
                 cargarCombo('Conductor', conductorPorDefecto, 2);
                 cargarCombo('ConductorEntrada', conductorPorDefecto, 2);
 
-                cargarComboFabricado();
+               
                 cargarCombo('FabricadoCon', '', 9);
                 // cargarCombo('Orden', '', 3, true).then(datos_ => {
                 //     datos_orden = datos_;

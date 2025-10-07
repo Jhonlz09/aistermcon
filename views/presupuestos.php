@@ -242,7 +242,7 @@
     </div>
 </div>
 <div class="modal fade" id="modalVerImg" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
+    <div class="modal-dialog modal-md " role="document">
         <div class="modal-content">
             <div class="modal-body">
                 <div id="carouselPreview" class="carousel slide" data-ride="carousel">

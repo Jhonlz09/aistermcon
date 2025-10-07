@@ -82,7 +82,7 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <div class="icon">
                                     <i class="fas fa-person-digging"></i>
                                 </div>
-                                <a onclick="masInfo('Orden de trabajo'); estado_filter= '1'" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                                <a onclick="masInfo('Orden de trabajo'); estado_filter= 'OPERACION'" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                     <?php endif; ?>

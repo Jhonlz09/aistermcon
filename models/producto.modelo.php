@@ -120,24 +120,24 @@ class ModeloProductos
         }
     }
 
-    public static function mdlEliminarOrden($id)
-    {
-        try {
-            $sql= "UPDATE tblorden SET estado=false WHERE id=:id";
-            $e = Conexion::ConexionDB()->prepare($sql);
-            $e->bindParam(":id", $id, PDO::PARAM_INT);
-            $e->execute();
-            return array(
-                'status' => 'success',
-                'm' => 'Se eliminó correctamente.'
-            );
-        } catch (PDOException $e) {
-            return array(
-                'status' => 'danger',
-                'm' => 'No se pudo eliminar: ' . $e->getMessage()
-            );
-        }
-    }
+    // public static function mdlEliminarOrden($id)
+    // {
+    //     try {
+    //         $sql= "UPDATE tblorden SET estado=false WHERE id=:id";
+    //         $e = Conexion::ConexionDB()->prepare($sql);
+    //         $e->bindParam(":id", $id, PDO::PARAM_INT);
+    //         $e->execute();
+    //         return array(
+    //             'status' => 'success',
+    //             'm' => 'Se eliminó correctamente.'
+    //         );
+    //     } catch (PDOException $e) {
+    //         return array(
+    //             'status' => 'danger',
+    //             'm' => 'No se pudo eliminar: ' . $e->getMessage()
+    //         );
+    //     }
+    // }
 
     
 }

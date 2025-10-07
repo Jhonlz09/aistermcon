@@ -68,15 +68,16 @@ class ModeloCombos
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT o.id, 
-            o.nombre || ' | ' || c.nombre AS nombre,COALESCE(b.tiene_boleta_fab, false) AS tiene_boleta_fab
+            p.num_orden || ' | ' || c.nombre AS nombre,COALESCE(b.tiene_boleta_fab, false) AS tiene_boleta_fab
             FROM tblorden o
-                JOIN tblclientes c ON c.id = o.id_cliente
+				JOIN tblpresupuesto p ON p.id = o.id
+				JOIN tblclientes c ON c.id = p.id_cliente
                 LEFT JOIN (
                     SELECT DISTINCT id_orden, true AS tiene_boleta_fab
                     FROM tblboleta
                     WHERE fab = true
                 ) b ON b.id_orden = o.id
-                WHERE o.estado = true
+                WHERE o.anulado = false
                 AND EXTRACT(YEAR FROM o.fecha) = :anio
                 ORDER BY o.id DESC;");
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
@@ -88,16 +89,16 @@ class ModeloCombos
     }
 
 
-    static public function mdlListarClientesActivos()
-    {
-        try {
-            $l = Conexion::ConexionDB()->prepare("SELECT c.id, c.nombre FROM tblclientes c JOIN tblorden o ON o.id_cliente = c.id WHERE o.obra_estado = true AND o.estado=true GROUP BY c.id");
-            $l->execute();
-            return $l->fetchAll();
-        } catch (PDOException $e) {
-            return "Error en la consulta: " . $e->getMessage();
-        }
-    }
+    // static public function mdlListarClientesActivos()
+    // {
+    //     try {
+    //         $l = Conexion::ConexionDB()->prepare("SELECT c.id, c.nombre FROM tblclientes c JOIN tblorden o ON o.id_cliente = c.id WHERE o.obra_estado = true AND o.estado=true GROUP BY c.id");
+    //         $l->execute();
+    //         return $l->fetchAll();
+    //     } catch (PDOException $e) {
+    //         return "Error en la consulta: " . $e->getMessage();
+    //     }
+    // }
 
     static public function mdlListarProductosFab()
     {
@@ -160,14 +161,16 @@ class ModeloCombos
     static public function mdlListarOrdenHorario($anio)
     {
         try {
-            $sql = "SELECT o.id AS id, o.nombre || ' ' || c.nombre AS nombre
+            $sql = "SELECT o.id AS id, p.num_orden || ' ' || c.nombre AS nombre
             FROM tblhorario h
             JOIN tblorden o ON o.id = h.id_orden
-            JOIN tblclientes c ON c.id = o.id_cliente
+			JOIN tblpresupuesto p ON o.id = p.id
+            JOIN tblclientes c ON c.id = p.id_cliente
             WHERE 
                 EXTRACT(YEAR FROM h.fecha) = :anio
-            GROUP BY o.id, o.nombre, c.nombre
+            GROUP BY o.id, p.num_orden, c.nombre
             ORDER BY o.id;";
+
             $l = Conexion::ConexionDB()->prepare($sql);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             $l->execute();
@@ -181,13 +184,13 @@ class ModeloCombos
     {
         try {
             $e = Conexion::ConexionDB()->prepare("SELECT o.id, 
-            o.nombre || ' ' || c.nombre AS descripcion,e.estado_obra AS estado_obra, 
+            p.num_orden || ' ' || c.nombre AS descripcion, o.estado AS estado_obra, 
             EXTRACT(YEAR FROM o.fecha) AS anio 
                 FROM tblorden o 
-                JOIN tblclientes c ON o.id_cliente = c.id
-                JOIN tblestado_obra e ON o.estado_obra = e.id
-                WHERE o.estado = true 
-                AND o.estado_obra IN (0, 1, 2, 4)
+				JOIN tblpresupuesto p ON o.id = p.id
+                JOIN tblclientes c ON p.id_cliente = c.id
+                WHERE o.anulado = false 
+                AND o.estado IN ('ESPERA', 'OPERACION', 'FINALIZADO', 'GARANTIA')
                 ORDER BY o.id DESC;");
             $e->execute();
             return $e->fetchAll();

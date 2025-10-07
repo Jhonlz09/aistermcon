@@ -8,7 +8,7 @@ class ModeloHorario
     {
         try {
             $sql = "SELECT h.id, split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
-                COALESCE(j.justificacion, o.nombre) AS orden,c.nombre AS cliente,
+                COALESCE(j.justificacion, p.num_orden) AS orden,c.nombre AS cliente,
                 UPPER(TO_CHAR(h.fecha, 'TMDy DD TMMON YYYY')) AS fecha,h.hn_val::MONEY,h.hs_val::MONEY,
                 h.he_val::MONEY,h.ht_val::MONEY,h.adicional_1215::MONEY,h.decimo_tercer::MONEY,
                 h.decimo_cuarto::MONEY,h.vacaciones::MONEY,h.fondo_reserva::MONEY,h.costo_mano_obra,
@@ -16,7 +16,8 @@ class ModeloHorario
             FROM public.tblhorario h
                 LEFT JOIN tblorden o ON o.id = h.id_orden
                 JOIN tblempleado e   ON e.id = h.id_empleado 
-                LEFT JOIN tblclientes c ON c.id = o.id_cliente
+				JOIN tblpresupuesto p ON o.id = p.id
+                LEFT JOIN tblclientes c ON c.id = p.id_cliente
                 LEFT JOIN tbljustificacion j ON j.id = h.id_justificacion
             WHERE h.fecha BETWEEN :start AND :end
             ORDER BY h.fecha DESC, h.id;";
@@ -61,15 +62,16 @@ class ModeloHorario
     {
         try {
             $sql = "SELECT h.id, split_part(e.apellido, ' ', 1) || ' ' || split_part(e.nombre, ' ', 1) AS nombres,
-            COALESCE(j.justificacion, o.nombre) AS orden,c.nombre AS cliente,h.gm::MONEY,h.gt::MONEY,
+            COALESCE(j.justificacion, p.num_orden) AS orden,c.nombre AS cliente,h.gm::MONEY,h.gt::MONEY,
             h.gc::MONEY,h.gh::MONEY,h.gg::MONEY,h.ga::MONEY,h.gasto_en_obra
             FROM public.tblhorario h
                 LEFT JOIN tblorden o ON o.id = h.id_orden
                 JOIN tblempleado e   ON e.id = h.id_empleado 
-                LEFT JOIN tblclientes c ON c.id = o.id_cliente
+				JOIN  tblpresupuesto p ON p.id = o.id 
+                LEFT JOIN tblclientes c ON c.id = p.id_cliente
                 LEFT JOIN tbljustificacion j ON j.id = h.id_justificacion
             WHERE h.fecha BETWEEN :start AND :end
-            ORDER BY h.fecha DESC, h.id;";
+            ORDER BY h.fecha DESC, h.id";
             // Preparamos, vinculamos y ejecutamos
             $stmt = Conexion::ConexionDB()->prepare($sql);
             $stmt->bindParam(":start", $start);
@@ -92,16 +94,17 @@ class ModeloHorario
             // Crear placeholders dinámicos para ambos arrays
             $placeholdersOrden = implode(',', array_fill(0, count($ids_orden), '?'));
             $placeholdersFechas = implode(',', array_fill(0, count($fechas), '?'));
-            $sql = "SELECT o.nombre || ' ' || c.nombre AS orden,
+            $sql = "SELECT p.num_orden || ' ' || c.nombre AS orden,
                     COALESCE(SUM(h.costo_mano_obra), '$0.00') AS suma_costo_mano_obra,
                     COALESCE(SUM(h.gasto_en_obra), '$0.00') AS suma_gasto_en_obra,
                     COALESCE(SUM(h.total_costo), '$0.00') AS suma_total_costo
                 FROM public.tblhorario h
                 JOIN public.tblorden o ON h.id_orden = o.id
-                JOIN public.tblclientes c ON o.id_cliente = c.id
+				JOIN public.tblpresupuesto p ON p.id = o.id
+                JOIN public.tblclientes c ON p.id_cliente = c.id
                 WHERE h.id_orden IN ($placeholdersOrden)
                 AND h.fecha::date IN ($placeholdersFechas)
-                GROUP BY o.nombre, c.nombre
+                GROUP BY p.num_orden, c.nombre
                 ORDER BY c.nombre;";
 
             $stmt = $conexion->prepare($sql);
@@ -125,15 +128,16 @@ class ModeloHorario
             if (empty($startDate) || empty($endDate)) {
                 throw new Exception("No se proporcionó el rango de fechas.");
             }
-            $sql = "SELECT o.nombre || ' ' || c.nombre AS orden,
+            $sql = "SELECT p.num_orden || ' ' || c.nombre AS orden,
                     COALESCE(SUM(h.costo_mano_obra), '$0.00') AS suma_costo_mano_obra,
                     COALESCE(SUM(h.gasto_en_obra), '$0.00') AS suma_gasto_en_obra,
                     COALESCE(SUM(h.total_costo), '$0.00') AS suma_total_costo
                 FROM public.tblhorario h
                 JOIN public.tblorden o ON h.id_orden = o.id
-                JOIN public.tblclientes c ON o.id_cliente = c.id
+                JOIN public.tblpresupuesto p ON p.id = o.id
+                JOIN public.tblclientes c ON p.id_cliente = c.id
                 WHERE h.fecha::date BETWEEN ? AND ?
-                GROUP BY o.nombre, c.nombre
+                GROUP BY p.num_orden, c.nombre
                 ORDER BY c.nombre;";
 
             $stmt = $conexion->prepare($sql);

@@ -37,11 +37,11 @@ class ControladorProductos
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function eliminarOrden()
-    {
-        $data = ModeloProductos::mdlEliminarOrden($this->id);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    }
+    // public function eliminarOrden()
+    // {
+    //     $data = ModeloProductos::mdlEliminarOrden($this->id);
+    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    // }
     
 }
     if ($_POST["accion"] == 1) {
@@ -71,8 +71,8 @@ class ControladorProductos
         $data->nombres = $_POST["num_orden"];
         $data->id_cliente = $_POST["id_cliente"];
         $data->editarOrden();
-    }else if ($_POST["accion"] == 6) {
-        $data = new ControladorProductos();
-        $data->id = $_POST["id"];
-        $data->eliminarOrden();
+    // }else if ($_POST["accion"] == 6) {
+    //     $data = new ControladorProductos();
+    //     $data->id = $_POST["id"];
+    //     $data->eliminarOrden();
     }

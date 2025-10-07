@@ -28,13 +28,13 @@ class ControladorCombos
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function listarClientesActivos()
-    {
+    // public function listarClientesActivos()
+    // {
 
-        $data = ModeloCombos::mdlListarClientesActivos();
+    //     $data = ModeloCombos::mdlListarClientesActivos();
 
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    }
+    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    // }
 
     // public function listarOrdenActivas(){
 
@@ -116,9 +116,9 @@ if (isset($_POST['accion']) && $_POST['accion'] == 1) {
     $data = new ControladorCombos();
     $data->anio = $_POST["anio"];
     $data->listarNumOrden();
-} else if (isset($_POST['accion']) && $_POST['accion'] == 4) {
-    $data = new ControladorCombos();
-    $data->listarClientesActivos();
+// } else if (isset($_POST['accion']) && $_POST['accion'] == 4) {
+//     $data = new ControladorCombos();
+//     $data->listarClientesActivos();
 } else if (isset($_POST['accion']) && $_POST['accion'] == 6) {
     $data = new ControladorCombos();
     $data->listarDespachado();

@@ -11,7 +11,7 @@ class ModeloInforme
                     TO_CHAR(b.fecha, 'DD/MM/YYYY') AS fecha, 
                     TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') AS fecha_retorno, 
                     i.descripcion, u.nombre AS unidad, s.cantidad_salida, s.retorno, 
-                    o.nombre || ' '|| cl.nombre AS grupo, b.id as id_boleta, 
+                    p.num_orden || ' '|| cl.nombre AS grupo, b.id as id_boleta, 
                     o.id as id_orden, cl.id as cliente, b.id_conductor,b.id_despachado,
                     b.id_responsable,ROW_NUMBER() OVER (PARTITION BY o.id ORDER BY s.id) AS fila
                 FROM 
@@ -19,7 +19,8 @@ class ModeloInforme
                     JOIN tblinventario i ON s.id_producto = i.id
                     JOIN tblboleta b ON s.id_boleta = b.id 
                     JOIN tblorden o ON b.id_orden = o.id
-                    JOIN tblclientes cl ON cl.id = o.id_cliente
+					JOIN tblpresupuesto p ON p.id = o.id
+                    JOIN tblclientes cl ON cl.id = p.id_cliente
                     JOIN tblunidad u ON i.id_unidad = u.id
                 WHERE EXTRACT(YEAR FROM b.fecha) = :anio and b.fab = false ";
             if ($mes !== '') {
@@ -55,7 +56,8 @@ class ModeloInforme
             FROM 
                 tblboleta b
                 JOIN tblorden o ON b.id_orden = o.id 
-                JOIN tblclientes cl ON cl.id = o.id_cliente
+				JOIN tblpresupuesto pr ON pr.id = o.id
+                JOIN tblclientes cl ON cl.id = pr.id_cliente
                 LEFT JOIN tblempleado_placa e_conductor ON e_conductor.id = b.id_conductor
                 LEFT JOIN tblempleado e_despachado ON e_despachado.id = b.id_despachado
                 LEFT JOIN tblempleado e_responsable ON e_responsable.id = b.id_responsable
@@ -92,15 +94,14 @@ class ModeloInforme
         try {
             $a = Conexion::ConexionDB()->prepare("SELECT 
                     cl.nombre AS cliente,
-                    o.nombre AS orden_nro,
-                    o.descripcion,
-                    COALESCE(SPLIT_PART(e_encargado.nombre, ' ', 1) || ' ' || SPLIT_PART(e_encargado.apellido, ' ', 1), '') AS encargado,
-                    TO_CHAR(DATE(o.fecha_ini), 'DD/MM/YYYY') as fecha_ini,
+                    p.num_orden AS orden_nro,
+                    p.descripcion,
+                    TO_CHAR(DATE(o.fecha_ope), 'DD/MM/YYYY') as fecha_ini,
                     TO_CHAR(DATE(o.fecha_fin), 'DD/MM/YYYY') as fecha_fin
                 FROM 
-                    tblorden o 
-                    JOIN tblclientes cl ON cl.id = o.id_cliente
-                    LEFT JOIN tblempleado e_encargado ON e_encargado.id = o.id_encargado
+                    tblorden o
+					JOIN tblpresupuesto p ON p.id = o.id
+                    JOIN tblclientes cl ON cl.id = p.id_cliente
                 WHERE 
                     o.id =:id_orden");
 
@@ -195,7 +196,6 @@ class ModeloInforme
                     JOIN tblinventario i ON s.id_producto = i.id
                     JOIN tblboleta b ON s.id_boleta = b.id
                     JOIN tblorden o ON b.id_orden = o.id
-                    JOIN tblclientes cl ON cl.id = o.id_cliente
                     JOIN tblunidad u ON i.id_unidad = u.id
                 WHERE 
                     o.id = :id_orden";
@@ -255,7 +255,6 @@ class ModeloInforme
                     FROM tblsalidas s
                     JOIN tblinventario i ON s.id_producto = i.id
                     JOIN tblboleta b ON s.id_boleta = b.id 
-                    JOIN tblorden o ON b.id_orden = o.id
                     JOIN tblunidad u ON i.id_unidad = u.id
                         WHERE b.id=:id
                     ORDER BY b.fecha ASC, s.id");
@@ -276,7 +275,6 @@ class ModeloInforme
                 FROM tblsalidas s
                 JOIN tblinventario i ON s.id_producto = i.id
                 JOIN tblboleta b ON s.id_boleta = b.id 
-                JOIN tblorden o ON b.id_orden = o.id
                 JOIN tblunidad u ON i.id_unidad = u.id
 		            WHERE b.id=:id
                 ORDER BY b.fecha ASC, s.id;");
@@ -325,15 +323,16 @@ class ModeloInforme
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT TO_CHAR(DATE(b.fecha), 'DD/MM/YYYY') as fecha,
-            o.nombre as orden,
+            p.num_orden as orden,
             c.nombre as cliente,
             e_entrega.nombre as entrega,
             e_conductor.nombre as conductor,
             e_conductor.cedula as cedula_conductor
                 FROM tblboleta b
                 JOIN tblorden o ON b.id_orden = o.id
-                JOIN tblclientes c ON c.id = o.id_cliente
-                JOIN tblempleado e_entrega ON e_entrega.id = b.id_entrega
+				JOIN tblpresupuesto p ON p.id = o.id
+                JOIN tblclientes c ON c.id = p.id_cliente
+                JOIN tblempleado e_entrega ON e_entrega.id = b.id_responsable
                 JOIN tblempleado e_conductor ON e_conductor.id = b.id_conductor
                 WHERE b.id = :id;");
             $l->bindParam(":id", $id_boleta, PDO::PARAM_INT);
