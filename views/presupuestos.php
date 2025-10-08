@@ -968,7 +968,7 @@
             precioConIva.disabled = false
             precioSinIva.disabled = false
             desc.disabled = false
-            div_fecha_new.style.display = 'none';
+            
             cambiarModal(span, ' Editar Presupuesto', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             desc.value = row["descripcion"];
