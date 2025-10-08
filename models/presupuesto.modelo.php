@@ -41,8 +41,7 @@ class ModeloPresupuesto
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare(
-                "INSERT INTO tblpresupuesto(num_orden, descripcion, id_cliente, precio_iva, precio_total,pdf_pre, pdf_ord, xls_pre, xls_ord, pdf_ae, doc_ae, pdf_oc, img_oc, fecha, nota) VALUES (:num_orden, :descripcion, :id_cliente, :precio_iva, :precio_total,:pdf_pre, :pdf_ord, :xls_pre, :xls_ord, :pdf_ae, :doc_ae, :pdf_oc, :img_oc, :fecha, :nota)"
+            $a = $conexion->prepare("INSERT INTO tblpresupuesto(num_orden, descripcion, id_cliente, precio_iva, precio_total,pdf_pre, pdf_ord, xls_pre, xls_ord, pdf_ae, doc_ae, pdf_oc, img_oc, fecha, nota) VALUES (:num_orden, :descripcion, :id_cliente, :precio_iva, :precio_total,:pdf_pre, :pdf_ord, :xls_pre, :xls_ord, :pdf_ae, :doc_ae, :pdf_oc, :img_oc, :fecha, :nota)"
             );
             $a->bindParam(":num_orden", $presupuesto, PDO::PARAM_STR);
             $a->bindParam(":descripcion", $descrip, PDO::PARAM_STR);
@@ -60,10 +59,7 @@ class ModeloPresupuesto
             $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
             $a->bindParam(":nota", $nota, PDO::PARAM_STR);
             $a->execute();
-
-            // Enviar correo en segundo plano
-            // self::enviarCorreoEnSegundoPlano($descrip, $presupuesto, $fecha, $cliente);
-
+            
             return array(
                 'status' => 'success',
                 'm' => 'El presupuesto se agregó correctamente.'
@@ -91,7 +87,7 @@ class ModeloPresupuesto
         $descrip = escapeshellarg($descrip);
         $presupuesto  = escapeshellarg($presupuesto);
         $cliente = escapeshellarg($cliente);
-        $fecha = escapeshellarg($fecha);
+        // $fecha = escapeshellarg($fecha);
 
         // Comando para ejecutar en segundo plano
         $command = "php $scriptPath $descrip $presupuesto  $fecha $cliente $usuario > /dev/null 2>&1 &";

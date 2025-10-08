@@ -110,7 +110,7 @@ class ModeloRegistro
     private static function mdlCambioEstadoOrden($conexion, $orden, $fecha)
     {
         // Verificamos si el campo fecha_ini es NULL
-        $stmt = $conexion->prepare("SELECT fecha_ini FROM tblorden WHERE id = :orden");
+        $stmt = $conexion->prepare("SELECT fecha_ope FROM tblorden WHERE id = :orden");
         $stmt->bindParam(':orden', $orden, PDO::PARAM_INT);
         $stmt->execute();
 
