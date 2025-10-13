@@ -177,12 +177,16 @@
             },
             {
                 targets: 2,
-                responsivePriority: 1
+                responsivePriority: 1,
+                render: function(data, type, row, meta) {
+                        return '<a href="javascript:void(0)" class="text-dark">' + data + '</a>';
+                }
             },
             {
                 targets: 3,
                 className: "text-center",
-                responsivePriority: 2
+                responsivePriority: 2,
+                
             },
             {
                 targets: 4,
@@ -342,6 +346,7 @@
             event.preventDefault(); // Evita la acción predeterminada
             let rowData = tabla.row($(this).closest('tr').next()).data();
             let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+            console.log(boleta);
             enviarFormularioPDF('PDF/pdf_guia_img.php', boleta);
         });
 
