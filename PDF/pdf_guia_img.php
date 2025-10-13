@@ -13,8 +13,12 @@ if (!isset($_SESSION['s_usuario'])) {
 require('../assets/plugins/fpdf/fpdf.php');
 require('../models/salidas.modelo.php');
 
+if (!isset($_POST['id_boleta'])) {
+    die('No se proporcionó ID de boleta');
+}else{
 $id_boleta = $_POST['id_boleta'];
 
+}
 // Función para obtener DPI real de la imagen (solo funciona con JPEG/TIFF con EXIF)
 function obtenerDPI($ruta_imagen) {
     $exif = @exif_read_data($ruta_imagen);
@@ -61,7 +65,8 @@ if (empty($data_boleta)) {
     $pdf->Cell(0, 10, iconv('UTF-8', 'windows-1252', 'No se encontraron imágenes'), 0, 1, 'C');
 } else {
     foreach ($data_boleta as $imagen) {
-        $image_path = $dir . $imagen['nombre_imagen'];
+        $image_path = $dir . $imagen['nombre_file'];
+
 
         if (!file_exists($image_path)) {
             $pdf->AddPage();
