@@ -1,5 +1,6 @@
 <?php
 
+
 require_once "../utils/database/conexion.php";
 
 class ModeloEntradas

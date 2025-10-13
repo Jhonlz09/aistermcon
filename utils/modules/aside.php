@@ -467,153 +467,40 @@
     </div>
 </aside>
 <!-- /.control-sidebar -->
-<div class="modal fade" id="modal-fab">
-    <div class="modal-dialog modal-lg modal-rol modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header bg-gradient-blue">
-                <h4 class="modal-title"><i class="fas fa-screwdriver-wrench"></i><span> Agregar Producto a Producción</span></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="formFab" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body scroll-modal">
-                    <input type="hidden" id="id_" value="">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group" style="margin-bottom:1.5rem;">
-                                <label id="lbl" class="mb-0 combo"><i class="fas fa-trowel-bricks"></i> Producto</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select id="cboFabricado" class="cbo form-control select2 select2-success flex-grow-1" data-dropdown-css-class="select2-dark" required>
-                                        </select>
-                                        <div class="invalid-feedback">*Campo obligatorio.</div>
-                                    </div>
-                                    <div class="span-btn fab" style="padding-right:.5rem">
-                                        <!-- <span style="display: ;" class="badge bg-gradient-dark" id="new_fab" title='Nuevo' data-target='#modal-fab' data-toggle='modal'><i class="fa-solid fa-plus"></i></span> -->
-                                        <span style="display:none" class="dis badge bg-gradient-dark" data-value="Fab" data-target='#modal-new-fab' data-toggle='modal' id="edit_fab" title='Editar'><i class="fa-solid fa-pencil"></i></span>
-                                        <span style="display:none" class="dis badge bg-gradient-dark" data-value="Fab" id="eli_fab" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="tblFab">
-                                <thead style="background:#a7b2c1!important">
-                                    <tr>
-                                        <th class="text-center">Nº</th>
-                                        <th></th>
-                                        <th>CANTIDAD</th>
-                                        <th>UND</th>
-                                        <th>DESCRIPCION</th>
-                                        <th class="text-center">ACCIONES</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnAgregarFab" class="btn bg-gradient-blue"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
-                </div>
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<div class="modal fade" id="modal-new-fab">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-gradient-green">
-                <h4 id="title-fab" class="modal-title"><i class="fas fa-screwdriver-wrench"></i><span> Nuevo Producto en Producción</span></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="formFabNew" autocomplete="off" class="needs-validation" novalidate>
-                <div class="modal-body ">
-                    <input type="hidden" id="id_" value="">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="input-data">
-                                <input autocomplete="off" id="nombre_fab" class="input-nuevo" type="text" required>
-                                <div class="line underline"></div>
-                                <label class="barra label">
-                                    <i class="fa-solid fa-signature"></i> Descripción</label>
-                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="input-data s1">
-                                <input type="text" id="cantidad_fab" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
-                                <label class="label"><i class="fa-solid fa-boxes-stacked"></i> Cantidad</label>
-                                <div class="invalid-feedback">*Este campo es requerido.</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <select name="c" id="cboUnidad_fab" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
-                                        </select>
-                                        <div class="invalid-feedback">*Campo obligatorio</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnAgregarFabNew" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
-                </div>
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
+
 
 
 <script>
-    const btnGuardarFab = document.getElementById('btnAgregarFab');
-    const formFab = document.getElementById('formFab'),
-        formFabCon = document.getElementById('formFabCon'),
-        formFabNew = document.getElementById('formFabNew');
-    const modal_fab = document.getElementById('modal-new-fab');
+    // const btnGuardarFab = document.getElementById('btnAgregarFab');
+    // const formFab = document.getElementById('formFab'),
+    //     formFabCon = document.getElementById('formFabCon'),
+    //     formFabNew = document.getElementById('formFabNew');
+    // const modal_fab = document.getElementById('modal-new-fab');
 
-    const nombre_fab = document.getElementById('nombre_fab'),
-        cboUnidad_fab = document.getElementById('cboUnidad_fab'),
-        cantidad_fab = document.getElementById('cantidad_fab');
+    // const nombre_fab = document.getElementById('nombre_fab'),
+    //     cboUnidad_fab = document.getElementById('cboUnidad_fab'),
+    //     cantidad_fab = document.getElementById('cantidad_fab');
 
     const cboFab = document.getElementById('cboFabricado'),
         cboFabCon = document.getElementById('cboFabricadoCon');
 
-    const edit_fab = document.getElementById('edit_fab'),
-        eli_fab = document.getElementById('eli_fab')
+    // const edit_fab = document.getElementById('edit_fab'),
+    //     eli_fab = document.getElementById('eli_fab')
 
-    const title_fab = document.querySelector('#title-fab span'),
-        icon_fab = document.querySelector('.modal-title i'),
-        elements_fab = document.querySelectorAll('#modal-new-fab .bg-gradient-green');
+    // const title_fab = document.querySelector('#title-fab span'),
+    //     icon_fab = document.querySelector('.modal-title i'),
+    //     elements_fab = document.querySelectorAll('#modal-new-fab .bg-gradient-green');
 
-    const select_fab = formFabNew.querySelectorAll('.modal-body select.select2');
+    // const select_fab = formFabNew.querySelectorAll('.modal-body select.select2');
     const drop_element = document.querySelector(".dropzone");
 
     let id_e = 0;
-    let accion_fab = 0;
-    let id_producto_fab = 0;
+    // let accion_fab = 0;
+    // let id_producto_fab = 0;
 
-    $(modal_fab).on("shown.bs.modal", () => {
-        nombre_fab.focus();
-    });
+    // $(modal_fab).on("shown.bs.modal", () => {
+    //     nombre_fab.focus();
+    // });
 
     Dropzone.autoDiscover = false;
 
@@ -682,138 +569,138 @@
 
 
 
-    let tblFabCon = $('#tblFabCon').DataTable({
-        "responsive": true,
-        "dom": 'pt',
-        "lengthChange": false,
-        "ordering": false,
-        "autoWidth": false,
-        "ajax": {
-            "url": "controllers/inventario.controlador.php",
-            "type": "POST",
-            "dataSrc": '',
-            data: function(data) {
-                data.accion = 11;
-                data.id_producto_fab = id_producto_fab;
-            }
-        },
-        columnDefs: [{
-                targets: 0,
-                data: null,
-                className: "text-center",
-                render: function(data, type, row, meta) {
-                    if (type === 'display') {
-                        return meta.row + 1;
-                    }
-                    return meta.row;
-                }
-            },
-            {
-                targets: 1,
-                className: "text-center ",
-            },
-            {
-                targets: 2,
-                className: "text-center ",
-            },
-        ],
-    });
+    // let tblFabCon = $('#tblFabCon').DataTable({
+    //     "responsive": true,
+    //     "dom": 'pt',
+    //     "lengthChange": false,
+    //     "ordering": false,
+    //     "autoWidth": false,
+    //     "ajax": {
+    //         "url": "controllers/inventario.controlador.php",
+    //         "type": "POST",
+    //         "dataSrc": '',
+    //         data: function(data) {
+    //             data.accion = 11;
+    //             data.id_producto_fab = id_producto_fab;
+    //         }
+    //     },
+    //     columnDefs: [{
+    //             targets: 0,
+    //             data: null,
+    //             className: "text-center",
+    //             render: function(data, type, row, meta) {
+    //                 if (type === 'display') {
+    //                     return meta.row + 1;
+    //                 }
+    //                 return meta.row;
+    //             }
+    //         },
+    //         {
+    //             targets: 1,
+    //             className: "text-center ",
+    //         },
+    //         {
+    //             targets: 2,
+    //             className: "text-center ",
+    //         },
+    //     ],
+    // });
 
-    $(edit_fab).on('click', function() {
-        accion_fab = 10;
-        let data_fab = cboFab.options[cboFab.selectedIndex].dataset;
-        id_e = cboFab.value;
-        // let orden_id = data_fab.orden;
-        let cant_id = data_fab.cant;
-        let und_id = data_fab.und;
-        let name_id = data_fab.name;
+    // $(edit_fab).on('click', function() {
+    //     accion_fab = 10;
+    //     let data_fab = cboFab.options[cboFab.selectedIndex].dataset;
+    //     id_e = cboFab.value;
+    //     // let orden_id = data_fab.orden;
+    //     let cant_id = data_fab.cant;
+    //     let und_id = data_fab.und;
+    //     let name_id = data_fab.name;
 
-        nombre_fab.value = name_id
-        cantidad_fab.value = cant_id
-        // setChange(cboOrdenFab, orden_id);
-        setChange(cboUnidad_fab, und_id);
+    //     nombre_fab.value = name_id
+    //     cantidad_fab.value = cant_id
+    //     // setChange(cboOrdenFab, orden_id);
+    //     setChange(cboUnidad_fab, und_id);
 
-        cambiarModal(title_fab, ' Editar Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-green', 'bg-gradient-blue', modal_fab, 'modal-change', 'modal-new')
+    //     cambiarModal(title_fab, ' Editar Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-green', 'bg-gradient-blue', modal_fab, 'modal-change', 'modal-new')
 
-        select_fab.forEach(function(s) {
-            s.classList.remove('select2-success');
-            s.classList.add('select2-warning');
-        });
+    //     select_fab.forEach(function(s) {
+    //         s.classList.remove('select2-success');
+    //         s.classList.add('select2-warning');
+    //     });
 
-        // Muestra el valor en la consola
-        // name = this.dataset.value;
-        // const selectE = document.getElementById('cbo' + name);
-        // const iconS = this.dataset.icon;
+    //     // Muestra el valor en la consola
+    //     // name = this.dataset.value;
+    //     // const selectE = document.getElementById('cbo' + name);
+    //     // const iconS = this.dataset.icon;
 
-        // inputId.value = selectE.value;
-        // inputContent.value = selectE.options[selectE.selectedIndex].textContent;
-        // cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-green', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
-    });
+    //     // inputId.value = selectE.value;
+    //     // inputContent.value = selectE.options[selectE.selectedIndex].textContent;
+    //     // cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-green', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
+    // });
 
-    $(eli_fab).on('click', function() {
-        accion_fab = 3;
-        id_e = cboFab.value;
-        // const id_val = document.getElementById('cbo' + name).value;
-        // const tbl = 'tbl' + name.toLowerCase();
-        let src = new FormData();
-        src.append('accion', accion_fab);
-        src.append('id', id_e);
-        confirmarEliminar('este', 'producto fabricado', function(res) {
-            if (res) {
-                confirmarAccion(src, 'inventario', null, '', function(res) {
-                    cargarAutocompletado();
-                    cargarComboFabricado();
-                    cargarCombo('FabricadoCon', '', 9);
+    // $(eli_fab).on('click', function() {
+    //     accion_fab = 3;
+    //     id_e = cboFab.value;
+    //     // const id_val = document.getElementById('cbo' + name).value;
+    //     // const tbl = 'tbl' + name.toLowerCase();
+    //     let src = new FormData();
+    //     src.append('accion', accion_fab);
+    //     src.append('id', id_e);
+    //     confirmarEliminar('este', 'producto fabricado', function(res) {
+    //         if (res) {
+    //             confirmarAccion(src, 'inventario', null, '', function(res) {
+    //                 cargarAutocompletado();
+    //                 cargarComboFabricado();
+    //                 cargarCombo('FabricadoCon', '', 9);
 
-                })
-            }
-        });
-    });
+    //             })
+    //         }
+    //     });
+    // });
 
-    $(cboFab).change(function() {
-        opcionSelect(this, 'fab')
-    });
-
-
-    $(cboFabCon).change(function() {
-        if (this.value !== '')
-            id_producto_fab = this.value;
-        tblFabCon.ajax.reload(null, false)
-
-    });
+    // $(cboFab).change(function() {
+    //     opcionSelect(this, 'fab')
+    // });
 
 
+    // $(cboFabCon).change(function() {
+    //     if (this.value !== '')
+    //         id_producto_fab = this.value;
+    //     tblFabCon.ajax.reload(null, false)
 
-    formFabNew.addEventListener("submit", function(e) {
-        e.preventDefault();
-        if (!this.checkValidity()) {
-            this.classList.add('was-validated');
-            return;
-        }
-        let nom = nombre_fab.value.trim().toUpperCase();
-        let und = cboUnidad_fab.value;
-        let cant = cantidad_fab.value;
-        // let id_orden = cboOrdenFab.value;
+    // });
 
-        let datos = new FormData();
-        datos.append('id_e', id_e);
-        datos.append('nombre', nom);
-        datos.append('unidad', und);
-        datos.append('cantidad', cant);
-        // datos.append('id_orden', id_orden);
-        datos.append('accion', accion_fab);
-    })
 
-    formFab.addEventListener("submit", function(e) {
-        e.preventDefault();
-        if (!this.checkValidity()) {
-            this.classList.add('was-validated');
-            return;
-        }
-        let formData = new FormData();
-        let clases = ['cantidad'];
-        formData.append('id_producto_fab', cboFab.value);
-        formData.append('accion', 7);
-        realizarRegistro(tblFab, formData, clases);
-    })
+
+    // formFabNew.addEventListener("submit", function(e) {
+    //     e.preventDefault();
+    //     if (!this.checkValidity()) {
+    //         this.classList.add('was-validated');
+    //         return;
+    //     }
+    //     let nom = nombre_fab.value.trim().toUpperCase();
+    //     let und = cboUnidad_fab.value;
+    //     let cant = cantidad_fab.value;
+    //     // let id_orden = cboOrdenFab.value;
+
+    //     let datos = new FormData();
+    //     datos.append('id_e', id_e);
+    //     datos.append('nombre', nom);
+    //     datos.append('unidad', und);
+    //     datos.append('cantidad', cant);
+    //     // datos.append('id_orden', id_orden);
+    //     datos.append('accion', accion_fab);
+    // })
+
+    // formFab.addEventListener("submit", function(e) {
+    //     e.preventDefault();
+    //     if (!this.checkValidity()) {
+    //         this.classList.add('was-validated');
+    //         return;
+    //     }
+    //     let formData = new FormData();
+    //     let clases = ['cantidad'];
+    //     formData.append('id_producto_fab', cboFab.value);
+    //     formData.append('accion', 7);
+    //     realizarRegistro(tblFab, formData, clases);
+    // })
 </script>

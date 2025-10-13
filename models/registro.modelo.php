@@ -118,7 +118,7 @@ class ModeloRegistro
         $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Si fecha_ini es NULL, procedemos a actualizar
-        if ($resultado['fecha_ini'] === null) {
+        if ($resultado['fecha_ope'] === null) {
             $hora = date('H:i:s');
             $fechaHora = $fecha . ' ' . $hora;
 

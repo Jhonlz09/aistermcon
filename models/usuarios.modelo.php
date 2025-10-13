@@ -31,7 +31,6 @@ class ModeloUsuarios
     {
         try {
             $hashedPassword = password_hash($pass, PASSWORD_BCRYPT);
-
             $a = Conexion::ConexionDB()->prepare("INSERT INTO tblusuario(nombres,nombre_usuario,clave_usuario,id_perfil) VALUES (:nombres,:usuario,:pass,:id_perfil)");
             $a->bindParam(":nombres", $nombres, PDO::PARAM_STR);
             $a->bindParam(":usuario", $usuario, PDO::PARAM_STR);
