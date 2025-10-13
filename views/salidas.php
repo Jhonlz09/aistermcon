@@ -179,14 +179,14 @@
                 targets: 2,
                 responsivePriority: 1,
                 render: function(data, type, row, meta) {
-                        return '<a href="javascript:void(0)" class="text-dark">' + data + '</a>';
+                    return '<a href="javascript:void(0)" class="text-dark">' + data + '</a>';
                 }
             },
             {
                 targets: 3,
                 className: "text-center",
                 responsivePriority: 2,
-                
+
             },
             {
                 targets: 4,
@@ -650,9 +650,11 @@
             first_control.click();
 
             let src = new FormData();
-            src.append('accion', 8);
-            src.append('boleta', id_boleta);
-            cargarFilesDropzone(src, dropzone, 'salidas', 'guia_img');
+            // src.append('accion', 8);
+            // src.append('boleta', id_boleta);
+
+            // cargarFilesDropzone(src, dropzone, 'salidas', 'guia_img');
+            cargarImagenesDropzone(id_boleta);
             dropzone.enable();
             if (eliminar) {
                 drop_element.classList.remove("dropzone-disabled");
@@ -661,7 +663,7 @@
             }
         });
 
-        
+
 
         $('#tblSalidas').on('click', '#editR', function() {
             row = tabla.row($(this).closest('tr').next()).data()
@@ -744,9 +746,10 @@
                 tblReturn.ajax.reload(null, false);
                 fecha_retorno.value = fecha_return == '' ? '' : fecha_return;
                 let src = new FormData();
-                src.append('accion', 8);
-                src.append('boleta', id_boleta);
-                cargarFilesDropzone(src, dropzone, 'salidas', 'guia_img');
+                // src.append('accion', 8);
+                // src.append('boleta', id_boleta);
+                // cargarFilesDropzone(src, dropzone, 'salidas', 'guia_img');
+                cargarImagenesDropzone(id_boleta);
                 dropzone.disable();
                 document.querySelector(".dropzone").classList.add("dropzone-disabled");
             }
@@ -772,5 +775,36 @@
                 }
             })
         });
+
+        function cargarImagenesDropzone(id_boleta) {
+            dropzone.removeAllFilesWithoutServer();
+            $.ajax({
+                url: 'controllers/salidas.controlador.php', // Ajusta esta URL a tu controlador PHP
+                type: 'POST',
+                "dataSrc": '',
+                data: {
+                    'boleta': id_boleta,
+                    'accion': 8
+                },
+                success: function(response) {
+                    console.log(response) // Limpia los archivos existentes
+                    response = JSON.parse(response);
+                    response.files.forEach(imagen => {
+                        const mockFile = {
+                            name: imagen.nombre_file || "Imagen", // Puedes asignar un nombre genérico si no guardas el nombre original
+                            size: 123456, // Valor genérico; Dropzone no valida este campo para imágenes precargadas
+                            ruta: imagen.nombre_file, // Ruta de la imagen en el servidor
+                            isExisting: true
+                        };
+
+                        // Añade la imagen simulando que ya está cargada
+                        dropzone.emit('addedfile', mockFile);
+                        dropzone.emit('thumbnail', mockFile, '/guia_img/' + imagen.nombre_file);
+                        dropzone.emit('complete', mockFile);
+                        dropzone.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
+                    });
+                },
+            });
+        }
     })
 </script>
