@@ -570,6 +570,7 @@
                 entrega = row[16],
                 fab = row[21],
                 tras = row[22],
+                isTrasfab = !tras,
                 orden = row[7],
                 cliente = row[8],
                 fecha_return = row[23],

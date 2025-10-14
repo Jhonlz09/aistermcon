@@ -471,36 +471,10 @@
 
 
 <script>
-    // const btnGuardarFab = document.getElementById('btnAgregarFab');
-    // const formFab = document.getElementById('formFab'),
-    //     formFabCon = document.getElementById('formFabCon'),
-    //     formFabNew = document.getElementById('formFabNew');
-    // const modal_fab = document.getElementById('modal-new-fab');
-
-    // const nombre_fab = document.getElementById('nombre_fab'),
-    //     cboUnidad_fab = document.getElementById('cboUnidad_fab'),
-    //     cantidad_fab = document.getElementById('cantidad_fab');
-
     const cboFab = document.getElementById('cboFabricado'),
         cboFabCon = document.getElementById('cboFabricadoCon');
-
-    // const edit_fab = document.getElementById('edit_fab'),
-    //     eli_fab = document.getElementById('eli_fab')
-
-    // const title_fab = document.querySelector('#title-fab span'),
-    //     icon_fab = document.querySelector('.modal-title i'),
-    //     elements_fab = document.querySelectorAll('#modal-new-fab .bg-gradient-green');
-
-    // const select_fab = formFabNew.querySelectorAll('.modal-body select.select2');
     const drop_element = document.querySelector(".dropzone");
-
     let id_e = 0;
-    // let accion_fab = 0;
-    // let id_producto_fab = 0;
-
-    // $(modal_fab).on("shown.bs.modal", () => {
-    //     nombre_fab.focus();
-    // });
 
     Dropzone.autoDiscover = false;
 
@@ -560,147 +534,9 @@
 
     // Para limpiar los archivos del contenedor sin eliminarlos del servidor
 
-
     dropzone.on("sending", function(file, xhr, formData) {
         if (file.isExisting) {
             xhr.abort(); // Cancelar el envío de imágenes precargadas
         }
     });
-
-
-
-    // let tblFabCon = $('#tblFabCon').DataTable({
-    //     "responsive": true,
-    //     "dom": 'pt',
-    //     "lengthChange": false,
-    //     "ordering": false,
-    //     "autoWidth": false,
-    //     "ajax": {
-    //         "url": "controllers/inventario.controlador.php",
-    //         "type": "POST",
-    //         "dataSrc": '',
-    //         data: function(data) {
-    //             data.accion = 11;
-    //             data.id_producto_fab = id_producto_fab;
-    //         }
-    //     },
-    //     columnDefs: [{
-    //             targets: 0,
-    //             data: null,
-    //             className: "text-center",
-    //             render: function(data, type, row, meta) {
-    //                 if (type === 'display') {
-    //                     return meta.row + 1;
-    //                 }
-    //                 return meta.row;
-    //             }
-    //         },
-    //         {
-    //             targets: 1,
-    //             className: "text-center ",
-    //         },
-    //         {
-    //             targets: 2,
-    //             className: "text-center ",
-    //         },
-    //     ],
-    // });
-
-    // $(edit_fab).on('click', function() {
-    //     accion_fab = 10;
-    //     let data_fab = cboFab.options[cboFab.selectedIndex].dataset;
-    //     id_e = cboFab.value;
-    //     // let orden_id = data_fab.orden;
-    //     let cant_id = data_fab.cant;
-    //     let und_id = data_fab.und;
-    //     let name_id = data_fab.name;
-
-    //     nombre_fab.value = name_id
-    //     cantidad_fab.value = cant_id
-    //     // setChange(cboOrdenFab, orden_id);
-    //     setChange(cboUnidad_fab, und_id);
-
-    //     cambiarModal(title_fab, ' Editar Producto en Producción', icon_fab, 'fa-pen-to-square', elements_fab, 'bg-gradient-green', 'bg-gradient-blue', modal_fab, 'modal-change', 'modal-new')
-
-    //     select_fab.forEach(function(s) {
-    //         s.classList.remove('select2-success');
-    //         s.classList.add('select2-warning');
-    //     });
-
-    //     // Muestra el valor en la consola
-    //     // name = this.dataset.value;
-    //     // const selectE = document.getElementById('cbo' + name);
-    //     // const iconS = this.dataset.icon;
-
-    //     // inputId.value = selectE.value;
-    //     // inputContent.value = selectE.options[selectE.selectedIndex].textContent;
-    //     // cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-green', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
-    // });
-
-    // $(eli_fab).on('click', function() {
-    //     accion_fab = 3;
-    //     id_e = cboFab.value;
-    //     // const id_val = document.getElementById('cbo' + name).value;
-    //     // const tbl = 'tbl' + name.toLowerCase();
-    //     let src = new FormData();
-    //     src.append('accion', accion_fab);
-    //     src.append('id', id_e);
-    //     confirmarEliminar('este', 'producto fabricado', function(res) {
-    //         if (res) {
-    //             confirmarAccion(src, 'inventario', null, '', function(res) {
-    //                 cargarAutocompletado();
-    //                 cargarComboFabricado();
-    //                 cargarCombo('FabricadoCon', '', 9);
-
-    //             })
-    //         }
-    //     });
-    // });
-
-    // $(cboFab).change(function() {
-    //     opcionSelect(this, 'fab')
-    // });
-
-
-    // $(cboFabCon).change(function() {
-    //     if (this.value !== '')
-    //         id_producto_fab = this.value;
-    //     tblFabCon.ajax.reload(null, false)
-
-    // });
-
-
-
-    // formFabNew.addEventListener("submit", function(e) {
-    //     e.preventDefault();
-    //     if (!this.checkValidity()) {
-    //         this.classList.add('was-validated');
-    //         return;
-    //     }
-    //     let nom = nombre_fab.value.trim().toUpperCase();
-    //     let und = cboUnidad_fab.value;
-    //     let cant = cantidad_fab.value;
-    //     // let id_orden = cboOrdenFab.value;
-
-    //     let datos = new FormData();
-    //     datos.append('id_e', id_e);
-    //     datos.append('nombre', nom);
-    //     datos.append('unidad', und);
-    //     datos.append('cantidad', cant);
-    //     // datos.append('id_orden', id_orden);
-    //     datos.append('accion', accion_fab);
-    // })
-
-    // formFab.addEventListener("submit", function(e) {
-    //     e.preventDefault();
-    //     if (!this.checkValidity()) {
-    //         this.classList.add('was-validated');
-    //         return;
-    //     }
-    //     let formData = new FormData();
-    //     let clases = ['cantidad'];
-    //     formData.append('id_producto_fab', cboFab.value);
-    //     formData.append('accion', 7);
-    //     realizarRegistro(tblFab, formData, clases);
-    // })
 </script>

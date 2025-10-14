@@ -84,7 +84,7 @@
 ?>
     <script>
         // var calendarInstance = null;
-        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblFab, tblProdFab, tblDetalleFab, tblDetalleFabEntrada;
+        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblProdFab, tblDetalleFab;
         var configuracionTable = {};
         let items = [];
         let id_boleta = 0;
@@ -169,7 +169,6 @@
                 id: 12,
                 text: 'DICIEMBRE'
             },
-
         ];
     </script>
 
@@ -697,8 +696,6 @@
                         'oninput': 'validarNumber(this,/[^0-9.]/g)'
                     });
                 }
-
-
             });
 
             $('#tblDetalleCompra').on('draw.dt', function() {
@@ -852,7 +849,7 @@
                 cargarCombo('Conductor', conductorPorDefecto, 2);
                 cargarCombo('ConductorEntrada', conductorPorDefecto, 2);
 
-               
+
                 cargarCombo('FabricadoCon', '', 9);
                 // cargarCombo('Orden', '', 3, true).then(datos_ => {
                 //     datos_orden = datos_;
@@ -1181,68 +1178,68 @@
                     },
                 });
 
-                tblDetalleFabEntrada = $('#tblDetalleFabEntrada').DataTable({
-                    "dom": 'pt',
-                    "lengthChange": false,
-                    "ordering": false,
-                    "autoWidth": false,
-                    "paging": false,
-                    "ajax": {
-                        "url": "controllers/salidas.controlador.php",
-                        "type": "POST",
-                        dataSrc: "",
-                        "datatype": 'json',
-                        "data": function(d) {
-                            d.accion = 10;
-                            d.boleta = id_boleta_fab
-                        }
-                    },
-                    columnDefs: [{
-                            targets: 0,
-                            data: null,
-                            className: 'dt-control',
-                            orderable: false,
-                            defaultContent: '',
-                            render: function(data, type, row, meta) {
-                                if (type === 'display') {
-                                    return meta.row + 1;
-                                }
-                                return meta.row;
-                            }
-                        },
-                        {
-                            targets: 1,
-                            data: 'descripcion',
-                        },
-                        {
-                            targets: 2,
-                            className: "text-center ",
-                            data: 'unidad',
-                        },
-                        {
-                            targets: 3,
-                            className: "text-center ",
-                            data: 'salidas',
-                        },
-                        {
-                            targets: 4,
-                            data: 'retorno',
-                            className: "text-center ",
-                            render: function(data, type, row) {
-                                // Definir el valor del input
-                                let value = (data === null) ? '' : row.retorno;
-                                // Definir el HTML del input
-                                let inputHTML = '<input value="' + value + '" type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline retorno" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" >';
-                                // Condicional para id_perfil_sistema
-                                if (isEntrada || isSuperAdmin) {
-                                    return inputHTML;
-                                } else {
-                                    return row.isentrada ? row.retorno : inputHTML;
-                                }
-                            }
-                        },
-                    ],
-                });
+                // tblDetalleFabEntrada = $('#tblDetalleFabEntrada').DataTable({
+                //     "dom": 'pt',
+                //     "lengthChange": false,
+                //     "ordering": false,
+                //     "autoWidth": false,
+                //     "paging": false,
+                //     "ajax": {
+                //         "url": "controllers/salidas.controlador.php",
+                //         "type": "POST",
+                //         dataSrc: "",
+                //         "datatype": 'json',
+                //         "data": function(d) {
+                //             d.accion = 10;
+                //             d.boleta = id_boleta_fab
+                //         }
+                //     },
+                //     columnDefs: [{
+                //             targets: 0,
+                //             data: null,
+                //             className: 'dt-control',
+                //             orderable: false,
+                //             defaultContent: '',
+                //             render: function(data, type, row, meta) {
+                //                 if (type === 'display') {
+                //                     return meta.row + 1;
+                //                 }
+                //                 return meta.row;
+                //             }
+                //         },
+                //         {
+                //             targets: 1,
+                //             data: 'descripcion',
+                //         },
+                //         {
+                //             targets: 2,
+                //             className: "text-center ",
+                //             data: 'unidad',
+                //         },
+                //         {
+                //             targets: 3,
+                //             className: "text-center ",
+                //             data: 'salidas',
+                //         },
+                //         {
+                //             targets: 4,
+                //             data: 'retorno',
+                //             className: "text-center ",
+                //             render: function(data, type, row) {
+                //                 // Definir el valor del input
+                //                 let value = (data === null) ? '' : row.retorno;
+                //                 // Definir el HTML del input
+                //                 let inputHTML = '<input value="' + value + '" type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline retorno" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" >';
+                //                 // Condicional para id_perfil_sistema
+                //                 if (isEntrada || isSuperAdmin) {
+                //                     return inputHTML;
+                //                 } else {
+                //                     return row.isentrada ? row.retorno : inputHTML;
+                //                 }
+                //             }
+                //         },
+                //     ],
+                // });
 
                 addProFab.addEventListener('click', function() {
                     agregarFilaFab();
@@ -1330,8 +1327,7 @@
                                     },
                                     {
                                         targets: 2,
-                                        title: "CANT.",
-                                        className: "text-center"
+                                        title: "DESCRIPCION"
                                     },
                                     {
                                         targets: 3,
@@ -1340,10 +1336,16 @@
                                     },
                                     {
                                         targets: 4,
-                                        title: "DESCRIPCION"
+                                        title: "SALIDA",
+                                        className: "text-center"
                                     },
                                     {
                                         targets: 5,
+                                        title: "ENTRADA",
+                                        className: "text-center"
+                                    },
+                                    {
+                                        targets: 6,
                                         title: "ACCIONES",
                                         className: "text-center"
                                     }
@@ -1480,25 +1482,50 @@
                                         visible: false
                                     },
                                     {
-                                        title: "CANT.",
-                                        data: "cantidad_salida",
-                                        className: "text-center",
-                                        render: function(data, type, row) {
-                                            return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
-                                            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
-                                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                                            oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
-                                        }
+                                        title: "DESCRIPCION",
+                                        data: "descripcion"
                                     },
                                     {
                                         title: "UND",
                                         data: "unidad",
                                         className: "text-center"
                                     },
+                                    
+                                    // {
+                                    //     title: "SALIDA",
+                                    //     data: "cantidad_salida",
+                                    //     className: "text-center",
+                                    //     render: function(data, type, row) {
+                                    //         return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
+                                    //         class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                                    //         onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                                    //         oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
+                                    //     }
+                                    // },
                                     {
-                                        title: "DESCRIPCION",
-                                        data: "descripcion"
+                                        title: "SALIDA",
+                                        data: "cantidad_salida",
+                                        className: "text-center",
+                                        render: function(data, type, row) {
+                                            return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
+                                            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                                            onpate="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                                            oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
+                                        }
                                     },
+                                    {
+                                        title: "ENTRADA",
+                                        data: "retorno",
+                                        className: "text-center",
+                                        render: function(data, type, row) {
+                                            data = (data === '-') ? '' : data;
+                                            return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
+                                            class="form-control text-center d-inline cantidad_retorno" inputmode="numeric" autocomplete="off" 
+                                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                                            oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
+                                        }
+                                    },
+
                                     {
                                         title: "ACCIONES",
                                         data: null,
@@ -1524,121 +1551,88 @@
                     }
                 });
 
-                $('#tblDetalleFabEntrada tbody').on('click', 'td.dt-control', function() {
-                    let tr = $(this).closest('tr');
-                    let row = tblDetalleFabEntrada.row(tr);
-                    let rowData = row.data();
-                    let idUnico = rowData[9]; // Se asume que el ID del producto está en la segunda columna
-                    let tablaId = `#tbl${idUnico}`;
-                    id_prod_fab = idUnico;
-                    if (row.child.isShown()) {
-                        row.child.hide();
-                        tr.removeClass('shown');
-                    } else {
-                        if (!tr.hasClass('loaded')) {
-                            row.child(format(idUnico, true)).show();
-                            tr.addClass('loaded');
-                            // let searchBox = $(`#search-${idUnico}`);
-                            // Evitar reinicialización del autocompletado
-                            // if (!searchBox.data("ui-autocomplete")) {
-                            //     cargarAutocompletado(function(items) {
-                            //         searchBox.autocomplete({
-                            //             source: items,
-                            //             minLength: 3,
-                            //             autoFocus: true,
-                            //             focus: function() {
-                            //                 return false;
-                            //             },
-                            //             select: function(event, ui) {
-                            //                 CargarProductos(ui.item.cod, null, $(tablaId).DataTable(), id_prod_fab);
-                            //                 return false;
-                            //             }
-                            //         }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                            //             let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                            //             return $("<li>").append(
-                            //                 `<div>${item.label} <strong class='large-text'>CANTIDAD: ${res}</strong></div>`
-                            //             ).appendTo(ul);
-                            //         };
-                            //     });
-                            // }
-                            let dataTable = $(tablaId).DataTable({
-                                dom: "t",
-                                paging: false,
-                                ordering: false,
-                                autoWidth: false,
-                                destroy: true, // Asegura que la tabla se reinicializa correctamente 
-                                ajax: {
-                                    url: "controllers/inventario.controlador.php",
-                                    dataSrc: "",
-                                    type: "POST",
-                                    data: function(d) {
-                                        d.accion = 11;
-                                        d.id_producto_fab = id_prod_fab;
-                                    },
-                                    dataSrc: function(json) {
-                                        console.log("✅ Datos cargados:", json);
-                                        $(tablaId).data('originalData', json); // Guardamos los datos originales
-                                        // console.log($(tablaId).data('originalData'));
+                // $('#tblDetalleFabEntrada tbody').on('click', 'td.dt-control', function() {
+                //     let tr = $(this).closest('tr');
+                //     let row = tblDetalleFabEntrada.row(tr);
+                //     let rowData = row.data();
+                //     let idUnico = rowData[9]; // Se asume que el ID del producto está en la segunda columna
+                //     let tablaId = `#tbl${idUnico}`;
+                //     id_prod_fab = idUnico;
+                //     if (row.child.isShown()) {
+                //         row.child.hide();
+                //         tr.removeClass('shown');
+                //     } else {
+                //         if (!tr.hasClass('loaded')) {
+                //             row.child(format(idUnico, true)).show();
+                //             tr.addClass('loaded');
+                //             let dataTable = $(tablaId).DataTable({
+                //                 dom: "t",
+                //                 paging: false,
+                //                 ordering: false,
+                //                 autoWidth: false,
+                //                 destroy: true, // Asegura que la tabla se reinicializa correctamente 
+                //                 ajax: {
+                //                     url: "controllers/inventario.controlador.php",
+                //                     dataSrc: "",
+                //                     type: "POST",
+                //                     data: function(d) {
+                //                         d.accion = 11;
+                //                         d.id_producto_fab = id_prod_fab;
+                //                     },
+                //                     dataSrc: function(json) {
+                //                         console.log("✅ Datos cargados:", json);
+                //                         $(tablaId).data('originalData', json); // Guardamos los datos originales
+                //                         // console.log($(tablaId).data('originalData'));
 
-                                        return json;
-                                    }
-                                    // success: function(data) {
-                                    //     // Guardar los datos originales
-                                    //     // $(tablaId).data('originalData', data); // Guardamos los datos originales
-                                    // }
-                                },
-                                // xhr: function(settings, json) {
-                                //     console.log("✅ Datos originales guardados:", json);
-                                //     $(tablaId).data('originalData', json); // Guardamos los datos originales
-                                //     console.log($(tablaId).data('originalData'));
-
-                                // },
-                                columns: [{
-                                        title: "N°",
-                                        data: null,
-                                        render: function(data, type, row, meta) {
-                                            return meta.row + 1;
-                                        }
-                                    },
-                                    {
-                                        title: "CODIGO",
-                                        data: "codigo",
-                                        visible: false
-                                    },
-                                    {
-                                        title: "DESCRIPCION",
-                                        data: "descripcion"
-                                    },
-                                    {
-                                        title: "UND",
-                                        data: "unidad",
-                                        className: "text-center"
-                                    },
-                                    {
-                                        title: "SALIDA",
-                                        data: "cantidad_salida",
-                                        className: "text-center",
-                                    },
-                                    {
-                                        title: "ENTRADA",
-                                        data: "retorno",
-                                        className: "text-center",
-                                        render: function(data, type, row) {
-                                            data = (data === '-') ? '' : data;
-                                            return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
-                                            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
-                                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                                            oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
-                                        }
-                                    },
-                                ],
-                            });
-                        } else {
-                            row.child.show();
-                        }
-                        tr.addClass('shown');
-                    }
-                });
+                //                         return json;
+                //                     }
+                //                 },
+                //                 columns: [{
+                //                         title: "N°",
+                //                         data: null,
+                //                         render: function(data, type, row, meta) {
+                //                             return meta.row + 1;
+                //                         }
+                //                     },
+                //                     {
+                //                         title: "CODIGO",
+                //                         data: "codigo",
+                //                         visible: false
+                //                     },
+                //                     {
+                //                         title: "DESCRIPCION",
+                //                         data: "descripcion"
+                //                     },
+                //                     {
+                //                         title: "UND",
+                //                         data: "unidad",
+                //                         className: "text-center"
+                //                     },
+                //                     {
+                //                         title: "SALIDA",
+                //                         data: "cantidad_salida",
+                //                         className: "text-center",
+                //                     },
+                //                     {
+                //                         title: "ENTRADA",
+                //                         data: "retorno",
+                //                         className: "text-center",
+                //                         render: function(data, type, row) {
+                //                             data = (data === '-') ? '' : data;
+                //                             return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
+                //                             class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                //                             onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                //                             oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
+                //                         }
+                //                     },
+                //                 ],
+                //             });
+                //         } else {
+                //             row.child.show();
+                //         }
+                //         tr.addClass('shown');
+                //     }
+                // });
 
                 $('#tblOut').on('keydown', 'input.cantidad', moveFocusOnTab);
 
@@ -2182,7 +2176,7 @@
                             let rowData = row.data();
                             let idUnico = rowData[0]; // Asumimos que el ID está en la primera columna
                             let tablaSecundariaId = `#tbl${idUnico}`;
-
+                            console.log('tablaSecundariaId', tablaSecundariaId)
                             // Crear el objeto principal para cada fila
                             let filaPrincipal = {
                                 id: idUnico,
@@ -2196,12 +2190,14 @@
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
                                 let datosOriginales = $(tablaSecundariaId).data('originalData'); // Datos originales de la tabla secundaria
+
                                 console.log('datosOriginales', datosOriginales)
                                 tablaSecundaria.rows().every(function() {
                                     let secData = this.data();
                                     console.log('secData', secData);
                                     let id_prod = secData["id_producto"];
                                     let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val());
+                                    console.log('cantidadModificada', cantidadModificada)
                                     let cantidadOriginal = parseFloat(datosOriginales.find(item => item.id_producto === id_prod)?.cantidad_salida ?? 0);
                                     // console.log('cantidadOriginal', cantidadOriginal, 'cantidadModificada', cantidadModificada)
                                     // Comparar si la cantidad ha cambiado
@@ -2257,118 +2253,118 @@
                                 }
                             }
                         });
-                    } else if (selectedTab === '9') {
-                        let elementosAValidar = [fecha, fecha_retorno, nro_ordenFab, nro_guiaFab];
-                        let isValid = true;
-                        elementosAValidar.forEach(function(elemento) {
-                            if (!elemento.checkValidity()) {
-                                isValid = false;
-                                form_guia.classList.add('was-validated');
-                            }
-                        });
-                        if (!isValid) {
-                            return;
-                        }
-                        let hasError = false;
-                        tblDetalleFabEntrada.rows().every(function() {
-                            let row = this;
-                            let tr = $(row.node());
-                            let rowData = row.data();
-                            let idUnico = rowData[0];
-                            row.child.show();
-                        });
+                    } //else if (selectedTab === '9') {
+                    //     let elementosAValidar = [fecha, fecha_retorno, nro_ordenFab, nro_guiaFab];
+                    //     let isValid = true;
+                    //     elementosAValidar.forEach(function(elemento) {
+                    //         if (!elemento.checkValidity()) {
+                    //             isValid = false;
+                    //             form_guia.classList.add('was-validated');
+                    //         }
+                    //     });
+                    //     if (!isValid) {
+                    //         return;
+                    //     }
+                    //     let hasError = false;
+                    //     tblDetalleFabEntrada.rows().every(function() {
+                    //         let row = this;
+                    //         let tr = $(row.node());
+                    //         let rowData = row.data();
+                    //         let idUnico = rowData[0];
+                    //         row.child.show();
+                    //     });
 
-                        let datosPrincipales = [];
-                        // Recorre cada fila de la tabla principal (tblDetalleFab)
-                        tblDetalleFabEntrada.rows().every(function() {
-                            if (hasError) return false;
-                            let row = this;
-                            // let tr = $(row.node());
-                            let rowData = row.data();
-                            let id_salida = rowData[0]; // Asumimos que el ID está en la primera columna
-                            let idUnico = rowData[9]; // Asumimos que el ID está en la primera columna
-                            let tablaSecundariaId = `#tbl${idUnico}`;
-                            let producto = rowData[1]
-                            // console.log('rowdata CONFIREM', rowData)
-                            let cantidad_entrada_fab = parseFloat($(this.node()).find('.retorno').val())
-                            let cantidad_salida_fab = parseFloat(rowData[3]);
+                    //     let datosPrincipales = [];
+                    //     // Recorre cada fila de la tabla principal (tblDetalleFab)
+                    //     tblDetalleFabEntrada.rows().every(function() {
+                    //         if (hasError) return false;
+                    //         let row = this;
+                    //         // let tr = $(row.node());
+                    //         let rowData = row.data();
+                    //         let id_salida = rowData[0]; // Asumimos que el ID está en la primera columna
+                    //         let idUnico = rowData[9]; // Asumimos que el ID está en la primera columna
+                    //         let tablaSecundariaId = `#tbl${idUnico}`;
+                    //         console.log('tablaSecundariaId', tablaSecundariaId)
+                    //         let producto = rowData[1]
+                    //         // console.log('rowdata CONFIREM', rowData)
+                    //         let cantidad_entrada_fab = parseFloat($(this.node()).find('.retorno').val())
+                    //         let cantidad_salida_fab = parseFloat(rowData[3]);
 
-                            // console.log('cantidad_entrada_fab', cantidad_entrada_fab, 'cantidad_salida_fab', cantidad_salida_fab)
-                            if (isTrasFab.checked) {
-                                if (cantidad_entrada_fab > cantidad_salida_fab) {
-                                    hasError = true;
-                                    mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto ' + "'" + producto + "'");
-                                    return false;
-                                }
-                            }
+                    //         // console.log('cantidad_entrada_fab', cantidad_entrada_fab, 'cantidad_salida_fab', cantidad_salida_fab)
+                    //         if (isTrasFab.checked) {
+                    //             if (cantidad_entrada_fab > cantidad_salida_fab) {
+                    //                 hasError = true;
+                    //                 mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto ' + "'" + producto + "'");
+                    //                 return false;
+                    //             }
+                    //         }
 
+                    //         let filaPrincipal = {
+                    //             id: id_salida,
+                    //             cantidad: cantidad_entrada_fab,
+                    //             productos: []
+                    //         };
 
-                            let filaPrincipal = {
-                                id: id_salida,
-                                cantidad: cantidad_entrada_fab,
-                                productos: []
-                            };
+                    //         // if (hasError) return false;
+                    //         if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
+                    //             let tablaSecundaria = $(tablaSecundariaId).DataTable();
+                    //             tablaSecundaria.rows().every(function() {
+                    //                 if (hasError) return false;
+                    //                 let secData = this.data();
+                    //                 let cantidad_salida = parseFloat(secData[1]);
+                    //                 let cantidad_entrada = parseFloat($(this.node()).find('.cantidad').val())
+                    //                 let pro_uti = secData[3]
+                    //                 if (cantidad_entrada > cantidad_salida) {
+                    //                     hasError = true;
+                    //                     mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto utilizado ' + "'" + pro_uti + "'");
+                    //                     return false;
+                    //                 }
+                    //                 // cantidad = cantidad_salida - cantidad;
+                    //                 filaPrincipal.productos.push({
+                    //                     codigo: secData[0],
+                    //                     cantidad: cantidad_entrada
+                    //                 });
+                    //                 console.log('filaPrincipal secdat', filaPrincipal)
+                    //             });
+                    //         }
+                    //         // Obtener los datos originales de la tabla secundaria
 
-                            // if (hasError) return false;
-                            if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
-                                let tablaSecundaria = $(tablaSecundariaId).DataTable();
-                                tablaSecundaria.rows().every(function() {
-                                    if (hasError) return false;
-                                    let secData = this.data();
-                                    let cantidad_salida = parseFloat(secData[1]);
-                                    let cantidad_entrada = parseFloat($(this.node()).find('.cantidad').val())
-                                    let pro_uti = secData[3]
-                                    if (cantidad_entrada > cantidad_salida) {
-                                        hasError = true;
-                                        mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto utilizado ' + "'" + pro_uti + "'");
-                                        return false;
-                                    }
-                                    // cantidad = cantidad_salida - cantidad;
-                                    filaPrincipal.productos.push({
-                                        codigo: secData[0],
-                                        cantidad: cantidad_entrada
-                                    });
-                                    console.log('filaPrincipal secdat', secData)
-                                });
-                            }
-                            // Obtener los datos originales de la tabla secundaria
-
-                            datosPrincipales.push(filaPrincipal);
-                        });
-                        if (hasError) return;
-                        // console.log('DATOS MODIFICADOS ENVIADOS', datosPrincipales)
-                        formData.append('datos', JSON.stringify(datosPrincipales));
-                        formData.append('id_boleta', id_boleta_fab);
-                        formData.append('fecha_retorno', fecha_retorno.value);
-                        formData.append('accion', 13);
-                        dropzone.getAcceptedFiles().forEach((file, index) => {
-                            if (!file.isExisting) {
-                                formData.append(`imagenes[${index}]`, file, file.name);
-                            }
-                        });
-                        $.ajax({
-                            url: "controllers/registro.controlador.php",
-                            method: "POST",
-                            data: formData,
-                            cache: false,
-                            dataType: "json",
-                            contentType: false,
-                            processData: false,
-                            success: function(r) {
-                                let isSuccess = r.status === "success";
-                                mostrarToast(r.status,
-                                    isSuccess ? "Completado" : "Error",
-                                    isSuccess ? "fa-check" : "fa-xmark",
-                                    r.m);
-                                if (isSuccess) {
-                                    tblDetalleFab.clear().draw();
-                                    tabla ? tabla.ajax.reload(null, false) : '';
-                                    cargarAutocompletado();
-                                    limpiar();
-                                }
-                            }
-                        });
-                    }
+                    //         datosPrincipales.push(filaPrincipal);
+                    //     });
+                    //     if (hasError) return;
+                    //     // console.log('DATOS MODIFICADOS ENVIADOS', datosPrincipales)
+                    //     formData.append('datos', JSON.stringify(datosPrincipales));
+                    //     formData.append('id_boleta', id_boleta_fab);
+                    //     formData.append('fecha_retorno', fecha_retorno.value);
+                    //     formData.append('accion', 13);
+                    //     dropzone.getAcceptedFiles().forEach((file, index) => {
+                    //         if (!file.isExisting) {
+                    //             formData.append(`imagenes[${index}]`, file, file.name);
+                    //         }
+                    //     });
+                    //     $.ajax({
+                    //         url: "controllers/registro.controlador.php",
+                    //         method: "POST",
+                    //         data: formData,
+                    //         cache: false,
+                    //         dataType: "json",
+                    //         contentType: false,
+                    //         processData: false,
+                    //         success: function(r) {
+                    //             let isSuccess = r.status === "success";
+                    //             mostrarToast(r.status,
+                    //                 isSuccess ? "Completado" : "Error",
+                    //                 isSuccess ? "fa-check" : "fa-xmark",
+                    //                 r.m);
+                    //             if (isSuccess) {
+                    //                 tblDetalleFab.clear().draw();
+                    //                 tabla ? tabla.ajax.reload(null, false) : '';
+                    //                 cargarAutocompletado();
+                    //                 limpiar();
+                    //             }
+                    //         }
+                    //     });
+                    // }
                 });
 
                 tabs.forEach(tab => {
