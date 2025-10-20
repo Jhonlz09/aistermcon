@@ -1161,6 +1161,14 @@
                         },
                         {
                             targets: 4,
+                            render: function(data, type, row) {
+                                return `<input type="text" class="form-control text-center entrada" value="${data || ''}" 
+                            style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.1rem" 
+                            autocomplete="off" onfocus="selecTexto(this)" spellcheck="false">`;
+                            }
+                        },
+                        {
+                            targets: 5,
                             className: "text-center",
                             render: function(data, type, row) {
                                 return `<center>
@@ -1429,6 +1437,7 @@
                                             return false;
                                         }
                                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                                        console.log(item);
                                         let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                                         return $("<li>").append(
                                             `<div>${item.label} <strong class='large-text'>CANTIDAD: ${res}</strong></div>`
@@ -2183,6 +2192,7 @@
                                 cantidad: $(this.node()).find('.cantidad').val(),
                                 unidad: $(this.node()).find('.id_unidad').val(),
                                 descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
+                                retorno: $(this.node()).find('.retorno').val(),
                                 productos: [],
                             };
 
@@ -2190,29 +2200,29 @@
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
                                 let datosOriginales = $(tablaSecundariaId).data('originalData'); // Datos originales de la tabla secundaria
-
-                                console.log('datosOriginales', datosOriginales)
+                                console.log('datos Originales', datosOriginales)
                                 tablaSecundaria.rows().every(function() {
                                     let secData = this.data();
                                     console.log('secData', secData);
                                     let id_prod = secData["id_producto"];
                                     let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val());
+                                    let entrada_modificada = parseFloat($(this.node()).find('.retorno').val());
                                     console.log('cantidadModificada', cantidadModificada)
-                                    let cantidadOriginal = parseFloat(datosOriginales.find(item => item.id_producto === id_prod)?.cantidad_salida ?? 0);
-                                    // console.log('cantidadOriginal', cantidadOriginal, 'cantidadModificada', cantidadModificada)
-                                    // Comparar si la cantidad ha cambiado
-                                    if (cantidadOriginal !== cantidadModificada) {
+                                    console.log('retorno_modificada', retorno_modificada)
+                                 
                                         filaPrincipal.productos.push({
                                             codigo: secData['id'],
+                                            cantidad_old : secData['cantidad_salida'],
+                                            entrada_old : secData['retorno'],
                                             cantidad: cantidadModificada,
-                                            id_producto: id_prod
+                                            entrada: entrada_modificada,
+                                            id_producto: id_prod,
                                         });
-                                    }
+                                   
                                 });
                             }
                             datosModificados.push(filaPrincipal);
                         });
-                        // console.log('DATOS MODIFICADOS ENVIADOS', datosModificados)
                         formData.append('datos', JSON.stringify(datosModificados));
                         formData.append('orden', id_orden_guia_fab);
                         formData.append('id_boleta', id_boleta_fab);
@@ -2253,118 +2263,7 @@
                                 }
                             }
                         });
-                    } //else if (selectedTab === '9') {
-                    //     let elementosAValidar = [fecha, fecha_retorno, nro_ordenFab, nro_guiaFab];
-                    //     let isValid = true;
-                    //     elementosAValidar.forEach(function(elemento) {
-                    //         if (!elemento.checkValidity()) {
-                    //             isValid = false;
-                    //             form_guia.classList.add('was-validated');
-                    //         }
-                    //     });
-                    //     if (!isValid) {
-                    //         return;
-                    //     }
-                    //     let hasError = false;
-                    //     tblDetalleFabEntrada.rows().every(function() {
-                    //         let row = this;
-                    //         let tr = $(row.node());
-                    //         let rowData = row.data();
-                    //         let idUnico = rowData[0];
-                    //         row.child.show();
-                    //     });
-
-                    //     let datosPrincipales = [];
-                    //     // Recorre cada fila de la tabla principal (tblDetalleFab)
-                    //     tblDetalleFabEntrada.rows().every(function() {
-                    //         if (hasError) return false;
-                    //         let row = this;
-                    //         // let tr = $(row.node());
-                    //         let rowData = row.data();
-                    //         let id_salida = rowData[0]; // Asumimos que el ID está en la primera columna
-                    //         let idUnico = rowData[9]; // Asumimos que el ID está en la primera columna
-                    //         let tablaSecundariaId = `#tbl${idUnico}`;
-                    //         console.log('tablaSecundariaId', tablaSecundariaId)
-                    //         let producto = rowData[1]
-                    //         // console.log('rowdata CONFIREM', rowData)
-                    //         let cantidad_entrada_fab = parseFloat($(this.node()).find('.retorno').val())
-                    //         let cantidad_salida_fab = parseFloat(rowData[3]);
-
-                    //         // console.log('cantidad_entrada_fab', cantidad_entrada_fab, 'cantidad_salida_fab', cantidad_salida_fab)
-                    //         if (isTrasFab.checked) {
-                    //             if (cantidad_entrada_fab > cantidad_salida_fab) {
-                    //                 hasError = true;
-                    //                 mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto ' + "'" + producto + "'");
-                    //                 return false;
-                    //             }
-                    //         }
-
-                    //         let filaPrincipal = {
-                    //             id: id_salida,
-                    //             cantidad: cantidad_entrada_fab,
-                    //             productos: []
-                    //         };
-
-                    //         // if (hasError) return false;
-                    //         if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
-                    //             let tablaSecundaria = $(tablaSecundariaId).DataTable();
-                    //             tablaSecundaria.rows().every(function() {
-                    //                 if (hasError) return false;
-                    //                 let secData = this.data();
-                    //                 let cantidad_salida = parseFloat(secData[1]);
-                    //                 let cantidad_entrada = parseFloat($(this.node()).find('.cantidad').val())
-                    //                 let pro_uti = secData[3]
-                    //                 if (cantidad_entrada > cantidad_salida) {
-                    //                     hasError = true;
-                    //                     mostrarToast('warning', 'Error', 'fa-xmark', 'La cantidad de entrada no puede ser mayor a la cantidad de salida en el producto utilizado ' + "'" + pro_uti + "'");
-                    //                     return false;
-                    //                 }
-                    //                 // cantidad = cantidad_salida - cantidad;
-                    //                 filaPrincipal.productos.push({
-                    //                     codigo: secData[0],
-                    //                     cantidad: cantidad_entrada
-                    //                 });
-                    //                 console.log('filaPrincipal secdat', filaPrincipal)
-                    //             });
-                    //         }
-                    //         // Obtener los datos originales de la tabla secundaria
-
-                    //         datosPrincipales.push(filaPrincipal);
-                    //     });
-                    //     if (hasError) return;
-                    //     // console.log('DATOS MODIFICADOS ENVIADOS', datosPrincipales)
-                    //     formData.append('datos', JSON.stringify(datosPrincipales));
-                    //     formData.append('id_boleta', id_boleta_fab);
-                    //     formData.append('fecha_retorno', fecha_retorno.value);
-                    //     formData.append('accion', 13);
-                    //     dropzone.getAcceptedFiles().forEach((file, index) => {
-                    //         if (!file.isExisting) {
-                    //             formData.append(`imagenes[${index}]`, file, file.name);
-                    //         }
-                    //     });
-                    //     $.ajax({
-                    //         url: "controllers/registro.controlador.php",
-                    //         method: "POST",
-                    //         data: formData,
-                    //         cache: false,
-                    //         dataType: "json",
-                    //         contentType: false,
-                    //         processData: false,
-                    //         success: function(r) {
-                    //             let isSuccess = r.status === "success";
-                    //             mostrarToast(r.status,
-                    //                 isSuccess ? "Completado" : "Error",
-                    //                 isSuccess ? "fa-check" : "fa-xmark",
-                    //                 r.m);
-                    //             if (isSuccess) {
-                    //                 tblDetalleFab.clear().draw();
-                    //                 tabla ? tabla.ajax.reload(null, false) : '';
-                    //                 cargarAutocompletado();
-                    //                 limpiar();
-                    //             }
-                    //         }
-                    //     });
-                    // }
+                    } 
                 });
 
                 tabs.forEach(tab => {

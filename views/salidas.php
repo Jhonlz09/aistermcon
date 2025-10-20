@@ -542,6 +542,7 @@
                                 cantidad, // Cantidad
                                 item.id_unidad, // Unidad
                                 item.descripcion, // Descripción
+                                item.retorno,
                                 ''
                             ];
                             tblDetalleFab.row.add(nuevaFila).draw(false);
@@ -583,16 +584,13 @@
             let selectedItem = items_orden.find(item => item.cod === id_orden);
             if (fab) {
                 if (selectedItem) {
-                    // Asignamos el valor al input de autocompletado
                     $(nro_ordenFab).val(selectedItem.label);
-                    // Simulamos la selección del ítem en el autocompletado
                     $(nro_ordenFab)
                         .autocomplete("instance")
                         ._trigger("select", null, {
                             item: selectedItem
                         });
                 } else {
-                    // Crear un nuevo item con los datos disponibles
                     let nuevoItem = {
                         cod: id_orden,
                         label: `${orden}  ${cliente}`,

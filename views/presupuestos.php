@@ -965,18 +965,18 @@
         $('#tblPresupuesto tbody').on('click', '.btnEditar', function() {
             let row = obtenerFila(this, tabla);
             accion = 2;
-            precioConIva.disabled = false
-            precioSinIva.disabled = false
-            desc.disabled = false
-            
+            precioConIva.disabled = false;
+            precioSinIva.disabled = false;
+            desc.disabled = false;
             cambiarModal(span, ' Editar Presupuesto', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
             id.value = row["id"];
             desc.value = row["descripcion"];
             orden_nro.value = row["num_orden"];
-            precioConIva.value = parseFloat(row["precio_total"].replace(/[$,]/g, ''));
-            precioSinIva.value = parseFloat(row["precio_iva"].replace(/[$,]/g, ''));
-            // precioConIva.value = row["precio_total"];
-            // precioSinIva.value = row["precio_iva"];
+            precioConIva.value = parseFloat(row["precio_total"].replace(/[$,]/g, ''))  || '';
+            // precioConIva.value = parseFloat((row["precio_total"] ?? "").replace(/[$,]/g, '')) || '';
+            // precioSinIva.value = parseFloat((row["precio_iva"] ?? "").replace(/[$,]/g, '')) || '';
+            precioSinIva.value = parseFloat(row["precio_iva"].replace(/[$,]/g, ''))  || '';
+        
             setChange(cboClienteOrden, row["id_cliente"]);
             form.classList.remove('was-validated');
             nota.value = row["nota"];
@@ -984,22 +984,6 @@
             src.append('accion', 7); // o el valor que corresponda en tu backend
             src.append('id', id.value); // el id del presupuesto a editar
             cargarTodosLosArchivos(id.value);
-
-            // cargarFilesDropzone(src, drop_pre, 'presupuesto', 'presupuestos');
-            // let datos = new FormData();
-            // datos.append('accion', 6); // o el valor que corresponda en tu backend
-            // datos.append('id', id.value); // el id del presupuesto a editar
-            // cargarFilesDropzoneOneCall(datos, drop_ord, 'presupuesto', 'ordenes');
-
-
-            // let src3 = new FormData();
-            // src3.append('accion', 11); // o el valor que corresponda en tu
-            // src3.append('id', id.value); // el id del presupuesto a editar
-            // cargarFilesDropzone(src3, drop_oc, 'presupuesto', 'orden_compra');
-            // let src2 = new FormData();
-            // src2.append('accion', 10); // o el valor que corresponda en tu
-            // src2.append('id', id.value); // el id del presupuesto a editar
-            // cargarFilesDropzone(src2, drop_ae, 'presupuesto', 'actas_entrega');
         });
 
         function cargarTodosLosArchivos(id) {
@@ -1011,9 +995,6 @@
                 url: 'controllers/presupuesto.controlador.php',
                 type: 'POST',
                 dataType: 'json',
-                // "dataSrc": '',
-                // contentType: false,
-                // processData: false,
                 data: {
                     'accion': 6,
                     'id': id
@@ -1026,7 +1007,7 @@
                         const filename = file.nombre_file.split('/').pop();
                         const ext = filename.split('.').pop().toLowerCase();
 
-                        // Tipos MIME para que Dropzone lo interprete bien
+                        // Tipos MIME para que Dropzone 
                         const extMap = {
                             pdf: 'application/pdf',
                             xls: 'application/vnd.ms-excel',

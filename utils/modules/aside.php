@@ -371,6 +371,7 @@
                                                                                         <th class="text-center">CANTIDAD</th>
                                                                                         <th class="text-center">UNIDAD</th>
                                                                                         <th class="text-nowrap">PRODUCTO FABRICADO</th>
+                                                                                        <th class="text-center">ENTRADA</th>
                                                                                         <th class="text-center">ACCIONES</th>
                                                                                     </tr>
                                                                                 </thead>

@@ -1,14 +1,14 @@
 <?php require_once "../utils/database/config.php"; ?>
 
 <head>
-    <title>Ordenes</title>
+    <title>Facturación</title>
 </head>
 <!-- Contenido Header -->
 <section class="content-header">
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto">
-                <h1 class="col-p">Orden de trabajo</h1>
+                <h1 class="col-p">Facturación</h1>
             </div>
             <?php if (isset($_SESSION["crear17"]) && $_SESSION["crear17"] === true) : ?>
                 <div class="col">
@@ -16,14 +16,14 @@
                         <i class="fa fa-plus"></i> Nuevo</button>
                 </div>
             <?php endif; ?>
-            <div class="col-auto" id="export-buttons">
+            <!-- <div class="col-auto" id="export-buttons">
                 <button id="btnExportExcel" class="btn btn-light">
                     <i class="fa-regular fa-file-xls fa-xl" style="color: #0a8f00"></i> Exportar a Excel
                 </button>
                 <button id="btnExportPDF" class="btn btn-light">
                     <i class="fa-regular fa-file-pdf fa-xl" style="color: #bd0000"></i> Exportar a PDF
                 </button>
-            </div>
+            </div> -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
 </section>
@@ -38,13 +38,12 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-auto col-p">
-                                    <h3 class="card-title ">Listado de ordenes</h3>
+                                    <h3 class="card-title ">Listado de ordenes facturadas</h3>
                                 </div>
                                 <div class="col col-sm-auto mr-5">
                                     <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
                                     </select>
                                 </div>
-
                                 <div class="col-sm p-0">
                                     <div style="margin-block:.4rem;height:33px;" class="input-group">
                                         <span class="input-group-text"><i class="fas fa-search icon"></i></span>
@@ -55,7 +54,7 @@
                         </div>
                     </div>
                     <!-- /.card-header -->
-                    <div class="card-body p-0">
+                    <!-- <div class="card-body p-0">
                         <table id="tblOrden" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -71,7 +70,7 @@
                             <tbody>
                             </tbody>
                         </table>
-                    </div>
+                    </div> -->
                     <!-- /.card-body -->
                 </div>
                 <!-- /.card -->
