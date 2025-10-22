@@ -483,7 +483,7 @@
 
 
                 archivos.forEach(file => {
-                    const url = `/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=orden_compra`;
+                    const url = `/aistermcon/utils/show.php?file=${encodeURIComponent(file)}&route=orden_compra`;
 
                     const wrapper = document.createElement('div');
                     wrapper.style.flex = '1 1 45%';
@@ -517,8 +517,6 @@
             // Ocultamos todos los grupos y mostramos solo el seleccionado
             document.querySelectorAll('#contenedorPDFs .pdf-group').forEach(div => div.style.display = 'none');
             cachedDiv.style.display = 'flex';
-
-
             $('#modalVerPDFs').modal('show');
         }
 
@@ -1120,8 +1118,9 @@
             const des = desc.value.trim().toUpperCase(),
                 ord = orden_nro.value.trim(),
                 id_cli = cboClienteOrden.value,
-                cli_name = cboClienteOrden.selectedIndex > 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '',
+                cli_name = cboClienteOrden.selectedIndex >= 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '',
                 fecha_act = fecha_new.value;
+                // console.log('cliente seleccionado:', cboClienteOrden.selectedIndex);
             id_e = id.value;
             let datos = new FormData();
             datos.append('id', id_e);

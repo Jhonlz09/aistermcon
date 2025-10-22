@@ -1,7 +1,9 @@
 <?php
 require_once('../vendor/autoload.php');
 
-use setasign\Fpdi\Fpdi;
+use setasign\Fpdi\Tcpdf\Fpdi;
+// use setasign\Fpdi\Fpdi;
+
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -26,19 +28,40 @@ try {
     $ext = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
 
     switch ($ext) {
+        // case 'pdf':
+        //     // 📄 PDF: mostrar en navegador usando FPDI (opcional)
+        //     $pdf = new Fpdi();
+        //     $pageCount = $pdf->setSourceFile($file_path);
+        //     for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+        //         $pdf->AddPage();
+        //         $tplId = $pdf->importPage($pageNo);
+        //         $pdf->useTemplate($tplId);
+        //     }
+        //     $pdf->SetTitle(iconv('UTF-8', 'windows-1252', $file));
+        //     $pdf->Output('I', htmlspecialchars($file), true);
+        //     exit;
         case 'pdf':
-            // 📄 PDF: mostrar en navegador usando FPDI (opcional)
+            // 📄 Mostrar PDF usando TCPDF + FPDI (soporta UTF-8, más moderno)
             $pdf = new Fpdi();
+            $pdf->SetTitle($file);
+            // $pdf->SetAutoPageBreak(true, 0);
+
+            // 🚫 Desactiva los encabezados y pies de página predeterminados de TCPDF
+            $pdf->setPrintHeader(false);
+            $pdf->setPrintFooter(false);
+
+            // 📥 Importar el PDF fuente
             $pageCount = $pdf->setSourceFile($file_path);
+
             for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-                $pdf->AddPage();
                 $tplId = $pdf->importPage($pageNo);
+                $pdf->AddPage();
                 $pdf->useTemplate($tplId);
             }
-            $pdf->SetTitle(iconv('UTF-8', 'windows-1252', $file));
-            $pdf->Output('I', htmlspecialchars($file), true);
-            exit;
 
+            // 📤 Mostrar en navegador
+            $pdf->Output(htmlspecialchars($file), 'I');
+            exit;
         case 'jpg':
         case 'jpeg':
         case 'png':

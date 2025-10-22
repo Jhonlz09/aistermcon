@@ -1161,6 +1161,7 @@
                         },
                         {
                             targets: 4,
+                            visible: false,
                             render: function(data, type, row) {
                                 return `<input type="text" class="form-control text-center entrada" value="${data || ''}" 
                             style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.1rem" 
@@ -1335,7 +1336,7 @@
                                     },
                                     {
                                         targets: 2,
-                                        title: "DESCRIPCION"
+                                        title: "CANT."
                                     },
                                     {
                                         targets: 3,
@@ -1344,13 +1345,14 @@
                                     },
                                     {
                                         targets: 4,
-                                        title: "SALIDA",
+                                        title: "DESCRIPCION",
                                         className: "text-center"
                                     },
                                     {
                                         targets: 5,
                                         title: "ENTRADA",
-                                        className: "text-center"
+                                        className: "text-center",
+                                        
                                     },
                                     {
                                         targets: 6,
@@ -1499,7 +1501,7 @@
                                         data: "unidad",
                                         className: "text-center"
                                     },
-                                    
+
                                     // {
                                     //     title: "SALIDA",
                                     //     data: "cantidad_salida",
@@ -2088,6 +2090,7 @@
                         });
                         // Ahoa obtenemos los datos
                         let datosPrincipales = [];
+                        let error = false;
                         tblProdFab.rows().every(function() {
                             let rowData = this.data();
                             let idUnico = rowData[0];
@@ -2103,15 +2106,28 @@
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
                                 tablaSecundaria.rows().every(function() {
                                     let secData = this.data();
-                                    let cantidad = $(this.node()).find('.cantidad').val();
+                                    let cantidad = parseFloat($(this.node()).find('.cantidad').val());
+                                    let entrada = parseFloat($(this.node()).find('.entrada').val());
+
+                                    if (cantidad < entrada) {
+                                        mostrarToast('danger', 'Error', 'fa-xmark',
+                                            'La cantidad utilizada no puede ser mayor a la de entrada para el producto "' +
+                                            secData[4] + '"');
+                                        error = true; // marcar error
+                                        return false; // salir del each interno
+                                    }
                                     filaPrincipal.productos.push({
                                         codigo: secData[1],
-                                        cantidad: cantidad
+                                        cantidad: cantidad,
+                                        entrada: entrada
                                     });
                                 });
                             }
+                            if (error) return false; // salir del each externo si hubo error
                             datosPrincipales.push(filaPrincipal);
                         });
+
+                        if (error) return;
                         formData.append('datos', JSON.stringify(datosPrincipales));
                         formData.append('orden', id_orden_guia_fab);
                         formData.append('nro_guia', nro_guiaFab.value);
@@ -2206,19 +2222,18 @@
                                     console.log('secData', secData);
                                     let id_prod = secData["id_producto"];
                                     let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val());
-                                    let entrada_modificada = parseFloat($(this.node()).find('.retorno').val());
+                                    let entrada_modificada = parseFloat($(this.node()).find('.cantidad_retorno').val());
                                     console.log('cantidadModificada', cantidadModificada)
-                                    console.log('retorno_modificada', retorno_modificada)
-                                 
-                                        filaPrincipal.productos.push({
-                                            codigo: secData['id'],
-                                            cantidad_old : secData['cantidad_salida'],
-                                            entrada_old : secData['retorno'],
-                                            cantidad: cantidadModificada,
-                                            entrada: entrada_modificada,
-                                            id_producto: id_prod,
-                                        });
-                                   
+                                    console.log('retorno_modificada', entrada_modificada)
+                                    filaPrincipal.productos.push({
+                                        codigo: secData['id'],
+                                        cantidad_old: secData['cantidad_salida'],
+                                        entrada_old: secData['retorno'],
+                                        cantidad: cantidadModificada,
+                                        retorno: entrada_modificada,
+                                        id_producto: id_prod,
+                                    });
+
                                 });
                             }
                             datosModificados.push(filaPrincipal);
@@ -2263,7 +2278,7 @@
                                 }
                             }
                         });
-                    } 
+                    }
                 });
 
                 tabs.forEach(tab => {
@@ -2432,6 +2447,10 @@
 
                         nuevaFila.push(
                             respuesta['descripcion'],
+                            `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
+                            class="form-control text-center d-inline entrada" inputmode="numeric" autocomplete="off" 
+                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                            oninput="validarNumber(this,/[^0-9.]/g)" value="">`,
                             `<center>
                             <span class='btnEliminaRow text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
                             data-bs-placement='top' title='Eliminar producto'> 
@@ -2558,6 +2577,7 @@
                                                         cantidad_salida: "1",
                                                         unidad: respuesta['nombre'], // Puedes cambiar el valor según lo necesites
                                                         descripcion: respuesta['descripcion'],
+                                                        entrada: "0",
                                                         id_producto: respuesta['id']
                                                     };
                                                     // let nuevaFila = ['', respuesta.id, '', '1', '', ''];

@@ -549,6 +549,7 @@
                             console.log('Fila añadida:', item.retorno);
                         });
                         console.log('Datos obtenidos:', response);
+                        tblDetalleFab.column(4).visible(tras);
                     } else {
                         console.error('No se encontraron datos para el id_boleta:', id_boleta);
                     }

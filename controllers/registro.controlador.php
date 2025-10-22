@@ -78,11 +78,11 @@ class ajaxRegistro
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function registrarFabricacionEntrada($datos, $fecha_entrada, $id_boleta)
-    {
-        $data = ModeloRegistro::mdlregistrarFabricacionEntrada($datos, $fecha_entrada, $id_boleta);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    }
+    // public function registrarFabricacionEntrada($datos, $fecha_entrada, $id_boleta)
+    // {
+    //     $data = ModeloRegistro::mdlregistrarFabricacionEntrada($datos, $fecha_entrada, $id_boleta);
+    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    // }
 
     public function actualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $fecha_retorno, $motivo,  $tras, $img)
     {
@@ -122,7 +122,7 @@ if (isset($_POST["accion"])) {
     }else if ($accion == 12) {
         $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : [];
         $registro->actualizarDatosFabricacion($_POST["datos"], $_POST["id_boleta"], $_POST["orden"], $_POST["nro_guia"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["fecha"], $_POST["fecha_retorno"], $_POST["motivo"], $_POST['tras'], $imagenes);
-    }else if ($accion == 13) {
-        $registro->registrarFabricacionEntrada($_POST["datos"], $_POST["fecha_retorno"],$_POST["id_boleta"] );
+    //else if ($accion == 13) {
+    //     $registro->registrarFabricacionEntrada($_POST["datos"], $_POST["fecha_retorno"],$_POST["id_boleta"] );
     }
 }

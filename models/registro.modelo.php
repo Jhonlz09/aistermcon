@@ -154,10 +154,10 @@ class ModeloRegistro
                 $des = $producto['descripcion'];
                 $uni = $producto['unidad'];
                 $insumos = $producto['productos'];
-
                 foreach ($insumos as $insumo) {
                     $codigoInsumo = $insumo['codigo'];
                     $cantidadUtilizada = $insumo['cantidad'];
+                    $cantidadEntrada = $insumo['entrada'];
                     $stmtStock = $conexion->prepare("SELECT stock, descripcion FROM tblinventario WHERE id = :codigoInsumo");
                     $stmtStock->bindParam(':codigoInsumo', $codigoInsumo, PDO::PARAM_INT);
                     $stmtStock->execute();
@@ -214,67 +214,67 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlRegistrarFabricacionEntrada($datos, $fecha_entrada, $id_boleta)
-    {
-        try {
-            $conexion = Conexion::ConexionDB();
-            $conexion->beginTransaction();
+    // static public function mdlRegistrarFabricacionEntrada($datos, $fecha_entrada, $id_boleta)
+    // {
+    //     try {
+    //         $conexion = Conexion::ConexionDB();
+    //         $conexion->beginTransaction();
 
-            $productos = json_decode($datos, true);
-            if (!$productos) {
-                throw new Exception("Los datos de productos son inválidos.");
-            }
+    //         $productos = json_decode($datos, true);
+    //         if (!$productos) {
+    //             throw new Exception("Los datos de productos son inválidos.");
+    //         }
 
-            foreach ($productos as $producto) {
-                $cantidadFabricada = $producto['cantidad'];
-                $id_salida = $producto['id'];
-                $insumos = $producto['productos'];
+    //         foreach ($productos as $producto) {
+    //             $cantidadFabricada = $producto['cantidad'];
+    //             $id_salida = $producto['id'];
+    //             $insumos = $producto['productos'];
 
-                // Actualizar salida principal
-                $sqlSalida = "UPDATE tblsalidas SET retorno = :cantidad WHERE id = :id";
-                $stmtSalida = $conexion->prepare($sqlSalida);
-                $stmtSalida->bindParam(':id', $id_salida, PDO::PARAM_INT);
-                $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_STR);
-                $stmtSalida->execute();
+    //             // Actualizar salida principal
+    //             $sqlSalida = "UPDATE tblsalidas SET retorno = :cantidad WHERE id = :id";
+    //             $stmtSalida = $conexion->prepare($sqlSalida);
+    //             $stmtSalida->bindParam(':id', $id_salida, PDO::PARAM_INT);
+    //             $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_STR);
+    //             $stmtSalida->execute();
 
-                // Actualizar insumos utilizados
-                foreach ($insumos as $insumo) {
-                    $codigoInsumo = $insumo['codigo'];
-                    $cantidadUtilizada = $insumo['cantidad'];
+    //             // Actualizar insumos utilizados
+    //             foreach ($insumos as $insumo) {
+    //                 $codigoInsumo = $insumo['codigo'];
+    //                 $cantidadUtilizada = $insumo['cantidad'];
 
-                    $stmtStock = $conexion->prepare($sqlSalida); // Reutiliza la misma SQL
-                    $stmtStock->bindParam(':id', $codigoInsumo, PDO::PARAM_INT);
-                    $stmtStock->bindParam(':cantidad', $cantidadUtilizada, PDO::PARAM_STR);
-                    $stmtStock->execute();
-                }
-            }
+    //                 $stmtStock = $conexion->prepare($sqlSalida); // Reutiliza la misma SQL
+    //                 $stmtStock->bindParam(':id', $codigoInsumo, PDO::PARAM_INT);
+    //                 $stmtStock->bindParam(':cantidad', $cantidadUtilizada, PDO::PARAM_STR);
+    //                 $stmtStock->execute();
+    //             }
+    //         }
 
-            // 🔄 Actualizar la fecha de retorno en tblboleta
-            $sqlBoleta = "UPDATE tblboleta SET fecha_retorno = :fecha_retorno WHERE id = :id_boleta";
-            $stmtBoleta = $conexion->prepare($sqlBoleta);
-            $stmtBoleta->bindParam(':fecha_retorno', $fecha_entrada);
-            $stmtBoleta->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
-            $stmtBoleta->execute();
+    //         // 🔄 Actualizar la fecha de retorno en tblboleta
+    //         $sqlBoleta = "UPDATE tblboleta SET fecha_retorno = :fecha_retorno WHERE id = :id_boleta";
+    //         $stmtBoleta = $conexion->prepare($sqlBoleta);
+    //         $stmtBoleta->bindParam(':fecha_retorno', $fecha_entrada);
+    //         $stmtBoleta->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+    //         $stmtBoleta->execute();
 
-            $conexion->commit();
-            return array(
-                'status' => 'success',
-                'm' => 'La entrada de la fabricación se registró correctamente.'
-            );
-        } catch (PDOException $e) {
-            $conexion->rollBack();
-            return array(
-                'status' => 'danger',
-                'm' => 'Error al registrar la entrada de fabricación: ' . $e->getMessage()
-            );
-        } catch (Exception $e) {
-            $conexion->rollBack();
-            return array(
-                'status' => 'danger',
-                'm' => $e->getMessage()
-            );
-        }
-    }
+    //         $conexion->commit();
+    //         return array(
+    //             'status' => 'success',
+    //             'm' => 'La entrada de la fabricación se registró correctamente.'
+    //         );
+    //     } catch (PDOException $e) {
+    //         $conexion->rollBack();
+    //         return array(
+    //             'status' => 'danger',
+    //             'm' => 'Error al registrar la entrada de fabricación: ' . $e->getMessage()
+    //         );
+    //     } catch (Exception $e) {
+    //         $conexion->rollBack();
+    //         return array(
+    //             'status' => 'danger',
+    //             'm' => $e->getMessage()
+    //         );
+    //     }
+    // }
 
 
     static public function mdlActualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $fecha_retorno, $motivo, $tras, $img)
@@ -301,9 +301,8 @@ class ModeloRegistro
 
             foreach ($productos as $producto) {
                 $id_prod_fab = $producto['id'];
-                // $cantidadOld = $producto['cantidad_old'];
                 $cantidadFabricada = $producto['cantidad'];
-                $retornoFabricado = $producto['retorno'];
+                // $retornoFabricado = $producto['retorno'];
                 $des = $producto['descripcion'];
                 $uni = $producto['unidad'];
                 $insumos = $producto['productos'];
@@ -369,26 +368,24 @@ class ModeloRegistro
                 if ($tras && !$trasExistente) {
                     // Primera vez: trasladar retorno -> salida
                     $sqlSalida = "UPDATE tblsalidas 
-                              SET retorno = NULL, cantidad_salida = :cantidad 
-                              WHERE id_producto = :id AND id_boleta = :id_boleta";
+                                SET retorno = NULL, cantidad_salida = :cantidad,
+                                WHERE id_producto = :id AND id_boleta = :id_boleta";
                 } elseif ($tras && $trasExistente) {
                     // Ya se trasladó antes: solo actualizar salida
                     $sqlSalida = "UPDATE tblsalidas 
-                              SET cantidad_salida = :cantidad 
-                              WHERE id_producto = :id AND id_boleta = :id_boleta";
+                                SET cantidad_salida = :cantidad 
+                                WHERE id_producto = :id AND id_boleta = :id_boleta";
                 } else {
                     // Modo normal (sin traslado)
                     $sqlSalida = "UPDATE tblsalidas 
-                              SET retorno = :cantidad 
-                              WHERE id_producto = :id AND id_boleta = :id_boleta";
+                                SET retorno = :cantidad 
+                                WHERE id_producto = :id AND id_boleta = :id_boleta";
                 }
-
                 $stmtSalida = $conexion->prepare($sqlSalida);
                 $stmtSalida->bindParam(':id', $id_prod_fab, PDO::PARAM_INT);
                 $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_STR);
                 $stmtSalida->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
                 $stmtSalida->execute();
-
                 // 🔗 Actualizar relación producto-insumo
                 self::relacionarProductoConInsumosUpdate($conexion, $id_prod_fab, $id_boleta, $insumos);
             }
@@ -422,13 +419,15 @@ class ModeloRegistro
     private static function relacionarProductoConInsumos($conexion, $idProductoFabricado, $idBoleta, $insumos)
     {
         $stmtSalidaInsumo = $conexion->prepare(
-            "INSERT INTO tblsalidas(id_boleta, cantidad_salida, id_producto, id_producto_fab) 
-            VALUES(:id_boleta, :cantidad, :id_producto, :id_producto_fab)"
+            "INSERT INTO tblsalidas(id_boleta, cantidad_salida, id_producto, id_producto_fab, retorno) 
+            VALUES(:id_boleta, :cantidad, :id_producto, :id_producto_fab, :retorno)"
         );
 
         foreach ($insumos as $insumo) {
             $stmtSalidaInsumo->bindParam(':id_boleta', $idBoleta, PDO::PARAM_INT);
             $stmtSalidaInsumo->bindParam(':cantidad', $insumo['cantidad'], PDO::PARAM_STR);
+            $stmtSalidaInsumo->bindParam(':retorno', $insumo['entrada'], PDO::PARAM_STR);
+
             $stmtSalidaInsumo->bindParam(':id_producto', $insumo['codigo'], PDO::PARAM_INT);
             $stmtSalidaInsumo->bindParam(':id_producto_fab', $idProductoFabricado, PDO::PARAM_INT);
             $stmtSalidaInsumo->execute();
@@ -437,10 +436,11 @@ class ModeloRegistro
 
     private static function relacionarProductoConInsumosUpdate($conexion, $idProductoFabricado, $idBoleta, $insumos)
     {
-        $stmtSalidaInsumo = $conexion->prepare("UPDATE tblsalidas SET id_boleta=:id_boleta, cantidad_salida=:cantidad, id_producto_fab=:id_producto_fab WHERE id=:id_producto");
+        $stmtSalidaInsumo = $conexion->prepare("UPDATE tblsalidas SET id_boleta=:id_boleta, cantidad_salida=:cantidad, retorno=:retorno, id_producto_fab=:id_producto_fab WHERE id=:id_producto");
         foreach ($insumos as $insumo) {
             $stmtSalidaInsumo->bindParam(':id_boleta', $idBoleta, PDO::PARAM_INT);
             $stmtSalidaInsumo->bindParam(':cantidad', $insumo['cantidad'], PDO::PARAM_STR);
+            $stmtSalidaInsumo->bindParam(':retorno', $insumo['retorno'], PDO::PARAM_STR);
             $stmtSalidaInsumo->bindParam(':id_producto', $insumo['codigo'], PDO::PARAM_INT);
             $stmtSalidaInsumo->bindParam(':id_producto_fab', $idProductoFabricado, PDO::PARAM_INT);
             $stmtSalidaInsumo->execute();

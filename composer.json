@@ -12,6 +12,7 @@
         "phpmailer/phpmailer": "^6.9",
         "vlucas/phpdotenv": "^5.6",
         "league/oauth2-google": "^4.0",
-        "google/apiclient": "^2.18"
+        "google/apiclient": "^2.18",
+        "setasign/fpdi-tcpdf": "^2.3"
     }
 }
