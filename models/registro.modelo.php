@@ -302,44 +302,21 @@ class ModeloRegistro
             foreach ($productos as $producto) {
                 $id_prod_fab = $producto['id'];
                 $cantidadFabricada = $producto['cantidad'];
-                // $retornoFabricado = $producto['retorno'];
+                $cantidadEntrada = $producto['entrada'];
                 $des = $producto['descripcion'];
                 $uni = $producto['unidad'];
                 $insumos = $producto['productos'];
-
-                // 🔎 Verificar stock de insumos
-                // foreach ($insumos as $insumo) {
-                //     $cantidadUtilizada = $insumo['cantidad'];
-                //     $id_producto_util = $insumo['id_producto'];
-
-                //     $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) as stock, descripcion FROM tblinventario WHERE id = :insumo");
-                //     $stmtStock->bindParam(':insumo', $id_producto_util, PDO::PARAM_INT);
-                //     $stmtStock->execute();
-                //     $response = $stmtStock->fetch(PDO::FETCH_ASSOC);
-
-                //     $stockActual = $response['stock'];
-                //     $descripPro = $response['descripcion'];
-
-                //     if ($stockActual < $cantidadUtilizada) {
-                //         throw new Exception("Stock insuficiente para el producto '$descripPro'. Necesario: $cantidadUtilizada, Disponible: $stockActual");
-                //     }
-                // }
-
                 foreach ($insumos as $insumo) {
                     $cantidadNueva = floatval($insumo['cantidad']);
                     $cantidadAnterior = floatval($insumo['cantidad_old'] ?? 0);
                     $id_producto_util = $insumo['id_producto'];
-
                     // 🔍 Consultar stock actual real
                     $stmtStock = $conexion->prepare("SELECT (stock - stock_mal) AS stock, descripcion  FROM tblinventario WHERE id = :insumo");
                     $stmtStock->bindParam(':insumo', $id_producto_util, PDO::PARAM_INT);
                     $stmtStock->execute();
                     $response = $stmtStock->fetch(PDO::FETCH_ASSOC);
-
                     $stockActual = floatval($response['stock']);
                     $descripPro = $response['descripcion'];
-
-                    // 📉 Calcular diferencia (solo si hay aumento en la cantidad usada)
                     $diferencia = $cantidadNueva - $cantidadAnterior;
 
                     if ($diferencia > 0 && $stockActual < $diferencia) {
@@ -349,12 +326,10 @@ class ModeloRegistro
                         );
                     }
                 }
-
                 // 🏭 Actualizar datos del producto fabricado
                 $sqlUpdateFab = $tras
                     ? "UPDATE tblinventario SET descripcion = :des, id_unidad = :uni, stock = :salida WHERE id = :id_prod_fab"
                     : "UPDATE tblinventario SET descripcion = :des, id_unidad = :uni WHERE id = :id_prod_fab";
-
                 $stmtUpdateFab = $conexion->prepare($sqlUpdateFab);
                 $stmtUpdateFab->bindParam(":id_prod_fab", $id_prod_fab, PDO::PARAM_INT);
                 $stmtUpdateFab->bindParam(":des", $des, PDO::PARAM_STR);
@@ -363,17 +338,16 @@ class ModeloRegistro
                     $stmtUpdateFab->bindParam(":salida", $cantidadFabricada, PDO::PARAM_STR);
                 }
                 $stmtUpdateFab->execute();
-
                 // 🧠 Determinar cómo actualizar tblsalidas según el estado de traslado
                 if ($tras && !$trasExistente) {
                     // Primera vez: trasladar retorno -> salida
                     $sqlSalida = "UPDATE tblsalidas 
-                                SET retorno = NULL, cantidad_salida = :cantidad,
+                                SET retorno = NULL, cantidad_salida = :cantidad
                                 WHERE id_producto = :id AND id_boleta = :id_boleta";
                 } elseif ($tras && $trasExistente) {
                     // Ya se trasladó antes: solo actualizar salida
                     $sqlSalida = "UPDATE tblsalidas 
-                                SET cantidad_salida = :cantidad 
+                                SET cantidad_salida = :cantidad, retorno = :entrada 
                                 WHERE id_producto = :id AND id_boleta = :id_boleta";
                 } else {
                     // Modo normal (sin traslado)
@@ -384,12 +358,14 @@ class ModeloRegistro
                 $stmtSalida = $conexion->prepare($sqlSalida);
                 $stmtSalida->bindParam(':id', $id_prod_fab, PDO::PARAM_INT);
                 $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_STR);
+                if($tras && $trasExistente){
+                    $stmtSalida->bindParam(':entrada', $cantidadEntrada, PDO::PARAM_STR);
+                }
                 $stmtSalida->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
                 $stmtSalida->execute();
                 // 🔗 Actualizar relación producto-insumo
                 self::relacionarProductoConInsumosUpdate($conexion, $id_prod_fab, $id_boleta, $insumos);
             }
-
             // 🖼️ Guardar imágenes si existen
             if (!empty($img)) {
                 self::guardarImagenesSalida($conexion, $id_boleta, $img);
