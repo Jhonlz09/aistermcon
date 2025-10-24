@@ -214,69 +214,6 @@ class ModeloRegistro
         }
     }
 
-    // static public function mdlRegistrarFabricacionEntrada($datos, $fecha_entrada, $id_boleta)
-    // {
-    //     try {
-    //         $conexion = Conexion::ConexionDB();
-    //         $conexion->beginTransaction();
-
-    //         $productos = json_decode($datos, true);
-    //         if (!$productos) {
-    //             throw new Exception("Los datos de productos son inválidos.");
-    //         }
-
-    //         foreach ($productos as $producto) {
-    //             $cantidadFabricada = $producto['cantidad'];
-    //             $id_salida = $producto['id'];
-    //             $insumos = $producto['productos'];
-
-    //             // Actualizar salida principal
-    //             $sqlSalida = "UPDATE tblsalidas SET retorno = :cantidad WHERE id = :id";
-    //             $stmtSalida = $conexion->prepare($sqlSalida);
-    //             $stmtSalida->bindParam(':id', $id_salida, PDO::PARAM_INT);
-    //             $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_STR);
-    //             $stmtSalida->execute();
-
-    //             // Actualizar insumos utilizados
-    //             foreach ($insumos as $insumo) {
-    //                 $codigoInsumo = $insumo['codigo'];
-    //                 $cantidadUtilizada = $insumo['cantidad'];
-
-    //                 $stmtStock = $conexion->prepare($sqlSalida); // Reutiliza la misma SQL
-    //                 $stmtStock->bindParam(':id', $codigoInsumo, PDO::PARAM_INT);
-    //                 $stmtStock->bindParam(':cantidad', $cantidadUtilizada, PDO::PARAM_STR);
-    //                 $stmtStock->execute();
-    //             }
-    //         }
-
-    //         // 🔄 Actualizar la fecha de retorno en tblboleta
-    //         $sqlBoleta = "UPDATE tblboleta SET fecha_retorno = :fecha_retorno WHERE id = :id_boleta";
-    //         $stmtBoleta = $conexion->prepare($sqlBoleta);
-    //         $stmtBoleta->bindParam(':fecha_retorno', $fecha_entrada);
-    //         $stmtBoleta->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
-    //         $stmtBoleta->execute();
-
-    //         $conexion->commit();
-    //         return array(
-    //             'status' => 'success',
-    //             'm' => 'La entrada de la fabricación se registró correctamente.'
-    //         );
-    //     } catch (PDOException $e) {
-    //         $conexion->rollBack();
-    //         return array(
-    //             'status' => 'danger',
-    //             'm' => 'Error al registrar la entrada de fabricación: ' . $e->getMessage()
-    //         );
-    //     } catch (Exception $e) {
-    //         $conexion->rollBack();
-    //         return array(
-    //             'status' => 'danger',
-    //             'm' => $e->getMessage()
-    //         );
-    //     }
-    // }
-
-
     static public function mdlActualizarDatosFabricacion($datos, $id_boleta, $orden, $nro_guia, $conductor, $despachado, $responsable, $fecha, $fecha_retorno, $motivo, $tras, $img)
     {
         try {
@@ -302,7 +239,10 @@ class ModeloRegistro
             foreach ($productos as $producto) {
                 $id_prod_fab = $producto['id'];
                 $cantidadFabricada = $producto['cantidad'];
-                $cantidadEntrada = $producto['entrada'];
+                $cantidadEntrada = isset($producto['retorno']) && $producto['retorno'] !== ''
+                    ? $producto['retorno']
+                    : null;
+
                 $des = $producto['descripcion'];
                 $uni = $producto['unidad'];
                 $insumos = $producto['productos'];
@@ -358,7 +298,7 @@ class ModeloRegistro
                 $stmtSalida = $conexion->prepare($sqlSalida);
                 $stmtSalida->bindParam(':id', $id_prod_fab, PDO::PARAM_INT);
                 $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_STR);
-                if($tras && $trasExistente){
+                if ($tras && $trasExistente) {
                     $stmtSalida->bindParam(':entrada', $cantidadEntrada, PDO::PARAM_STR);
                 }
                 $stmtSalida->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);

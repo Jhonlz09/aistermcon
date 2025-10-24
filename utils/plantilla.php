@@ -2208,10 +2208,9 @@
                                 cantidad: $(this.node()).find('.cantidad').val(),
                                 unidad: $(this.node()).find('.id_unidad').val(),
                                 descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
-                                retorno: $(this.node()).find('.retorno').val(),
+                                retorno: $(this.node()).find('.entrada').val(),
                                 productos: [],
                             };
-
                             // Obtener los datos originales de la tabla secundaria
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
