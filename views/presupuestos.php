@@ -322,10 +322,46 @@
                 orderable: false,
                 className: "text-center",
                 render: function(data, type, row, full, meta) {
-                    let clase = data === 'PENDIENTE' ? 'warning' : data === 'NO APROBADO' ? 'danger' : data === 'APROBADO' ? 'success' : 'secondary';
-                    let icon = data === 'PENDIENTE' ? 'fa-clock' : data === 'NO APROBADO' ? 'fa-file-xmark' : data === 'APROBADO' ? 'fa-file-check' : 'fa-circle-question';
-                    return `<span class='alert alert-default-${clase}'><i class='fas ${icon}'></i> ${data}</span>`;
+                    let clase = data === 'PENDIENTE' ? 'warning' :
+                        data === 'NO APROBADO' ? 'danger' :
+                        data === 'APROBADO' ? 'success' : 'secondary';
+
+                    let icon = data === 'PENDIENTE' ? 'clock' :
+                        data === 'NO APROBADO' ? 'file-xmark' :
+                        data === 'APROBADO' ? 'file-check' : 'circle-question';
+
+                    // Normaliza valores
+                    let fecha_ope = row.fecha_ope?.trim() || '';
+                    let fecha_fin = row.fecha_fin?.trim() || '';
+                    let fecha_fac = row.fecha_fac?.trim() || '';
+                    let fecha_gar = row.fecha_gar?.trim() || '';
+                    let nota = row.nota_ord?.trim() || '';
+
+                    // Construye solo los que tienen valor
+                    const tooltipParts = [];
+
+                    if (fecha_ope) tooltipParts.push(`Fecha de operación: ${fecha_ope}`);
+                    if (fecha_fin) tooltipParts.push(`Fecha de finalización: ${fecha_fin}`);
+                    if (fecha_fac) tooltipParts.push(`Fecha de facturación: ${fecha_fac}`);
+                    if (fecha_gar) tooltipParts.push(`Fecha de garantía: ${fecha_gar}`);
+                    if (nota) tooltipParts.push(`<strong>NOTA:</strong> ${nota}`);
+
+                    // Si no hay nada, muestra un mensaje simple
+                    const tooltipText = tooltipParts.length > 0 ?
+                        tooltipParts.join('<br>') :
+                        'Sin información disponible';
+
+                    return `
+        <span style="cursor:pointer"
+              data-toggle="tooltip"
+              title="${tooltipText}"
+              data-html="true"
+              class="alert alert-default-${clase}">
+            <i class="fas fa-${icon}"></i> ${data}
+        </span>
+    `;
                 }
+
             },
             {
                 targets: 7,
@@ -970,11 +1006,11 @@
             id.value = row["id"];
             desc.value = row["descripcion"];
             orden_nro.value = row["num_orden"];
-            precioConIva.value = parseFloat(row["precio_total"].replace(/[$,]/g, ''))  || '';
+            precioConIva.value = parseFloat(row["precio_total"].replace(/[$,]/g, '')) || '';
             // precioConIva.value = parseFloat((row["precio_total"] ?? "").replace(/[$,]/g, '')) || '';
             // precioSinIva.value = parseFloat((row["precio_iva"] ?? "").replace(/[$,]/g, '')) || '';
-            precioSinIva.value = parseFloat(row["precio_iva"].replace(/[$,]/g, ''))  || '';
-        
+            precioSinIva.value = parseFloat(row["precio_iva"].replace(/[$,]/g, '')) || '';
+
             setChange(cboClienteOrden, row["id_cliente"]);
             form.classList.remove('was-validated');
             nota.value = row["nota"];
@@ -1120,7 +1156,7 @@
                 id_cli = cboClienteOrden.value,
                 cli_name = cboClienteOrden.selectedIndex >= 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '',
                 fecha_act = fecha_new.value;
-                // console.log('cliente seleccionado:', cboClienteOrden.selectedIndex);
+            // console.log('cliente seleccionado:', cboClienteOrden.selectedIndex);
             id_e = id.value;
             let datos = new FormData();
             datos.append('id', id_e);
@@ -1177,7 +1213,7 @@
         //     });
         // }
 
-         function mostrarConfirmacionExistente(datos, cliente) {
+        function mostrarConfirmacionExistente(datos, cliente) {
             Swal.fire({
                 title: `Numero de orden ya existe para '${cliente.nombre}'`,
                 text: "¿Estás seguro que deseas continuar?",

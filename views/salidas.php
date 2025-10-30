@@ -161,7 +161,7 @@
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf"><i class="fas fa-file-pdf"></i></button>' +
                     '<button class="btn btn-row pt-0 pb-0 btn_pdf_img"><i class="fas fa-file-image"></i></button>' +
                     (editar ? '<button id="editS" class="btn btn-row pt-0 pb-0"><i class="fas fa-pen-to-square"></i></button>' : '') +
-                    (crear ? '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') +
+                    (!fabricacion ? '<button id="editR" class="btn btn-row pt-0 pb-0"><i class="fas fa-clipboard-list-check"></i></button>' : '') +
                     (eliminar ? '<button id="eliS" class="btn btn-row pt-0 pb-0"><i class="fas fa-trash-can"></i></button>' : '') +
                     '</div></div>';
                 return $('<tr/>')
@@ -186,7 +186,6 @@
                 targets: 3,
                 className: "text-center",
                 responsivePriority: 2,
-
             },
             {
                 targets: 4,

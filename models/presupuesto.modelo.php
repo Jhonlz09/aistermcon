@@ -15,9 +15,10 @@ class ModeloPresupuesto
             $consulta = "SELECT p.id, p.num_orden,c.nombre AS cliente,p.descripcion,  
                         p.precio_iva,p.precio_total,p.estado,p.pdf_pre,p.xls_pre,p.pdf_ord,
                         p.xls_ord,p.pdf_ae,p.doc_ae, p.pdf_oc, p.img_oc, TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
-                        p.nota, p.id_cliente, '' AS acciones
+                        p.nota, p.id_cliente, null AS acciones, TO_CHAR(o.fecha, 'DD/MM/YYYY') as fecha_ord, TO_CHAR(o.fecha_ope, 'DD/MM/YYYY') as fecha_ope, TO_CHAR(o.fecha_fin, 'DD/MM/YYYY') as fecha_fin, TO_CHAR(o.fecha_fac, 'DD/MM/YYYY') as fecha_fac, o.nota as nota_ord
                     FROM tblpresupuesto p
                     JOIN tblclientes c ON p.id_cliente = c.id
+                    LEFT JOIN tblorden o ON o.id = p.id
                     WHERE p.anulado = false
                     AND EXTRACT(YEAR FROM p.fecha) = :anio ";
             if ($estado !== 'null') {

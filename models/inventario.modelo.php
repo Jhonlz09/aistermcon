@@ -167,7 +167,6 @@ class ModeloInventario
             $sql .= ")";
             // Preparar la consulta
             $a = $conn->prepare($sql);
-
             // Asignar los valores a los parámetros
             $a->bindParam(":cod", $cod, PDO::PARAM_STR);
             $a->bindParam(":des", $des, PDO::PARAM_STR);
@@ -182,10 +181,8 @@ class ModeloInventario
             if ($img !== null) {
                 $a->bindParam(":img", $img, PDO::PARAM_STR);
             }
-
             // Ejecutar la consulta
             $a->execute();
-
             $id_producto = $conn->lastInsertId();
             $anio = date('Y');
             $sql_stock_ini = "INSERT INTO tblstock_inicial(id_producto, anio, stock_ini) VALUES (:id_producto, :anio, :stock_ini)";

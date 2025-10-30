@@ -1352,7 +1352,7 @@
                                         targets: 5,
                                         title: "ENTRADA",
                                         className: "text-center",
-                                        
+
                                     },
                                     {
                                         targets: 6,
@@ -1439,7 +1439,7 @@
                                             return false;
                                         }
                                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                                        console.log(item);
+                                        // console.log(item);
                                         let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                                         return $("<li>").append(
                                             `<div>${item.label} <strong class='large-text'>CANTIDAD: ${res}</strong></div>`
@@ -1526,7 +1526,7 @@
                                     },
                                     {
                                         title: "ENTRADA",
-                                        data: "retorno",
+                                        data: 'retorno',
                                         className: "text-center",
                                         render: function(data, type, row) {
                                             data = (data === '-') ? '' : data;
@@ -2110,9 +2110,15 @@
                                     let entrada = parseFloat($(this.node()).find('.entrada').val());
 
                                     if (cantidad < entrada) {
-                                        mostrarToast('danger', 'Error', 'fa-xmark',
-                                            'La cantidad utilizada no puede ser mayor a la de entrada para el producto "' +
-                                            secData[4] + '"');
+                                        mostrarToast(
+                                            "warning",
+                                            "Advertencia",
+                                            "fa-exclamation-triangle",
+                                            `En el producto "${filaPrincipal.descripcion}", la entrada del insumo "${secData['descripcion'] || secData['id']}" (${entrada}) supera la cantidad de (${cantidad}).`
+                                        );
+                                        // mostrarToast('danger', 'Error', 'fa-xmark',
+                                        //     'La cantidad utilizada no puede ser mayor a la de entrada para el producto "' +
+                                        //     secData[4] + '"');
                                         error = true; // marcar error
                                         return false; // salir del each interno
                                     }
@@ -2172,7 +2178,10 @@
                             }
                         });
                     } else if (selectedTab === '8') {
-                        let elementosAValidar = [fecha, fecha_retorno, nro_ordenFab, nro_guiaFab];
+                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
+                        if (isTrasFab.checked) {
+                            elementosAValidar.push(fecha_retorno);
+                        }
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -2195,48 +2204,122 @@
                         // let datosPrincipales = [];
                         let datosModificados = [];
                         // Recorre cada fila de la tabla principal (tblDetalleFab)
+                        // tblDetalleFab.rows().every(function() {
+                        //     let row = this;
+                        //     let tr = $(row.node());
+                        //     let rowData = row.data();
+                        //     let idUnico = rowData[0]; // Asumimos que el ID está en la primera columna
+                        //     let tablaSecundariaId = `#tbl${idUnico}`;
+                        //     console.log('tablaSecundariaId', tablaSecundariaId)
+                        //     let cantidad = $(this.node()).find('.entrada').val();
+                        //     let retorno =  $(this.node()).find('.entrada').val();
+                        //     let filaPrincipal = {
+                        //         id: idUnico,
+                        //         cantidad: $(this.node()).find('.cantidad').val(),
+                        //         unidad: $(this.node()).find('.id_unidad').val(),
+                        //         descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
+                        //         retorno: retorno,
+                        //         productos: [],
+                        //     };
+                        //     // Obtener los datos originales de la tabla secundaria
+                        //     if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
+                        //         let tablaSecundaria = $(tablaSecundariaId).DataTable();
+                        //         let datosOriginales = $(tablaSecundariaId).data('originalData'); // Datos originales de la tabla secundaria
+                        //         console.log('datos Originales', datosOriginales)
+                        //         tablaSecundaria.rows().every(function() {
+                        //             let secData = this.data();
+                        //             console.log('secData', secData);
+                        //             let id_prod = secData["id_producto"];
+                        //             let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val());
+                        //             let entrada_modificada = parseFloat($(this.node()).find('.cantidad_retorno').val());
+                        //             console.log('cantidadModificada', cantidadModificada)
+                        //             console.log('retorno_modificada', entrada_modificada)
+                        //             filaPrincipal.productos.push({
+                        //                 codigo: secData['id'],
+                        //                 cantidad_old: secData['cantidad_salida'],
+                        //                 entrada_old: secData['retorno'],
+                        //                 cantidad: cantidadModificada,
+                        //                 retorno: entrada_modificada,
+                        //                 id_producto: id_prod,
+                        //             });
+
+                        //         });
+                        //     }
+                        //     datosModificados.push(filaPrincipal);
+                        // });
+                        let error = true;
                         tblDetalleFab.rows().every(function() {
                             let row = this;
                             let tr = $(row.node());
                             let rowData = row.data();
-                            let idUnico = rowData[0]; // Asumimos que el ID está en la primera columna
+                            let idUnico = rowData[0];
                             let tablaSecundariaId = `#tbl${idUnico}`;
-                            console.log('tablaSecundariaId', tablaSecundariaId)
-                            // Crear el objeto principal para cada fila
+
+                            let cantidad = parseFloat($(this.node()).find('.cantidad').val()) || 0;
+                            let retorno = parseFloat($(this.node()).find('.entrada').val()) || 0;
+
+                            // 🔹 VALIDAR PRODUCTO PRINCIPAL
+                            if (retorno > cantidad) {
+                                mostrarToast(
+                                    "danger",
+                                    "Error",
+                                    "fa-circle-exclamation",
+                                    `La cantidad de entrada (${retorno}) no puede ser mayor a la de salida (${cantidad}) en el producto fabricado "${$(this.node()).find('.descripcion').val()}".`
+                                );
+                                error = false;
+                                return false; // Detiene el recorrido principal
+                            }
+
                             let filaPrincipal = {
                                 id: idUnico,
-                                cantidad: $(this.node()).find('.cantidad').val(),
+                                cantidad: cantidad,
                                 unidad: $(this.node()).find('.id_unidad').val(),
                                 descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
-                                retorno: $(this.node()).find('.entrada').val(),
+                                retorno: retorno,
                                 productos: [],
                             };
-                            // Obtener los datos originales de la tabla secundaria
+
+                            // 🔹 VALIDAR INSUMOS EN LA TABLA SECUNDARIA
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
-                                let datosOriginales = $(tablaSecundariaId).data('originalData'); // Datos originales de la tabla secundaria
-                                console.log('datos Originales', datosOriginales)
+
                                 tablaSecundaria.rows().every(function() {
                                     let secData = this.data();
-                                    console.log('secData', secData);
-                                    let id_prod = secData["id_producto"];
-                                    let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val());
-                                    let entrada_modificada = parseFloat($(this.node()).find('.cantidad_retorno').val());
-                                    console.log('cantidadModificada', cantidadModificada)
-                                    console.log('retorno_modificada', entrada_modificada)
+                                    let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val()) || 0;
+                                    let entradaModificada = parseFloat($(this.node()).find('.cantidad_retorno').val()) || 0;
+
+                                    // Validación de insumos
+                                    if (entradaModificada > cantidadModificada) {
+                                        mostrarToast(
+                                            "warning",
+                                            "Advertencia",
+                                            "fa-exclamation-triangle",
+                                            `En el producto "${filaPrincipal.descripcion}", la cantidad de entrada del insumo "${secData['descripcion'] || secData['id']}" (${entradaModificada}) supera la cantidad de (${cantidadModificada}).`
+                                        );
+                                        error = false;
+                                        return false; // Detiene el recorrido de la tabla secundaria
+                                    }
+
                                     filaPrincipal.productos.push({
                                         codigo: secData['id'],
                                         cantidad_old: secData['cantidad_salida'],
                                         entrada_old: secData['retorno'],
                                         cantidad: cantidadModificada,
-                                        retorno: entrada_modificada,
-                                        id_producto: id_prod,
+                                        retorno: entradaModificada,
+                                        id_producto: secData['id_producto'],
                                     });
-
                                 });
                             }
+
                             datosModificados.push(filaPrincipal);
                         });
+
+                        if (!error) {
+                            console.warn("Se detectaron errores de validación, no se puede continuar.");
+                            return;
+                        }
+
+
                         formData.append('datos', JSON.stringify(datosModificados));
                         formData.append('orden', id_orden_guia_fab);
                         formData.append('id_boleta', id_boleta_fab);
@@ -2576,7 +2659,7 @@
                                                         cantidad_salida: "1",
                                                         unidad: respuesta['nombre'], // Puedes cambiar el valor según lo necesites
                                                         descripcion: respuesta['descripcion'],
-                                                        entrada: "0",
+                                                        retorno: "",
                                                         id_producto: respuesta['id']
                                                     };
                                                     // let nuevaFila = ['', respuesta.id, '', '1', '', ''];
