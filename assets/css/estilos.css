@@ -568,6 +568,10 @@ a.dropdown-item[data-estado="PENDIENTE"]:active {
     background-color: var(--label-new);
 } */
 
+.form-group:has(#inputClienteContainer input:valid) #lblCO {
+    color: var(--label-new);
+}
+
 #radio-1:checked~.glider,
 #radio-fecha:checked~.glider {
     transform: translateX(200%);

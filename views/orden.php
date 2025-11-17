@@ -703,6 +703,10 @@
             orden_nro.value = row["num_orden"];
             fileInput.value = '';
             nombre.disabled = false;
+            select.forEach(function(s) {
+                s.classList.remove('select2-success');
+                s.classList.add('select2-warning');
+            });
             setChange(cboClienteOrden, row["id_cliente"]);
             //  let cli_name = cboClienteOrden.options[cboClienteOrden.selectedIndex].text;
             // console.log(cli_name);

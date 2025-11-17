@@ -109,18 +109,41 @@
                                         <div class="invalid-feedback mt-0">*Campo obligatorio.</div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
-                                    <div class="form-group mb-4">
-                                        <label id="lblCO" class="mb-0 combo"><i class="fas fa-user-tag"></i> Cliente</label>
-                                        <div class="row">
-                                            <div class="col">
-                                                <select id="cboClientesOrden" class="cbo modalB form-control select2 select2-success" data-dropdown-css-class="select2-dark" data-placeholder="SELECCIONE" required>
-                                                </select>
+                                <div class="col-md-9 form-group mb-4">
+                                    <!-- <div class="form-group mb-4"> -->
+                                    <label id="lblCO" class="mb-0 combo selected-bor">
+                                        <i class="fas fa-user-tag"></i> Cliente
+                                    </label>
+
+                                    <div class="d-flex align-items-center flex-wrap" style="gap: 0.5rem;">
+                                        <!-- SELECT2 -->
+                                        <div class="flex-grow-1" id="selectClienteContainer">
+                                            <select id="cboClientesOrden"
+                                                class="cbo modalB form-control select2 select2-success"
+                                                data-dropdown-css-class="select2-dark"
+                                                data-placeholder="SELECCIONE"
+                                                required>
+                                            </select>
+                                            <div class="invalid-feedback mt-0">*Campo obligatorio.</div>
+                                        </div>
+                                        <div class="flex-grow-1" id="inputClienteContainer" style="display:none;">
+                                            <div class="input-data mb-0" style="height:2.39rem;">
+                                                <input autocomplete="off" id="nuevoCliente" class="input-nuevo" type="text" required>
+                                                <div class="line underline"></div>
                                                 <div class="invalid-feedback mt-0">*Campo obligatorio.</div>
                                             </div>
                                         </div>
+
+                                        <!-- BOTÓN DE CAMBIO -->
+                                        <span id="toggleCliente"
+                                            class="new-span badge bg-gradient-dark d-flex justify-content-center align-items-center"
+                                            style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 4px; cursor: pointer;"
+                                            title="Nuevo Cliente">
+                                            <i class="fas fa-lg fa-input-text"></i>
+                                        </span>
                                     </div>
                                 </div>
+                                <!-- </div> -->
                             </div>
                             <div class="row">
                                 <div class="col-md-3 form-group mb-4" id="div_fecha_new">
@@ -140,14 +163,14 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="input-data mb-4">
-                                        <input autocomplete="off" id="precioSinIva" class="input-nuevo" type="text" required>
+                                        <input autocomplete="off" id="precioSinIva" class="input-nuevo" type="text" onpaste="validarPegado(this, event)" oninput="validarNumber(this,/[^0-9.]/g)" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fas fa-circle-dollar"></i> Precio <span style="font-size:60%;color: #666666ff;">(sin iva)</span></label>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="input-data mb-4">
-                                        <input autocomplete="off" id="precioConIva" class="input-nuevo" type="text" required>
+                                        <input autocomplete="off" id="precioConIva" class="input-nuevo" type="text" onpaste="validarPegado(this, event)" oninput="validarNumber(this,/[^0-9.]/g)" required>
                                         <div class="line underline"></div>
                                         <label class="label"><i class="fas fa-circle-dollar"></i> Precio <span style="font-size:60%;color: #666666ff;">(con iva)</span> </label>
                                     </div>
@@ -158,15 +181,7 @@
                                     <textarea style="font-size:1.2rem;border-bottom:2px solid var(--select-border-bottom);background-color:#d1d1d1" type="text" class="form-control" id="nota" placeholder="Observaciones..." spellcheck="false" data-ms-editor="true"></textarea>
                                 </div>
                             </div>
-                            <!-- <div class="row">
-                                <div class="col-md-12 mb-3">
-                                    <label class="combo" style="font-size: 1.15rem;"><i class="fa-solid fa-file-pdf"></i> Archivo</label>
-                                    <input type="file" name="fileOrden" id="fileOrden" class="form-control" accept=".pdf">
-                                    <div class="ten no-margin">*Debe selecionar un archivo .pdf</div>
-                                </div>
-                            </div> -->
                             <div class="row">
-
                                 <!-- Columna Presupuestos -->
                                 <div class="col-md-6 mb-2">
                                     <label class="combo" style="font-size:1.15rem;">
@@ -350,16 +365,8 @@
                     const tooltipText = tooltipParts.length > 0 ?
                         tooltipParts.join('<br>') :
                         'Sin información disponible';
-
-                    return `
-        <span style="cursor:pointer"
-              data-toggle="tooltip"
-              title="${tooltipText}"
-              data-html="true"
-              class="alert alert-default-${clase}">
-            <i class="fas fa-${icon}"></i> ${data}
-        </span>
-    `;
+                    return `<span style="cursor:pointer" data-toggle="tooltip" title="${tooltipText}"   data-html="true" class="alert alert-default-${clase}">
+                        <i class="fas fa-${icon}"></i> ${data}</span>`;
                 }
 
             },
@@ -377,7 +384,6 @@
                         if (file) {
                             return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=presupuestos' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
                         }
-
                         return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
                     };
 
@@ -516,8 +522,6 @@
                 cachedDiv.style.flexWrap = 'wrap';
                 cachedDiv.style.gap = '1rem';
                 cachedDiv.style.justifyContent = 'center';
-
-
                 archivos.forEach(file => {
                     const url = `/aistermcon/utils/show.php?file=${encodeURIComponent(file)}&route=orden_compra`;
 
@@ -853,6 +857,9 @@
             }
         });
 
+
+
+
         $('.select-filter').html('<div class="row" id="rowFilter" style="padding:.25rem .55rem .25rem;flex-wrap:nowrap"><div style="max-width:max-content" class="col-sm-3"><label style="padding-block:.5rem;white-space:nowrap" class="col-form-label" ><i class="fas fa-shuffle"></i> Estado:</label></div> <div class="col-sm-6"><select id="cboPreEstadoFilter" class="cbo form-control select2 select2-dark" data-dropdown-css-class="select2-dark" data-placeholder="TODO"><option value="null">TODO</option><option value="PENDIENTE">PENDIENTE</option><option value="NO APROBADO">NO APROBADO</option><option value="APROBADO">APROBADO</option> </select> </div></div>');
 
         function eliminarArchivo(file, carpeta = '') {
@@ -958,6 +965,32 @@
             estilosSelect2(this, 'lblCO')
         });
 
+        $('#toggleCliente').on('click', function() {
+            const $icon = $(this).find('i');
+            const isInputVisible = $('#inputClienteContainer').is(':visible');
+
+            if (isInputVisible) {
+                // Modo SELECT
+                $('#inputClienteContainer input').val('');
+                $('#inputClienteContainer').hide();
+                $('#selectClienteContainer').show();
+                $icon.removeClass('fa-list-dropdown').addClass('fa-input-text');
+
+                $(this).attr('title', 'Escribir Cliente');
+            } else {
+                // Modo INPUT
+                setChange(cboClienteOrden, 0);
+                let labelElement = $("#lblCO");
+                console.log(labelElement)
+                labelElement.removeClass("selected-bor");
+                $('#selectClienteContainer').hide();
+                $('#inputClienteContainer').show();
+                $('#inputClienteContainer input').trigger('focus');
+                $icon.removeClass('fa-input-text').addClass('fa-list-dropdown');
+                $(this).attr('title', 'Seleccionar Cliente');
+            }
+        });
+
         if (btnNuevo) {
             btnNuevo.addEventListener('click', () => {
                 accion = 1;
@@ -967,8 +1000,9 @@
                     s.classList.add('select2-success');
                 });
                 form.reset();
-                precioConIva.disabled = false
-                precioSinIva.disabled = false
+                precioConIva.disabled = false;
+                precioSinIva.disabled = false;
+                // nuevoCliente.disabled = false;
                 desc.disabled = false
                 form.classList.remove('was-validated');
                 setChange(cboClienteOrden, 0);
@@ -1003,14 +1037,15 @@
             precioSinIva.disabled = false;
             desc.disabled = false;
             cambiarModal(span, ' Editar Presupuesto', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modal, 'modal-change', 'modal-new')
+            select.forEach(function(s) {
+                s.classList.remove('select2-success');
+                s.classList.add('select2-warning');
+            });
             id.value = row["id"];
             desc.value = row["descripcion"];
             orden_nro.value = row["num_orden"];
             precioConIva.value = parseFloat(row["precio_total"].replace(/[$,]/g, '')) || '';
-            // precioConIva.value = parseFloat((row["precio_total"] ?? "").replace(/[$,]/g, '')) || '';
-            // precioSinIva.value = parseFloat((row["precio_iva"] ?? "").replace(/[$,]/g, '')) || '';
             precioSinIva.value = parseFloat(row["precio_iva"].replace(/[$,]/g, '')) || '';
-
             setChange(cboClienteOrden, row["id_cliente"]);
             form.classList.remove('was-validated');
             nota.value = row["nota"];
@@ -1082,7 +1117,6 @@
             });
         }
 
-        // Función auxiliar para añadir archivos simulados al Dropzone
         function agregarMockFile(drop, mockFile) {
             drop.emit('addedfile', mockFile);
             drop.emit('complete', mockFile);
@@ -1110,18 +1144,35 @@
 
         form.addEventListener("submit", function(e) {
             e.preventDefault();
-            let datos = obtenerDatosFormulario();
-            desc.disabled = desc.value === '';
-            precioConIva.disabled = precioConIva.value === '';
-            precioSinIva.disabled = precioSinIva.value === '';
+            // desc.disabled = desc.value === '';
+            // nuevoCliente.disabled = nuevoCliente.value === '';
+            // precioConIva.disabled = precioConIva.value === '';
+            // precioSinIva.disabled = precioSinIva.value === '';
+            let elementosAValidar = [orden_nro];
 
-            if (!this.checkValidity()) {
-                this.classList.add('was-validated');
-                desc.disabled = false;
-                precioConIva.disabled = false;
-                precioSinIva.disabled = false;
-                return;
+            if ($('#inputClienteContainer').is(':visible')) {
+                elementosAValidar.push(nuevoCliente)
+            } else {
+                elementosAValidar.push(cboClienteOrden)
             }
+            let isValid = true;
+            elementosAValidar.forEach(function(elemento) {
+                if (!elemento.checkValidity()) {
+                    isValid = false;
+                    form.classList.add('was-validated');
+                }
+            });
+            if (!isValid) return
+            // if (!this.checkValidity()) {
+            //     this.classList.add('was-validated');
+            //     desc.disabled = false;
+            //     precioConIva.disabled = false;
+            //     precioSinIva.disabled = false;
+            //     // nuevoCliente.disabled = false;
+            //     return;
+            // }
+            let datos = obtenerDatosFormulario();
+
             if (accion == 2) {
                 confirmarAccion(datos, 'presupuesto', tabla, modal, function(r) {
                     // cargarAutocompletado(function(items) {
@@ -1156,7 +1207,7 @@
                 id_cli = cboClienteOrden.value,
                 cli_name = cboClienteOrden.selectedIndex >= 0 ? cboClienteOrden.options[cboClienteOrden.selectedIndex].text : '',
                 fecha_act = fecha_new.value;
-            // console.log('cliente seleccionado:', cboClienteOrden.selectedIndex);
+            const isManual = $('#inputClienteContainer').is(':visible');
             id_e = id.value;
             let datos = new FormData();
             datos.append('id', id_e);
@@ -1166,8 +1217,16 @@
             datos.append('precio_con_iva', precioConIva.value === '' ? 0 : parseFloat(precioConIva.value).toFixed(2));
             datos.append('nota', nota.value.trim().toUpperCase());
             datos.append('presupuesto', ord);
-            datos.append('cliente', cli_name)
             datos.append('fecha', fecha_act);
+            if (isManual) {
+                datos.append('isManual', isManual);
+                datos.append('cliente_manual', nuevoCliente.value);
+                datos.append('cliente', nuevoCliente.value)
+            }else{
+                datos.append('id_cliente', id_cli);
+                datos.append('cliente', cli_name)
+            }
+
             drop_ord.getAcceptedFiles().forEach((file, index) => {
                 if (!file.isExisting) {
                     datos.append(`orden_files[${index}]`, file, file.name);

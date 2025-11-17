@@ -1384,7 +1384,7 @@
                                         return false;
                                     },
                                     select: function(event, ui) {
-                                        CargarProductos(ui.item.cod, null, $(tablaId).DataTable());
+                                        CargarProductos(ui.item.cod, null, $(tablaId).DataTable(), '', true);
                                         return false;
                                     }
                                 }).data("ui-autocomplete")._renderItem = function(ul, item) {
@@ -1435,7 +1435,7 @@
                                             return false;
                                         },
                                         select: function(event, ui) {
-                                            CargarProductos(ui.item.cod, null, $(tablaId).DataTable(), id_prod_fab);
+                                            CargarProductos(ui.item.cod, null, $(tablaId).DataTable(), id_prod_fab, true);
                                             return false;
                                         }
                                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
@@ -2483,7 +2483,7 @@
                     });
                 });
 
-                function CargarProductos(p = "", barras = false, tablaUnica = "", id_prod_fab = "") {
+                function CargarProductos(p = "", barras = false, tablaUnica = "", id_prod_fab = "", both = false) {
                     function manejarRespuesta(r, tblDetalle, tabla) {
                         tblDetalle.ajax.reload(null, false);
                         tabla.ajax.reload(null, false);
@@ -2512,40 +2512,60 @@
                         };
                     }
 
-                    function agregarFila(respuesta, tabla, ids = respuesta['id']) {
+                    function agregarFila(respuesta, tabla, ids = respuesta['id'], both = false) {
                         let nuevaFila = [
                             '',
                             ids,
                             `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
-                            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
-                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                            oninput="validarNumber(this,/[^0-9.]/g)" value="${respuesta['cantidad']}">`,
+            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+            oninput="validarNumber(this,/[^0-9.]/g)" value="${respuesta['cantidad']}">`,
                             respuesta['nombre']
                         ];
+
                         if (tabla === tblCompra) {
-                            nuevaFila.push('$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,5)" value="0">');
-                            nuevaFila.push('<span class="total">$0.00</span>', '<span class="iva">$0.00</span>', '<span class="precio_final">$0.00</span>');
+                            nuevaFila.push(
+                                '$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,5)" value="0">',
+                                '<span class="total">$0.00</span>',
+                                '<span class="iva">$0.00</span>',
+                                '<span class="precio_final">$0.00</span>'
+                            );
+                        }
+                        nuevaFila.push(
+                            respuesta['descripcion']);
+                        // input opcional
+                        let inputHTML = "";
+
+                        if (both) {
+                            inputHTML = `
+            <input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
+                class="form-control text-center d-inline entrada" inputmode="numeric" autocomplete="off" 
+                onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                oninput="validarNumber(this,/[^0-9.]/g)" value="">
+        `;
+                        }
+
+                        // 👉 Sólo agregar si existe
+                        if (inputHTML !== "") {
+                            nuevaFila.push(inputHTML);
                         }
 
                         nuevaFila.push(
-                            respuesta['descripcion'],
-                            `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
-                            class="form-control text-center d-inline entrada" inputmode="numeric" autocomplete="off" 
-                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                            oninput="validarNumber(this,/[^0-9.]/g)" value="">`,
                             `<center>
-                            <span class='btnEliminaRow text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
-                            data-bs-placement='top' title='Eliminar producto'> 
-                                <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
-                                </i> </span>
-                            </center>`
+            <span class='btnEliminaRow text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
+                data-bs-placement='top' title='Eliminar producto'> 
+                <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'></i>
+            </span>
+        </center>`
                         );
 
                         tabla.row.add(nuevaFila).node().id = "producto_" + respuesta['codigo'];
                         tabla.draw(false);
+
                         audio.onplay = function() {
                             $(inputauto).val("");
                         };
+
                         audio.onended = function() {
                             if (barras) {
                                 inputBarras.disabled = false;
@@ -2554,6 +2574,7 @@
                             $(inputBarras).val("");
                         };
                     }
+
 
                     if (selectedTab === '4') {
                         $.ajax({
@@ -2638,7 +2659,7 @@
                                     } else if (selectedTab === '3') {
                                         agregarFila(respuesta, tblIn)
                                     } else if (selectedTab === '7') {
-                                        agregarFila(respuesta, tablaUnica);
+                                        agregarFila(respuesta, tablaUnica, null, true);
                                     } else if (selectedTab === '8') {
                                         $.ajax({
                                             url: "controllers/fabricacion.controlador.php",
@@ -2749,7 +2770,6 @@
                                 processData: false,
                                 success: function(r) {
                                     let isSuccess = r.status === "success";
-
                                     mostrarToast(r.status,
                                         isSuccess ? "Completado" : "Error",
                                         isSuccess ? "fa-check" : "fa-xmark",

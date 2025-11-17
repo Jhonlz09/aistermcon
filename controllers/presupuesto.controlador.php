@@ -3,7 +3,7 @@ require_once "../models/presupuesto.modelo.php";
 
 class ControladorPresupuesto
 {
-    public $id, $descrip, $id_cliente, $estado, $presupuesto, $anio, $cliente, $fecha, $precio_iva, $precio_total, $nota, $ext, $ruta, $carpeta, $tipo;
+    public $id, $descrip, $id_cliente, $estado, $presupuesto, $anio, $cliente, $fecha, $precio_iva, $precio_total, $nota, $ext, $ruta, $carpeta, $tipo, $isManual, $cliente_manual;
 
     public function listarPresupuesto()
     {
@@ -60,7 +60,6 @@ class ControladorPresupuesto
         $data = ModeloPresupuesto::mdlAgregarPresupuesto(
             $this->descrip,
             $this->id_cliente,
-            $this->cliente,
             $this->presupuesto,
             $pdf_pre,
             $pdf_ord,
@@ -73,128 +72,13 @@ class ControladorPresupuesto
             $this->fecha,
             $this->precio_iva,
             $this->precio_total,
-            $this->nota
+            $this->nota,
+            $this->isManual,
+            $this->cliente_manual
         );
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-
-    // public function editarPresupuesto()
-    // {
-    //     $existingPdf = ModeloPresupuesto::mdlIsPdfPresupuesto($this->id);
-
-    //     if (isset($_FILES['filePresupuesto']) && $_FILES['filePresupuesto']['type'] === 'application/pdf') {
-    //         // $year = date("Y", strtotime($existingPdf['fecha_creacion'])); // Mantener el año de la creación
-    //         list($year, $oldFileName) = explode('/', $existingPdf);
-    //         $uploadDir = '/var/www/uploads/';
-    //         $fileName = basename($_FILES['filePresupuesto']['name']);
-    //         $filePath = $uploadDir . $year . '/' . $fileName;
-    //         $fullNameFinal = $this->presupuesto . '   ' . $this->cliente;
-    //         // Generar un descrip único si el archivo ya existe
-    //         if (file_exists($uploadDir . $existingPdf)) {
-    //             unlink($uploadDir . $existingPdf);
-    //         }
-    //         $filePath = $this->generateUniqueFilePath($filePath, $fullNameFinal);
-    //         $savePath = $uploadDir . $year . '/' . $filePath;
-    //         $finalPath = $year . '/' . $filePath;
-
-    //         if (move_uploaded_file($_FILES['filePresupuesto']['tmp_name'], $savePath)) {
-    //         } else {
-    //             echo json_encode(['status' => 'danger', 'm' => 'Error al subir el archivo. ' . $savePath], JSON_UNESCAPED_UNICODE);
-    //             return;
-    //         }
-    //     } else {
-    //         // Mantener la ruta del archivo actual si no se ha subido uno nuevo
-    //         $finalPath = $existingPdf;
-    //     }
-
-    //     $data = ModeloPresupuesto::mdlEditarPresupuesto($this->id, $this->descrip, $this->id_cliente, $this->presupuesto, $finalPath);
-    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    // }
-
-    // public function editarPresupuesto()
-    // {
-    //     $year = date("Y", strtotime($this->fecha));
-    //     $uploadDirPres = "/var/www/presupuestos/$year/";
-    //     $uploadDirOrd = "/var/www/ordenes/$year/";
-    //     $uploadDirActs = "/var/www/actas_entrega/$year/";
-    //     $uploadDirOrdCom = "/var/www/orden_compra/$year/";
-
-    //     $id = $_POST['id'];
-
-    //     $pdf_pre = $xls_pre = $pdf_ord = $xls_ord = $doc_ae = $pdf_ae = null;
-    //     $pdf_oc_arr = [];
-    //     $img_oc_arr = [];
-
-    //     if (isset($_FILES['presupuesto_files'])) {
-    //         $files = $_FILES['presupuesto_files'];
-    //         $baseName = 'PPT ' . $this->presupuesto . '   ' . $this->cliente;
-    //         $pdf_pre = self::procesarArchivosSimples($files, $uploadDirPres, $baseName, $year, ['pdf', 'xls', 'xlsx']);
-    //     }
-
-    //     if (isset($_FILES['orden_files'])) {
-    //         $files = $_FILES['orden_files'];
-    //         $baseName = 'OT ' . $this->presupuesto . '   ' . $this->cliente;
-    //         $pdf_ord = self::procesarArchivosSimples($files, $uploadDirOrd, $baseName, $year, ['pdf', 'xls', 'xlsx']);
-    //     }
-
-    //     if (isset($_FILES['actas_files'])) {
-    //         $files = $_FILES['actas_files'];
-    //         $baseName = 'AE ' . $this->presupuesto . '   ' . $this->cliente;
-    //         $pdf_ae = self::procesarArchivosSimples($files, $uploadDirActs, $baseName, $year, ['pdf', 'doc', 'docx']);
-    //     }
-
-    //     // 📌 2️⃣ Procesar archivos de orden_compra para ARRAY_APPEND
-    //     if (isset($_FILES['orden_compra_files'])) {
-    //         $files = $_FILES['orden_compra_files'];
-    //         $baseName = $this->presupuesto . '   ' . $this->cliente;
-
-    //         if (is_array($files['name'])) {
-    //             for ($i = 0; $i < count($files['name']); $i++) {
-    //                 $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
-    //                 $filePath = $uploadDirOrdCom . $baseName . '.' . $ext;
-    //                 $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
-    //                 $dest = $uploadDirOrdCom . $uniqueFileName;
-    //                 if (move_uploaded_file($files['tmp_name'][$i], $dest)) {
-    //                     if ($ext === 'pdf') $pdf_oc_arr[] = "$year/$uniqueFileName";
-    //                     elseif (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) $img_oc_arr[] = "$year/$uniqueFileName";
-    //                 }
-    //             }
-    //         } else {
-    //             $ext = strtolower(pathinfo($files['name'], PATHINFO_EXTENSION));
-    //             $filePath = $uploadDirOrdCom . $baseName . '.' . $ext;
-    //             $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
-    //             $dest = $uploadDirOrdCom . $uniqueFileName;
-    //             if (move_uploaded_file($files['tmp_name'], $dest)) {
-    //                 if ($ext === 'pdf') $pdf_oc_arr[] = "$year/$uniqueFileName";
-    //                 elseif (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) $img_oc_arr[] = "$year/$uniqueFileName";
-    //             }
-    //         }
-    //     }
-
-    //     // 📌 3️⃣ Llamar al modelo para actualizar
-    //     $data = ModeloPresupuesto::mdlEditarPresupuesto(
-    //         $id,
-    //         $this->descrip,
-    //         $this->id_cliente,
-    //         $this->cliente,
-    //         $this->presupuesto,
-    //         $pdf_pre,
-    //         $pdf_ord,
-    //         $xls_pre,
-    //         $xls_ord,
-    //         $doc_ae,
-    //         $pdf_ae,
-    //         $pdf_oc_arr,
-    //         $img_oc_arr,
-    //         $this->fecha,
-    //         $this->precio_iva,
-    //         $this->precio_total,
-    //         $this->nota
-    //     );
-
-    //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    // }
 
     public function editarPresupuesto()
     {
@@ -395,6 +279,8 @@ if (!isset($_POST["accion"])) {
         $data->descrip = $_POST["des"];
         $data->presupuesto = $_POST["presupuesto"];
         $data->id_cliente = $_POST["id_cliente"];
+        $data->isManual = $_POST["isManual"] ?? false;
+        $data->cliente_manual = $_POST["cliente_manual"] ?? '';
         $data->cliente = $_POST["cliente"];
         $data->fecha = $_POST["fecha"];
         $data->precio_iva = $_POST["precio_sin_iva"];
