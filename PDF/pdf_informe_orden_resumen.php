@@ -45,13 +45,14 @@ class PDF extends FPDF
     {
         $this->SetFont('Arial', '', 11);
         $this->SetTextColor(10, 0, 0);
-
+        $this->SetY(0);
         $this->Cell(376, 25, '' . $this->PageNo() . ' / {nb}', 0, 0, 'C');
         if ($this->encabezado) {
             global $info_header;
             $this->SetFont('Arial', '', 10);
             $this->SetXY(15, 13);
             $this->MultiCell(0, 0, iconv('UTF-8', 'windows-1252', $info_header), 0, 'L', 0);
+            // $this->Ln(5);
         }
     }
 
