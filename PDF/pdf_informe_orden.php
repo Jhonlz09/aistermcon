@@ -333,6 +333,20 @@ if ($datos_guias == null) {
                 iconv('UTF-8', 'windows-1252', $entrada),
                 iconv('UTF-8', 'windows-1252', $util)
             ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
+            // }
+            // if ($fab_pro == true) {
+            //     $data_fab = ModeloInventario::mdlListarProductoFab($id_producto);
+            //     foreach ($data_fab as $fab) {
+            //         $pdf->Row(array(
+            //             iconv('UTF-8', 'windows-1252', $fab["codigo"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["descripcion"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["unidad"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["cantidad_salida"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["retorno"]),
+            //             iconv('UTF-8', 'windows-1252', $fab["utilizado"])
+            //         ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
+            //     }
+            // }
         }
         $pdf->Ln();
     }

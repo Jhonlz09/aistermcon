@@ -269,6 +269,7 @@ if ($datos_guias == null) {
     $pdf->Row($header_resumen, array(12, 12, 12, 12, 12, 12), 'B', 5, [true, true, true, true, true, true]);
     $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden, null, true);
     foreach ($data_resumen as $fill) {
+        $pdf->SetStartY(20);
         $pdf->SetFont('Arial', '', 10);
         $salida = $fill["cantidad_salida"];
         $entrada = $fill["retorno"];
