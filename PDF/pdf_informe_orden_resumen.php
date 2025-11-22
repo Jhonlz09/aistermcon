@@ -20,9 +20,9 @@ $id_orden = $_POST['id_orden'] ?? $_GET['id_orden'] ?? null;
 if (!$id_orden) {
     die("Error: ID de orden no recibido.");
 }
-$info_error = 'NRO. DE ORDEN';
-$datos_fecha = ModeloInforme::mdlInformeDetalleOrden($id_orden);
-$datos_guias = ModeloInforme::mdlInformeFechaOrden($id_orden, false);
+    $info_error = 'NRO. DE ORDEN';
+    $datos_fecha = ModeloInforme::mdlInformeDetalleOrden($id_orden);
+    $datos_guias = ModeloInforme::mdlInformeFechaOrden($id_orden, false);
 if ($datos_fecha != null) {
     $cliente = $datos_fecha[0]['cliente'];
     $orden = $datos_fecha[0]['orden_nro'];
@@ -242,13 +242,13 @@ if ($datos_guias == null) {
     $pdf->Ln();
     $pdf->SetFont('Arial', 'B', 12);
     /************************************************
-    CELDA ELABORADO POR
+        CELDA ELABORADO POR
      *************************************************/
     $pdf->SetXY(20, 210);
     $pdf->MultiCell(86, 10, iconv('UTF-8', 'windows-1252', 'Elaborado por:' . "\n\n" . ' ' . "\n" . ' '), 1, 'L', 0);
     $pdf->SetXY(20, 210);
     /************************************************
-    CELDA APROBADO POR
+        CELDA APROBADO POR
      *************************************************/
     $pdf->SetXY(106, 210);
     $pdf->MultiCell(86, 10, iconv('UTF-8', 'windows-1252', 'Aprobado por:' . "\n\n" . ' ' . "\n" . ' '), 1, 'L', 0);
@@ -273,7 +273,7 @@ if ($datos_guias == null) {
         $salida = $fill["cantidad_salida"];
         $entrada = $fill["retorno"];
         $util = $fill["utilizado"];
-        $fab_pro = $fill['fabricado']; 
+        $fab_pro = $fill['fabricado'];
         $id_producto = $fill['id_producto'];
         $pdf->Row(array(
             iconv('UTF-8', 'windows-1252', $fill["codigo"]),

@@ -1187,69 +1187,6 @@
                     },
                 });
 
-                // tblDetalleFabEntrada = $('#tblDetalleFabEntrada').DataTable({
-                //     "dom": 'pt',
-                //     "lengthChange": false,
-                //     "ordering": false,
-                //     "autoWidth": false,
-                //     "paging": false,
-                //     "ajax": {
-                //         "url": "controllers/salidas.controlador.php",
-                //         "type": "POST",
-                //         dataSrc: "",
-                //         "datatype": 'json',
-                //         "data": function(d) {
-                //             d.accion = 10;
-                //             d.boleta = id_boleta_fab
-                //         }
-                //     },
-                //     columnDefs: [{
-                //             targets: 0,
-                //             data: null,
-                //             className: 'dt-control',
-                //             orderable: false,
-                //             defaultContent: '',
-                //             render: function(data, type, row, meta) {
-                //                 if (type === 'display') {
-                //                     return meta.row + 1;
-                //                 }
-                //                 return meta.row;
-                //             }
-                //         },
-                //         {
-                //             targets: 1,
-                //             data: 'descripcion',
-                //         },
-                //         {
-                //             targets: 2,
-                //             className: "text-center ",
-                //             data: 'unidad',
-                //         },
-                //         {
-                //             targets: 3,
-                //             className: "text-center ",
-                //             data: 'salidas',
-                //         },
-                //         {
-                //             targets: 4,
-                //             data: 'retorno',
-                //             className: "text-center ",
-                //             render: function(data, type, row) {
-                //                 // Definir el valor del input
-                //                 let value = (data === null) ? '' : row.retorno;
-                //                 // Definir el HTML del input
-                //                 let inputHTML = '<input value="' + value + '" type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline retorno" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" >';
-                //                 // Condicional para id_perfil_sistema
-                //                 if (isEntrada || isSuperAdmin) {
-                //                     return inputHTML;
-                //                 } else {
-                //                     return row.isentrada ? row.retorno : inputHTML;
-                //                 }
-                //             }
-                //         },
-                //     ],
-                // });
-
                 addProFab.addEventListener('click', function() {
                     agregarFilaFab();
                 });
@@ -1351,8 +1288,7 @@
                                     {
                                         targets: 5,
                                         title: "ENTRADA",
-                                        className: "text-center",
-
+                                        className: "text-center"
                                     },
                                     {
                                         targets: 6,
@@ -2106,6 +2042,7 @@
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
                                 tablaSecundaria.rows().every(function() {
                                     let secData = this.data();
+
                                     let cantidad = parseFloat($(this.node()).find('.cantidad').val());
                                     let entrada = parseFloat($(this.node()).find('.entrada').val());
 
@@ -2122,6 +2059,8 @@
                                         error = true; // marcar error
                                         return false; // salir del each interno
                                     }
+                                    console.log(secData)
+                                    console.log(secData[1])
                                     filaPrincipal.productos.push({
                                         codigo: secData[1],
                                         cantidad: cantidad,
@@ -2512,7 +2451,7 @@
                         };
                     }
 
-                    function agregarFila(respuesta, tabla, ids = respuesta['id'], both = false) {
+                    function agregarFila(respuesta, tabla, both = false, ids = respuesta['id'], ) {
                         let nuevaFila = [
                             '',
                             ids,
@@ -2659,7 +2598,8 @@
                                     } else if (selectedTab === '3') {
                                         agregarFila(respuesta, tblIn)
                                     } else if (selectedTab === '7') {
-                                        agregarFila(respuesta, tablaUnica, null, true);
+                                        console.log('respuetsa del server',respuesta)
+                                        agregarFila(respuesta, tablaUnica, true);
                                     } else if (selectedTab === '8') {
                                         $.ajax({
                                             url: "controllers/fabricacion.controlador.php",
@@ -2678,12 +2618,11 @@
                                                         id: res.id,
                                                         codigo: respuesta['codigo'],
                                                         cantidad_salida: "1",
-                                                        unidad: respuesta['nombre'], // Puedes cambiar el valor según lo necesites
+                                                        unidad: respuesta['nombre'],
                                                         descripcion: respuesta['descripcion'],
                                                         retorno: "",
                                                         id_producto: respuesta['id']
                                                     };
-                                                    // let nuevaFila = ['', respuesta.id, '', '1', '', ''];
                                                     tablaUnica.row.add(nuevaFila).node().id = "producto_" + respuesta['codigo'];
                                                     tablaUnica.draw(false);
 
@@ -2748,13 +2687,11 @@
                                 let row = table.row(index);
                                 let data = row.data();
                                 let id = data[producto];
-
                                 let valores = clases.map(clase => {
                                     let inputElement = row.node().querySelector('.' + clase);
                                     // Si inputElement es null, retornar data[5]
                                     return inputElement ? inputElement.value : data[5];
                                 });
-
                                 arr.push(id + "," + valores.join(","));
                                 // Agrega al FormData directamente en este ciclo si es necesario
                                 formData.append('arr[]', arr[index]);
