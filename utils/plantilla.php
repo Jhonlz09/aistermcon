@@ -186,7 +186,7 @@
             <!-- Content Wrapper.-->
             <div class='content-wrapper'>
                 <?php
-                include_once 'views/' . $_SESSION['s_usuario']->vista; ?>
+                include_once 'views/inicio.php'  ?>
             </div>
 
             <?php
@@ -220,8 +220,8 @@
                 first_control = body.querySelector('#first_control'),
                 second_control = document.querySelector('#second_control'),
                 btnSide = document.getElementById('btnSide'),
-                setA = body.querySelectorAll('.setA'),
-                setB = body.querySelectorAll('.setB'),
+                // setA = body.querySelectorAll('.setA'),
+                // setB = body.querySelectorAll('.setB'),
                 inputauto = body.querySelector('#codProducto'),
                 inputBarras = body.querySelector('#codBarras');
 
@@ -321,64 +321,7 @@
             // Verificar el estado de la sesión cada 5 minutos (300000 milisegundos)
             checkSessionInterval = setInterval(checkSession, 300000);
 
-            setA.forEach((e) => {
-                e.addEventListener('click', function() {
-                    // Verificar si el elemento clickeado es desplegable
-                    const isDropdown = this.nextElementSibling && this.nextElementSibling.classList.contains('nav-treeview');
-                    // Si es desplegable, no hacer nada
-                    if (isDropdown) {
-                        return;
-                    }
-                    // Remover la clase 'active' de todos los elementos setA
-                    setA.forEach((a) => a.classList.remove('active'));
-                    // Agregar la clase 'active' al elemento clickeado
-                    this.classList.add('active');
-                    // Si no es desplegable, remover la clase 'active' de todos los elementos setB
-                    if (!isDropdown) {
-                        const setB = document.querySelectorAll('.setB');
-                        setB.forEach((b) => b.classList.remove('active'));
-                    }
-
-                    if (body.classList.contains('control-sidebar-slide-open')) {
-                        control.forEach((e) => {
-                            if (e.classList.contains('active')) {
-                                e.click();
-                            }
-                        })
-                    }
-                });
-            });
-
-            setB.forEach((e) => {
-                e.addEventListener('click', function() {
-                    // Remover la clase 'active' de todos los elementos setB
-                    setB.forEach((b) => b.classList.remove('active'));
-                    // Agregar la clase 'active' al elemento clickeado
-                    this.classList.add('active');
-
-                    const parentSetA = this.closest('.sub').querySelector('.setA');
-                    // Remover la clase 'active' de todos los elementos setA que no contienen al setB clickeado
-                    document.querySelectorAll('.setA').forEach((setA) => {
-                        if (setA !== parentSetA) {
-                            setA.classList.remove('active');
-                        }
-                    });
-
-                    parentSetA.classList.add('active');
-
-                    if (body.classList.contains('control-sidebar-slide-open')) {
-                        control.forEach((e) => {
-                            // e.style.display = 'none'
-                            if (e.classList.contains('active')) {
-                                e.click();
-                            }
-                        })
-
-
-                    }
-
-                });
-            });
+            
 
             function cargarContenido(contenedor, contenido, id = '') {
                 let tbl = 'tbl' + id;
@@ -2476,12 +2419,8 @@
                         let inputHTML = "";
 
                         if (both) {
-                            inputHTML = `
-            <input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
-                class="form-control text-center d-inline entrada" inputmode="numeric" autocomplete="off" 
-                onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                oninput="validarNumber(this,/[^0-9.]/g)" value="">
-        `;
+                            inputHTML = `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
+                class="form-control text-center d-inline entrada" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="">`;
                         }
 
                         // 👉 Sólo agregar si existe
@@ -2598,7 +2537,7 @@
                                     } else if (selectedTab === '3') {
                                         agregarFila(respuesta, tblIn)
                                     } else if (selectedTab === '7') {
-                                        console.log('respuetsa del server',respuesta)
+                                        console.log('respuetsa del server', respuesta)
                                         agregarFila(respuesta, tablaUnica, true);
                                     } else if (selectedTab === '8') {
                                         $.ajax({

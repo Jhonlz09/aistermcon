@@ -1128,9 +1128,11 @@
             const row = obtenerFila(this, tabla);
             const id = row["id"];
             const estado = $(this).data('estado');
+            const id_cliente =  row["id_cliente"];
             let data = new FormData();
             data.append('id', id);
             data.append('estado', estado);
+            // data.append('id_cliente', id_cliente)
             data.append('accion', 5);
             confirmarAccion(data, 'presupuesto', tabla, modal, function(r) {
                 cargarAutocompletado(function(items) {
@@ -1220,7 +1222,7 @@
             datos.append('fecha', fecha_act);
             if (isManual) {
                 datos.append('isManual', isManual);
-                datos.append('cliente_manual', nuevoCliente.value);
+                datos.append('cliente_manual', nuevoCliente.value.toUpperCase());
                 datos.append('cliente', nuevoCliente.value)
             }else{
                 datos.append('id_cliente', id_cli);

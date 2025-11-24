@@ -233,8 +233,7 @@
                 visible: false,
                 render: function(data, type, row, meta) {
                     // Dividir los correos por comas
-                    var emails = data.split(',');
-
+                    let emails = data.split(',');
                     // Crear enlaces de correo electrónico
                     var emailLinks = emails.map(function(email) {
                         return '<a href="mailto:' + email.trim() + '" class="text-info">' + email.trim() + '</a>';
@@ -251,7 +250,7 @@
                 visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
                     return (
-                        "<center style='white-space: nowrap;'>" +
+                        "<center style='white-space:nowrap'>" +
                         (editar ?
                             " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
@@ -372,9 +371,6 @@
             }
         ]
     }
-
-
-
 
     $(document).ready(function() {
         if (!$.fn.DataTable.isDataTable('#tblClientes')) {
@@ -539,5 +535,6 @@
             })
 
         });
-    })
+    });
+
 </script>

@@ -227,7 +227,7 @@ class ControladorPresupuesto
 
     public function cambiarEstadoPresupuesto()
     {
-        $data = ModeloPresupuesto::mdlCambiarEstado($this->id, $this->estado);
+        $data = ModeloPresupuesto::mdlCambiarEstado($this->id, $this->estado, );
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -312,6 +312,7 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
         $data->estado = $_POST["estado"];
+        // $data->id_cliente = $_POST["id_cliente"];
         $data->cambiarEstadoPresupuesto();
     } else if ($_POST["accion"] == 6) {
         $data = new ControladorPresupuesto();

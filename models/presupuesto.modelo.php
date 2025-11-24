@@ -58,77 +58,113 @@ class ModeloPresupuesto
         $cliente_manual
     ) {
         try {
+
             $conexion = Conexion::ConexionDB();
+
             // --------------------------------------------------
-            // 1️⃣ SI ES MANUAL, INTENTAMOS INSERTAR EL CLIENTE
+            // 1️⃣ INSERTAR CLIENTE MANUAL (si aplica)
             // --------------------------------------------------
             if ($isManual) {
-                try {
-                    $q = $conexion->prepare(
-                        "INSERT INTO tblclientes(nombre, id_tipo)
-                        VALUES(:cliente_manual, 1)"
-                    );
-                    $q->bindParam(":cliente_manual", $cliente_manual, PDO::PARAM_STR);
-                    $q->execute();
-                    // Si se registra, usar ID recién insertado
-                    $id_cliente = $conexion->lastInsertId();
-                } catch (PDOException $e) {
-                    // Error UNIQUE (cliente ya existe)
-                    if ($e->getCode() == '23505') {
-                        // Buscar su ID
-                        $q = $conexion->prepare(
-                            "SELECT id FROM tblclientes WHERE nombre = :cliente_manual"
-                        );
-                        $q->bindParam(":cliente_manual", $cliente_manual, PDO::PARAM_STR);
-                        $q->execute();
-                        $row = $q->fetch(PDO::FETCH_ASSOC);
+                // Normalizar nombre (quita espacios al inicio/fin)
+                $cliente_manual_trim = trim($cliente_manual);
 
-                        if ($row) {
-                            $id_cliente = $row['id'];
-                        } else {
-                        return [
-                            'status' => 'danger',
-                            'm' => 'Error inesperado: el cliente existe pero no se pudo obtener su ID.'];
-                        }
+                try {
+                    // Iniciamos transacción para seguridad en concurrencia
+                    $conexion->beginTransaction();
+
+                    // 1) Intentar buscar previamente (búsqueda exacta; si quieres ignorar mayúsculas usar lower(nombre)=lower(:nm))
+                    $sel = $conexion->prepare("SELECT id FROM tblclientes WHERE nombre = :cliente_manual LIMIT 1");
+                    $sel->bindParam(":cliente_manual", $cliente_manual_trim, PDO::PARAM_STR);
+                    $sel->execute();
+                    $row = $sel->fetch(PDO::FETCH_ASSOC);
+
+                    if ($row && isset($row['id'])) {
+                        // Ya existe: tomar su id
+                        $id_cliente = $row['id'];
                     } else {
-                        return [
-                            'status' => 'danger',
-                            'm' => 'Error al registrar cliente manual: ' . $e->getMessage()];
+                        // No existe: insertar usando ON CONFLICT para evitar excepciones por condición de carrera
+                        $ins = $conexion->prepare(
+                            "INSERT INTO tblclientes(nombre, id_tipo, estado, correo)
+                 VALUES(:cliente_manual, 1, false, :correo)
+                 ON CONFLICT (nombre) DO NOTHING
+                 RETURNING id"
+                        );
+                        $correo_placeholder = 'POR AÑADIR';
+                        $ins->bindParam(":cliente_manual", $cliente_manual_trim, PDO::PARAM_STR);
+                        $ins->bindParam(":correo", $correo_placeholder, PDO::PARAM_STR);
+                        $ins->execute();
+
+                        $insertRow = $ins->fetch(PDO::FETCH_ASSOC);
+
+                        if ($insertRow && isset($insertRow['id'])) {
+                            // Insert exitoso y RETURNING id
+                            $id_cliente = $insertRow['id'];
+                        } else {
+                            // Hubo conflicto (otro proceso insertó) — obtener id con SELECT final
+                            $sel2 = $conexion->prepare("SELECT id FROM tblclientes WHERE nombre = :cliente_manual LIMIT 1");
+                            $sel2->bindParam(":cliente_manual", $cliente_manual_trim, PDO::PARAM_STR);
+                            $sel2->execute();
+                            $row2 = $sel2->fetch(PDO::FETCH_ASSOC);
+
+                            if ($row2 && isset($row2['id'])) {
+                                $id_cliente = $row2['id'];
+                            } else {
+                                // Caso raro: no se puede obtener id
+                                $conexion->rollBack();
+                                return [
+                                    'status' => 'danger',
+                                    'm' => 'Error: no se pudo obtener el id del cliente después del intento de inserción.'
+                                ];
+                            }
+                        }
                     }
+
+                    // Commit si todo OK
+                    $conexion->commit();
+                } catch (PDOException $e) {
+                    // Rollback ante cualquier fallo
+                    if ($conexion->inTransaction()) {
+                        $conexion->rollBack();
+                    }
+                    return [
+                        'status' => 'danger',
+                        'm' => 'Error al procesar cliente manual: ' . $e->getMessage()
+                    ];
                 }
             }
 
-            // --------------------------------------------------
-            // 2️⃣ INSERTAR PRESUPUESTO FINAL
-            // --------------------------------------------------
 
-            $a = $conexion->prepare(
-                "INSERT INTO tblpresupuesto(
+            // --------------------------------------------------
+            // 2️⃣ INSERTAR PRESUPUESTO
+            // --------------------------------------------------
+            $a = $conexion->prepare("
+            INSERT INTO tblpresupuesto(
                 num_orden, descripcion, id_cliente, precio_iva, precio_total,
-                pdf_pre, pdf_ord, xls_pre, xls_ord, pdf_ae, doc_ae, pdf_oc, img_oc,
-                fecha, nota
-            ) VALUES (
+                pdf_pre, pdf_ord, xls_pre, xls_ord, pdf_ae, doc_ae, pdf_oc,
+                img_oc, fecha, nota
+            )
+            VALUES (
                 :num_orden, :descripcion, :id_cliente, :precio_iva, :precio_total,
-                :pdf_pre, :pdf_ord, :xls_pre, :xls_ord, :pdf_ae, :doc_ae, :pdf_oc, :img_oc,
-                :fecha, :nota
-            )"
-            );
+                :pdf_pre, :pdf_ord, :xls_pre, :xls_ord, :pdf_ae, :doc_ae, :pdf_oc,
+                :img_oc, :fecha, :nota
+            )
+        ");
 
-            $a->bindParam(":num_orden", $presupuesto, PDO::PARAM_STR);
-            $a->bindParam(":descripcion", $descrip, PDO::PARAM_STR);
-            $a->bindParam(":id_cliente", $id_cliente, PDO::PARAM_INT);
-            $a->bindParam(":precio_iva", $precio_iva, PDO::PARAM_STR);
-            $a->bindParam(":precio_total", $precio_total, PDO::PARAM_STR);
-            $a->bindParam(":pdf_pre", $pdf_pre, PDO::PARAM_STR);
-            $a->bindParam(":pdf_ord", $pdf_ord, PDO::PARAM_STR);
-            $a->bindParam(":xls_pre", $xls_pre, PDO::PARAM_STR);
-            $a->bindParam(":xls_ord", $xls_ord, PDO::PARAM_STR);
-            $a->bindParam(":doc_ae", $doc_ae, PDO::PARAM_STR);
-            $a->bindParam(":pdf_ae", $pdf_ae, PDO::PARAM_STR);
-            $a->bindParam(":pdf_oc", $pdf_oc, PDO::PARAM_STR);
-            $a->bindParam(":img_oc", $img_oc, PDO::PARAM_STR);
-            $a->bindParam(":fecha", $fecha, PDO::PARAM_STR);
-            $a->bindParam(":nota", $nota, PDO::PARAM_STR);
+            $a->bindParam(":num_orden", $presupuesto);
+            $a->bindParam(":descripcion", $descrip);
+            $a->bindParam(":id_cliente", $id_cliente);
+            $a->bindParam(":precio_iva", $precio_iva);
+            $a->bindParam(":precio_total", $precio_total);
+            $a->bindParam(":pdf_pre", $pdf_pre);
+            $a->bindParam(":pdf_ord", $pdf_ord);
+            $a->bindParam(":xls_pre", $xls_pre);
+            $a->bindParam(":xls_ord", $xls_ord);
+            $a->bindParam(":pdf_ae", $pdf_ae);
+            $a->bindParam(":doc_ae", $doc_ae);
+            $a->bindParam(":pdf_oc", $pdf_oc);
+            $a->bindParam(":img_oc", $img_oc);
+            $a->bindParam(":fecha", $fecha);
+            $a->bindParam(":nota", $nota);
 
             $a->execute();
 
@@ -141,13 +177,13 @@ class ModeloPresupuesto
             if ($e->getCode() == '23505') {
                 return [
                     'status' => 'danger',
-                    'm' => 'La presupuesto ya existe para el cliente seleccionado.'
+                    'm' => 'El presupuesto ya existe para este cliente.'
                 ];
             }
 
             return [
                 'status' => 'danger',
-                'm' => 'No se pudo agregar la presupuesto: ' . $e->getMessage()
+                'm' => 'Error al agregar presupuesto: ' . $e->getMessage()
             ];
         }
     }
@@ -373,64 +409,89 @@ class ModeloPresupuesto
         try {
             $con = Conexion::ConexionDB();
 
-            // 1️⃣ Actualizamos el estado del presupuesto
+            // Cambiar estado del presupuesto
             $consulta = "UPDATE tblpresupuesto SET estado = :estado WHERE id = :id";
             $e = $con->prepare($consulta);
-            $e->bindParam(":id", $id, PDO::PARAM_INT);
-            $e->bindParam(":estado", $estado, PDO::PARAM_STR);
+            $e->bindParam(":id", $id);
+            $e->bindParam(":estado", $estado);
             $e->execute();
 
-            // 2️⃣ Si el estado es APROBADO, verificamos si ya se envió el correo
+            // 2️⃣ Solo si está aprobado → cambiar estado del cliente a TRUE
             if ($estado === 'APROBADO') {
-                $verificar = $con->prepare("SELECT issend_email FROM tblpresupuesto WHERE id = :id");
-                $verificar->bindParam(":id", $id, PDO::PARAM_INT);
-                $verificar->execute();
-                $row = $verificar->fetch(PDO::FETCH_ASSOC);
 
-                if ($row && !$row['issend_email']) {
-                    // 3️⃣ Obtenemos datos del presupuesto y cliente
-                    $l = $con->prepare("
-                    SELECT 
-                        p.descripcion, 
-                        p.num_orden, 
-                        TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
-                        c.nombre AS cliente 
-                    FROM tblpresupuesto p
-                    JOIN tblclientes c ON p.id_cliente = c.id
-                    WHERE p.id = :id
+                // Obtener cliente asociado
+                $q = $con->prepare("
+                SELECT id_cliente, issend_email 
+                FROM tblpresupuesto 
+                WHERE id = :id
+            ");
+                $q->bindParam(":id", $id);
+                $q->execute();
+                $data = $q->fetch(PDO::FETCH_ASSOC);
+
+                if ($data) {
+
+                    $id_cliente = $data['id_cliente'];
+
+                    // Cambiar estado del cliente a TRUE
+                    $updateCliente = $con->prepare("
+                    UPDATE tblclientes 
+                    SET estado = TRUE 
+                    WHERE id = :id
                 ");
-                    $l->bindParam(":id", $id, PDO::PARAM_INT);
-                    $l->execute();
-                    $data = $l->fetch(PDO::FETCH_ASSOC);
+                    $updateCliente->bindParam(":id", $id_cliente);
+                    $updateCliente->execute();
 
-                    if ($data) {
-                        $descripcion = $data['descripcion'];
-                        $numOrden    = $data['num_orden'];
-                        $fecha       = $data['fecha'];
-                        $cliente     = $data['cliente'];
+                    // Envío de correo (si no se envió antes)
+                    if (!$data['issend_email']) {
 
-                        // 4️⃣ Enviamos el correo en segundo plano
-                        self::enviarCorreoEnSegundoPlano($descripcion, $numOrden, $fecha, $cliente);
+                        // Obtener información para el correo
+                        $l = $con->prepare("
+                        SELECT 
+                            p.descripcion, 
+                            p.num_orden, 
+                            TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
+                            c.nombre AS cliente 
+                        FROM tblpresupuesto p
+                        JOIN tblclientes c ON p.id_cliente = c.id
+                        WHERE p.id = :id
+                    ");
+                        $l->bindParam(":id", $id);
+                        $l->execute();
+                        $info = $l->fetch(PDO::FETCH_ASSOC);
 
-                        // 5️⃣ Marcamos como enviado
-                        $updateFlag = $con->prepare("UPDATE tblpresupuesto SET issend_email = TRUE WHERE id = :id");
-                        $updateFlag->bindParam(":id", $id, PDO::PARAM_INT);
-                        $updateFlag->execute();
+                        if ($info) {
+                            self::enviarCorreoEnSegundoPlano(
+                                $info['descripcion'],
+                                $info['num_orden'],
+                                $info['fecha'],
+                                $info['cliente']
+                            );
+
+                            $updateFlag = $con->prepare("
+                            UPDATE tblpresupuesto 
+                            SET issend_email = TRUE 
+                            WHERE id = :id
+                        ");
+                            $updateFlag->bindParam(":id", $id);
+                            $updateFlag->execute();
+                        }
                     }
                 }
             }
 
-            return array(
+            return [
                 'status' => 'success',
-                'm' => 'Se editó el estado del presupuesto correctamente.'
-            );
+                'm' => 'Estado actualizado correctamente.'
+            ];
         } catch (PDOException $ex) {
-            return array(
+            return [
                 'status' => 'error',
                 'm' => 'Error al cambiar el estado: ' . $ex->getMessage()
-            );
+            ];
         }
     }
+
 
     static public function mdlObtenerFilesOrden($id)
     {
