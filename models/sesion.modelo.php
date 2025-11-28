@@ -66,70 +66,77 @@ class SesionModelo
     }
 
 
-    static private function normalizeParent($val)
-    {
-        // normaliza a null para raíces, o int para padres válidos
-        if ($val === null) return null;
-        if (is_string($val)) {
-            $v = trim($val);
-            if ($v === '' || strtoupper($v) === 'NULL') return null;
-            if (ctype_digit($v)) return (int)$v;
+    static private function buildTree(array $elements, $parentId = 0) 
+{
+    $branch = array();
+
+    // Aseguramos que parentId sea entero para comparaciones estrictas
+    // (PostgreSQL puede devolver null, strings o ints)
+    $parentId = ($parentId === null || strtoupper((string)$parentId) === 'NULL') ? 0 : (int)$parentId;
+
+    foreach ($elements as $element) {
+        // Normalización al vuelo (más rápido que pre-procesar todo el array antes)
+        // Convertimos el id_padre actual a 0 si es null/vacío
+        $elementParent = ($element->id_padre === null || strtoupper((string)$element->id_padre) === 'NULL') ? 0 : (int)$element->id_padre;
+        
+        if ($elementParent === $parentId) {
+            $children = self::buildTree($elements, $element->id);
+            
+            if ($children) {
+                $element->children = $children;
+            }
+            
+            // Normalización de booleanos para el frontend (si es necesario)
+            $element->crear = filter_var($element->crear, FILTER_VALIDATE_BOOLEAN);
+            $element->editar = filter_var($element->editar, FILTER_VALIDATE_BOOLEAN);
+            $element->eliminar = filter_var($element->eliminar, FILTER_VALIDATE_BOOLEAN);
+
+            $branch[] = $element;
         }
-        if (is_numeric($val)) return (int)$val;
-        return null;
     }
 
-    static private function buildTree($modulos, $padre = null)
-    {
-        // normalizar el padre de entrada
-        $padre = self::normalizeParent($padre);
-        $menu = [];
-
-        // Pré-process: convertir propiedades para evitar problemas de tipo
-        foreach ($modulos as $m) {
-            // asegurar que id e id_padre existan como propiedades
-            if (!isset($m->id)) continue;
-
-            $m->id = (int)$m->id;
-            $m->id_padre = self::normalizeParent(isset($m->id_padre) ? $m->id_padre : null);
-
-            // normalizar booleans (si vienen 'True'/'False' o '1'/'0')
-            foreach (['crear', 'editar', 'eliminar'] as $b) {
-                if (isset($m->$b)) {
-                    if (is_string($m->$b)) {
-                        $up = strtoupper($m->$b);
-                        $m->$b = ($up === 'TRUE' || $up === '1' || $up === 't') ? true : false;
-                    } else {
-                        $m->$b = (bool)$m->$b;
-                    }
-                } else {
-                    $m->$b = false;
-                }
-            }
-        }
-
-        foreach ($modulos as $m) {
-            if ($m->id_padre === $padre) {
-                $hijos = self::buildTree($modulos, $m->id);
-                if ($hijos) $m->children = $hijos;
-                $menu[] = $m;
-            }
-        }
-
-        return $menu;
-    }
+    return $branch;
+}
 
     static public function mdlObtenerPermisos($id)
     {
-        $stmt = Conexion::ConexionDB()->prepare("SELECT m.id, m.modulo, m.icon, m.vista, m.id_padre,
-        pm.crear, pm.editar, pm.eliminar
-        FROM tblusuario u
-        JOIN tblperfil p ON p.id = u.id_perfil
-        JOIN tblperfil_modulo pm ON pm.id_perfil = p.id
-        JOIN tblmodulo m ON m.id = pm.id_modulo
-        WHERE u.id = :id
-        ORDER BY m.id_padre, m.id
-    ");
+        $stmt = Conexion::ConexionDB()->prepare("WITH RECURSIVE arbol_modulos AS (
+            -- 1. CASO BASE: Obtener los módulos asignados explícitamente al usuario
+            SELECT 
+                m.id, 
+                m.modulo, 
+                m.icon, 
+                m.vista, 
+                m.id_padre,
+                pm.crear,
+                pm.editar,
+                pm.eliminar
+            FROM tblusuario u
+            JOIN tblperfil_modulo pm ON pm.id_perfil = u.id_perfil
+            JOIN tblmodulo m ON m.id = pm.id_modulo
+            WHERE u.id = :id
+
+            UNION
+
+            -- 2. RECURSIVIDAD: Buscar los padres de los módulos encontrados
+            -- (Aunque no tengan permisos explícitos en tblperfil_modulo)
+            SELECT 
+                padre.id, 
+                padre.modulo, 
+                padre.icon, 
+                padre.vista, 
+                padre.id_padre,
+                false AS crear,    -- Los padres autogenerados no tienen CRUD activo
+                false AS editar,
+                false AS eliminar
+            FROM tblmodulo padre
+            INNER JOIN arbol_modulos hijo ON hijo.id_padre = padre.id
+        )
+        -- 3. SELECCIÓN FINAL: Usamos DISTINCT ON para evitar duplicados
+        -- (Si un padre fue asignado explícitamente y también encontrado recursivamente,
+        --  nos quedamos con el primero que suele ser el explícito por el orden del UNION)
+        SELECT DISTINCT ON (id) * FROM arbol_modulos 
+        ORDER BY id, id_padre ASC NULLS FIRST");
 
         $stmt->bindParam(":id", $id);
         $stmt->execute();

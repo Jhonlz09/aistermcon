@@ -635,16 +635,16 @@ function validarTecla(e, input) {
   }
 }
 
-function toggleWithEnter(e, checkbox, pre = false) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    checkbox.checked = !checkbox.checked;
-  }
+// function toggleWithEnter(e, checkbox, pre = false) {
+//   if (e.key === "Enter") {
+//     e.preventDefault();
+//     checkbox.checked = !checkbox.checked;
+//   }
 
-  if (pre) {
-    changeToggle(checkbox);
-  }
-}
+//   if (pre) {
+//     changeToggle(checkbox);
+//   }
+// }
 
 function obtenerEspacioLibreLocalStorage() {
   // Tamaño máximo en bytes (aproximado)

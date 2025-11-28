@@ -1,8 +1,5 @@
-<?php
-// sidebar.php
-?>
 <!-- Main Sidebar Container -->
-<aside style="backdrop-filter:blur(85px);-webkit-backdrop-filter:blur(85px);;white-space:nowrap;overflow-x:hidden" class="main-sidebar sidebar-light-lightblue elevation-4">
+<aside style="backdrop-filter:blur(85px);-webkit-backdrop-filter:blur(85px);white-space:nowrap;overflow-x:hidden" class="main-sidebar sidebar-light-lightblue elevation-4">
     <!-- Brand Logo -->
     <a href="" class="brand-link">
         <img src="assets/img/logo_menu.png" alt="logo" class="brand-image" />
@@ -14,70 +11,73 @@
         <nav class="mt-2">
             <ul id="nav" class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="true">
                 <?php
-                /* DEBUG: Verificar que la sesión y menuTree existen (se imprimará como comentario HTML) Quitar estas líneas en producción */
-                if (!isset($_SESSION)) session_start(); // asegura que la sesión esté iniciada
-                echo '<!-- DEBUG: isset($_SESSION)=' . (isset($_SESSION) ? 'yes' : 'no') . ' -->';
-                if (!isset($_SESSION['menuTree'])) {
-                    echo '<!-- DEBUG: menuTree NO existe -->';
-                } else {
-                    $countRoots = is_array($_SESSION['menuTree']) ? count($_SESSION['menuTree']) : 0;
-                    echo '<!-- DEBUG: menuTree existe; raíces=' . $countRoots . ' -->';
-                    // echo '<!-- ' . htmlspecialchars(print_r($_SESSION['menuTree'], true)) . ' -->'; // opcional, muy verboso
-                }
+                // 1. Verificación de Sesión Segura
+                if (session_status() === PHP_SESSION_NONE) session_start();
 
-                function renderMenu($items, $isSub = false)
-                {
-                    if ($isSub) echo '<ul class="nav nav-treeview">';
+                // 2. Función Renderizadora (Protegida contra re-declaración)
+                if (!function_exists('renderSidebarMenu')) {
+                    function renderSidebarMenu($items, $level = 1)
+                    {
+                        // Si no hay items, salir
+                        if (empty($items)) return;
 
-                    // si $items no es un array o está vacío, no hacemos nada
-                    if (!is_array($items) || count($items) === 0) {
-                        if ($isSub) echo '</ul>';
-                        return;
-                    }
+                        // Sub-nivel contenedor (UL)
+                        if ($level > 1) echo '<ul class="nav nav-treeview">';
 
-                    foreach ($items as $item) {
-                        // protección: asegurar propiedades mínimas
-                        if (!isset($item->id) || !isset($item->modulo)) continue;
+                        foreach ($items as $item) {
+                            // Validación básica
+                            if (!isset($item->modulo)) continue;
 
-                        $hasChildren = isset($item->children) && is_array($item->children) && count($item->children) > 0;
+                            $hasChildren = !empty($item->children);
 
-                        $liId = 'menu-item-' . (int)$item->id;
-                        echo '<li id="' . $liId . '" class="nav-item ' . ($hasChildren ? 'has-children' : '') . '">';
+                            // Determinar Icono según nivel
+                            $iconClass = 'nav-icon fas ' . ($item->icon ?? 'fa-circle');
+                            if ($level === 2 && empty($item->icon)) $iconClass = 'nav-icon far fa-circle';
+                            if ($level >= 3 && empty($item->icon)) $iconClass = 'nav-icon far fa-dot-circle';
 
-                        // Contenedor (sin vista o con hijos)
-                        if ($hasChildren || empty($item->vista)) {
+                            // --- RENDER ITEM (LI) ---
+                            echo '<li class="nav-item ' . ($hasChildren ? 'has-treeview' : '') . '">';
 
-                            echo '<a href="#" class="nav-link" data-vista="" data-id="' . (int)$item->id . '" data-modulo="' . htmlspecialchars($item->modulo, ENT_QUOTES) . '">';
-                            echo '<i class="nav-icon fas ' . htmlspecialchars($item->icon ?? '', ENT_QUOTES) . '"></i>';
-                            echo '<p>' . htmlspecialchars($item->modulo, ENT_QUOTES) . ' <i class="right fas fa-angle-left"></i></p>';
+                            // Enlace (A)
+                            $href = '#';
+                            $onclick = '';
+                            $vista = $item->vista ?? '';
+
+                            // Si tiene vista y NO tiene hijos, es clickeable para cargar contenido
+                            if (!$hasChildren && !empty($vista)) {
+                                // Escapamos datos para JS
+                                $vistaSafe = htmlspecialchars($vista, ENT_QUOTES);
+                                $moduloSafe = addslashes($item->modulo);
+                                $onclick = "onclick=\"cargarContenido('content-wrapper', 'views/$vistaSafe', '$moduloSafe');\"";
+                            }
+
+                            echo '<a href="' . $href . '" class="nav-link" ' . $onclick . '>';
+                            echo '<i class="' . $iconClass . '"></i>';
+                            echo '<p>';
+                            echo htmlspecialchars($item->modulo);
+                            if ($hasChildren) {
+                                echo '<i class="right fas fa-angle-left"></i>';
+                            }
+                            echo '</p>';
                             echo '</a>';
 
-                            // Renderizar hijos recursivamente
-                            renderMenu($item->children, true);
-                        } else {
-                            // Item con vista -> clickable
-                            $vista = $item->vista;
-                            echo '<a href="#" class="nav-link" data-vista="' . htmlspecialchars($vista, ENT_QUOTES) . '" data-id="' . (int)$item->id . '" data-modulo="' . htmlspecialchars($item->modulo, ENT_QUOTES) . '" onclick="cargarContenido(\'content-wrapper\', \'views/' . htmlspecialchars($vista, ENT_QUOTES) . '\', \'' . addslashes($item->modulo) . '\'); return false;">';
-                            echo '<i class="nav-icon fas ' . htmlspecialchars($item->icon ?? '', ENT_QUOTES) . '"></i>';
-                            echo '<p>' . htmlspecialchars($item->modulo, ENT_QUOTES) . '</p>';
-                            echo '</a>';
+                            // Recursividad para hijos
+                            if ($hasChildren) {
+                                renderSidebarMenu($item->children, $level + 1);
+                            }
+
+                            echo '</li>';
                         }
 
-                        echo '</li>';
+                        if ($level > 1) echo '</ul>';
                     }
-
-                    if ($isSub) echo '</ul>';
                 }
 
-                // LLAMADA A renderMenu: verifica existencia y llama
-                if (isset($_SESSION['menuTree']) && is_array($_SESSION['menuTree']) && count($_SESSION['menuTree']) > 0) {
-                    renderMenu($_SESSION['menuTree']);
-                } else {
-                    // Mensaje pequeño (en HTML comentado para evitar romper el diseño)
-                    echo '<!-- No hay módulos para este usuario o menuTree está vacío -->';
+                // 3. Ejecutar Renderizado
+                if (!empty($_SESSION['menuTree'])) {
+                    renderSidebarMenu($_SESSION['menuTree']);
                 }
                 ?>
-
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
@@ -88,56 +88,27 @@
 
 <script>
     $(document).ready(function() {
+        // Lógica de Activación de Menú (Active State)
+        $('#nav').on('click', 'a.nav-link', function(e) {
+            let $link = $(this);
+            let $li = $link.parent('li');
+            let hasChildren = $li.hasClass('has-treeview');
 
-        // Verificar si no es un dispositivo móvil
-        if (window.matchMedia("(max-width: 768px)").matches) {
-            const sidebar = document.querySelector('.main-sidebar');
-            sidebar.classList.add('sidebar-no-expand');
-            const nav = document.getElementById('nav');
-            nav.classList.remove('nav-child-indent')
-        }
+            // Si es un padre (carpeta), AdminLTE maneja el slideDown.
+            // Solo queremos manejar la clase 'active' si es un enlace final (hoja).
+            if (!hasChildren) {
+                // 1. Limpiar todos los activos previos
+                $('ul.nav-sidebar .nav-link').removeClass('active');
+                
+                // 2. Activar el link actual
+                $link.addClass('active');
 
-        const nav = document.getElementById("nav");
-
-        // Registrar clicks delegados
-        nav.addEventListener("click", function(e) {
-            const link = e.target.closest("a.nav-link");
-            if (!link) return;
-            const li = link.closest("li");
-            // Solo manejamos la CLASE ACTIVE
-            const hasSubmenu = li.classList.contains("has-treeview");
-            // Caso 1: tiene submenu → solo dejar que AdminLTE lo abra
-            if (hasSubmenu) {
-                return; // NO tocamos active
+                // 3. Activar recursivamente a los padres (abuelos) para que queden azules/abiertos
+                $link.parents('.has-treeview').each(function() {
+                    $(this).children('a.nav-link').addClass('active');
+                    $(this).addClass('menu-open'); // Forzar apertura en AdminLTE
+                });
             }
-            // Caso 2: es una vista final → marcar active
-            markAsActive(link);
         });
-
-        function markAsActive(link) {
-            // 1) eliminar active existente
-            document.querySelectorAll("#nav a.nav-link.active")
-                .forEach(a => a.classList.remove("active"));
-            // 2) marcar el clickeado
-            link.classList.add("active");
-            // 3) abrir todos los padres (sin romper AdminLTE)
-            openParents(link);
-        }
-
-        function openParents(link) {
-            let li = link.closest("li");
-            while (li && li.id !== "nav") {
-                const parentUl = li.parentElement;
-                if (parentUl.classList.contains("nav-treeview")) {
-                    const parentLi = parentUl.closest("li.has-treeview");
-                    if (parentLi) {
-                        parentLi.classList.add("menu-open");
-                        const parentA = parentLi.querySelector(":scope > a.nav-link");
-                        if (parentA) parentA.classList.add("active");
-                    }
-                }
-                li = li.parentElement;
-            }
-        }
     });
 </script>

@@ -261,16 +261,15 @@
 </div>
 <script>
     var mostrarCol = true;
-    var editar = '<?php echo $_SESSION["editar17"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar17"] ?>';
+    var editar = '<?php echo $_SESSION["editar18"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar18"] ?>';
     OverlayScrollbars(document.querySelector('.scroll-modal'), {
         autoUpdate: true,
         scrollbars: {
             autoHide: 'leave'
         }
     });
-
-
+    
     configuracionTable = {
         "responsive": true,
         "dom": '<"row"<"col-sm-6 select-filter"><"col-sm-6"p>>t',

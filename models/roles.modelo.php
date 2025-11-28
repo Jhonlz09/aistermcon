@@ -92,9 +92,10 @@ class ModeloRoles
     public static function mdlgetPermisos($id)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT pm.id_modulo, pm.crear, pm.editar, pm.eliminar FROM tblperfil_modulo pm
+            $l = Conexion::ConexionDB()->prepare("SELECT pm.id_modulo, pm.crear, pm.editar, pm.eliminar 
+            FROM tblperfil_modulo pm
             JOIN tblmodulo m on m.id = pm.id_modulo
-                WHERE id_perfil=:id AND m.vista IS NOT null ORDER BY id_modulo");
+            WHERE id_perfil=:id ORDER BY id_modulo");
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             $l->execute();
             return $l->fetchAll();
@@ -105,28 +106,49 @@ class ModeloRoles
 
     public static function mdlSavePermisos($id, $permisos)
     {
-        try {
-            $query = "INSERT INTO tblperfil_modulo (id_perfil, id_modulo, crear, editar, eliminar) VALUES (:id, :modulo, :crear, :editar, :eliminar)";
+        $conexion = Conexion::ConexionDB();
 
-            $stmt = Conexion::ConexionDB()->prepare($query);
+        try {
+            // 1. Iniciar Transacción (Vital para integridad de datos)
+            $conexion->beginTransaction();
+            // 2. ELIMINAR permisos anteriores de este perfil
+            // Esto limpia la "pizarra" para escribir los nuevos permisos
+            $stmtDelete = $conexion->prepare("DELETE FROM tblperfil_modulo WHERE id_perfil = :id");
+            $stmtDelete->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmtDelete->execute();
+            // 3. INSERTAR los nuevos permisos
+            $query = "INSERT INTO tblperfil_modulo (id_perfil, id_modulo, crear, editar, eliminar) 
+                    VALUES (:id, :modulo, :crear, :editar, :eliminar)";
+
+            $stmtInsert = $conexion->prepare($query);
 
             foreach ($permisos as $permiso) {
-                $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-                $stmt->bindParam(":modulo", $permiso['id_modulo'], PDO::PARAM_INT);
-                $stmt->bindParam(":crear", $permiso['crear'], PDO::PARAM_BOOL);
-                $stmt->bindParam(":editar", $permiso['editar'], PDO::PARAM_BOOL);
-                $stmt->bindParam(":eliminar", $permiso['eliminar'], PDO::PARAM_BOOL);
-                $stmt->execute();
+                // Casteo explícito de booleanos a enteros para PostgreSQL (true=1, false=0)
+                // PostgreSQL a veces es estricto con booleanos en binding
+                $crear = $permiso['crear'] === 'true' || $permiso['crear'] === true ? 'true' : 'false';
+                $editar = $permiso['editar'] === 'true' || $permiso['editar'] === true ? 'true' : 'false';
+                $eliminar = $permiso['eliminar'] === 'true' || $permiso['eliminar'] === true ? 'true' : 'false';
+                $stmtInsert->bindParam(":id", $id, PDO::PARAM_INT);
+                $stmtInsert->bindParam(":modulo", $permiso['id_modulo'], PDO::PARAM_INT);
+                $stmtInsert->bindParam(":crear", $crear, PDO::PARAM_BOOL);
+                $stmtInsert->bindParam(":editar", $editar, PDO::PARAM_BOOL);
+                $stmtInsert->bindParam(":eliminar", $eliminar, PDO::PARAM_BOOL);
+                $stmtInsert->execute();
             }
+
+            // 4. Confirmar cambios
+            $conexion->commit();
 
             return array(
                 'status' => 'success',
                 'm' => 'Se guardaron los permisos del perfil correctamente.'
             );
         } catch (PDOException $e) {
+            // Si algo falla, revertimos el borrado inicial
+            $conexion->rollBack();
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudieron guardar los permisos del perfil: ' . $e->getMessage()
+                'm' => 'Error al guardar: ' . $e->getMessage()
             );
         }
     }
@@ -149,5 +171,20 @@ class ModeloRoles
                 'm' => 'No se pudo eliminar los permisos de el perfil: ' . $e->getMessage()
             );
         }
+    }
+
+    static public function mdlObtenerModulos()
+    {
+
+        $sql = "SELECT id, modulo, icon, vista, id_padre 
+            FROM public.tblmodulo 
+            ORDER BY id_padre ASC NULLS FIRST, id ASC";
+
+        $stmt = Conexion::ConexionDB()->prepare($sql);
+
+        $stmt->execute();
+
+        // Retornamos como objetos anónimos (stdClass) para acceder como $row->modulo
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 }

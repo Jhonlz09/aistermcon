@@ -49,6 +49,11 @@ class ControladorRoles
         $data = ModeloRoles::mdlDeletePermisos($this->id);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+     static public function ctrObtenerModulos(){
+        $data = ModeloRoles::mdlObtenerModulos();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 
 if (!isset($_POST["accion"])) {
@@ -81,5 +86,8 @@ if (!isset($_POST["accion"])) {
         $data->id = $_POST["id_perfil"];
         $datos = json_decode($_POST["datos"], true);
         $data->savePermisos($datos);
+    }else if($_POST["accion"] == 7) {
+        $data = new ControladorRoles();
+        $data->ctrObtenerModulos();
     }
 }

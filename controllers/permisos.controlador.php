@@ -20,4 +20,6 @@ class PermisosControlador {
         $data = PermisosModelo::mdlObtenerConfiguracion();
         return $data;
     }
-}?>
+}
+
+?>

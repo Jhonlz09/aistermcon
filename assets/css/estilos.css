@@ -1785,3 +1785,157 @@ i.fas.fa-file-lines.mr-3.fa-xl:hover {
     /* Agregar sombra */
     color: var(--icon-neon);
 }
+
+/* ==================== SIDEBAR TREE STYLES ==================== */
+
+/* Estilos base del árbol */
+
+
+/* Mostrar submenu cuando está open */
+
+
+
+/* Tercer nivel de hijos (bisnietos) */
+
+/* Estado ACTIVE en los links */
+.nav-sidebar .nav-link.active {
+    background-color: rgba(0, 98, 255, 0.15);
+    border-left: 4px solid #0062ff;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    color: #0062ff !important;
+    margin-left: -1px;
+}
+
+/* Padre con menú abierto */
+/* .nav-sidebar .nav-item.menu-open > .nav-link {
+    background-color: rgba(0, 98, 255, 0.08);
+    border-left: 4px solid #0062ff;
+    border-radius: 0.25rem;
+    margin-left: -1px;
+} */
+
+/* Padre con menú abierto Y active */
+/* .nav-sidebar .nav-item.menu-open > .nav-link.active {
+    background-color: rgba(0, 98, 255, 0.15);
+    border-left: 4px solid #0062ff;
+    color: #0062ff !important;
+    font-weight: 600;
+} */
+
+
+/* Hover en links (excepto active) */
+/* .nav-sidebar .nav-link:hover:not(.active) {
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: background-color 0.2s ease;
+} */
+
+body.sidebar-collapse.sidebar-mini .main-sidebar:not(:hover) .nav-child-indent .nav-treeview .nav-treeview .nav-link {
+    width: 3.6rem !important;
+    /* El ancho exacto que tienen los padres */
+    min-width: 3.6rem !important;
+
+    /* Quitamos padding para centrar el icono */
+    text-align: center !important;
+}
+
+/* Ocultar el texto del 3er nivel cuando está colapsado */
+
+body.sidebar-collapse .main-sidebar:hover .nav-sidebar.nav-child-indent .nav-treeview .nav-treeview .nav-link {
+        
+        /* Ajustamos el ancho restando los 2rem de indentación del nivel 3 */
+        width: calc(250px - .5rem * 2 - 2rem) !important;
+        
+        /* Aseguramos que el padding corresponda a la indentación para que el texto no quede pegado */
+       
+    }
+
+.text-dark-blue{
+    color:#4d6379 !important;
+}
+
+/* Icono chevron en padres */
+/* .nav-sidebar .nav-link>p>i.right {
+    position: absolute;
+    right: 0.5rem;
+    transition: transform 0.3s ease;
+} */
+
+/* Rotar chevron cuando está abierto */
+/* .nav-sidebar .nav-item.menu-open>.nav-link>p>i.right {
+    transform: rotate(-90deg);
+} */
+
+/* .main-sidebar .nav-child-indent .nav-treeview .nav-treeview .nav-link {
+    width: 100% !important;
+    box-sizing: border-box;
+} */
+
+/* 2. CORRECCIÓN PARA MODO COLAPSADO (SIDEBAR MINI) */
+/* Cuando el body tiene 'sidebar-collapse' y NO estamos haciendo hover sobre el menú,
+       el enlace debe ser estrecho (solo el icono) */
+/* body.sidebar-collapse .main-sidebar:not(:hover) .nav-child-indent .nav-treeview .nav-treeview .nav-link {
+    width: auto !important;
+    min-width: 0 !important;
+    padding-left: 1rem !important;
+} */
+
+/* Opcional: Ocultar el texto p cuando está colapsado para evitar "fantasmas" visuales */
+/* body.sidebar-collapse .main-sidebar:not(:hover) .nav-child-indent .nav-treeview .nav-treeview .nav-link p {
+    display: none !important;
+} */
+
+/* 3. CORRECCIÓN PARA EL HOVER EN MODO COLAPSADO */
+/* Cuando pasas el mouse sobre el sidebar colapsado, este se expande.
+       Aseguramos que el 3er nivel vuelva a ocupar el 100% del espacio disponible */
+/* body.sidebar-collapse .main-sidebar:hover .nav-child-indent .nav-treeview .nav-treeview .nav-link {
+    width: 100% !important;
+} */
+
+
+/* Mobile responsive */
+/* @media (max-width: 768px) {
+    .nav-sidebar.nav-child-indent > .nav-item > .nav-treeview > .nav-item > .nav-link {
+        padding-left: 1.5rem !important;
+    }
+
+    .nav-sidebar.nav-child-indent > .nav-item > .nav-treeview > .nav-item > .nav-treeview > .nav-item > .nav-link {
+        padding-left: 2.75rem !important;
+    }
+
+    .nav-sidebar.nav-child-indent > .nav-item > .nav-treeview > .nav-item > .nav-treeview > .nav-item > .nav-treeview > .nav-item > .nav-link {
+        padding-left: 4rem !important;
+    }
+} */
+
+/* Sidebar colapsado */
+/* .sidebar-collapse .nav-sidebar .nav-treeview {
+    display: none !important;
+}
+
+.sidebar-collapse .nav-sidebar .nav-item.menu-open > .nav-treeview {
+    display: block !important;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    width: 250px;
+    background: var(--sidebar-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 0.25rem;
+    z-index: 1000;
+} */
+
+/* Cuando el sidebar está colapsado, mostrar los submenus en flyout (posición absoluta)
+   para que no ocupen espacio en el flujo y no dejen huecos */
+/* body.sidebar-collapse .nav-sidebar .nav-item.menu-open > .nav-treeview,
+body.sidebar-closed .nav-sidebar .nav-item.menu-open > .nav-treeview {
+    display: block !important;
+    position: absolute !important;
+    left: 100% !important;
+    top: 0 !important;
+    width: 250px !important;
+    background: var(--sidebar-color) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    border-radius: 0.25rem !important;
+    z-index: 1000 !important;
+} */
