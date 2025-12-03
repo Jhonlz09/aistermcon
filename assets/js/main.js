@@ -635,16 +635,33 @@ function validarTecla(e, input) {
   }
 }
 
-// function toggleWithEnter(e, checkbox, pre = false) {
-//   if (e.key === "Enter") {
-//     e.preventDefault();
-//     checkbox.checked = !checkbox.checked;
-//   }
-
-//   if (pre) {
-//     changeToggle(checkbox);
-//   }
-// }
+function getFileIconSVG(file) {
+  // SVG PDF
+  const pdfSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#de0000ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">PDF</text></svg>`;
+  // SVG Excel
+  const excelSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#059500ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">XLS</text></svg>`;
+  const imgSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#004ca3ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" font-weight="bold">IMG</text></svg>`;
+  const wordSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#0045cfff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" font-weight="bold">DOC</text></svg>`;
+  if (file.type === "application/pdf") {
+    return pdfSVG;
+  }
+  if (
+    file.type === "application/vnd.ms-excel" ||
+    file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ) {
+    return excelSVG;
+  }
+  if (
+    file.type === "application/msword" ||
+    file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ) {
+    return wordSVG;
+  }
+  if (file.type.startsWith("image/")) {
+    return null; // Para imágenes, se usará la miniatura real
+  }
+  return imgSVG;
+}
 
 function obtenerEspacioLibreLocalStorage() {
   // Tamaño máximo en bytes (aproximado)
@@ -665,7 +682,6 @@ function obtenerEspacioOcupadoLocalStorage() {
   for (var i = 0; i < localStorage.length; i++) {
     var clave = localStorage.key(i);
     var valor = localStorage.getItem(clave);
-
     // Sumar el tamaño de la clave y el valor (aproximadamente)
     tamanoOcupado += (clave.length + valor.length) * 2; // Multiplicar por 2 para tener una estimación en bytes (UTF-16)
   }

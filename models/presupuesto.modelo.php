@@ -639,12 +639,12 @@ class ModeloPresupuesto
     static public function mdlEliminarFilePresupuesto($id, $ruta, $ext)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET " . ($ext === 'pdf' ? 'pdf_pre' : 'xls_pre') . " = NULL
+            $l = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET " . ($ext === 'pdf' ? 'pdf_pre' : 'xls_pre'). " = NULL
             WHERE id = :id");
 
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             if ($l->execute()) {
-                $uploadDir = "var/www/presupuestos/"; // Directorio donde están las imágenes
+                $uploadDir = "var/www/pre_trabajo/"; // Directorio donde están las imágenes
                 $filePath = $uploadDir . $ruta;
 
                 if (file_exists($filePath)) {

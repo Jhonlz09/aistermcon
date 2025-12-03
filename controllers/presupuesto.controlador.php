@@ -174,7 +174,7 @@ class ControladorPresupuesto
         }
     }
 
-    private function procesarOrdenCompraArchivos($files, $uploadDir, $baseName, $year, &$pdfArray, &$imgArray)
+    private function procesarOrdenCompraArchivos($files,$uploadDir,$baseName,$year,&$pdfArray,&$imgArray)
     {
         if (is_array($files['name'])) {
             for ($i = 0; $i < count($files['name']); $i++) {
@@ -298,7 +298,6 @@ if (!isset($_POST["accion"])) {
         $data->precio_iva = $_POST["precio_sin_iva"];
         $data->precio_total = $_POST["precio_con_iva"];
         $data->nota = $_POST["nota"];
-        // $data->estado = $_POST["estado"];
         $data->editarPresupuesto();
     } else if ($_POST["accion"] == 3) {
         $data = new ControladorPresupuesto();
@@ -318,12 +317,7 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
         $data->obtenerFiles();
-    } //else if ($_POST["accion"] == 7) {
-    //     $data = new ControladorPresupuesto();
-    //     $data->id = $_POST["id"];
-    //     $data->obtenerFilesPresupuesto();
-    // } 
-    else if ($_POST["accion"] == 8) {
+    } else if ($_POST["accion"] == 8) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
         $data->ruta = $_POST["ruta"];
@@ -337,13 +331,5 @@ if (!isset($_POST["accion"])) {
         $data->carpeta = $_POST["carpeta"];
         $data->tipo = $_POST["tipo"];
         $data->eliminarFiles();
-    } //else if ($_POST["accion"] == 10) {
-    //     $data = new ControladorPresupuesto();
-    //     $data->id = $_POST["id"];
-    //     $data->obtenerFilesActaEntrega();
-    // } else if ($_POST["accion"] == 11) {
-    //     $data = new ControladorPresupuesto();
-    //     $data->id = $_POST["id"];
-    //     $data->obtenerFilesOrdenCompra();
-    // }
+    }
 }

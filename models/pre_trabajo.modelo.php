@@ -9,28 +9,18 @@ require '../vendor/autoload.php'; // Asegúrate de cargar PHPMailer correctament
 
 class ModeloPretrabajo
 {
-    static public function mdlListarPretrabajo($anio, $estado)
+    static public function mdlListarPretrabajo($anio)
     {
         try {
-            $consulta = "SELECT p.id, p.num_orden,c.nombre AS cliente,p.descripcion,  
-                        p.precio_iva,p.precio_total,p.estado,p.pdf_pre,p.xls_pre,p.pdf_ord,
-                        p.xls_ord,p.pdf_ae,p.doc_ae, p.pdf_oc, p.img_oc, TO_CHAR(p.fecha, 'DD/MM/YYYY') AS fecha, 
-                        p.nota, p.id_cliente, null AS acciones, TO_CHAR(o.fecha, 'DD/MM/YYYY') as fecha_ord, TO_CHAR(o.fecha_ope, 'DD/MM/YYYY') as fecha_ope, TO_CHAR(o.fecha_fin, 'DD/MM/YYYY') as fecha_fin, TO_CHAR(o.fecha_fac, 'DD/MM/YYYY') as fecha_fac, o.nota as nota_ord
-                    FROM tblpresupuesto p
-                    JOIN tblclientes c ON p.id_cliente = c.id
-                    LEFT JOIN tblorden o ON o.id = p.id
-                    WHERE p.anulado = false
-                    AND EXTRACT(YEAR FROM p.fecha) = :anio ";
-            if ($estado !== 'null') {
-                $consulta .= "AND p.estado = :estado ";
-            }
-            $consulta .= "ORDER BY p.id DESC;";
+            $consulta = "SELECT p.id, TO_CHAR(p.fecha_inspeccion, 'DD/MM/YYYY') as fecha, p.cliente, p.detalle,p.pdf_arr, p.img_arr, null AS acciones, TO_CHAR(p.fecha_inspeccion, 'YYYY-MM-DD') AS fecha_inspeccion
+                    FROM tblpre_trabajo p
+                    WHERE EXTRACT(YEAR FROM p.fecha_inspeccion) = :anio ORDER BY p.id DESC;";
 
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
-            if ($estado !== 'null') {
-                $l->bindParam(":estado", $estado, PDO::PARAM_INT);
-            }
+            // if ($estado !== 'null') {
+            //     $l->bindParam(":estado", $estado, PDO::PARAM_INT);
+            // }
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -43,123 +33,26 @@ class ModeloPretrabajo
         try {
 
             $conexion = Conexion::ConexionDB();
+            $a = $conexion->prepare("INSERT INTO tblpre_trabajo(fecha_inspeccion, cliente, detalle, pdf_arr, img_arr) VALUES (:fecha, :cliente, :detalles, :pdf_arr, :img_arr)");
 
-            // --------------------------------------------------
-            // 1️⃣ INSERTAR CLIENTE MANUAL (si aplica)
-            // --------------------------------------------------
-            // if ($isManual) {
-            //     // Normalizar nombre (quita espacios al inicio/fin)
-            //     $cliente_manual_trim = trim($cliente_manual);
-
-            //     try {
-            //         // Iniciamos transacción para seguridad en concurrencia
-            //         $conexion->beginTransaction();
-
-            //         // 1) Intentar buscar previamente (búsqueda exacta; si quieres ignorar mayúsculas usar lower(nombre)=lower(:nm))
-            //         $sel = $conexion->prepare("SELECT id FROM tblclientes WHERE nombre = :cliente_manual LIMIT 1");
-            //         $sel->bindParam(":cliente_manual", $cliente_manual_trim, PDO::PARAM_STR);
-            //         $sel->execute();
-            //         $row = $sel->fetch(PDO::FETCH_ASSOC);
-            //         if ($row && isset($row['id'])) {
-            //             // Ya existe: tomar su id
-            //             $id_cliente = $row['id'];
-            //         } else {
-            //             // No existe: insertar usando ON CONFLICT para evitar excepciones por condición de carrera
-            //             $ins = $conexion->prepare("INSERT INTO tblclientes(nombre, id_tipo, estado, correo)
-            //                     VALUES(:cliente_manual, 1, false, :correo) ON CONFLICT (nombre) DO NOTHING RETURNING id"
-            //             );
-            //             $correo_placeholder = 'POR AÑADIR';
-            //             $ins->bindParam(":cliente_manual", $cliente_manual_trim, PDO::PARAM_STR);
-            //             $ins->bindParam(":correo", $correo_placeholder, PDO::PARAM_STR);
-            //             $ins->execute();
-
-            //             $insertRow = $ins->fetch(PDO::FETCH_ASSOC);
-
-            //             if ($insertRow && isset($insertRow['id'])) {
-            //                 // Insert exitoso y RETURNING id
-            //                 $id_cliente = $insertRow['id'];
-            //             } else {
-            //                 // Hubo conflicto (otro proceso insertó) — obtener id con SELECT final
-            //                 $sel2 = $conexion->prepare("SELECT id FROM tblclientes WHERE nombre = :cliente_manual LIMIT 1");
-            //                 $sel2->bindParam(":cliente_manual", $cliente_manual_trim, PDO::PARAM_STR);
-            //                 $sel2->execute();
-            //                 $row2 = $sel2->fetch(PDO::FETCH_ASSOC);
-
-            //                 if ($row2 && isset($row2['id'])) {
-            //                     $id_cliente = $row2['id'];
-            //                 } else {
-            //                     // Caso raro: no se puede obtener id
-            //                     $conexion->rollBack();
-            //                     return [
-            //                         'status' => 'danger',
-            //                         'm' => 'Error: no se pudo obtener el id del cliente después del intento de inserción.'
-            //                     ];
-            //                 }
-            //             }
-            //         }
-
-            //         // Commit si todo OK
-            //         $conexion->commit();
-            //     } catch (PDOException $e) {
-            //         // Rollback ante cualquier fallo
-            //         if ($conexion->inTransaction()) {
-            //             $conexion->rollBack();
-            //         }
-            //         return [
-            //             'status' => 'danger',
-            //             'm' => 'Error al procesar cliente manual: ' . $e->getMessage()
-            //         ];
-            //     }
-            // }
-
-
-            // --------------------------------------------------
-            // 2️⃣ INSERTAR PRESUPUESTO
-            // --------------------------------------------------
-            $a = $conexion->prepare("
-            INSERT INTO tblpresupuesto(
-                num_orden, descripcion, id_cliente, precio_iva, precio_total,
-                pdf_pre, pdf_ord, xls_pre, xls_ord, pdf_ae, doc_ae, pdf_oc,
-                img_oc, fecha, nota
-            )
-            VALUES (
-                :num_orden, :descripcion, :id_cliente, :precio_iva, :precio_total,
-                :pdf_pre, :pdf_ord, :xls_pre, :xls_ord, :pdf_ae, :doc_ae, :pdf_oc,
-                :img_oc, :fecha, :nota
-            )
-        ");
-
-            $a->bindParam(":num_orden", $presupuesto);
-            $a->bindParam(":descripcion", $descrip);
-            $a->bindParam(":id_cliente", $id_cliente);
-            $a->bindParam(":precio_iva", $precio_iva);
-            $a->bindParam(":precio_total", $precio_total);
-            $a->bindParam(":pdf_pre", $pdf_pre);
-            $a->bindParam(":pdf_ord", $pdf_ord);
-            $a->bindParam(":xls_pre", $xls_pre);
-            $a->bindParam(":xls_ord", $xls_ord);
-            $a->bindParam(":pdf_ae", $pdf_ae);
-            $a->bindParam(":doc_ae", $doc_ae);
-            $a->bindParam(":pdf_oc", $pdf_oc);
-            $a->bindParam(":img_oc", $img_oc);
             $a->bindParam(":fecha", $fecha);
-            $a->bindParam(":nota", $nota);
+            $a->bindParam(":cliente", $cliente);
+            $a->bindParam(":detalles", $detalles);
+            $a->bindParam(":pdf_arr", $pdf_arr);
+            $a->bindParam(":img_arr", $img_arr);
 
             $a->execute();
-
             return [
                 'status' => 'success',
-                'm' => 'El presupuesto se agregó correctamente.'
+                'm' => 'El pre trabajo se agregó correctamente.'
             ];
         } catch (PDOException $e) {
-
             if ($e->getCode() == '23505') {
                 return [
                     'status' => 'danger',
-                    'm' => 'El presupuesto ya existe para este cliente.'
+                    'm' => 'El pre trabajo ya existe para este cliente.'
                 ];
             }
-
             return [
                 'status' => 'danger',
                 'm' => 'Error al agregar presupuesto: ' . $e->getMessage()
@@ -167,66 +60,34 @@ class ModeloPretrabajo
         }
     }
 
-    // static private function enviarCorreoEnSegundoPlano($descrip, $presupuesto, $fecha, $cliente)
-    // {
-    //     $scriptPath = escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'send_email.php');
-    //     $usuario = $_SESSION['s_usuario']->nombres;
-    //     // $id_cliente = escapeshellarg($id_cliente);
-    //     $descrip = escapeshellarg($descrip);
-    //     $presupuesto  = escapeshellarg($presupuesto);
-    //     $cliente = escapeshellarg($cliente);
-    //     // $fecha = escapeshellarg($fecha);
-
-    //     // Comando para ejecutar en segundo plano
-    //     $command = "php $scriptPath $descrip $presupuesto  $fecha $cliente $usuario > /dev/null 2>&1 &";
-    //     exec($command);
-    // }
-
-
-    static public function mdlEditarPretrabajo($id, $descrip, $id_cliente, $cliente, $presupuesto, $pdf_pre, $pdf_ord, $xls_pre, $xls_ord, $doc_ae, $pdf_ae, $pdf_oc, $img_oc, $fecha, $precio_iva, $precio_total, $nota)
-
+    static public function mdlEditarPretrabajo($id, $fecha, $cliente, $detalles, $pdf_arr, $img_arr)
     {
-
         try {
             $conexion = Conexion::ConexionDB();
 
             $campos = [
-                "num_orden = :num_orden",
-                "descripcion = :descripcion",
-                "id_cliente = :id_cliente",
-                "precio_iva = :precio_iva",
-                "precio_total = :precio_total",
-                "fecha = :fecha",
-                "nota = :nota"
+                "fecha_inspeccion = :fecha",
+                "cliente = :cliente",
+                "detalle = :detalles",
             ];
 
             // Solo agregar columnas de archivo si hay valor nuevo
             $binds = [
-                ":num_orden" => $presupuesto,
-                ":descripcion" => $descrip,
-                ":id_cliente" => $id_cliente,
-                ":precio_iva" => $precio_iva,
-                ":precio_total" => $precio_total,
                 ":fecha" => $fecha,
-                ":nota" => $nota,
+                ":detalles" => $detalles,
+                ":cliente" => $cliente,
                 ":id" => $id
             ];
 
             $archivos = [
-                'pdf_pre' => $pdf_pre,
-                'pdf_ord' => $pdf_ord,
-                'xls_pre' => $xls_pre,
-                'xls_ord' => $xls_ord,
-                'doc_ae'  => $doc_ae,
-                'pdf_ae'  => $pdf_ae,
-                'pdf_oc'  => $pdf_oc,
-                'img_oc'  => $img_oc
+                'pdf_arr'  => $pdf_arr,
+                'img_arr'  => $img_arr
             ];
 
             foreach ($archivos as $col => $valor) {
                 if (!is_null($valor)) {
                     // Para pdf_oc y img_oc → concatenar arrays existentes
-                    if (in_array($col, ['pdf_oc', 'img_oc'])) {
+                    if (in_array($col, ['img_arr', 'pdf_arr'])) {
                         $campos[] = "$col = COALESCE($col, '{}') || :$col";
                     } else {
                         $campos[] = "$col = :$col";
@@ -235,7 +96,7 @@ class ModeloPretrabajo
                 }
             }
 
-            $sql = "UPDATE tblpresupuesto SET " . implode(", ", $campos) . " WHERE id = :id";
+            $sql = "UPDATE tblpre_trabajo SET " . implode(", ", $campos) . " WHERE id = :id";
             $stmt = $conexion->prepare($sql);
 
             foreach ($binds as $k => $v) {
@@ -244,29 +105,29 @@ class ModeloPretrabajo
             // var_dump($stmt);
             $stmt->execute();
 
-            return ['status' => 'success', 'm' => 'El presupuesto se actualizó correctamente.'];
+            return ['status' => 'success', 'm' => 'El pre trabajo se actualizó correctamente.'];
         } catch (PDOException $e) {
             return ['status' => 'danger', 'm' => 'Error al actualizar: ' . $e->getMessage()];
         }
     }
 
-    // public static function mdlEliminarPretrabajo($id)
-    // {
-    //     try {
-    //         $e = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET anulado=true WHERE id=:id");
-    //         $e->bindParam(":id", $id, PDO::PARAM_INT);
-    //         $e->execute();
-    //         return array(
-    //             'status' => 'success',
-    //             'm' => 'Se eliminó la presupuesto correctamente.'
-    //         );
-    //     } catch (PDOException $e) {
-    //         return array(
-    //             'status' => 'danger',
-    //             'm' => 'No se pudo eliminar la presupuesto: ' . $e->getMessage()
-    //         );
-    //     }
-    // }
+    public static function mdlEliminarPretrabajo($id)
+    {
+        try {
+            $e = Conexion::ConexionDB()->prepare("UPDATE tblpre_trabajo SET anulado=true WHERE id=:id");
+            $e->bindParam(":id", $id, PDO::PARAM_INT);
+            $e->execute();
+            return array(
+                'status' => 'success',
+                'm' => 'Se eliminó la presupuesto correctamente.'
+            );
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo eliminar la presupuesto: ' . $e->getMessage()
+            );
+        }
+    }
 
     // public static function mdlCambiarEstado($id, $estado)
     // {
@@ -356,49 +217,11 @@ class ModeloPretrabajo
     //     }
     // }
 
-
-    static public function mdlObtenerFilesOrden($id)
-    {
-        try {
-            $l = Conexion::ConexionDB()->prepare("SELECT unnest(array[pdf_ord, xls_ord]) AS nombre_file
-                    FROM tblpresupuesto
-                    WHERE id = :id");
-
-            $l->bindParam(":id", $id, PDO::PARAM_INT);
-            $l->execute();
-            $files = $l->fetchAll(PDO::FETCH_ASSOC);
-
-            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
-        } catch (PDOException $e) {
-            // Retornar un mensaje de error descriptivo
-            return "Error en la consulta: " . $e->getMessage();
-        }
-    }
-
     static public function mdlObtenerTodosLosArchivos($id)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare(" SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_ord, xls_ord], NULL)) AS nombre_file, 'ord' AS tipo
-            FROM tblpresupuesto
-            WHERE id = :id
-
-            UNION ALL
-
-            SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_pre, xls_pre], NULL)) AS nombre_file, 'ppt' AS tipo
-            FROM tblpresupuesto
-            WHERE id = :id
-
-            UNION ALL
-
-            SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_ae, doc_ae], NULL)) AS nombre_file, 'ae' AS tipo
-            FROM tblpresupuesto
-            WHERE id = :id
-
-            UNION ALL
-
-            SELECT unnest(pdf_oc || img_oc) AS nombre_file, 'oc' AS tipo
-            FROM tblpresupuesto
-            WHERE id = :id");
+            $l = Conexion::ConexionDB()->prepare("SELECT unnest(pdf_arr || img_arr) AS 
+            nombre_file FROM tblpre_trabajo WHERE id =:id");
 
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             $l->execute();
@@ -422,40 +245,6 @@ class ModeloPretrabajo
             $l->execute();
             $files = $l->fetchAll(PDO::FETCH_ASSOC);
 
-            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
-        } catch (PDOException $e) {
-            // Retornar un mensaje de error descriptivo
-            return "Error en la consulta: " . $e->getMessage();
-        }
-    }
-
-    static public function mdlObtenerFilesActaEntrega($id)
-    {
-        try {
-            $l = Conexion::ConexionDB()->prepare("SELECT unnest(array[pdf_ae, doc_ae]) AS nombre_file
-                FROM tblpresupuesto
-                WHERE id = :id");
-
-            $l->bindParam(":id", $id, PDO::PARAM_INT);
-            $l->execute();
-            $files = $l->fetchAll(PDO::FETCH_ASSOC);
-
-            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
-        } catch (PDOException $e) {
-            // Retornar un mensaje de error descriptivo
-            return "Error en la consulta: " . $e->getMessage();
-        }
-    }
-
-    static public function mdlObtenerFilesOrdenCompra($id)
-    {
-        try {
-            $l = Conexion::ConexionDB()->prepare("SELECT unnest(pdf_oc || img_oc) AS nombre_file
-                    FROM tblpresupuesto WHERE id =:id");
-
-            $l->bindParam(":id", $id, PDO::PARAM_INT);
-            $l->execute();
-            $files = $l->fetchAll(PDO::FETCH_ASSOC);
             return $files ?: []; // Retorna un arreglo vacío si no hay resultados
         } catch (PDOException $e) {
             // Retornar un mensaje de error descriptivo
@@ -520,66 +309,27 @@ class ModeloPretrabajo
         }
     }
 
-    // static public function mdlEliminarFileOrden($id, $ruta, $ext, $carpeta)
-    // {
-    //     try {
-    //         $l = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET " . ($ext === 'pdf' ? 'pdf_ord' : 'xls_ord') . " = NULL WHERE id = :id");
-
-    //         $l->bindParam(":id", $id, PDO::PARAM_INT);
-    //         if ($l->execute()) {
-    //             $uploadDir = "var/www/". $carpeta. "/" ; // Directorio donde están las imágenes
-    //             $filePath = $uploadDir . $ruta;
-
-    //             if (file_exists($filePath)) {
-    //                 unlink($filePath); // Eliminar archivo
-    //             }
-    //         };
-    //     } catch (PDOException $e) {
-    //         return "Error en la consulta: " . $e->getMessage();
-    //     }
-    // }
-
-    static public function mdlEliminarArchivo($id, $ruta, $ext, $carpeta, $tipo)
+    static public function mdlEliminarArchivo($id, $ruta, $ext)
     {
         try {
             $db = Conexion::ConexionDB();
 
-            // 📌 Mapeo de columnas normales
-            $columnas = [
-                'ppt' => ['pdf' => 'pdf_pre', 'xls' => 'xls_pre', 'xlsx' => 'xls_pre'],
-                'ord' => ['pdf' => 'pdf_ord', 'xls' => 'xls_ord', 'xlsx' => 'xls_ord'],
-                'ae'  => ['pdf' => 'pdf_ae', 'doc' => 'doc_ae', 'docx' => 'doc_ae'],
-            ];
-
-            if ($tipo === 'oc') {
-                if ($ext === 'pdf') {
-                    $columna = 'pdf_oc';
-                } else {
-                    $columna = 'img_oc';
-                }
-
-                // Eliminar la ruta específica del array en PostgreSQL
-                $sql = "UPDATE tblpresupuesto 
-                    SET {$columna} = array_remove({$columna}, :ruta)
-                    WHERE id = :id";
-                $stmt = $db->prepare($sql);
-                $stmt->bindParam(':ruta', $ruta, PDO::PARAM_STR);
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->execute();
+            if ($ext === 'pdf') {
+                $columna = 'pdf_arr';
             } else {
-                // 🧠 CASO NORMAL: columnas simples
-                if (!isset($columnas[$tipo][$ext])) {
-                    throw new Exception("Tipo de archivo no soportado: $tipo / $ext");
-                }
-                $columna = $columnas[$tipo][$ext];
-                $sql = "UPDATE tblpresupuesto SET {$columna} = NULL WHERE id = :id";
-                $stmt = $db->prepare($sql);
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->execute();
+                $columna = 'img_arr';
             }
 
+            $sql = "UPDATE tblpre_trabajo
+                    SET {$columna} = array_remove({$columna}, :ruta)
+                    WHERE id = :id";
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':ruta', $ruta, PDO::PARAM_STR);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
             // 🧹 Eliminar archivo físico
-            $baseDir = '/var/www/' . $carpeta . '/';
+            $baseDir = '/var/www/pre_trabajo/';
             $filePath = $baseDir . $ruta;
             if (file_exists($filePath)) {
                 unlink($filePath);

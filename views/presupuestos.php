@@ -620,33 +620,7 @@
         }
         let IVA = iva_config / 100;
 
-        function getFileIconSVG(file) {
-            // SVG PDF
-            const pdfSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#de0000ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">PDF</text></svg>`;
-            // SVG Excel
-            const excelSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#059500ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">XLS</text></svg>`;
-            const imgSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#004ca3ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" font-weight="bold">IMG</text></svg>`;
-            const wordSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#0045cfff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" font-weight="bold">DOC</text></svg>`;
-            if (file.type === "application/pdf") {
-                return pdfSVG;
-            }
-            if (
-                file.type === "application/vnd.ms-excel" ||
-                file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            ) {
-                return excelSVG;
-            }
-            if (
-                file.type === "application/msword" ||
-                file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            ) {
-                return wordSVG;
-            }
-            if (file.type.startsWith("image/")) {
-                return null; // Para imágenes, se usará la miniatura real
-            }
-            return imgSVG;
-        }
+        
 
         Dropzone.autoDiscover = false;
         let drop_ord = new Dropzone("#dropzone-orden", {
@@ -657,7 +631,6 @@
             dictDefaultMessage: "Arrastra aquí o haz clic para subir PDF/Excel",
             init: function() {
                 let removeAllFilesCalled = false;
-
                 this.on("addedfile", function(file) {
                     // Busca el contenedor de imagen generado por Dropzone
                     var dzImage = file.previewElement.querySelector('.dz-image');
@@ -1255,25 +1228,6 @@
             return datos;
         }
 
-        // function mostrarConfirmacionExistente(datos) {
-        //     Swal.fire({
-        //         title: "Esta orden de trabajo ya existe",
-        //         text: "¿Estás seguro que deseas continuar?",
-        //         icon: "warning",
-        //         showCancelButton: true,
-        //         allowOutsideClick: false,
-        //         allowEscapeKey: false,
-        //         confirmButtonText: "Sí, continuar",
-        //         cancelButtonText: "Cancelar",
-        //     }).then((result) => {
-        //         if (result.isConfirmed) {
-        //             confirmarAccion(datos, 'orden', tabla, modal, function(r) {
-        //                 // Callback para acciones después de confirmarAccion si es necesario
-        //             });
-        //         }
-        //     });
-        // }
-
         function mostrarConfirmacionExistente(datos, cliente) {
             Swal.fire({
                 title: `Numero de orden ya existe para '${cliente.nombre}'`,
@@ -1296,17 +1250,6 @@
                     });
                 }
             });
-        }
-
-        function convertirFecha(fecha) {
-            // Dividir la fecha y la hora
-            let [datePart, timePart] = fecha.split(' ');
-
-            // Dividir los componentes de la fecha
-            let [day, month, year] = datePart.split('/');
-
-            // Formatear la fecha como 'YYYY-MM-DD'
-            return `${year}-${month}-${day}`;
         }
     })
 </script>
