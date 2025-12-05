@@ -4,7 +4,6 @@
     <title>Cargar</title>
 </head>
 <script>
-
     window.scrollTo(0, 0);
 </script>
 

@@ -40,18 +40,18 @@
 
                             // Enlace (A)
                             $href = '#';
-                            $onclick = '';
+                            $id = $item->modulo;
                             $vista = $item->vista ?? '';
 
-                            // Si tiene vista y NO tiene hijos, es clickeable para cargar contenido
+                            // Si tiene vista y NO tiene hijos, añadimos data-attributes en lugar de onclick
+                            $dataAttrs = '';
                             if (!$hasChildren && !empty($vista)) {
-                                // Escapamos datos para JS
                                 $vistaSafe = htmlspecialchars($vista, ENT_QUOTES);
-                                $moduloSafe = addslashes($item->modulo);
-                                $onclick = "onclick=\"cargarContenido('content-wrapper', 'views/$vistaSafe', '$moduloSafe');\"";
+                                $moduloSafe = htmlspecialchars($item->modulo ?? '', ENT_QUOTES);
+                                $dataAttrs = ' data-vista="' . $vistaSafe . '" data-modulo="' . $moduloSafe . '"';
                             }
 
-                            echo '<a href="' . $href . '" class="nav-link" ' . $onclick . '>';
+                            echo '<a id="' . $id . '" href="#" class="nav-link"' . $dataAttrs . '>';
                             echo '<i class="' . $iconClass . '"></i>';
                             echo '<p>';
                             echo htmlspecialchars($item->modulo);
@@ -86,29 +86,66 @@
 </aside>
 <!-- /.Main Sidebar Container -->
 
-<script>
+<!-- <script>
     $(document).ready(function() {
         // Lógica de Activación de Menú (Active State)
         $('#nav').on('click', 'a.nav-link', function(e) {
             let $link = $(this);
             let $li = $link.parent('li');
             let hasChildren = $li.hasClass('has-treeview');
-
-            // Si es un padre (carpeta), AdminLTE maneja el slideDown.
-            // Solo queremos manejar la clase 'active' si es un enlace final (hoja).
             if (!hasChildren) {
                 // 1. Limpiar todos los activos previos
                 $('ul.nav-sidebar .nav-link').removeClass('active');
-                
                 // 2. Activar el link actual
                 $link.addClass('active');
-
-                // 3. Activar recursivamente a los padres (abuelos) para que queden azules/abiertos
                 $link.parents('.has-treeview').each(function() {
                     $(this).children('a.nav-link').addClass('active');
-                    $(this).addClass('menu-open'); // Forzar apertura en AdminLTE
+                    // $(this).addClass('menu-open'); // Forzar apertura en AdminLTE
                 });
             }
         });
     });
+</script> -->
+
+
+<script>
+    (function($) {
+        // Estado inicial: sólo primer top-level activo
+        $(function() {
+            $('ul.nav-sidebar .nav-link').removeClass('active');
+            const $firstTop = $('#nav > li.nav-item:first > a.nav-link');
+            if ($firstTop.length) {
+                $firstTop.addClass('active');
+            }
+
+            // Handler delegado: único punto de entrada para clicks en links del menú
+            $('#nav').on('click', 'a.nav-link', function(e) {
+                const $link = $(this);
+                const vista = $link.data('vista');
+                const modulo = $link.data('modulo');
+                // Si ya está activo, no hacemos nada
+                if ($link.hasClass('active')) {
+                    e.preventDefault();
+                    return;
+                }
+                // Si el item no tiene vista (es contenedor con hijos), dejamos que el treeview lo maneje
+                if (!vista) {
+                    return;
+                }
+                // Actualizar clases 'active'
+                $('ul.nav-sidebar .nav-link').removeClass('active');
+                $link.addClass('active');
+                $link.parents('.has-treeview').each(function() {
+                    $(this).children('a.nav-link').addClass('active');
+                });
+
+                // Llamada centralizada para cargar contenido
+                if (typeof cargarContenido === 'function') {
+                    cargarContenido('content-wrapper', 'views/' + vista, modulo);
+                } else {
+                    console.warn('cargarContenido no está definida');
+                }
+            });
+        });
+    })(jQuery);
 </script>

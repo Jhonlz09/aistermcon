@@ -11,7 +11,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Horario personal</h1>
             </div>
-            <?php if (isset($_SESSION["crear20"]) && $_SESSION["crear20"] === true) : ?>
+            <?php if (isset($_SESSION["crear33"]) && $_SESSION["crear33"] === true) : ?>
                 <div class="col-auto" style="padding-block:.5rem">
                     <button id="btnNuevo" class="btn bg-gradient-green">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -520,9 +520,9 @@
 <script src="assets/plugins/daterange-vanilla/daterange.min.js"></script>
 <script src="assets/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.min.js" type="text/javascript"></script>
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar20"] || $_SESSION["eliminar20"] ?>';
-    var editar = '<?php echo $_SESSION["editar20"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar20"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar33"] || $_SESSION["eliminar33"] ?>';
+    var editar = '<?php echo $_SESSION["editar33"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar33"] ?>';
     var collapsedGroups = {}; // Variable para identificar la tabla activa
     // var calendarInstance = null;
     configuracionTable = {

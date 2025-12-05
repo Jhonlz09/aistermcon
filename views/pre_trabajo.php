@@ -380,13 +380,11 @@
             form = document.getElementById('formNuevo'),
             icon = document.querySelector('.modal-title i'),
             btnNuevo = document.getElementById('btnNuevo');
-
+            
         const id = document.getElementById('id'),
             fecha = document.getElementById('fecha_inp'),
             cliente = document.getElementById('cliente'),
-            // correo = document.getElementById('correo'),
-            detalles = document.getElementById('detalles'),
-            telefono = document.getElementById('telefono');
+            detalles = document.getElementById('detalles');
 
         $(modal).on("shown.bs.modal", () => {
             cliente.focus();
@@ -424,7 +422,6 @@
                         if (file.type === "") {
                             const imageUrl = `/aistermcon/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=pre_trabajo`;
                             dzImage.innerHTML = `<img src="${imageUrl}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;"alt="preview">`;
-                            // dzImage.innerHTML = `<img src="C:/var/www/orden_compra/${file.ruta}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" alt="preview">`;
                         } else if (file.type.startsWith("image/")) {
                             // Mostrar miniatura real de la imagen
                             var reader = new FileReader();
@@ -436,15 +433,6 @@
                             dzImage.innerHTML = getFileIconSVG(file) || "";
                         }
                     }
-                    // let pdfCount = 0;
-                    // this.files.forEach(f => {
-                    //     if (f.type === "application/pdf") pdfCount++;
-                    // });
-
-                    // if ((file.type === "application/pdf" && pdfCount > 1)) {
-                    //     this.removeFile(file);
-                    //     alert("Solo puedes subir 1 archivo PDF por vez.");
-                    // }
                 });
 
                 this.on("removedfile", function(file) {
@@ -502,11 +490,7 @@
             src.append('id', id_);
             confirmarEliminar('este', 'pre trabajo', function(r) {
                 if (r) {
-                    confirmarAccion(src, 'pre_trabajo', tabla, '', function(r) {
-                        if (r) {
-                            cargarCombo('Pretrabajo');
-                        }
-                    });
+                    confirmarAccion(src, 'pre_trabajo', tabla, '', function(r) {});
                 }
             });
         });
@@ -600,7 +584,7 @@
             });
             datos.append('accion', accion);
             confirmarAccion(datos, 'pre_trabajo', tabla, modal, function(r) {})
-        
+
         });
     })
 </script>

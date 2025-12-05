@@ -72,7 +72,7 @@ if (session_status() == PHP_SESSION_NONE) {
                             </div>
                         </div>
                     <?php endif; ?>
-                    <?php if (isset($_SESSION["crear17"])) : ?>
+                    <?php if (isset($_SESSION["crear23"])) : ?>
                         <div class="col-6 col-sm">
                             <div class="small-box bg-4">
                                 <div class="inner">

@@ -1,21 +1,16 @@
 <?php
 session_start();
 require_once "../utils/database/conexion.php";
-
-class ModeloPretrabajo
+class ModeloTrabajoRealizado
 {
-    static public function mdlListarPretrabajo($anio)
+    static public function mdlListarTrabajoRealizado($anio)
     {
         try {
-            $consulta = "SELECT p.id, TO_CHAR(p.fecha_inspeccion, 'DD/MM/YYYY') as fecha, p.cliente, p.detalle,p.pdf_arr, p.img_arr, null AS acciones, TO_CHAR(p.fecha_inspeccion, 'YYYY-MM-DD') AS fecha_inspeccion
-                    FROM tblpre_trabajo p
-                    WHERE EXTRACT(YEAR FROM p.fecha_inspeccion) = :anio ORDER BY p.id DESC;";
-
+            $consulta = "SELECT t.id, TO_CHAR(t.fecha, 'DD/MM/YYYY') as fecha, t.cliente, t.isfinalizado, t.pdf_arr, t.img_arr, null AS acciones, TO_CHAR(t.fecha, 'YYYY-MM-DD') AS fecha_finalizado, t.nota
+                    FROM tbltrabajo_realizado t
+                    WHERE EXTRACT(YEAR FROM t.fecha) = :anio ORDER BY t.id DESC;";
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":anio", $anio, PDO::PARAM_INT);
-            // if ($estado !== 'null') {
-            //     $l->bindParam(":estado", $estado, PDO::PARAM_INT);
-            // }
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -23,19 +18,17 @@ class ModeloPretrabajo
         }
     }
 
-    static public function mdlAgregarPretrabajo($fecha, $cliente, $detalles, $pdf_arr, $img_arr)
+    static public function mdlAgregarTrabajoRealizado($fecha, $cliente, $nota, $pdf_arr, $img_arr, $isFinalizado)
     {
         try {
-
             $conexion = Conexion::ConexionDB();
-            $a = $conexion->prepare("INSERT INTO tblpre_trabajo(fecha_inspeccion, cliente, detalle, pdf_arr, img_arr) VALUES (:fecha, :cliente, :detalles, :pdf_arr, :img_arr)");
-
+            $a = $conexion->prepare("INSERT INTO tbltrabajo_realizado(fecha, cliente, nota, pdf_arr, img_arr, isFinalizado) VALUES (:fecha, :cliente, :nota, :pdf_arr, :img_arr, :isFinalizado)");
             $a->bindParam(":fecha", $fecha);
             $a->bindParam(":cliente", $cliente);
-            $a->bindParam(":detalles", $detalles);
+            $a->bindParam(":nota", $nota);
             $a->bindParam(":pdf_arr", $pdf_arr);
             $a->bindParam(":img_arr", $img_arr);
-
+            $a->bindParam(":isFinalizado", $isFinalizado, PDO::PARAM_BOOL);
             $a->execute();
             return [
                 'status' => 'success',
@@ -55,23 +48,25 @@ class ModeloPretrabajo
         }
     }
 
-    static public function mdlEditarPretrabajo($id, $fecha, $cliente, $detalles, $pdf_arr, $img_arr)
+    static public function mdlEditarTrabajoRealizado($id, $fecha, $cliente, $nota, $pdf_arr, $img_arr, $isFinalizado)
     {
         try {
             $conexion = Conexion::ConexionDB();
 
             $campos = [
-                "fecha_inspeccion = :fecha",
+                "fecha = :fecha",
                 "cliente = :cliente",
-                "detalle = :detalles",
+                "nota = :nota",
+                "isFinalizado = :isFinalizado"
             ];
 
             // Solo agregar columnas de archivo si hay valor nuevo
             $binds = [
                 ":fecha" => $fecha,
-                ":detalles" => $detalles,
+                ":nota" => $nota,
                 ":cliente" => $cliente,
-                ":id" => $id
+                ":id" => $id,
+                ":isFinalizado" => $isFinalizado
             ];
 
             $archivos = [
@@ -91,22 +86,21 @@ class ModeloPretrabajo
                 }
             }
 
-            $sql = "UPDATE tblpre_trabajo SET " . implode(", ", $campos) . " WHERE id = :id";
+            $sql = "UPDATE tbltrabajo_realizado SET " . implode(", ", $campos) . " WHERE id = :id";
             $stmt = $conexion->prepare($sql);
 
             foreach ($binds as $k => $v) {
                 $stmt->bindValue($k, $v);
             }
-            // var_dump($stmt);
             $stmt->execute();
 
-            return ['status' => 'success', 'm' => 'El pre trabajo se actualizó correctamente.'];
+            return ['status' => 'success', 'm' => 'El informe de trabajo se actualizó correctamente.'];
         } catch (PDOException $e) {
             return ['status' => 'danger', 'm' => 'Error al actualizar: ' . $e->getMessage()];
         }
     }
 
-    public static function mdlEliminarPretrabajo($id)
+    public static function mdlEliminarTrabajoRealizado($id)
     {
         try {
             $db = Conexion::ConexionDB();
@@ -199,6 +193,30 @@ class ModeloPretrabajo
             return true;
         } catch (PDOException $e) {
             return "Error en la eliminación: " . $e->getMessage();
+        }
+    }
+
+    static public function mdlCambiarEstadoTrabajoRealizado($id, $isFinalizado)
+    {
+        try {
+            $db = Conexion::ConexionDB();
+
+            $sql = "UPDATE tbltrabajo_realizado
+                    SET isFinalizado = :isFinalizado
+                    WHERE id = :id";
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':isFinalizado', $isFinalizado, PDO::PARAM_BOOL);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return [
+                'status' => 'success',
+                'm' => 'El estado del trabajo realizado se actualizó correctamente.'
+            ];
+        } catch (PDOException $e) {
+            return [
+                'status' => 'danger',
+                'm' => 'Error al actualizar el estado: ' . $e->getMessage()
+            ];
         }
     }
 }

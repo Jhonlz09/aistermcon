@@ -10,7 +10,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Contactos</h1>
             </div>
-            <?php if (isset($_SESSION["crear23"]) && $_SESSION["crear23"] === true) : ?>
+            <?php if (isset($_SESSION["crear30"]) && $_SESSION["crear30"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -143,10 +143,10 @@
                                             </div>
                                             <div class="span-btn cat" style="padding-right:.5rem;">
                                                 <span class="new-span badge bg-gradient-dark" data-icon="fa-buildings" data-title='Nueva' data-value="Empresa" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                                <?php if ($_SESSION["editar23"]) : ?>
+                                                <?php if ($_SESSION["editar30"]) : ?>
                                                     <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-buildings" data-value="Empresa" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
                                                 <?php endif; ?>
-                                                <?php if ($_SESSION["eliminar23"]) : ?>
+                                                <?php if ($_SESSION["eliminar30"]) : ?>
                                                     <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Empresa" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
                                                 <?php endif; ?>
 
@@ -237,9 +237,9 @@
 </div>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar23"] || $_SESSION["eliminar23"] ?>';
-    var editar = '<?php echo $_SESSION["editar23"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar23"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar30"] || $_SESSION["eliminar30"] ?>';
+    var editar = '<?php echo $_SESSION["editar30"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar30"] ?>';
 
     configuracionTable = {
         "responsive": true,

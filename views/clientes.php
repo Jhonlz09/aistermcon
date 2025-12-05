@@ -10,7 +10,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Clientes</h1>
             </div>
-            <?php if (isset($_SESSION["crear22"]) && $_SESSION["crear22"] === true) : ?>
+            <?php if (isset($_SESSION["crear29"]) && $_SESSION["crear29"] === true) : ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -183,10 +183,10 @@
 </div>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar22"] || $_SESSION["eliminar22"] ?>';
-    var showColumns = '<?php echo $_SESSION["editar22"] || $_SESSION["eliminar22"] || $_SESSION["crear22"]  ?>';
-    var editar = '<?php echo $_SESSION["editar22"] ?>';
-    var eliminar = '<?php echo $_SESSION["eliminar22"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar29"] || $_SESSION["eliminar29"] ?>';
+    var showColumns = '<?php echo $_SESSION["editar29"] || $_SESSION["eliminar29"] || $_SESSION["crear29"]  ?>';
+    var editar = '<?php echo $_SESSION["editar29"] ?>';
+    var eliminar = '<?php echo $_SESSION["eliminar29"] ?>';
 
     OverlayScrollbars(document.querySelector('.scroll-modal'), {
         autoUpdate: true,

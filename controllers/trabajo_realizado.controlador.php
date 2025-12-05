@@ -1,24 +1,24 @@
 <?php
-require_once "../models/pre_trabajo.modelo.php";
+require_once "../models/trabajo_realizado.modelo.php";
 
-class ControladorPretrabajo
+class ControladorTrabajoRealizado
 {
-    public $id, $detalles, $id_cliente, $estado, $anio, $cliente, $fecha, $ext, $ruta;
+    public $id, $nota, $id_cliente, $estado, $anio, $cliente, $fecha, $ext, $ruta, $isFinalizado;
 
-    public function listarPretrabajo()
+    public function listarTrabajoRealizado()
     {
-        $data = ModeloPretrabajo::mdlListarPretrabajo($this->anio, $this->estado);
+        $data = ModeloTrabajoRealizado::mdlListarTrabajoRealizado($this->anio);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function agregarPretrabajo()
+    public function agregarTrabajoRealizado()
     {
         $year = date("Y", strtotime($this->fecha));
-        $uploadDir = "/var/www/pre_trabajo/$year/";
+        $uploadDir = "/var/www/trabajo_realizado/$year/";
         $pdf_arr = [];
         $img_arr = [];
-        if (isset($_FILES['pre_trabajo_files'])) {
-            $files = $_FILES['pre_trabajo_files'];
+        if (isset($_FILES['trabajo_realizado_files'])) {
+            $files = $_FILES['trabajo_realizado_files'];
             $baseName = $this->fecha . '   ' . $this->cliente;
             $this->procesarArchivos($files, $uploadDir, $baseName, $year, $pdf_arr, $img_arr);
         }
@@ -26,21 +26,19 @@ class ControladorPretrabajo
         $pdf_arr = !empty($pdf_arr) ? $this->arrayToPgArray($pdf_arr) : null;
         $img_arr = !empty($img_arr) ? $this->arrayToPgArray($img_arr) : null;
         /* ------------------- 📝 INSERTAR EN BD ------------------- */
-        $data = ModeloPretrabajo::mdlAgregarPretrabajo($this->fecha,$this->cliente,$this->detalles, $pdf_arr,$img_arr);
-
+        $data = ModeloTrabajoRealizado::mdlAgregarTrabajoRealizado($this->fecha, $this->cliente, $this->nota, $pdf_arr, $img_arr, $this->isFinalizado);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function editarPretrabajo()
+    public function editarTrabajoRealizado()
     {
         $year = date("Y", strtotime($this->fecha));
-        $uploadDir = "/var/www/pre_trabajo/$year/";
-
+        $uploadDir = "/var/www/trabajo_realizado/$year/";
         $pdf_arr = [];
         $img_arr = [];
 
-        if (isset($_FILES['pre_trabajo_files'])) {
-            $files = $_FILES['pre_trabajo_files'];
+        if (isset($_FILES['trabajo_realizado_files'])) {
+            $files = $_FILES['trabajo_realizado_files'];
             $baseName = $this->fecha . '   ' . $this->cliente;
             $this->procesarArchivos($files, $uploadDir, $baseName, $year, $pdf_arr, $img_arr);
         }
@@ -49,35 +47,10 @@ class ControladorPretrabajo
         $pdf_arr = !empty($pdf_arr) ? $this->arrayToPgArray($pdf_arr) : null;
         $img_arr = !empty($img_arr) ? $this->arrayToPgArray($img_arr) : null;
 
-        $data = ModeloPretrabajo::mdlEditarPretrabajo($this->id,$this->fecha,$this->cliente, $this->detalles,$pdf_arr,$img_arr);
+        $data = ModeloTrabajoRealizado::mdlEditarTrabajoRealizado($this->id, $this->fecha, $this->cliente, $this->nota, $pdf_arr, $img_arr, $this->isFinalizado);
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-
-    // private function procesarArchivos($files, $uploadDir, $baseName, $year, &$pdfVar, &$xlsOrDocVar)
-    // {
-    //     if (is_array($files['name'])) {
-    //         for ($i = 0; $i < count($files['name']); $i++) {
-    //             $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
-    //             $filePath = $uploadDir . $baseName . '.' . $ext;
-    //             $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
-    //             $dest = $uploadDir . $uniqueFileName;
-    //             if (move_uploaded_file($files['tmp_name'][$i], $dest)) {
-    //                 if ($ext === 'pdf') $pdfVar = "$year/$uniqueFileName";
-    //                 else $xlsOrDocVar = "$year/$uniqueFileName";
-    //             }
-    //         }
-    //     } else {
-    //         $ext = strtolower(pathinfo($files['name'], PATHINFO_EXTENSION));
-    //         $filePath = $uploadDir . $baseName . '.' . $ext;
-    //         $uniqueFileName = $this->generateUniqueFilePath($filePath, $baseName);
-    //         $dest = $uploadDir . $uniqueFileName;
-    //         if (move_uploaded_file($files['tmp_name'], $dest)) {
-    //             if ($ext === 'pdf') $pdfVar = "$year/$uniqueFileName";
-    //             else $xlsOrDocVar = "$year/$uniqueFileName";
-    //         }
-    //     }
-    // }
 
     private function procesarArchivos($files, $uploadDir, $baseName, $year, &$pdfArray, &$imgArray)
     {
@@ -124,24 +97,21 @@ class ControladorPretrabajo
         return $uniqueFilePath;
     }
 
-    public function eliminarPretrabajo()
+    public function eliminarTrabajoRealizado()
     {
-        $data = ModeloPretrabajo::mdlEliminarPretrabajo($this->id);
+        $data = ModeloTrabajoRealizado::mdlEliminarTrabajoRealizado($this->id);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     public function obtenerFiles()
     {
-        $data = ModeloPretrabajo::mdlObtenerTodosLosArchivos($this->id);
-
+        $data = ModeloTrabajoRealizado::mdlObtenerTodosLosArchivos($this->id);
         if (empty($data)) {
-            // Si no hay imágenes, retorna un arreglo vacío
             echo json_encode([
                 'files' => [],
             ]);
             return;
         }
-
         // Si hay imágenes, retornarlas en el JSON
         echo json_encode([
             'files' => $data,
@@ -150,42 +120,55 @@ class ControladorPretrabajo
 
     public function eliminarFiles()
     {
-        $data = ModeloPretrabajo::mdlEliminarArchivo($this->id, $this->ruta, $this->ext);
+        $data = ModeloTrabajoRealizado::mdlEliminarArchivo($this->id, $this->ruta, $this->ext);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function cambiarEstadoTrabajoRealizado()
+    {
+        $data = ModeloTrabajoRealizado::mdlCambiarEstadoTrabajoRealizado($this->id, $this->isFinalizado);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
 
 if (!isset($_POST["accion"])) {
-    $data = new ControladorPretrabajo();
+    $data = new ControladorTrabajoRealizado();
     $data->anio = $_POST["anio"];
-    $data->listarPretrabajo();
+    $data->listarTrabajoRealizado();
 } else {
     if ($_POST["accion"] == 1) {
-        $data = new ControladorPretrabajo();
+        $data = new ControladorTrabajoRealizado();
         $data->cliente = $_POST["cliente"];
         $data->fecha = $_POST["fecha"];
-        $data->detalles = $_POST["detalles"];
-        $data->agregarPretrabajo();
+        $data->nota = $_POST["nota"];
+        $data->isFinalizado = isset($_POST["isFinalizado"]) ? (filter_var($_POST["isFinalizado"], FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false') : 'true';
+        $data->agregarTrabajoRealizado();
     } else if ($_POST["accion"] == 2) {
-        $data = new ControladorPretrabajo();
+        $data = new ControladorTrabajoRealizado();
         $data->id = $_POST["id"];
         $data->cliente = $_POST["cliente"];
         $data->fecha = $_POST["fecha"];
-        $data->detalles = $_POST["detalles"];
-        $data->editarPretrabajo();
+        $data->nota = $_POST["nota"];
+        $data->isFinalizado = isset($_POST["isFinalizado"]) ? (filter_var($_POST["isFinalizado"], FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false') : 'true';
+        $data->editarTrabajoRealizado();
     } else if ($_POST["accion"] == 3) {
-        $data = new ControladorPretrabajo();
+        $data = new ControladorTrabajoRealizado();
         $data->id = $_POST["id"];
-        $data->eliminarPretrabajo();
+        $data->eliminarTrabajoRealizado();
     } else if ($_POST["accion"] == 4) {
-        $data = new ControladorPretrabajo();
+        $data = new ControladorTrabajoRealizado();
         $data->id = $_POST["id"];
         $data->obtenerFiles();
     } else if ($_POST["accion"] == 5) {
-        $data = new ControladorPretrabajo();
+        $data = new ControladorTrabajoRealizado();
         $data->id = $_POST["id"];
         $data->ruta = $_POST["ruta"];
         $data->ext = $_POST["ext"];
         $data->eliminarFiles();
+    } else if ($_POST["accion"] == 6) {
+        $data = new ControladorTrabajoRealizado();
+        $data->id = $_POST["id"];
+        $data->isFinalizado = isset($_POST["isFinalizado"]) ? filter_var($_POST["isFinalizado"], FILTER_VALIDATE_BOOLEAN) : true;
+        $data->cambiarEstadoTrabajoRealizado();
     }
 }
