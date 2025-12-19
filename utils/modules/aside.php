@@ -411,7 +411,7 @@
                                                             <?php endif; ?>
                                                             <div class="card-body" style="line-height:1.2;">
                                                                 <div class="form-group" style="margin-bottom: 1.6rem;">
-                                                                    <label id="lbl" class="mb-0 combo"><i class="fa-solid fa-person-carry-box"></i> Despachado por</label>
+                                                                    <label id="lbl" class="mb-0 combo"><i class="fas fa-person-carry-box"></i> Despachado por</label>
                                                                     <div class="row">
                                                                         <div class="col-12">
                                                                             <select id="cboDespachado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>

@@ -149,8 +149,8 @@ class SesionModelo
         $stmt = Conexion::ConexionDB()->prepare("SELECT empresa, iva, emisor, ruc, matriz, correo1,  correo2, telefonos, entradamultiple AS entrada, bodeguero, conductor, sbu,
                 (SELECT last_value + increment_by FROM pg_sequences 
                     WHERE schemaname = 'public' AND sequencename = 'secuencia_cotizacion') AS sc_cot 
-                    FROM tblconfiguracion;");
-        // $stmt->bindParam(":id", $id, PDO::PARAM_STR);
+                    FROM tblconfiguracion");
+        
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS);
     }

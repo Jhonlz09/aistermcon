@@ -324,7 +324,6 @@ if ($datos_guias == null) {
             ['family'=>'Arial', 'style'=>'B', 'size'=>12],
             ['family'=>'Arial', 'style'=>'I', 'size'=>12]
         );
-        // $pdf->MultiCell(0, 6, iconv('UTF-8', 'windows-1252', 'Motivo: ' . $row["motivo"]), 0, 'L', 0);
         $pdf->Ln(7);
         $id_guia = $row["id_guia"];
 
@@ -334,29 +333,30 @@ if ($datos_guias == null) {
             $pdf->SetFont('Arial', 'B', 11);
             $pdf->checkNewPage($pdf, 6);
             $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Produto fabricado:'), 0, 1, 'L');
-            $header_fab = array('Codigo', 'Descripcion', 'Unidad', 'Cantidad Fab.');
+            $header_fab = array('Codigo', 'Descripcion', 'Unid.', 'Cantidad fab', 'Cantidad ent.');
             $header_start = true;
             $prod_fab_des = null;
-            $header = array('Codigo', 'Descripcion', 'Unidad', 'Usado');
+            $header = array('Codigo', 'Descripcion', 'Unid.', 'Usado');
 
             $pdf->SetStartY(20);
             $pdf->SetFont('Arial', '', 10);
             $salida = $fill["cantidad_salida"];
-            $entrada = ($fill["retorno"] == '-') ? $fill["cantidad_salida"] : $fill["retorno"];
+            $entrada = $fill["retorno"];
             $util = $fill["utilizado"];
             $fab_pro = $fill['fabricado'];
             $id_producto = $fill['id_producto'];
             // $list_prod_util = ModeloInforme::mdlInformeOrdenFabUtil($id_producto);
             $pdf->SetMargins(12, 0, 12);
-            $pdf->SetWidths(array(27, 113, 18, 30));
-            $pdf->SetAligns(array('L', 'L', 'C', 'C'));
-            $pdf->Row($header_fab, array(12, 12, 12, 12), 'B');
+            $pdf->SetWidths(array(17, 96, 14, 30, 30));
+            $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C'));
+            $pdf->Row($header_fab, array(12, 12, 12, 12, 12), 'B');
             $pdf->Row(array(
                 iconv('UTF-8', 'windows-1252', $fill["codigo"]),
                 iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
                 iconv('UTF-8', 'windows-1252', $fill["unidad"]),
+                iconv('UTF-8', 'windows-1252', $salida),
                 iconv('UTF-8', 'windows-1252', $entrada),
-            ), array(10, 10, 10, 10), '', 7, [true, true, true, true]);
+            ), array(9, 9, 9, 10, 10), '', 7, [true, true, true, true, true]);
             $prod_fab_des = $fill["descripcion"];
             // $pdf->Ln();
             $list_prod_util = ModeloInforme::mdlInformeOrdenFabUtil($id_producto);
@@ -388,7 +388,7 @@ if ($datos_guias == null) {
                     iconv('UTF-8', 'windows-1252', $list["descripcion"]),
                     iconv('UTF-8', 'windows-1252', $list["unidad"]),
                     iconv('UTF-8', 'windows-1252', $list["cantidad_salida"]),
-                ), array(10, 10, 10, 10), '', 7, [true, true, true, true]);
+                ), array(9, 9, 9, 9), '', 7, [true, true, true, true]);
             }
             $pdf->Ln();
             $pdf->SetMargins(12, 0, 12);
@@ -400,15 +400,14 @@ if ($datos_guias == null) {
     $pdf->Ln(8);
     $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'RESUMEN DE FABRICACION: '), 0, 1, 'L');
     $pdf->Ln(3);
-    $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.');
-    $pdf->SetWidths(array(24, 70, 18, 24, 28, 24));
+    $header_resumen = array('Codigo', 'Descripcion', 'Unid.', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.');
+    $pdf->SetWidths(array(24, 70, 13, 27, 27, 26));
     $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C'));
     $pdf->Row($header_resumen, array(12, 12, 12, 12, 12, 12), 'B');
     $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden, true);
     foreach ($data_resumen as $fill) {
         $pdf->SetStartY(20);
         $pdf->SetFont('Arial', '', 10);
-        // $resaño = substr($fill["year"], -2);
         $salida = $fill["cantidad_salida"];
         $entrada = $fill["retorno"];
         $util = $fill["utilizado"];
@@ -427,48 +426,5 @@ if ($datos_guias == null) {
         ), array(10, 10, 10, 10, 10, 10), '', 6, [true, true, true, true, true, true]);
     }
 }
-// Configurar cabeceras para indicar el tipo de contenido y el nombre de descarga
 
-// Generar el PDF y almacenarlo temporalmente
 $pdf->Output('I', $filename);
-
-
-// $pdf->SetFont('Arial', 'B', 12);
-// $pdf->Row(array('Cantidad', 'Unidad', 'Descripcion'), array(12, 12, 12), 'B', 7);
-// $rowsPrinted = 0;
-// $totalRowsPrinted = 0;
-
-// foreach ($data_boleta as $fill) {
-//     // Verificar si se alcanzó el límite de filas por página
-//     if ($rowsPrinted >= 24) {
-//         // Si se alcanza el límite, dibujar la fila adicional y reiniciar el contador de filas
-//         $pdf->SetWidths(array(194));
-//         $pdf->SetAligns(array('C'));
-
-//         $pdf->Row(array(''. "\n" . ' RECIBIDO POR                                                                              ENTREGADO POR',), array(9), '', 16);
-//         $rowsPrinted = 0;
-
-//         // Agregar una nueva página si es necesario
-//         if ($pdf->GetY() + 40 > $pdf->GetPageHeight() - 10) {
-//             $pdf->AddPage();
-//             // Dibujar encabezado de tabla en la nueva página
-//             $pdf->SetY($pdf->GetY() + 4);
-//             $pdf->SetWidths(array(30, 20, 144));
-//             $pdf->SetAligns(array('C', 'C', 'C'));
-//             $pdf->Row(array('Cantidad', 'Unidad', 'Descripcion'), array(12, 12, 12), 'B', 7);
-//             $totalRowsPrinted = 0; // Reiniciar el contador total de filas impresas para la nueva página
-//         }
-//     }
-
-//     // Dibujar fila de datos
-//     $pdf->SetAligns(array('C', 'C', 'L'));
-//     $pdf->Row(array(
-//         iconv('UTF-8', 'windows-1252', $fill["cantidad_salida"]),
-//         iconv('UTF-8', 'windows-1252', $fill["unidad"]),
-//         iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
-//     ), array(8, 8, 8), '', 6);
-
-//     // Incrementar el contador de filas
-//     $rowsPrinted++;
-//     $totalRowsPrinted++;
-// }
