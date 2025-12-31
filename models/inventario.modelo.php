@@ -416,8 +416,8 @@ class ModeloInventario
     {
         try {
 
-            $e = Conexion::ConexionDB()->prepare("SELECT i.codigo, i.codigo || ' - ' || i.descripcion AS descripcion, 
-            (i.stock - i.stock_mal) AS cantidad, null as a
+            $e = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo, i.codigo || ' - ' || i.descripcion AS descripcion, 
+            (i.stock - i.stock_mal) AS cantidad, i.img
                 FROM tblinventario i WHERE i.estado = true 
                 AND i.fabricado = false
                 ORDER BY i.descripcion;");
@@ -569,7 +569,7 @@ SELECT
     stock, 
     producto_util
 FROM final_data
-ORDER BY fecha_raw, tipo_orden");
+ORDER BY fecha, tipo_orden");
             $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
             $e->bindParam(':anio', $anio, PDO::PARAM_INT);
             $e->execute();

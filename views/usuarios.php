@@ -170,7 +170,7 @@
             {
                 targets: 4,
                 data: "acciones",
-                visible: mostrarCol,
+                visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
                     if (row.id === 1) { // Verifica si es la primera fila
                         return (

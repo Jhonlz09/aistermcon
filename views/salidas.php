@@ -114,7 +114,6 @@
 </div>
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar4"] || $_SESSION["eliminar4"] ?>';
     var crear = '<?php echo $_SESSION["crear4"] ?>';
     var editar = '<?php echo $_SESSION["editar4"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar4"] ?>';

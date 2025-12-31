@@ -86,7 +86,6 @@
 </section>
 <!-- /.Contenido -->
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar9"] || $_SESSION["eliminar9"] ?>';
     var editar = '<?php echo $_SESSION["editar9"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar9"] ?>';
     var collapsedGroups = {};

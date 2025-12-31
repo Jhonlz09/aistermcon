@@ -153,7 +153,6 @@
 <!-- /.Modal Date-->
 
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar7"] || $_SESSION["eliminar7"] ?>';
     var editar = '<?php echo $_SESSION["editar7"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar7"] ?>';
     var collapsedGroups = {};

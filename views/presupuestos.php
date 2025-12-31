@@ -278,7 +278,7 @@
 </div>
 
 <script>
-    var mostrarCol = true;
+    var mostrarCol = '<?php echo $_SESSION["editar22"] || $_SESSION["eliminar22"] ?>';
     var editar = '<?php echo $_SESSION["editar22"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar22"] ?>';
     OverlayScrollbars(document.querySelector('.scroll-modal'), {
@@ -330,7 +330,6 @@
                 targets: 5,
                 "orderable": false,
                 responsivePriority: 2,
-                visible: mostrarCol ? true : false,
             },
             {
                 targets: 6,
@@ -474,6 +473,7 @@
             {
                 targets: 11,
                 orderable: false,
+                visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
                     let botones = '';
                     if (editar) {

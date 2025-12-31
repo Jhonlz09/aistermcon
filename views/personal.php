@@ -262,7 +262,7 @@
                 targets: 8,
                 responsivePriority: 2,
                 data: null,
-                visible: mostrarCol,
+                visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
                     // let ruta = true;
                     let ruta = row.ruta ?? '';

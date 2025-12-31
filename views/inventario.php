@@ -529,7 +529,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             {
                 targets: 10,
                 data: "acciones",
-                visible: mostrarCol,
+                visible: mostrarCol ? true : false,
                 responsivePriority: 2,
                 render: function(data, type, row, full, meta) {
                     return (

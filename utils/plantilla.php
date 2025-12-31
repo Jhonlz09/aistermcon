@@ -321,7 +321,7 @@
             // Verificar el estado de la sesión cada 5 minutos (300000 milisegundos)
             checkSessionInterval = setInterval(checkSession, 300000);
 
-            
+
 
             function cargarContenido(contenedor, contenido, id = '') {
                 let tbl = 'tbl' + id;
@@ -350,7 +350,6 @@
 
                         $('#' + tbl).DataTable().clear().rows.add(JSON.parse(tablaData)).draw();
                         // $('.dtfh-floatingparent').remove(); // Limpia headers flotantes colgados
-
                         tabla.settings()[0].ajax = {
                             "url": "controllers/" + ruta + ".controlador.php",
                             "type": "POST",
@@ -365,6 +364,7 @@
                 var ul = this.menu.element;
                 ul.outerWidth(this.element.outerWidth());
             }
+
             let isLocked = false;
             let activeControl = null;
             control.forEach((e) => {
@@ -1249,12 +1249,70 @@
                                 searchBox.autocomplete({
                                     source: function(request, response) {
                                         const input = request.term.toLowerCase().trim();
-                                        const palabras = input.split(/\s+/);
 
-                                        const resultados = items.filter(item => {
-                                            const label = item.label.toLowerCase();
-                                            return palabras.every(palabra => label.includes(palabra));
-                                        });
+                                        // Detectar patrón "número x número" (dimensiones)
+                                        const esPatronDimensiones = /^\d+\s*x\s*\d+/i.test(input);
+
+                                        let resultados;
+
+                                        if (esPatronDimensiones) {
+                                            // Para patrones como "8 x 1", buscar con regex más estricto
+                                            const regex = new RegExp(input.replace(/\s+/g, '\\s*'), 'i');
+                                            resultados = items.filter(item => {
+                                                const label = item.label.toLowerCase();
+                                                return regex.test(label);
+                                            });
+
+                                            // Ordenar por relevancia: exactos primero, luego parciales
+                                            resultados.sort((a, b) => {
+                                                const labelA = a.label.toLowerCase();
+                                                const labelB = b.label.toLowerCase();
+
+                                                // Extraer los números del input (ej: "8" y "1" de "8 x 1")
+                                                const numeros = input.match(/\d+/g);
+                                                if (!numeros || numeros.length < 2) {
+                                                    return labelA.localeCompare(labelB);
+                                                }
+
+                                                const num1 = numeros[0];
+                                                const num2 = numeros[1];
+                                                const patronExacto = new RegExp(`\\b${num1}\\s*x\\s*${num2}\\b`, 'i');
+
+                                                const matchA = patronExacto.test(labelA);
+                                                const matchB = patronExacto.test(labelB);
+
+                                                // Primero los que coinciden exactamente
+                                                if (matchA && !matchB) return -1;
+                                                if (!matchA && matchB) return 1;
+
+                                                // Si ambos coinciden exactamente, ordenar alfabéticamente
+                                                if (matchA && matchB) return labelA.localeCompare(labelB);
+
+                                                // Si ninguno coincide exactamente, ordenar por posición
+                                                const posA = labelA.indexOf(input.replace(/\s+/g, ' '));
+                                                const posB = labelB.indexOf(input.replace(/\s+/g, ' '));
+                                                return posA - posB;
+                                            });
+                                        } else {
+                                            // Para búsqueda normal: dividir en palabras
+                                            const palabras = input.split(/\s+/).filter(p => p.length > 0);
+                                            resultados = items.filter(item => {
+                                                const label = item.label.toLowerCase();
+                                                return palabras.every(palabra => label.includes(palabra));
+                                            });
+
+                                            // Ordenar por posición en label
+                                            resultados.sort((a, b) => {
+                                                const labelA = a.label.toLowerCase();
+                                                const labelB = b.label.toLowerCase();
+                                                const posA = labelA.indexOf(palabras[0]);
+                                                const posB = labelB.indexOf(palabras[0]);
+                                                if (posA === 0 && posB !== 0) return -1;
+                                                if (posA !== 0 && posB === 0) return 1;
+                                                return posA - posB;
+                                            });
+                                        }
+
                                         response(resultados);
                                     },
                                     minLength: 3,
@@ -1267,11 +1325,41 @@
                                         return false;
                                     }
                                 }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                                    let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                                    return $("<li>").append(
-                                        "<div>" + item.label + "<strong class='large-text'>CANTIDAD: " +
-                                        res + "</strong></div>"
-                                    ).appendTo(ul);
+                                    let cantidad = (item.cantidad || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                                    const $node = $("<li>");
+                                    const $inner = $("<div style='display:flex;align-items:center;gap:10px;padding:4px 6px;'>");
+                                    let $thumb;
+                                    if (item.img) {
+                                        let imgSrc = '../products/' + item.img;
+                                        $thumb = $("<img/>").attr('src', imgSrc).attr('data-toggle', "modal").attr('data-target', "#modalImagenProducto").attr('data-img-src', imgSrc).attr('data-img-label', item.label).css({
+                                            width: '48px',
+                                            height: '48px',
+                                            objectFit: 'cover',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer'
+                                        });
+                                        $thumb.on('click', function(e) {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            e.stopImmediatePropagation();
+                                            $('#imgProductoModal').attr('src', $(this).attr('data-img-src'));
+                                            $('#modalImagenTitulo').text($(this).attr('data-img-label'));
+                                            // Asegura que Bootstrap modal se dispare después de actualizar contenido
+                                            setTimeout(function() {
+                                                if (!$('#modalImagenProducto').hasClass('show')) {
+                                                    $('#modalImagenProducto').modal('show');
+                                                }
+                                            }, 0);
+                                        });
+                                    } else {
+                                        $thumb = $("<div style='width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:#f0f0f0;'>").append($("<i style='color:#555;font-size:1.5rem;' class='fas fa-xl fa-image-slash'></i>"));
+                                    }
+                                    const $text = $("<div style='flex:1;min-width:0;'>");
+                                    $text.append($("<div style='font-weight:600;word-wrap:break-word;white-space:normal;line-height:1.4;'>").text(item.label));
+                                    $text.append($("<div style='font-size:0.95rem;color:#6b6b6b;'>").html("CANTIDAD: <strong class='large-text'>" + cantidad + "</strong>"));
+                                    $inner.append($thumb).append($text);
+                                    $node.append($inner).appendTo(ul);
+                                    return $node;
                                 };
                             });
                         }
@@ -1321,7 +1409,7 @@
                                         // console.log(item);
                                         let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                                         return $("<li>").append(
-                                            `<div>${item.label} <strong class='large-text'>CANTIDAD: ${res}</strong></div>`
+                                            `<div style='word-wrap:break-word;white-space:normal;line-height:1.5;padding:4px 0;'>${item.label} <strong class='large-text'>CANTIDAD: ${res}</strong></div>`
                                         ).appendTo(ul);
                                     };
                                 });
@@ -1620,12 +1708,69 @@
                         minLength: 3,
                         source: function(request, response) {
                             const input = request.term.toLowerCase().trim();
-                            const palabras = input.split(/\s+/);
 
-                            const resultados = items.filter(item => {
-                                const label = item.label.toLowerCase();
-                                return palabras.every(palabra => label.includes(palabra));
-                            });
+                            // Detectar patrón "número x número" (dimensiones)
+                            const esPatronDimensiones = /^\d+\s*x\s*\d+/i.test(input);
+
+                            let resultados;
+
+                            if (esPatronDimensiones) {
+                                // Para patrones como "8 x 1", buscar con regex más estricto
+                                const regex = new RegExp(input.replace(/\s+/g, '\\s*'), 'i');
+                                resultados = items.filter(item => {
+                                    const label = item.label.toLowerCase();
+                                    return regex.test(label);
+                                });
+
+                                // Ordenar por relevancia: exactos primero, luego parciales
+                                resultados.sort((a, b) => {
+                                    const labelA = a.label.toLowerCase();
+                                    const labelB = b.label.toLowerCase();
+
+                                    // Extraer los números del input (ej: "8" y "1" de "8 x 1")
+                                    const numeros = input.match(/\d+/g);
+                                    if (!numeros || numeros.length < 2) {
+                                        return labelA.localeCompare(labelB);
+                                    }
+
+                                    const num1 = numeros[0];
+                                    const num2 = numeros[1];
+                                    const patronExacto = new RegExp(`\\b${num1}\\s*x\\s*${num2}\\b`, 'i');
+
+                                    const matchA = patronExacto.test(labelA);
+                                    const matchB = patronExacto.test(labelB);
+
+                                    // Primero los que coinciden exactamente
+                                    if (matchA && !matchB) return -1;
+                                    if (!matchA && matchB) return 1;
+
+                                    // Si ambos coinciden exactamente, ordenar alfabéticamente
+                                    if (matchA && matchB) return labelA.localeCompare(labelB);
+
+                                    // Si ninguno coincide exactamente, ordenar por posición
+                                    const posA = labelA.indexOf(input.replace(/\s+/g, ' '));
+                                    const posB = labelB.indexOf(input.replace(/\s+/g, ' '));
+                                    return posA - posB;
+                                });
+                            } else {
+                                // Para búsqueda normal: dividir en palabras
+                                const palabras = input.split(/\s+/).filter(p => p.length > 0);
+                                resultados = items.filter(item => {
+                                    const label = item.label.toLowerCase();
+                                    return palabras.every(palabra => label.includes(palabra));
+                                });
+
+                                // Ordenar por posición en label
+                                resultados.sort((a, b) => {
+                                    const labelA = a.label.toLowerCase();
+                                    const labelB = b.label.toLowerCase();
+                                    const posA = labelA.indexOf(palabras[0]);
+                                    const posB = labelB.indexOf(palabras[0]);
+                                    if (posA === 0 && posB !== 0) return -1;
+                                    if (posA !== 0 && posB === 0) return 1;
+                                    return posA - posB;
+                                });
+                            }
 
                             response(resultados);
                         },
@@ -1637,12 +1782,47 @@
                             valid_orden = true;
                             return false;
                         },
+                    }).on('focus', function() {
+                        // Mostrar listado al retomar el foco si hay 3+ caracteres
+                        if ($(this).val().length >= 3) {
+                            $(this).autocomplete('search', $(this).val());
+                        }
                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                        let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        return $("<li>").append(
-                            "<div>" + item.label + "<strong class='large-text'>CANTIDAD: " +
-                            res + "</strong></div>"
-                        ).appendTo(ul);
+                        let cantidad = (item.cantidad || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        const $node = $("<li>");
+                        const $inner = $("<div style='display:flex;align-items:center;gap:10px;padding:4px 6px;cursor:pointer;'>");
+                        let $thumb;
+                        if (item.img) {
+                            let imgSrc = '../products/' + item.img;
+                            $thumb = $("<img/>").attr('src', imgSrc).attr('data-toggle', "modal").attr('data-target', "#modalImagenProducto").attr('data-img-src', imgSrc).attr('data-img-label', item.label).css({
+                                width: '48px',
+                                height: '48px',
+                                objectFit: 'cover',
+                                borderRadius: '4px',
+                                cursor: 'pointer'
+                            });
+                            $thumb.on('click', function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                e.stopImmediatePropagation();
+                                $('#imgProductoModal').attr('src', $(this).attr('data-img-src'));
+                                $('#modalImagenTitulo').text($(this).attr('data-img-label'));
+                                // Asegura que Bootstrap modal se dispare después de actualizar contenido
+                                setTimeout(function() {
+                                    if (!$('#modalImagenProducto').hasClass('show')) {
+                                        $('#modalImagenProducto').modal('show');
+                                    }
+                                }, 0);
+                            });
+                        } else {
+                            $thumb = $("<div style='width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:#f0f0f0;'>").append($("<i style='color:#555;font-size:1.5rem;' class='fas fa-xl fa-image-slash'></i>"));
+                        }
+                        const $text = $("<div style='flex:1;min-width:0;'>");
+                        $text.append($("<div style='font-weight:600;word-wrap:break-word;white-space:normal;line-height:1.4;'>").text(item.label));
+                        $text.append($("<div style='font-size:0.95rem;color:#6b6b6b;'>").html("CANTIDAD: <strong class='large-text'>" + cantidad + "</strong>"));
+                        $inner.append($thumb).append($text);
+                        $node.append($inner).appendTo(ul);
+                        return $node;
                     };
                 });
 
@@ -1662,10 +1842,14 @@
                             clearButton.style.display = "block";
                             nro_orden.focus();
                         },
+                    }).on('focus', function() {
+                        // Al retomar el foco, mostrar el listado si hay valor
+                        if ($(this).val().length >= 1) {
+                            $(this).autocomplete('search', $(this).val());
+                        }
                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
                         return $("<li>").append(
-                            "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
-                            item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
+                            `<div style='word-wrap:break-word;white-space:normal;line-height:1.5;padding:4px 0;'>${item.label}<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: ${item.cantidad} </strong><span>AÑO: ${item.anio}</span></div></div>`
                         ).appendTo(ul);
                     };
 
@@ -1708,8 +1892,7 @@
                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
                         // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         return $("<li>").append(
-                            "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
-                            item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
+                            `<div style='word-wrap:break-word;white-space:normal;line-height:1.5;padding:4px 0;'>${item.label}<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: ${item.cantidad} </strong><span>AÑO: ${item.anio}</span></div></div>`
                         ).appendTo(ul);
                     };
                 }, null, 'orden', 6)
@@ -2417,25 +2600,20 @@
                             respuesta['descripcion']);
                         // input opcional
                         let inputHTML = "";
-
                         if (both) {
                             inputHTML = `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
                 class="form-control text-center d-inline entrada" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="">`;
                         }
-
-                        // 👉 Sólo agregar si existe
+                        // Sólo agregar si existe
                         if (inputHTML !== "") {
                             nuevaFila.push(inputHTML);
                         }
-
-                        nuevaFila.push(
-                            `<center>
-            <span class='btnEliminaRow text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
-                data-bs-placement='top' title='Eliminar producto'> 
-                <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'></i>
-            </span>
-        </center>`
-                        );
+                        nuevaFila.push(`<center>
+                            <span class='btnEliminaRow text-danger' style='cursor:pointer' data-bs-toggle='tooltip' 
+                                data-bs-placement='top' title='Eliminar producto'> 
+                                <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'></i>
+                            </span>
+                                </center>`);
 
                         tabla.row.add(nuevaFila).node().id = "producto_" + respuesta['codigo'];
                         tabla.draw(false);
@@ -2452,8 +2630,7 @@
                             $(inputBarras).val("");
                         };
                     }
-
-
+                    
                     if (selectedTab === '4') {
                         $.ajax({
                             url: "controllers/salidas.controlador.php",
@@ -2618,7 +2795,7 @@
                         showCancelButton: true,
                         confirmButtonText: "Sí, Guardar",
                         cancelButtonText: "Cancelar",
-                        timer: 5000, // El SweetAlert2 se cerrará automáticamente después de 3 segundos (3000 milisegundos)
+                        timer: 5000,
                         timerProgressBar: true,
                     }).then((result) => {
                         if (result.value) {
@@ -2635,7 +2812,6 @@
                                 // Agrega al FormData directamente en este ciclo si es necesario
                                 formData.append('arr[]', arr[index]);
                             });
-
                             $.ajax({
                                 url: "controllers/registro.controlador.php",
                                 method: "POST",
@@ -2650,13 +2826,11 @@
                                         isSuccess ? "Completado" : "Error",
                                         isSuccess ? "fa-check" : "fa-xmark",
                                         r.m);
-
                                     if (isSuccess) {
                                         table.clear().draw();
                                     }
                                     tabla ? tabla.ajax.reload(null, false) : ''
                                     cargarAutocompletado();
-
                                     if (typeof callback === 'function') {
                                         callback(isSuccess);
                                     }
@@ -2669,6 +2843,22 @@
                 }
             }
         </script>
+        <!-- Modal para ver imagen completa del producto -->
+        <div class="modal fade" id="modalImagenProducto" tabindex="-1" role="dialog" aria-labelledby="modalImagenTitulo" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:fit-content;">
+                <div class="modal-content bg-white" style="border-radius:8px;border:none;box-shadow:0 8px 24px rgba(0,0,0,0.25);">
+                    <div class="modal-header bg-gradient-dark border-0 py-2 px-3">
+                        <h5 class="modal-title text-white" id="modalImagenTitulo">Imagen del Producto</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="font-size:1.5rem;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body d-flex justify-content-center align-items-center p-0" style="background:#fff;">
+                        <img id="imgProductoModal" src="" alt="Imagen del producto" style="width:auto;height:auto;max-width:90vw;max-height:80vh;object-fit:contain;display:block;">
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 <?php } else { ?>
 

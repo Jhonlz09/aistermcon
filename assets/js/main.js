@@ -792,17 +792,37 @@ function cargarAutocompletado(
     },
     dataType: "json",
     success: function (respuesta) {
-      var items = [];
-      for (let i = 0; i < respuesta.length; i++) {
-        var formattedItem = {
-          cod: respuesta[i][0],
-          label: respuesta[i][1],
-          value: respuesta[i][1],
-          cantidad: respuesta[i][2],
-          anio: respuesta[i][3],
-        };
-        items.push(formattedItem);
-      }
+        var items = [];
+        for (let i = 0; i < respuesta.length; i++) {
+          const row = respuesta[i];
+          let formattedItem = {};
+          if (row && typeof row === 'object' && !Array.isArray(row)) {
+            // expected keys from mdlBuscarProductos: id, codigo, descripcion, cantidad, img
+            formattedItem = {
+              id: row.id || null,
+              cod: row.codigo || null,
+              label: row.descripcion || row.label || '',  // descripcion ya contiene "codigo - descripcion"
+              value: row.codigo || '',
+              cantidad: row.cantidad || 0,
+              img: row.img || null,
+              raw: row
+            };
+          } else if (Array.isArray(row)) {
+            // fallback to array indexed rows: [id, codigo, descripcion, cantidad, img]
+            formattedItem = {
+              id: row[0] || null,
+              cod: row[1] || null,
+              label: row[2] || '',  // descripcion con concatenación ya hecha
+              value: row[1] || '',
+              cantidad: row[3] || 0,
+              img: row[4] || null,
+              raw: row
+            };
+          } else {
+            formattedItem = { id: null, cod: row, label: String(row), value: String(row), cantidad: 0, img: null, raw: row };
+          }
+          items.push(formattedItem);
+        }
       if (typeof callback === "function") {
         callback(items);
       } else {

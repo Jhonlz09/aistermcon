@@ -272,7 +272,7 @@
                 targets: 7,
                 responsivePriority: 2,
                 data: "acciones",
-                visible: mostrarCol,
+                visible: mostrarCol ? true : false,
                 render: function(data, type, row, full, meta) {
                     return (
                         "<center style='white-space: nowrap;'>" +
