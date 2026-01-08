@@ -20,7 +20,6 @@
                     {
                         // Si no hay items, salir
                         if (empty($items)) return;
-
                         // Sub-nivel contenedor (UL)
                         if ($level > 1) echo '<ul class="nav nav-treeview">';
 

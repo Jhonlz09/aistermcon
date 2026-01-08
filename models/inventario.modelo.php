@@ -7,21 +7,16 @@ class ModeloInventario
     public static function mdlListarInventario()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT i.id, i.codigo, i.descripcion, 
-                c.nombre as categoria, u.nombre as unidad, p.nombre as percha, 
-                i.stock_mal, i.stock, '' as acciones, i.stock_min, 
-                c.id as categoria_id, u.id as unidad_id, p.id as percha_id,
-                i.img, si.stock_ini,
-                (
-                    SELECT COUNT(*) FROM tblmedidas_producto m WHERE m.id_producto = i.id
-                ) AS cantidad_medidas
-            FROM tblinventario i 
-            JOIN tblcategoria c on c.id= i.id_categoria
-            JOIN tblunidad u on u.id= i.id_unidad
-            JOIN tblubicacion p on p.id= i.id_percha
-            LEFT JOIN tblstock_inicial si on si.id_producto = i.id
-            WHERE i.estado=true
-            ORDER BY i.id ASC");
+            $l = Conexion::ConexionDB()->prepare("SELECT i.id,i.codigo,i.descripcion, 
+                c.nombre as categoria,u.nombre as unidad,p.nombre as percha, i.stock_mal,i.stock, 
+                '' as acciones,i.stock_min, c.id as categoria_id, u.id as unidad_id, p.id as percha_id,
+                i.img,(SELECT COUNT(*) FROM tblmedidas_producto m WHERE m.id_producto = i.id) AS cantidad_medidas
+                    FROM tblinventario i
+                    JOIN tblcategoria c on c.id= i.id_categoria
+                    JOIN tblunidad u on u.id= i.id_unidad
+                    JOIN tblubicacion p on p.id= i.id_percha
+                    WHERE i.estado=true
+                    ORDER BY i.id ASC;");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -434,17 +429,19 @@ class ModeloInventario
     public static function mdlConsultarStockIniAnio($id_producto, $anio)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("SELECT stock_ini
-                    FROM tblstock_inicial  
-                    WHERE id_producto = :id_producto AND anio = :anio;");
-            $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
-            $e->bindParam(':anio', $anio, PDO::PARAM_INT);
-            $e->execute();
-            return $e->fetchAll();
+            // Usamos la misma lógica del CTE para garantizar que coincida con la tabla
+            $sql = "SELECT stock_ini FROM tblstock_inicial 
+            WHERE id_producto = :id_producto AND anio = :anio ORDER BY id DESC 
+            LIMIT 1";
+            $stmt = Conexion::ConexionDB()->prepare($sql);
+            $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $stmt->bindParam(':anio', $anio, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
+                'm' => 'Error al calcular stock inicial: ' . $e->getMessage()
             );
         }
     }
@@ -453,123 +450,141 @@ class ModeloInventario
     public static function mdlConsultarHistorialProducto($id_producto, $anio)
     {
         try {
-            $e = Conexion::ConexionDB()->prepare("WITH combined_data AS (
-    -- Salidas
-    SELECT 
-        b.fecha::date AS fecha_raw,
-        TO_CHAR(b.fecha, 'DD/MM/YYYY') AS fecha,
-        o.id AS id_orden,
-        p.num_orden AS orden_trabajo,
-        c.nombre AS empresa,
-        s.cantidad_salida AS salida,
-        NULL::numeric AS entrada,
-        NULL::numeric AS compras,
-        s.id_producto_fab,
-        2 AS tipo_orden
-    FROM tblsalidas s
-    JOIN tblboleta b ON s.id_boleta = b.id
-    JOIN tblorden o ON b.id_orden = o.id
-    JOIN tblpresupuesto p ON p.id = o.id
-    JOIN tblclientes c ON p.id_cliente = c.id
-    WHERE s.id_producto = :id_producto
-      AND EXTRACT(YEAR FROM b.fecha) = :anio
+            $e = Conexion::ConexionDB()->prepare("WITH params AS (
+                SELECT 
+                    CAST(:id_producto AS INTEGER) AS p_id, 
+                    CAST(:anio AS INTEGER) AS p_anio
+            ),
+            -- 1. OBTENER SOLO LA ÚLTIMA VERSIÓN DEL STOCK INICIAL REGISTRADO
+            ultima_version_stock AS (
+                SELECT stock_ini
+                FROM tblstock_inicial
+                WHERE id_producto = (SELECT p_id FROM params)
+                  AND anio = (SELECT p_anio FROM params)
+                ORDER BY id DESC -- Tomamos el ID más alto (última versión)
+                LIMIT 1
+            ),
+            combined_data AS (
+                -- 2. TRANSACCIONES (Salidas, Retornos, Compras)
+                -- Salidas
+                SELECT 
+                    b.fecha::date AS fecha_raw,
+                    TO_CHAR(b.fecha, 'DD/MM/YYYY') AS fecha,
+                    o.id AS id_orden,
+                    p.num_orden AS orden_trabajo,
+                    c.nombre AS empresa,
+                    s.cantidad_salida AS salida,
+                    0::numeric AS entrada, -- Usamos 0 explícito para facilitar el CASE final
+                    0::numeric AS compras,
+                    s.id_producto_fab,
+                    2 AS tipo_orden
+                FROM tblsalidas s
+                JOIN tblboleta b ON s.id_boleta = b.id
+                JOIN tblorden o ON b.id_orden = o.id
+                JOIN tblpresupuesto p ON p.id = o.id
+                JOIN tblclientes c ON p.id_cliente = c.id
+                CROSS JOIN params
+                WHERE s.id_producto = params.p_id
+                    AND EXTRACT(YEAR FROM b.fecha) = params.p_anio
+                UNION ALL
+                -- Retornos
+                SELECT 
+                    b.fecha_retorno::date AS fecha_raw,
+                    TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') AS fecha,
+                    o.id AS id_orden,
+                    p.num_orden AS orden_trabajo,
+                    c.nombre AS empresa,
+                    0 AS salida,
+                    s.retorno AS entrada,
+                    0::numeric AS compras,
+                    s.id_producto_fab,
+                    3 AS tipo_orden
+                FROM tblsalidas s
+                JOIN tblboleta b ON s.id_boleta = b.id
+                JOIN tblorden o ON b.id_orden = o.id
+                JOIN tblpresupuesto p ON p.id = o.id
+                JOIN tblclientes c ON p.id_cliente = c.id
+                CROSS JOIN params
+                WHERE s.id_producto = params.p_id
+                    AND s.retorno <> 0.00
+                    AND EXTRACT(YEAR FROM b.fecha_retorno) = params.p_anio
+                UNION ALL
+                -- Compras
+                SELECT 
+                    f.fecha::date AS fecha_raw,
+                    TO_CHAR(f.fecha, 'DD/MM/YYYY') AS fecha,
+                    NULL AS id_orden,
+                    NULL AS orden_trabajo,
+                    'COMPRA' AS empresa,
+                    0 AS salida,
+                    0 AS entrada,
+                    e.cantidad_entrada AS compras,
+                    NULL AS id_producto_fab,
+                    1 AS tipo_orden
+                FROM tblentradas e
+                LEFT JOIN tblfactura f ON e.id_factura = f.id
+                JOIN tblproveedores pr ON f.id_proveedor = pr.id
+                CROSS JOIN params
+                WHERE e.id_producto = params.p_id
+                    AND EXTRACT(YEAR FROM f.fecha) = params.p_anio),
+                aggregated_data AS (
+                    SELECT 
+                        cd.fecha_raw,
+                        cd.fecha,
+                        cd.id_orden,
+                        cd.orden_trabajo,
+                        cd.empresa,
+                        SUM(cd.salida) AS salida,
+                        SUM(cd.entrada) AS entrada,
+                        SUM(cd.compras) AS compras,
+                        -- Inyectamos la última versión del stock (o 0 si no existe)
+                        COALESCE((SELECT stock_ini FROM ultima_version_stock), 0) AS stock_inicial,
+                        MAX(cd.id_producto_fab) AS id_producto_fab,
+                        cd.tipo_orden
+                    FROM combined_data cd
+                    GROUP BY 
+                        cd.fecha_raw, cd.fecha, cd.id_orden, cd.orden_trabajo, 
+                        cd.empresa, cd.tipo_orden
+                ),
+                final_data AS (
+                SELECT 
+                    ad.fecha_raw, -- La necesitamos aquí para ordenar, pero no la seleccionaremos al final
+                    ad.fecha,
+                    ad.orden_trabajo,
+                    ad.empresa,
+                    ad.salida,
+                    ad.entrada,
+                    ad.compras,
+                    -- Cálculo Matemático del Stock Acumulado
+                    SUM(ad.compras + ad.entrada - ad.salida) 
+                    OVER (
+                        ORDER BY ad.fecha_raw, ad.tipo_orden
+                        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                    ) + ad.stock_inicial AS stock,
+                    
+                    CASE WHEN ad.id_producto_fab IS NOT NULL THEN TRUE ELSE FALSE END AS producto_util,
+                    ad.tipo_orden
+                FROM aggregated_data ad
+            )
+            -- 3. SELECCIÓN FINAL CON FORMATEO VISUAL
+            SELECT 
+                fecha, 
+                -- NULOS A VACÍOS
+                COALESCE(orden_trabajo, '') AS orden_trabajo,
+                COALESCE(empresa, '') AS empresa,
+                
+                -- CEROS A GUIONES (-) O NÚMEROS FORMATEADOS
+                CASE WHEN salida = 0 THEN '-' ELSE TO_CHAR(salida, 'FM999,999,990.00') END AS salida,
+                CASE WHEN entrada = 0 THEN '-' ELSE TO_CHAR(entrada, 'FM999,999,990.00') END AS entrada,
+                CASE WHEN compras = 0 THEN '-' ELSE TO_CHAR(compras, 'FM999,999,990.00') END AS compras,
+                
+                -- STOCK FORMATEADO
+                TO_CHAR(stock, 'FM999,999,990.00') AS stock,
+                
+                producto_util
+            FROM final_data
+            ORDER BY fecha_raw, tipo_orden;");
 
-    UNION ALL
-
-    -- Retornos
-    SELECT 
-        b.fecha_retorno::date AS fecha_raw,
-        TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') AS fecha,
-        o.id AS id_orden,
-        p.num_orden AS orden_trabajo,
-        c.nombre AS empresa,
-        NULL AS salida,
-        s.retorno AS entrada,
-        NULL::numeric AS compras,
-        s.id_producto_fab,
-        3 AS tipo_orden
-    FROM tblsalidas s
-    JOIN tblboleta b ON s.id_boleta = b.id
-    JOIN tblorden o ON b.id_orden = o.id
-    JOIN tblpresupuesto p ON p.id = o.id
-    JOIN tblclientes c ON p.id_cliente = c.id
-    WHERE s.id_producto = :id_producto
-      AND s.retorno <> 0.00
-      AND EXTRACT(YEAR FROM b.fecha_retorno) = :anio
-
-    UNION ALL
-    
-    -- Compras
-    SELECT 
-        f.fecha::date AS fecha_raw,
-        TO_CHAR(f.fecha, 'DD/MM/YYYY') AS fecha,
-        NULL AS id_orden,
-        NULL AS orden_trabajo,
-        'COMPRA' AS empresa,
-        NULL AS salida,
-        NULL AS entrada,
-        e.cantidad_entrada AS compras,
-        NULL AS id_producto_fab,
-        1 AS tipo_orden
-    FROM tblentradas e
-    LEFT JOIN tblfactura f ON e.id_factura = f.id
-    JOIN tblproveedores pr ON f.id_proveedor = pr.id
-    WHERE e.id_producto = :id_producto
-      AND EXTRACT(YEAR FROM f.fecha) = :anio
-),
-aggregated_data AS (
-    SELECT 
-        cd.fecha_raw,
-        cd.fecha,
-        cd.id_orden,
-        cd.orden_trabajo,
-        cd.empresa,
-        SUM(COALESCE(cd.salida, NULL)) AS salida,
-        SUM(COALESCE(cd.entrada, NULL)) AS entrada,
-        SUM(COALESCE(cd.compras, NULL)) AS compras,
-        COALESCE(si.stock_ini, 0) AS stock_inicial,
-        MAX(cd.id_producto_fab) AS id_producto_fab,
-        cd.tipo_orden
-    FROM combined_data cd
-    LEFT JOIN tblstock_inicial si 
-        ON si.id_producto = :id_producto AND si.anio = :anio
-    GROUP BY 
-        cd.fecha_raw, cd.fecha, cd.id_orden, cd.orden_trabajo, 
-        cd.empresa, si.stock_ini, cd.tipo_orden
-),
-final_data AS (
-    SELECT 
-        ad.fecha_raw,
-        ad.fecha,
-        ad.orden_trabajo,
-        ad.empresa,
-        ad.salida,
-        ad.entrada,
-        ad.compras,
-        SUM(
-            COALESCE(-ad.salida, 0) +
-            COALESCE(ad.entrada, 0) +
-            COALESCE(ad.compras, 0)
-        ) OVER (
-            ORDER BY ad.fecha_raw, ad.tipo_orden
-            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-        )
-        + ad.stock_inicial AS stock,
-        CASE WHEN ad.id_producto_fab IS NOT NULL THEN TRUE ELSE FALSE END AS producto_util,
-        ad.tipo_orden
-    FROM aggregated_data ad
-)
-SELECT 
-    fecha, 
-    orden_trabajo, 
-    empresa, 
-    salida, 
-    entrada, 
-    compras, 
-    stock, 
-    producto_util
-FROM final_data
-ORDER BY fecha, tipo_orden");
             $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
             $e->bindParam(':anio', $anio, PDO::PARAM_INT);
             $e->execute();

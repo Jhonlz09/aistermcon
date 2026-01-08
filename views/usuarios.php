@@ -171,27 +171,25 @@
                 targets: 4,
                 data: "acciones",
                 visible: mostrarCol ? true : false,
-                render: function(data, type, row, full, meta) {
+                render: function (data, type, row, full, meta) {
                     if (row.id === 1) { // Verifica si es la primera fila
-                        return (
-                            "<center style='white-space: nowrap;'>" +
+                        return ("<center style='white-space: nowrap;'>" +
                             " <button type='button' class='btn bg-gradient-warning btnEditarSup' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-pencil'></i>" +
                             "</button>" +
                             " <button type='button' class='btn bg-gradient-gray-dark btnClaveSup' data-target='#modal' data-toggle='modal'  title='Editar'>" +
                             " <i class='fa-solid fa-key'></i>" +
                             "</button>" +
-                            " </center>"
-                        );
+                            " </center>");
                     } else {
                         return (
                             "<center style='white-space: nowrap;'>" +
                             (editar ?
                                 " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modal' data-toggle='modal'  title='Editar'>" +
-                                " <i class='fa-solid fa-pencil'></i>" +
+                                " <i class='fas fa-pencil'></i>" +
                                 "</button>" +
                                 " <button type='button' class='btn bg-gradient-gray-dark btnClave' data-target='#modal' data-toggle='modal'  title='Editar'>" +
-                                " <i class='fa-solid fa-key'></i>" +
+                                " <i class='fas fa-key'></i>" +
                                 "</button>" : "") +
                             (eliminar ?
                                 " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +

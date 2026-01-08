@@ -79,6 +79,60 @@
     <script defer src="assets/plugins/chart.js/ChartDataLabels.min.js"></script>
     <!-- tinyMCE -->
     <!-- <script defer src="assets/plugins/tinymce/tinymce.min.js"></script> -->
+    <style>
+        /* Estilos para el autocomplete de órdenes */
+        /* .ui-autocomplete.ui-front {
+            max-width: 650px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+            border-radius: 6px !important;
+            border: 1px solid #e0e0e0 !important;
+            background-color: #fff !important;
+            z-index: 9999 !important;
+            padding: 8px 0 !important;
+        }
+        
+        .autocomplete-item-orden {
+            padding: 0 !important;
+            margin: 0 !important;
+            list-style: none !important;
+            border: none !important;
+        }
+        
+        .autocomplete-item-orden > div {
+            transition: all 0.2s ease !important;
+        }
+        
+        .autocomplete-item-orden:hover > div {
+            background-color: #f8f9fa !important;
+            padding-left: 20px !important;
+        }
+        
+        .autocomplete-item-orden.ui-state-active > div {
+            background-color: #e7f3ff !important;
+            border-left: 4px solid #007bff !important;
+            padding-left: 11px !important;
+            box-shadow: inset 0 2px 4px rgba(0, 123, 255, 0.1) !important;
+        }
+        
+        .ui-autocomplete li {
+            padding: 0 !important;
+            margin: 0 !important;
+            height: auto !important;
+            border: none !important;
+        }
+        
+        .ui-autocomplete > li {
+            margin-bottom: 4px !important;
+        }
+        
+        .ui-autocomplete > li:last-child {
+            margin-bottom: 0 !important;
+        }
+        
+        .ui-autocomplete > li:first-child {
+            margin-top: 0 !important;
+        } */
+    </style>
 </head>
 <?php if (isset($_SESSION['s_usuario'])) {
 ?>
@@ -321,8 +375,6 @@
             // Verificar el estado de la sesión cada 5 minutos (300000 milisegundos)
             checkSessionInterval = setInterval(checkSession, 300000);
 
-
-
             function cargarContenido(contenedor, contenido, id = '') {
                 let tbl = 'tbl' + id;
                 let ruta = id.toLowerCase();
@@ -337,7 +389,6 @@
                         tabla = $("#" + tbl).DataTable({
                             ...configuracionTable
                         })
-
                         tabla.on('draw.dt', function() {
                             const b = document.body;
                             const s = b.scrollHeight;
@@ -794,15 +845,6 @@
 
 
                 cargarCombo('FabricadoCon', '', 9);
-                // cargarCombo('Orden', '', 3, true).then(datos_ => {
-                //     datos_orden = datos_;
-
-                //     $(cboOrdenFab).select2({
-                //         placeholder: 'SELECCIONE',
-                //         width: 'auto',
-                //         data: datos_orden
-                //     })
-                // });
 
                 cargarCombo('Despachado', bodegueroPorDefecto, 6);
                 cargarCombo('Responsable', '', 7, true).then(datos_ => {
@@ -1701,7 +1743,6 @@
                 // });
 
                 cargarAutocompletado(function(items) {
-
                     $(inputauto).autocomplete({
                         // source: items,
                         autoFocus: true,
@@ -1819,7 +1860,7 @@
                         }
                         const $text = $("<div style='flex:1;min-width:0;'>");
                         $text.append($("<div style='font-weight:600;word-wrap:break-word;white-space:normal;line-height:1.4;'>").text(item.label));
-                        $text.append($("<div style='font-size:0.95rem;color:#6b6b6b;'>").html("CANTIDAD: <strong class='large-text'>" + cantidad + "</strong>"));
+                        $text.append($("<div style='font-size:0.95rem;color:#6c7891;'>").html("CANTIDAD: <strong class='large-text'>" + cantidad + "</strong>"));
                         $inner.append($thumb).append($text);
                         $node.append($inner).appendTo(ul);
                         return $node;
@@ -1828,19 +1869,132 @@
 
                 cargarAutocompletado(function(items) {
                     items_orden = items;
+                    
+                    // Configuración común para los autocompletes de orden
+                    const sourceFunction = function(request, response) {
+                        const input = request.term.toLowerCase().trim();
+                        const resultados = items.filter(item => {
+                            const label = item.label.toLowerCase();
+                            const codigo = (item.cod || '').toString().toLowerCase();
+                            return label.includes(input) || codigo.includes(input);
+                        }).sort((a, b) => {
+                            const labelA = a.label.toLowerCase();
+                            const labelB = b.label.toLowerCase();
+                            const inputLower = input.toLowerCase();
+                            const posA = labelA.indexOf(inputLower);
+                            const posB = labelB.indexOf(inputLower);
+                            if (posA === 0 && posB !== 0) return -1;
+                            if (posA !== 0 && posB === 0) return 1;
+                            return posA - posB;
+                        });
+                        response(resultados);
+                    };
+
                     $(nro_orden).autocomplete({
-                        source: items,
+                        source: sourceFunction,
                         minLength: 1,
                         autoFocus: true,
                         focus: function() {
                             return false;
                         },
                         select: function(event, ui) {
+                            nro_orden.value = ui.item.label;
                             nro_orden.readOnly = true;
                             id_orden_guia_salida = ui.item.cod;
                             nro_orden.parentNode.querySelector(".ten").style.display = "none";
                             clearButton.style.display = "block";
                             nro_orden.focus();
+                            return false;
+                        },
+                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                        const $li = $("<li>");
+                        const $div = $("<div style='flex-direction:column'>");
+                        // Línea principal: Número de orden + Cliente
+                        const $title = $("<div style='font-weight:600;white-space:normal; word-wrap:break-word;line-height:1.4'>");
+                        $title.text(item.label);
+                        // Línea de descripción
+                        let $descHtml = '';
+                        if (item.descripcion_orden && item.descripcion_orden.trim() !== '') {
+                            const $desc = $("<div style='font-size: 0.8rem;color: #7c8b8c; margin-bottom:8px;white-space:normal;word-wrap:break-word;line-height:1.3;'>");
+                            $desc.text(item.descripcion_orden);
+                            $descHtml = $desc;
+                        }
+                        // Línea secundaria: Estado y Año con mejor espaciado
+                        const $details = $("<div style='display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; gap: 15px;'>");
+                        const $estado = $("<span style='color:#828282; font-weight: 600;'>").html("ESTADO: <strong style='color: #007bff; font-weight: 700;'>" + item.cantidad + "</strong>");
+                        const $anio = $("<span style='color:#999;font-weight:500'>AÑO: <span style='color:#666;'>" + item.anio + "</span></span>");
+                        
+                        $details.append($estado).append($anio);
+                        $div.append($title);
+
+                        if ($descHtml) {
+                            $div.append($descHtml);
+                        }
+
+                        $div.append($details);
+                        $li.append($div);
+                        
+                        return $li.appendTo(ul);
+                    };
+
+                    $(nro_ordenEntrada).autocomplete({
+                        source: sourceFunction,
+                        minLength: 1,
+                        autoFocus: true,
+                        focus: function() {
+                            return false;
+                        },
+                        select: function(event, ui) {
+                            nro_ordenEntrada.value = ui.item.label;
+                            nro_ordenEntrada.readOnly = true;
+                            id_orden_guia_entrada = ui.item.cod;
+                            clearButtonEntrada.style.display = "block";
+                            return false;
+                        },
+                    }).on('focus', function() {
+                        if ($(this).val().length >= 1) {
+                            $(this).autocomplete('search', $(this).val());
+                        }
+                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                        const $li = $("<li>");
+                        const $div = $("<div style='flex-direction:column;'>");
+                        // Línea principal: Número de orden + Cliente
+                        const $title = $("<div style='font-weight: 600; white-space: normal; word-wrap:break-word; line-height: 1.4;'>");
+                        $title.text(item.label);
+                        // Línea de descripción
+                        let $descHtml = '';
+                        if (item.descripcion_orden && item.descripcion_orden.trim() !== '') {
+                            const $desc = $("<div style='font-size: 0.8rem; color: #7c8b8c; margin-bottom: 8px; white-space: normal; word-wrap: break-word; line-height: 1.3;'>");
+                            $desc.text(item.descripcion_orden);
+                            $descHtml = $desc;
+                        }
+                        // Línea secundaria: Estado y Año con mejor espaciado
+                        const $details = $("<div style='display:flex;justify-content:space-between;align-items:center; font-size:0.85rem;gap:15px;'>");
+                        const $estado = $("<span style='color:#828282;font-weight:600;'>").html("ESTADO: <strong style='color: #007bff; font-weight: 700;'>" + item.cantidad + "</strong>");
+                        const $anio = $("<span style='color:#999;font-weight:500'>AÑO: <span style='color:#666;'>" + item.anio + "</span></span>");
+                        $details.append($estado).append($anio);
+                        $div.append($title);
+                        if ($descHtml) {
+                            $div.append($descHtml);
+                        }
+                        $div.append($details);
+                        $li.append($div);
+                        return $li.appendTo(ul);
+                    };
+                    
+                    $(nro_ordenFab).autocomplete({
+                        source: sourceFunction,
+                        minLength: 1,
+                        autoFocus: true,
+                        focus: function() {
+                            return false;
+                        },
+                        select: function(event, ui) {
+                            nro_ordenFab.value = ui.item.label;
+                            nro_ordenFab.readOnly = true;
+                            id_orden_guia_fab = ui.item.cod;
+                            clearButtonFab.style.display = "block";
+                            return false;
                         },
                     }).on('focus', function() {
                         // Al retomar el foco, mostrar el listado si hay valor
@@ -1848,52 +2002,33 @@
                             $(this).autocomplete('search', $(this).val());
                         }
                     }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                        return $("<li>").append(
-                            `<div style='word-wrap:break-word;white-space:normal;line-height:1.5;padding:4px 0;'>${item.label}<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: ${item.cantidad} </strong><span>AÑO: ${item.anio}</span></div></div>`
-                        ).appendTo(ul);
-                    };
-
-                    $(nro_ordenEntrada).autocomplete({
-                        source: items,
-                        minLength: 1,
-                        autoFocus: true,
-                        focus: function() {
-                            return false;
-                        },
-                        // open: function() {
-                        //     // Seleccionar automáticamente el primer elemento al abrir
-                        //     $(this).autocomplete("widget").children().first().find(".ui-menu-item-wrapper").addClass("ui-state-active");
-                        // },
-                        select: function(event, ui) {
-                            nro_ordenEntrada.readOnly = true;
-                            id_orden_guia_entrada = ui.item.cod;
-                            clearButtonEntrada.style.display = "block";
-                        },
-                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                        // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        return $("<li>").append(
-                            "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
-                            item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
-                        ).appendTo(ul);
-                    };
-
-                    $(nro_ordenFab).autocomplete({
-                        source: items,
-                        minLength: 1,
-                        autoFocus: true,
-                        focus: function() {
-                            return false;
-                        },
-                        select: function(event, ui) {
-                            nro_ordenFab.readOnly = true;
-                            id_orden_guia_fab = ui.item.cod;
-                            clearButtonFab.style.display = "block";
-                        },
-                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                        // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        return $("<li>").append(
-                            `<div style='word-wrap:break-word;white-space:normal;line-height:1.5;padding:4px 0;'>${item.label}<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: ${item.cantidad} </strong><span>AÑO: ${item.anio}</span></div></div>`
-                        ).appendTo(ul);
+                        const $li = $("<li class='autocomplete-item-orden'>");
+                        const $div = $("<div style='flex-direction:column'>");
+                        // Línea principal: Número de orden + Cliente
+                        const $title = $("<div style='font-weight:600;white-space:normal;word-wrap:break-word;line-height:1.4;'>");
+                        $title.text(item.label);
+                        // Línea de descripción
+                        let $descHtml = '';
+                        if (item.descripcion_orden && item.descripcion_orden.trim() !== '') {
+                            const $desc = $("<div style='font-size: 0.8rem; color: #7c8b8c; margin-bottom: 8px; white-space: normal; word-wrap: break-word; line-height: 1.3;'>");
+                            $desc.text(item.descripcion_orden);
+                            $descHtml = $desc;
+                        }
+                        
+                        // Línea secundaria: Estado y Año con mejor espaciado
+                        const $details = $("<div style='display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; gap: 15px;'>");
+                        const $estado = $("<span style='color:#828282; font-weight: 600;'>").html("ESTADO: <strong style='color: #007bff; font-weight: 700;'>" + item.cantidad + "</strong>");
+                        const $anio = $("<span style='color: #999; font-weight: 500;'>AÑO: <span style='color: #666;'>" + item.anio + "</span></span>");
+                        
+                        $details.append($estado).append($anio);
+                        $div.append($title);
+                        if ($descHtml) {
+                            $div.append($descHtml);
+                        }
+                        $div.append($details);
+                        $li.append($div);
+                        
+                        return $li.appendTo(ul);
                     };
                 }, null, 'orden', 6)
 
@@ -1988,11 +2123,29 @@
                                 dropzone.removeAllFiles(false);
                                 form_guia.classList.remove('was-validated');
                                 limpiar();
-                                cargarAutocompletado(function(items) {
+                                cargarAutocompletado(function(items, filterType) {
                                     items_orden = items;
-                                    $('#nro_orden').autocomplete("option", "source", items);
-                                    $('#nro_ordenEntrada').autocomplete("option", "source", items);
-                                    $('#nro_ordenFab').autocomplete("option", "source", items);
+                                    const sourceFunction = function(request, response) {
+                                        const input = request.term.toLowerCase().trim();
+                                        const resultados = items.filter(item => {
+                                            const label = item.label.toLowerCase();
+                                            const codigo = (item.cod || '').toString().toLowerCase();
+                                            return label.includes(input) || codigo.includes(input);
+                                        }).sort((a, b) => {
+                                            const labelA = a.label.toLowerCase();
+                                            const labelB = b.label.toLowerCase();
+                                            const inputLower = input.toLowerCase();
+                                            const posA = labelA.indexOf(inputLower);
+                                            const posB = labelB.indexOf(inputLower);
+                                            if (posA === 0 && posB !== 0) return -1;
+                                            if (posA !== 0 && posB === 0) return 1;
+                                            return posA - posB;
+                                        });
+                                        response(resultados);
+                                    };
+                                    $('#nro_orden').autocomplete("option", "source", sourceFunction);
+                                    $('#nro_ordenEntrada').autocomplete("option", "source", sourceFunction);
+                                    $('#nro_ordenFab').autocomplete("option", "source", sourceFunction);
                                 }, null, 'orden', 6)
                             }
                         });
@@ -2022,11 +2175,29 @@
                             if (r) {
                                 dropzone.removeAllFiles(false);
                                 limpiar();
-                                cargarAutocompletado(function(items) {
+                                cargarAutocompletado(function(items, filterType) {
                                     items_orden = items;
-                                    $('#nro_orden').autocomplete("option", "source", items);
-                                    $('#nro_ordenEntrada').autocomplete("option", "source", items);
-                                    $('#nro_ordenFab').autocomplete("option", "source", items);
+                                    const sourceFunction = function(request, response) {
+                                        const input = request.term.toLowerCase().trim();
+                                        const resultados = items.filter(item => {
+                                            const label = item.label.toLowerCase();
+                                            const codigo = (item.cod || '').toString().toLowerCase();
+                                            return label.includes(input) || codigo.includes(input);
+                                        }).sort((a, b) => {
+                                            const labelA = a.label.toLowerCase();
+                                            const labelB = b.label.toLowerCase();
+                                            const inputLower = input.toLowerCase();
+                                            const posA = labelA.indexOf(inputLower);
+                                            const posB = labelB.indexOf(inputLower);
+                                            if (posA === 0 && posB !== 0) return -1;
+                                            if (posA !== 0 && posB === 0) return 1;
+                                            return posA - posB;
+                                        });
+                                        response(resultados);
+                                    };
+                                    $('#nro_orden').autocomplete("option", "source", sourceFunction);
+                                    $('#nro_ordenEntrada').autocomplete("option", "source", sourceFunction);
+                                    $('#nro_ordenFab').autocomplete("option", "source", sourceFunction);
                                 }, null, 'orden', 6)
                             }
                         });
@@ -2630,7 +2801,6 @@
                             $(inputBarras).val("");
                         };
                     }
-                    
                     if (selectedTab === '4') {
                         $.ajax({
                             url: "controllers/salidas.controlador.php",

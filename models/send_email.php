@@ -43,8 +43,6 @@ if (isset($argv)) {
         foreach ($correos as $correo) {
             $mail->addAddress($correo); // Agrega cada correo como destinatario
         }
-   
-
         // Contenido del correo
         $mail->isHTML(true);
         $mail->Subject = 'Nueva orden de trabajo abierta';

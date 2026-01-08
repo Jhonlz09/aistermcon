@@ -188,9 +188,15 @@ class ModeloOrden
     {
         try {
 
-            $e = Conexion::ConexionDB()->prepare("SELECT o.id, 
-            p.num_orden || ' ' || c.nombre AS descripcion,o.estado AS estado_obra, 
-            EXTRACT(YEAR FROM o.fecha) AS anio 
+            $e = Conexion::ConexionDB()->prepare("SELECT o.id as id, 
+            o.id as cod,
+            p.num_orden || ' ' || c.nombre AS label,
+            p.num_orden || ' ' || c.nombre AS descripcion,
+            p.descripcion as descripcion_orden,
+            o.estado AS cantidad, 
+            EXTRACT(YEAR FROM o.fecha) AS anio,
+            NULL as img,
+            o.estado AS estado_obra
                 FROM tblorden o 
 				JOIN tblpresupuesto p ON p.id = o.id
                 JOIN tblclientes c ON p.id_cliente = c.id
@@ -202,7 +208,7 @@ class ModeloOrden
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
+                'm' => 'No se pudo obtener la orden: ' . $e->getMessage()
             );
         }
     }

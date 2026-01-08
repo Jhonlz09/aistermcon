@@ -941,17 +941,14 @@
         $('#toggleCliente').on('click', function() {
             const $icon = $(this).find('i');
             const isInputVisible = $('#inputClienteContainer').is(':visible');
-
             if (isInputVisible) {
                 // Modo SELECT
                 $('#inputClienteContainer input').val('');
                 $('#inputClienteContainer').hide();
                 $('#selectClienteContainer').show();
                 $icon.removeClass('fa-list-dropdown').addClass('fa-input-text');
-
                 $(this).attr('title', 'Escribir Cliente');
             } else {
-                // Modo INPUT
                 setChange(cboClienteOrden, 0);
                 let labelElement = $("#lblCO");
                 console.log(labelElement)
@@ -975,11 +972,9 @@
                 form.reset();
                 precioConIva.disabled = false;
                 precioSinIva.disabled = false;
-                // nuevoCliente.disabled = false;
                 desc.disabled = false
                 form.classList.remove('was-validated');
                 setChange(cboClienteOrden, 0);
-
                 drop_ord.removeAllFilesWithoutServer();
                 drop_pre.removeAllFilesWithoutServer();
                 drop_oc.removeAllFilesWithoutServer();

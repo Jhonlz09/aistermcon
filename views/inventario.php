@@ -139,7 +139,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
                                         </div>
-                                        <div class="col-xxl-6 col">
+                                        <div class="col-sm-6 col">
                                             <div class="input-data s1">
                                                 <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
                                                 <label class="label"><i class="fas fa-cubes"></i> Cantidad</label>
@@ -710,7 +710,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             },
             "dom": 't',
             "responsive": false,
-            "pageLength": 500,
+            "pageLength": 10000,
             "lengthChange": false,
             "ordering": false,
             "autoWidth": false,
@@ -768,9 +768,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             codigo = document.getElementById('codigo'),
             descripcion = document.getElementById('nombre'),
             stock = document.getElementById('stock'),
+            stock_ini = document.getElementById('stock_ini'),
             stock_min = document.getElementById('stock_min'),
             stock_mal = document.getElementById('stock_mal'),
-            stock_ini = document.getElementById('stock_ini'),
             cboCategoria = document.getElementById('cboCategoria'),
             cboUnidad = document.getElementById('cboUnidad'),
             fileImg = document.getElementById('fileImg'),
@@ -791,6 +791,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             elementsE = document.querySelectorAll('#modalS .bg-gradient-green'),
             select = document.querySelectorAll('#formNuevo .modal-body select.select2');
 
+
         $(cboCategoria).select2({
             placeholder: 'SELECCIONE',
             width: '100%',
@@ -799,7 +800,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         $(cboAnio).select2({
             width: '105%',
             data: datos_anio,
-
             minimumResultsForSearch: -1,
         })
 
@@ -872,7 +872,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         var medidasProducto = []; // Array local para las medidas del producto
-
         // Función para cargar medidas en el tab de medidas (cuando editas o creas un producto)
         function cargarMedidasTab(id_producto) {
             $.post('controllers/inventario.controlador.php', {
@@ -1127,15 +1126,13 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 $(navbar).css('margin-right', '6px');
             }
             let row = obtenerFila(this, tabla);
-            let stockInicial = row["stock_ini"] ?? 0;
-            stockInicial = stockInicial.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') // Ajusta la clave según tu tabla
+            document.getElementById('stockInicial').textContent = '0.00';
+            // stockInicial = stockInicial.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') // Ajusta la clave según tu tabla
             let descripcion = row["descripcion"]; // Ajusta la clave según tu tabla
             id_producto = row["id"]; // ID del producto
             setChange(cboAnio, year);
-            // Actualizar los valores en el modal
-            document.getElementById('stockInicial').textContent = stockInicial;
+            // Actualizar los valores en el modal    
             document.getElementById('descripcionProducto').textContent = descripcion;
-
         });
 
         $('#tblInventario tbody').on('click', '.btnEliminar', function() {
@@ -1183,7 +1180,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             data.append('des', descripcion.value.trim().toUpperCase());
             data.append('sto', stock.value);
             data.append('st_min', stock_min.value);
-            data.append('st_ini', stock_ini.value);
+            // data.append('st_ini', stock_ini.value);
             data.append('st_mal', stock_mal.value);
             data.append('cat', cboCategoria.value);
             data.append('uni', cboUnidad.value);

@@ -782,7 +782,8 @@ function cargarAutocompletado(
   callback = false,
   input = "codProducto",
   ruta = "inventario",
-  action = 7
+  action = 7,
+  filterType = 0  // 0: sin filtro dinámico, 1: filtro por palabras, 2: filtro para dimensiones
 ) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
@@ -797,39 +798,122 @@ function cargarAutocompletado(
           const row = respuesta[i];
           let formattedItem = {};
           if (row && typeof row === 'object' && !Array.isArray(row)) {
-            // expected keys from mdlBuscarProductos: id, codigo, descripcion, cantidad, img
             formattedItem = {
               id: row.id || null,
-              cod: row.codigo || null,
-              label: row.descripcion || row.label || '',  // descripcion ya contiene "codigo - descripcion"
-              value: row.codigo || '',
+              cod: row.cod || row.codigo || row.id || null,
+              label: row.label || row.descripcion || '',
+              value: row.cod || row.codigo || row.id || '',
               cantidad: row.cantidad || 0,
+              anio: row.anio || row.year || '',
+              descripcion_orden: row.descripcion_orden || '',
               img: row.img || null,
               raw: row
             };
           } else if (Array.isArray(row)) {
-            // fallback to array indexed rows: [id, codigo, descripcion, cantidad, img]
             formattedItem = {
               id: row[0] || null,
               cod: row[1] || null,
-              label: row[2] || '',  // descripcion con concatenación ya hecha
+              label: row[2] || '',
               value: row[1] || '',
               cantidad: row[3] || 0,
+              anio: row[5] || '',
+              descripcion_orden: '',
               img: row[4] || null,
               raw: row
             };
           } else {
-            formattedItem = { id: null, cod: row, label: String(row), value: String(row), cantidad: 0, img: null, raw: row };
+            formattedItem = { id: null, cod: row, label: String(row), value: String(row), cantidad: 0, anio: '', descripcion_orden: '', img: null, raw: row };
           }
           items.push(formattedItem);
         }
       if (typeof callback === "function") {
-        callback(items);
+        callback(items, filterType);
       } else {
-        $("#" + input).autocomplete("option", "source", items);
+        // Si filterType > 0, crear source dinámico; si no, usar items directamente
+        if (filterType > 0) {
+          $("#" + input).autocomplete("option", "source", function(request, response) {
+            const filteredItems = filterAutocompletadoItems(items, request.term, filterType);
+            response(filteredItems);
+          });
+        } else {
+          $("#" + input).autocomplete("option", "source", items);
+        }
       }
     },
   });
+}
+
+function filterAutocompletadoItems(items, searchTerm, filterType) {
+  const input = searchTerm.toLowerCase().trim();
+  let resultados = [];
+
+  if (filterType === 2) {
+    // Filtrado para dimensiones (e.g., "8 x 1")
+    const esPatronDimensiones = /^\d+\s*x\s*\d+/i.test(input);
+    
+    if (esPatronDimensiones) {
+      const regex = new RegExp(input.replace(/\s+/g, '\\s*'), 'i');
+      resultados = items.filter(item => {
+        const label = item.label.toLowerCase();
+        return regex.test(label);
+      });
+
+      resultados.sort((a, b) => {
+        const labelA = a.label.toLowerCase();
+        const labelB = b.label.toLowerCase();
+        const numeros = input.match(/\d+/g);
+        if (!numeros || numeros.length < 2) {
+          return labelA.localeCompare(labelB);
+        }
+
+        const num1 = numeros[0];
+        const num2 = numeros[1];
+        const patronExacto = new RegExp(`\\b${num1}\\s*x\\s*${num2}\\b`, 'i');
+        const matchA = patronExacto.test(labelA);
+        const matchB = patronExacto.test(labelB);
+
+        if (matchA && !matchB) return -1;
+        if (!matchA && matchB) return 1;
+        if (matchA && matchB) return labelA.localeCompare(labelB);
+
+        const posA = labelA.indexOf(input.replace(/\s+/g, ' '));
+        const posB = labelB.indexOf(input.replace(/\s+/g, ' '));
+        return posA - posB;
+      });
+    } else {
+      const palabras = input.split(/\s+/).filter(p => p.length > 0);
+      resultados = items.filter(item => {
+        const label = item.label.toLowerCase();
+        return palabras.every(palabra => label.includes(palabra));
+      });
+
+      resultados.sort((a, b) => {
+        const labelA = a.label.toLowerCase();
+        const labelB = b.label.toLowerCase();
+        const posA = labelA.indexOf(palabras[0]);
+        const posB = labelB.indexOf(palabras[0]);
+        if (posA === 0 && posB !== 0) return -1;
+        if (posA !== 0 && posB === 0) return 1;
+        return posA - posB;
+      });
+    }
+  } else if (filterType === 1) {
+    // Filtrado simple por palabras
+    const palabras = input.split(/\s+/).filter(p => p.length > 0);
+    if (palabras.length === 0) {
+      resultados = items;
+    } else {
+      resultados = items.filter(item => {
+        const label = item.label.toLowerCase();
+        return palabras.some(palabra => label.includes(palabra));
+      });
+    }
+  } else {
+    // Sin filtro especial, retornar todos
+    resultados = items;
+  }
+
+  return resultados;
 }
 
 function clearInput(inputId, btn) {
