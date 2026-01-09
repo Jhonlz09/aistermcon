@@ -669,15 +669,12 @@ class ModeloInventario
                 -- NULOS A VACÍOS
                 COALESCE(orden_trabajo, '') AS orden_trabajo,
                 COALESCE(empresa, '') AS empresa,
-                
                 -- CEROS A GUIONES (-) O NÚMEROS FORMATEADOS
                 CASE WHEN salida = 0 THEN '-' ELSE TO_CHAR(salida, 'FM999,999,990.00') END AS salida,
                 CASE WHEN entrada = 0 THEN '-' ELSE TO_CHAR(entrada, 'FM999,999,990.00') END AS entrada,
                 CASE WHEN compras = 0 THEN '-' ELSE TO_CHAR(compras, 'FM999,999,990.00') END AS compras,
-                
                 -- STOCK FORMATEADO
                 TO_CHAR(stock, 'FM999,999,990.00') AS stock,
-                
                 producto_util
             FROM final_data
             ORDER BY fecha_raw, tipo_orden;");
