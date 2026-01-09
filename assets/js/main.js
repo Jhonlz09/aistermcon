@@ -400,7 +400,7 @@ function mostrarToast(
     position: position,
     class: "bg-" + status,
     title: title,
-    icon: "fa-solid " + icon + " fa-lg",
+    icon: "fas " + icon + " fa-lg",
     body: m,
   });
 }
@@ -793,45 +793,45 @@ function cargarAutocompletado(
     },
     dataType: "json",
     success: function (respuesta) {
-        var items = [];
-        for (let i = 0; i < respuesta.length; i++) {
-          const row = respuesta[i];
-          let formattedItem = {};
-          if (row && typeof row === 'object' && !Array.isArray(row)) {
-            formattedItem = {
-              id: row.id || null,
-              cod: row.cod || row.codigo || row.id || null,
-              label: row.label || row.descripcion || '',
-              value: row.cod || row.codigo || row.id || '',
-              cantidad: row.cantidad || 0,
-              anio: row.anio || row.year || '',
-              descripcion_orden: row.descripcion_orden || '',
-              img: row.img || null,
-              raw: row
-            };
-          } else if (Array.isArray(row)) {
-            formattedItem = {
-              id: row[0] || null,
-              cod: row[1] || null,
-              label: row[2] || '',
-              value: row[1] || '',
-              cantidad: row[3] || 0,
-              anio: row[5] || '',
-              descripcion_orden: '',
-              img: row[4] || null,
-              raw: row
-            };
-          } else {
-            formattedItem = { id: null, cod: row, label: String(row), value: String(row), cantidad: 0, anio: '', descripcion_orden: '', img: null, raw: row };
-          }
-          items.push(formattedItem);
+      var items = [];
+      for (let i = 0; i < respuesta.length; i++) {
+        const row = respuesta[i];
+        let formattedItem = {};
+        if (row && typeof row === 'object' && !Array.isArray(row)) {
+          formattedItem = {
+            id: row.id || null,
+            cod: row.cod || row.codigo || row.id || null,
+            label: row.label || row.descripcion || '',
+            value: row.cod || row.codigo || row.id || '',
+            cantidad: row.cantidad || 0,
+            anio: row.anio || row.year || '',
+            descripcion_orden: row.descripcion_orden || '',
+            img: row.img || null,
+            raw: row
+          };
+        } else if (Array.isArray(row)) {
+          formattedItem = {
+            id: row[0] || null,
+            cod: row[1] || null,
+            label: row[2] || '',
+            value: row[1] || '',
+            cantidad: row[3] || 0,
+            anio: row[5] || '',
+            descripcion_orden: '',
+            img: row[4] || null,
+            raw: row
+          };
+        } else {
+          formattedItem = { id: null, cod: row, label: String(row), value: String(row), cantidad: 0, anio: '', descripcion_orden: '', img: null, raw: row };
         }
+        items.push(formattedItem);
+      }
       if (typeof callback === "function") {
         callback(items, filterType);
       } else {
         // Si filterType > 0, crear source dinámico; si no, usar items directamente
         if (filterType > 0) {
-          $("#" + input).autocomplete("option", "source", function(request, response) {
+          $("#" + input).autocomplete("option", "source", function (request, response) {
             const filteredItems = filterAutocompletadoItems(items, request.term, filterType);
             response(filteredItems);
           });
@@ -850,7 +850,7 @@ function filterAutocompletadoItems(items, searchTerm, filterType) {
   if (filterType === 2) {
     // Filtrado para dimensiones (e.g., "8 x 1")
     const esPatronDimensiones = /^\d+\s*x\s*\d+/i.test(input);
-    
+
     if (esPatronDimensiones) {
       const regex = new RegExp(input.replace(/\s+/g, '\\s*'), 'i');
       resultados = items.filter(item => {

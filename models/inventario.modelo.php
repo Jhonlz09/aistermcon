@@ -7,16 +7,30 @@ class ModeloInventario
     public static function mdlListarInventario()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT i.id,i.codigo,i.descripcion, 
-                c.nombre as categoria,u.nombre as unidad,p.nombre as percha, i.stock_mal,i.stock, 
-                '' as acciones,i.stock_min, c.id as categoria_id, u.id as unidad_id, p.id as percha_id,
-                i.img,(SELECT COUNT(*) FROM tblmedidas_producto m WHERE m.id_producto = i.id) AS cantidad_medidas
-                    FROM tblinventario i
-                    JOIN tblcategoria c on c.id= i.id_categoria
-                    JOIN tblunidad u on u.id= i.id_unidad
-                    JOIN tblubicacion p on p.id= i.id_percha
-                    WHERE i.estado=true
-                    ORDER BY i.id ASC;");
+            $l = Conexion::ConexionDB()->prepare("SELECT i.id,i.codigo,
+                i.descripcion, c.nombre as categoria,u.nombre as unidad,p.nombre as percha, 
+                i.stock_mal,i.stock, '' as acciones,i.stock_min, c.id as categoria_id, 
+                u.id as unidad_id, p.id as percha_id,i.img,
+                (SELECT COUNT(*) FROM tblmedidas_producto m WHERE m.id_producto = i.id) AS cantidad_medidas,
+                
+                -- === STOCK INICIAL AUTOMÁTICO (AÑO ACTUAL) ===
+                COALESCE((
+                    SELECT si.stock_ini 
+                    FROM tblstock_inicial si 
+                    WHERE si.id_producto = i.id 
+                      -- AQUÍ EL CAMBIO: Extraemos el año de la fecha actual del servidor
+                      AND si.anio = CAST(EXTRACT(YEAR FROM CURRENT_DATE) AS INTEGER)
+                    ORDER BY si.id DESC    
+                    LIMIT 1                
+                ), 0) AS stock_ini
+                -- =============================================
+
+            FROM tblinventario i
+            JOIN tblcategoria c on c.id= i.id_categoria
+            JOIN tblunidad u on u.id= i.id_unidad
+            JOIN tblubicacion p on p.id= i.id_percha
+            WHERE i.estado=true
+            ORDER BY i.id ASC;");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -263,7 +277,7 @@ class ModeloInventario
         }
     }
 
-    public static function mdlEditarInventario($id, $codigo, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi, $img, $st_ini)
+    public static function mdlEditarInventario($id, $codigo, $des, $sto, $st_min, $st_mal, $cat, $uni, $ubi, $img)
     {
         try {
             $conn = Conexion::ConexionDB();
@@ -290,13 +304,7 @@ class ModeloInventario
                 $e->bindParam(":img", $img, PDO::PARAM_STR);
             }
             $e->execute();
-            $anio = date('Y');
-            $sql_stock_ini = "UPDATE tblstock_inicial SET stock_ini=:stock_ini WHERE id_producto=:id_producto AND anio=:anio";
-            $b = $conn->prepare($sql_stock_ini);
-            $b->bindParam(":id_producto", $id, PDO::PARAM_INT);
-            $b->bindParam(":anio", $anio, PDO::PARAM_INT);
-            $b->bindParam(":stock_ini", $st_ini, PDO::PARAM_INT);
-            $b->execute();
+            
             return array(
                 'status' => 'success',
                 'm' => 'El producto se editó correctamente'
@@ -442,6 +450,95 @@ class ModeloInventario
             return array(
                 'status' => 'danger',
                 'm' => 'Error al calcular stock inicial: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlObtenerVersionesStockInicial($id_producto, $anio)
+    {
+        try {
+            $sql = "SELECT id, id_producto, anio, stock_ini, 
+                    TO_CHAR(fecha_registro, 'DD/MM/YYYY HH24:MI:SS') as fecha_registro,
+                    motivo,
+                    ROW_NUMBER() OVER (ORDER BY fecha_registro DESC) as numero_version
+            FROM tblstock_inicial 
+            WHERE id_producto = :id_producto AND anio = :anio 
+            ORDER BY fecha_registro DESC";
+            $stmt = Conexion::ConexionDB()->prepare($sql);
+            $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $stmt->bindParam(':anio', $anio, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public static function mdlCrearVersionStockInicial($id_producto, $anio, $stock_ini, $motivo = 'Ajuste de inventario')
+    {
+        try {
+            $conn = Conexion::ConexionDB();
+            $sql = "INSERT INTO tblstock_inicial(id_producto, anio, stock_ini, motivo, fecha_registro) 
+            VALUES (:id_producto, :anio, :stock_ini, :motivo, NOW()) RETURNING id";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $stmt->bindParam(':anio', $anio, PDO::PARAM_INT);
+            $stmt->bindParam(':stock_ini', $stock_ini);
+            $stmt->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return array(
+                'status' => 'success',
+                'm' => 'Versión de stock inicial creada',
+                'id_version' => $result['id']
+            );
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'Error al crear versión: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlActualizarMotivoCambio($id_version, $motivo)
+    {
+        try {
+            $sql = "UPDATE tblstock_inicial SET motivo = :motivo WHERE id = :id";
+            $stmt = Conexion::ConexionDB()->prepare($sql);
+            $stmt->bindParam(':id', $id_version, PDO::PARAM_INT);
+            $stmt->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            return array(
+                'status' => 'success',
+                'm' => 'Motivo actualizado correctamente'
+            );
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'Error al actualizar motivo: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlEliminarVersionStockInicial($id_version)
+    {
+        try {
+            $sql = "DELETE FROM tblstock_inicial WHERE id = :id";
+            $stmt = Conexion::ConexionDB()->prepare($sql);
+            $stmt->bindParam(':id', $id_version, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return array(
+                'status' => 'success',
+                'm' => 'Versión eliminada correctamente'
+            );
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'Error al eliminar versión: ' . $e->getMessage()
             );
         }
     }
@@ -594,6 +691,124 @@ class ModeloInventario
                 'status' => 'danger',
                 'm' => 'No se pudo obtener el producto: ' . $e->getMessage()
             );
+        }
+    }
+    /*=============================================
+    INSTALAR TRIGGER HISTÓRICO
+    =============================================*/
+    public static function mdlInstalarTriggerHistorico()
+    {
+        try {
+            $conn = Conexion::ConexionDB();
+
+            // 1. Crear Función
+            $sqlFunc = "CREATE OR REPLACE FUNCTION public.fn_propagar_stock_historico()
+            RETURNS TRIGGER AS \$\$
+            DECLARE
+                r_anio_transaccion INTEGER;
+                r_anio_actual INTEGER;
+                r_delta NUMERIC := 0;
+                r_anio_iter INTEGER;
+                r_ultimo_stock_ini NUMERIC;
+                r_id_producto INTEGER;
+                r_motivo TEXT;
+                r_fecha TIMESTAMP;
+            BEGIN
+                r_anio_actual := EXTRACT(YEAR FROM NOW())::INTEGER;
+                
+                -- Determinar ID, Fecha y Delta según la tabla y operación
+                IF TG_TABLE_NAME = 'tblsalidas' THEN
+                    IF TG_OP = 'DELETE' THEN
+                        r_id_producto := OLD.id_producto;
+                        -- Obtenemos fecha de la boleta relacionada
+                        SELECT fecha INTO r_fecha FROM tblboleta WHERE id = OLD.id_boleta;
+                        -- Borrar salida = Aumenta el stock disponible (Delta Positivo)
+                        r_delta := (OLD.cantidad_salida - COALESCE(OLD.retorno, 0));
+                    ELSIF TG_OP = 'INSERT' THEN
+                        r_id_producto := NEW.id_producto;
+                        SELECT fecha INTO r_fecha FROM tblboleta WHERE id = NEW.id_boleta;
+                        -- Nueva salida = Disminuye el stock (Delta Negativo)
+                        r_delta := - (NEW.cantidad_salida - COALESCE(NEW.retorno, 0));
+                    ELSIF TG_OP = 'UPDATE' THEN
+                        r_id_producto := NEW.id_producto;
+                        SELECT fecha INTO r_fecha FROM tblboleta WHERE id = NEW.id_boleta;
+                        -- Cambio neto: (Nuevo gasto) - (Viejo gasto). Si aumenta gasto, disminuye stock.
+                        r_delta := - ((NEW.cantidad_salida - COALESCE(NEW.retorno, 0)) - (OLD.cantidad_salida - COALESCE(OLD.retorno, 0)));
+                    END IF;
+                
+                ELSIF TG_TABLE_NAME = 'tblentradas' THEN
+                    IF TG_OP = 'DELETE' THEN
+                        r_id_producto := OLD.id_producto;
+                        -- En entradas la fecha está en tblfactura
+                        SELECT fecha INTO r_fecha FROM tblfactura WHERE id = OLD.id_factura;
+                        -- Borrar entrada = Disminuye stock (Delta Negativo)
+                        r_delta := - OLD.cantidad_entrada;
+                    ELSIF TG_OP = 'INSERT' THEN
+                        r_id_producto := NEW.id_producto;
+                        SELECT fecha INTO r_fecha FROM tblfactura WHERE id = NEW.id_factura;
+                        -- Nueva entrada = Aumenta stock (Delta Positivo)
+                        r_delta := NEW.cantidad_entrada;
+                    ELSIF TG_OP = 'UPDATE' THEN
+                        r_id_producto := NEW.id_producto;
+                        SELECT fecha INTO r_fecha FROM tblfactura WHERE id = NEW.id_factura;
+                        -- Cambio neto
+                        r_delta := NEW.cantidad_entrada - OLD.cantidad_entrada;
+                    END IF;
+                END IF;
+
+                -- Si no hay fecha (error integridad), usar NOW
+                IF r_fecha IS NULL THEN r_fecha := NOW(); END IF;
+                
+                r_anio_transaccion := EXTRACT(YEAR FROM r_fecha)::INTEGER;
+
+                -- Solo actuar si la transacción es de un año ANTERIOR al actual
+                IF r_anio_transaccion < r_anio_actual AND r_delta <> 0 THEN
+                    
+                    r_motivo := 'Ajuste automático: Cambio en ' || TG_TABLE_NAME || ' de ' || r_anio_transaccion;
+
+                    -- Recorrer años futuros desde (Año transaccion + 1) hasta Año Actual
+                    FOR r_anio_iter IN (r_anio_transaccion + 1) .. r_anio_actual LOOP
+                        
+                        -- Obtener el ÚLTIMO stock inicial registrado para ese año
+                        SELECT stock_ini INTO  r_ultimo_stock_ini
+                        FROM tblstock_inicial
+                        WHERE id_producto = r_id_producto AND anio = r_anio_iter
+                        ORDER BY fecha_registro DESC
+                        LIMIT 1;
+
+                        -- Si no existe registro previo para ese año, quizás deberíamos tomar el del año anterior, 
+                        -- pero para simplificar asumimos que '0' si no hay nada o ignoramos.
+                        -- Aquí asumiremos que si existe historial, lo ajustamos.
+                        
+                        IF r_ultimo_stock_ini IS NOT NULL THEN
+                           INSERT INTO tblstock_inicial (id_producto, anio, stock_ini, fecha_registro, motivo)
+                           VALUES (r_id_producto, r_anio_iter, r_ultimo_stock_ini + r_delta, NOW(), r_motivo);
+                        END IF;
+
+                    END LOOP;
+                END IF;
+
+                RETURN NULL;
+            END;
+            \$\$ LANGUAGE plpgsql;
+            ";
+            $conn->exec($sqlFunc);
+
+            // 2. Crear Triggers (Dropear si existen para evitar duplicados)
+            $conn->exec("DROP TRIGGER IF EXISTS tr_propagar_stock_historico_salida ON tblsalidas");
+            $conn->exec("CREATE TRIGGER tr_propagar_stock_historico_salida
+                         AFTER INSERT OR UPDATE OR DELETE ON tblsalidas
+                         FOR EACH ROW EXECUTE PROCEDURE public.fn_propagar_stock_historico()");
+
+            $conn->exec("DROP TRIGGER IF EXISTS tr_propagar_stock_historico_entrada ON tblentradas");
+            $conn->exec("CREATE TRIGGER tr_propagar_stock_historico_entrada
+                         AFTER INSERT OR UPDATE OR DELETE ON tblentradas
+                         FOR EACH ROW EXECUTE PROCEDURE public.fn_propagar_stock_historico()");
+
+            return array('status' => 'success', 'm' => 'Triggers históricos instalados correctamente');
+
+        } catch (PDOException $e) {
+            return array('status' => 'error', 'm' => $e->getMessage());
         }
     }
 }

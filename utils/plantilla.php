@@ -447,7 +447,7 @@
                     } else if (!(body.classList.contains('sidebar-collapse'))) {
                         body.classList.toggle('sidebar-collapse');
                     }
-                })
+                });
             });
 
             $(document).on('select2:open', () => {
@@ -456,9 +456,6 @@
                     if (searchField) searchField.focus();
                 }, 0);
             });
-
-
-
 
             // let savedTheme = localStorage.getItem('darkMode');
             // if (savedTheme == 'true') {

@@ -5,6 +5,31 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
 <head>
     <title>Inventario</title>
+    <style>
+        .timeline-container {
+            max-height: 310px;
+            overflow-y: auto;
+            padding: 10px;
+        }.timeline-item {
+            border-left: 2px solid #28a745;
+            padding-left: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }.timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #28a745;
+        }.card-outline.card-success {
+            border-top: 3px solid #28a745;
+        }.card-outline.card-secondary {
+            border-top: 3px solid #6c757d;
+        }
+    </style>
 </head>
 <!-- Contenido Header -->
 <section class="content-header">
@@ -133,9 +158,25 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     <div class="row">
                                         <div class="col-sm-6" id="divStockIni">
                                             <div class="input-data">
-                                                <?php echo  $id_user ? '' : '<span class="input-group-text" style="position:absolute;top:56%;right:12px"><i class="fas fa-lock"></i></span>'; ?>
-                                                <input autocomplete="off" id="stock_ini" name="stock_ini" class="input-nuevo" type="text" <?php echo  $id_user ? '' : 'readonly'; ?> onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)">
-                                                <label class="label"><i class="fas fa-boxes-stacked"></i> Cantidad Inicial</label>
+                                                <?php echo $id_user ? '' : '<span class="input-group-text" style="position:absolute;top:56%;right:12px"><i class="fas fa-lock"></i></span>'; ?>
+                                                <input autocomplete="off"
+                                                    id="stock_ini"
+                                                    name="stock_ini"
+                                                    class="input-nuevo"
+                                                    type="text"
+                                                    class="input-nuevo"
+                                                    type="text"
+                                                    readonly> <label class="label">
+                                                    <i class="fas fa-boxes-stacked"></i> Cantidad Inicial
+
+                                                    <i class="fas fa-pen-to-square text-secondary ml-2"
+                                                        id="iconStockHistory"
+                                                        style="cursor: pointer; font-size: 1.2rem; transition: 0.3s; pointer-events: auto; position: relative; z-index: 100;"
+                                                        title="Gestionar versiones e historial"
+                                                        onclick="event.preventDefault(); event.stopPropagation(); abrirModalVersionesStock();">
+                                                    </i>
+                                                </label>
+
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
                                         </div>
@@ -436,8 +477,54 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 </div>
 <!-- Fin Modal Medidas -->
 
-
-
+<!-- Modal Stock Inicial - Versiones -->
+<div class="modal fade" id="modalVersionesStock" tabindex="-1" aria-labelledby="modalVersionesStockLabel" aria-hidden="true" style="background-color: rgba(66, 74, 81, 0.69); backdrop-filter:blur(16px);">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-green align-items-center">
+                <h5 class="modal-title" id="modalVersionesStockLabel">
+                    <i class="fas fa-code-branch"></i> Versiones de Stock Inicial
+                </h5>
+                <div class="ml-3">
+                     <select id="cboAnioVersion" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark" style="width: 100px;"></select>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3" style="align-items: center;">
+                    <div class="col-md-3">
+                       <div class="input-data m-0">
+                           <input autocomplete="off" id="inputNuevoStockIni" class="input-nuevo" type="text" min="0" required="">
+                           <label class="label"><i class="fas fa-boxes-stacked"></i> Stock inicial</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="input-data m-0" style="/* height: auto; */">
+                            <!-- Usamos textarea pero con el estilo input-data si es posible, o un input grande -->
+                            <input autocomplete="off" id="inputMotivoStock" class="input-nuevo" type="text" required="">
+                            <label class="label"><i class="fas fa-comment-alt"></i> Motivo del cambio</label>
+                        </div>
+                    </div>
+                <div class="col-auto pt-4">
+                    <button class="btn bg-gradient-green" type="button" id="btnCrearVersionStock">
+                            <i class="fas fa-plus"></i> Nueva Versión
+                        </button>
+                </div></div>
+                <hr>
+                <h6 class="mb-2"><i class="fas fa-history"></i> Historial de Versiones</h6>
+                <div id="containerVersionesStock" class="timeline-container">
+                    <!-- Las versiones se cargarán dinámicamente aquí -->
+                    <div class="text-center text-muted" id="sinVersiones">
+                        <i class="fas fa-inbox"></i> No hay versiones registradas
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fin Modal Stock Inicial - Versiones -->
 <script>
     cargarCombo('Categoria');
     cargarCombo('Unidad');
@@ -651,7 +738,217 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         modalImage.src = imgSrc;
     }
 
+    // ========== FUNCIONES GLOBALES PARA GESTIÓN DE VERSIONES ==========
+    var idProductoActualStock = 0;
 
+    // Función para abrir modal
+    function abrirModalVersionesStock() {
+        const idEl = document.getElementById('id');
+        const idProducto = idEl ? idEl.value : '';
+        
+        if (!idProducto) {
+            mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Debe guardar el producto primero', 3000);
+            return;
+        }
+        
+        idProductoActualStock = idProducto;
+        const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
+        
+        // Inicializar combo de año si no tiene datos
+        if ($('#cboAnioVersion option').length === 0 && typeof datos_anio !== 'undefined') {
+             $('#cboAnioVersion').select2({
+                 data: datos_anio,
+                 minimumResultsForSearch: -1
+             });
+             
+             $('#cboAnioVersion').on('change', function() {
+                 cargarVersionesStockInicial(idProductoActualStock, this.value);
+             });
+        }
+        // Setear año actual y cargar
+        $('#cboAnioVersion').val(year_val).trigger('change');
+        
+        $('#modalVersionesStock').modal('show');
+        cargarVersionesStockInicial(idProducto, year_val);
+    }
+
+    // Cargar versiones del servidor
+    function cargarVersionesStockInicial(idProducto, anio) {
+        fetch('controllers/inventario.controlador.php', {
+            method: 'POST',
+            body: new URLSearchParams({
+                accion: 31,
+                id_producto: idProducto,
+                anio: anio
+            })
+        })
+        .then(r => r.json())
+        .then(data => mostrarVersionesStockInicial(data))
+        .catch(e => console.error('Error:', e));
+    }
+
+    // Mostrar versiones en el modal
+    function mostrarVersionesStockInicial(versiones) {
+        const container = document.getElementById('containerVersionesStock');
+        const sinVersiones = document.getElementById('sinVersiones');
+
+        if (!versiones || versiones.length === 0) {
+            container.innerHTML = '';
+            if (sinVersiones) sinVersiones.style.display = 'block';
+            return;
+        }
+
+        if (sinVersiones) sinVersiones.style.display = 'none';
+        container.innerHTML = versiones.map((v, idx) => `
+            <div class="card card-outline card-${idx === 0 ? 'success' : 'secondary'} mb-2">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <strong>Versión ${v.numero_version}</strong>
+                        <small class="text-muted">${v.fecha_registro}</small>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Stock:</strong> ${v.stock_ini}</p>
+                    <div class="motivo-display">
+                        <p class="mb-2"><strong>Motivo:</strong> ${v.motivo || 'Sin especificar'}</p>
+                        <button type="button" class="btn bg-gradient-warning btn-edit-motivo" data-id="${v.id}" title="Editar">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <button type="button" class="btn bg-gradient-danger btn-delete-version" data-id="${v.id}" title="Eliminar">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="motivo-edit" style="display: none;">
+                        <textarea class="form-control textarea-motivo" data-id="${v.id}" rows="2">${v.motivo || ''}</textarea>
+                        <button type="button" class="btn btn-sm btn-success btn-save-motivo mt-2" data-id="${v.id}">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary btn-cancel-motivo mt-2" data-id="${v.id}">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Agregar event listeners
+        document.querySelectorAll('.btn-edit-motivo').forEach(btn => {
+            btn.onclick = function() {
+                const card = this.closest('.card');
+                card.querySelector('.motivo-display').style.display = 'none';
+                card.querySelector('.motivo-edit').style.display = 'block';
+            };
+        });
+
+        document.querySelectorAll('.btn-cancel-motivo').forEach(btn => {
+            btn.onclick = function() {
+                const card = this.closest('.card');
+                card.querySelector('.motivo-display').style.display = 'block';
+                card.querySelector('.motivo-edit').style.display = 'none';
+            };
+        });
+
+        document.querySelectorAll('.btn-save-motivo').forEach(btn => {
+            btn.onclick = function() {
+                const id = this.dataset.id;
+                const motivo = document.querySelector(`.textarea-motivo[data-id="${id}"]`).value;
+                guardarMotivoVersion(id, motivo);
+            };
+        });
+
+        document.querySelectorAll('.btn-delete-version').forEach(btn => {
+            btn.onclick = function() {
+                if (confirm('¿Eliminar versión?')) {
+                    eliminarVersionStock(this.dataset.id);
+                }
+            };
+        });
+    }
+    
+    // Guardar motivo
+    function guardarMotivoVersion(idVersion, motivo) {
+        fetch('controllers/inventario.controlador.php', {
+            method: 'POST',
+            body: new URLSearchParams({
+                accion: 33,
+                id_version: idVersion,
+                motivo: motivo
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                mostrarToast('success', 'Completado', 'fa-check', 'Actualizado correctamente', 3000);
+                const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
+                cargarVersionesStockInicial(idProductoActualStock, year_val);
+            } else {
+                mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
+            }
+        });
+    }
+
+    // Eliminar versión
+    function eliminarVersionStock(idVersion) {
+        fetch('controllers/inventario.controlador.php', {
+            method: 'POST',
+            body: new URLSearchParams({
+                accion: 34,
+                id_version: idVersion
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                mostrarToast('success', 'Completado', 'fa-check', 'Versión eliminada', 3000);
+                const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
+                cargarVersionesStockInicial(idProductoActualStock, year_val);
+            } else {
+                mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
+            }
+        });
+    }
+
+    // Crear nueva versión
+    function crearNuevaVersionStock() {
+        const stock = document.getElementById('inputNuevoStockIni').value;
+        const motivo = document.getElementById('inputMotivoStock').value;
+
+        if (!stock) {
+            mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Ingrese un valor de stock', 3000);
+            return;
+        }
+
+        const year_val = $('#cboAnioVersion').val() || (typeof year !== 'undefined' ? year : new Date().getFullYear());
+        
+        fetch('controllers/inventario.controlador.php', {
+            method: 'POST',
+            body: new URLSearchParams({
+                accion: 32,
+                id_producto: idProductoActualStock,
+                anio: year_val,
+                stock_ini: stock,
+                motivo: motivo || 'Ajuste'
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                mostrarToast('success', 'Éxito', 'fa-check', 'Versión creada correctamente', 3000);
+                document.getElementById('inputNuevoStockIni').value = '';
+                document.getElementById('inputMotivoStock').value = '';
+                cargarVersionesStockInicial(idProductoActualStock, year_val);
+                
+                // Actualizar el valor en el input principal si es el año actual
+                const anioActual = new Date().getFullYear();
+                if (parseInt(year_val) === anioActual) {
+                     const stockInput = document.getElementById('stock_ini');
+                     if(stockInput) stockInput.value = stock;
+                }
+            } else {
+                mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
+            }
+        });
+    }
 
     $(document).ready(function() {
         let anio = year;
@@ -689,11 +986,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     const b = document.body;
                     const s = b.scrollHeight + 20;
                     const w = window.innerHeight;
-                    console.log(b + ' ' + s + ' hanfle ' + w)
                     handleScroll(b, s, w);
                 }
                 let tablaData = tabla.rows().data().toArray();
-                localStorage.setItem('i', JSON.stringify(tablaData));
             });
         }
 
@@ -1003,7 +1298,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     tabla.ajax.reload();
                 });
             } else {
-                alert('Completa todos los campos correctamente.');
+                mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Completa todos los campos correctamente.', 3000);
             }
         });
 
@@ -1014,7 +1309,12 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             const ancho = parseFloat($('#medidaAncho').val()) || 0;
             if (cantidad > 0 && alto > 0 && ancho > 0 && id_producto) {
                 const area_m2_total = cantidad * alto * ancho;
-                const medidas = [{cantidad,alto,ancho,area_m2_total}];
+                const medidas = [{
+                    cantidad,
+                    alto,
+                    ancho,
+                    area_m2_total
+                }];
                 $.post('controllers/inventario.controlador.php', {
                     accion: 22,
                     id_producto,
@@ -1060,6 +1360,20 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         $(modalS).on('hidden.bs.modal', function(e) {
+            e.preventDefault();
+            if (scroll) {
+                const navbar = body.querySelector('.navbar')
+                $(body).addClass('modal-open');
+                $(body).css('padding-right', '6px');
+            }
+        });
+
+        const modalVersiones = document.getElementById('modalVersionesStock');
+        $(modalVersiones).on("shown.bs.modal", function() {
+            document.getElementById('inputNuevoStockIni').focus();
+        });
+
+        $(modalVersiones).on('hidden.bs.modal', function(e) {
             e.preventDefault();
             if (scroll) {
                 const navbar = body.querySelector('.navbar')
@@ -1258,5 +1572,29 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 });
             }
         });
+
+        // Conexión botón crear versión con función global
+        const btnCrearVer = document.getElementById('btnCrearVersionStock');
+        if (btnCrearVer) {
+            btnCrearVer.onclick = crearNuevaVersionStock;
+        }
+
     });
+    // Función de utilidad para instalar la lógica de base de datos (Ejecutar una vez desde consola)
+    function instalarLogicDB() {
+        if(confirm('¿Desea instalar los triggers de control histórico? Esto modificará la estructura de la base de datos.')) {
+            const formData = new FormData();
+            formData.append('accion', 100);
+            fetch('controllers/inventario.controlador.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(d => {
+                alert(d.m);
+                console.log(d);
+            })
+            .catch(e => console.error(e));
+        }
+    }
 </script>
