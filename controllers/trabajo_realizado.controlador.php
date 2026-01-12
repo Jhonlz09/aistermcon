@@ -48,7 +48,6 @@ class ControladorTrabajoRealizado
         $img_arr = !empty($img_arr) ? $this->arrayToPgArray($img_arr) : null;
 
         $data = ModeloTrabajoRealizado::mdlEditarTrabajoRealizado($this->id, $this->fecha, $this->cliente, $this->nota, $pdf_arr, $img_arr, $this->isFinalizado);
-
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 

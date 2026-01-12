@@ -180,8 +180,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6 col">
-                                            <div class="input-data s1">
+                                        <div class="col col-6">
+                                            <div class="input-data">
                                                 <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
                                                 <label class="label"><i class="fas fa-cubes"></i> Cantidad</label>
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
@@ -247,7 +247,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
 
                                 </div>
-
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
@@ -486,22 +485,22 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     <i class="fas fa-code-branch"></i> Versiones de Stock Inicial
                 </h5>
                 <div class="ml-3">
-                     <select id="cboAnioVersion" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark" style="width: 100px;"></select>
+                    <select id="cboAnioVersion" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark" style="width: 100px;"></select>
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row mb-3" style="align-items: center;">
+                <div class="row mb-0" style="align-items: center;">
                     <div class="col-md-3">
-                       <div class="input-data m-0">
-                           <input autocomplete="off" id="inputNuevoStockIni" class="input-nuevo" type="text" min="0" required="">
-                           <label class="label"><i class="fas fa-boxes-stacked"></i> Stock inicial</label>
+                        <div class="input-data m-0">
+                            <input autocomplete="off" id="inputNuevoStockIni" class="input-nuevo" type="text" min="0" required="">
+                            <label class="label"><i class="fas fa-boxes-stacked"></i> Stock inicial</label>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="input-data m-0" style="/* height: auto; */">
+                        <div class="input-data m-0">
                             <!-- Usamos textarea pero con el estilo input-data si es posible, o un input grande -->
                             <input autocomplete="off" id="inputMotivoStock" class="input-nuevo" type="text" required="">
                             <label class="label"><i class="fas fa-comment-alt"></i> Motivo del cambio</label>
@@ -535,7 +534,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             autoHide: 'leave'
         }
     });
-
 
     var mostrarCol = '<?php echo $_SESSION["editar3"] || $_SESSION["eliminar3"] ?>';
     var editar = '<?php echo $_SESSION["editar3"] ?>';
@@ -1578,23 +1576,5 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         if (btnCrearVer) {
             btnCrearVer.onclick = crearNuevaVersionStock;
         }
-
     });
-    // Función de utilidad para instalar la lógica de base de datos (Ejecutar una vez desde consola)
-    function instalarLogicDB() {
-        if(confirm('¿Desea instalar los triggers de control histórico? Esto modificará la estructura de la base de datos.')) {
-            const formData = new FormData();
-            formData.append('accion', 100);
-            fetch('controllers/inventario.controlador.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(r => r.json())
-            .then(d => {
-                alert(d.m);
-                console.log(d);
-            })
-            .catch(e => console.error(e));
-        }
-    }
 </script>

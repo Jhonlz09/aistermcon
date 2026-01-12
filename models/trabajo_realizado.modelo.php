@@ -32,18 +32,18 @@ class ModeloTrabajoRealizado
             $a->execute();
             return [
                 'status' => 'success',
-                'm' => 'El pre trabajo se agregó correctamente.'
+                'm' => 'El trabajo realizado se agregó correctamente.'
             ];
         } catch (PDOException $e) {
             if ($e->getCode() == '23505') {
                 return [
                     'status' => 'danger',
-                    'm' => 'El pre trabajo ya existe para este cliente.'
+                    'm' => 'El trabajo realizado ya existe para este cliente.'
                 ];
             }
             return [
                 'status' => 'danger',
-                'm' => 'Error al agregar presupuesto: ' . $e->getMessage()
+                'm' => 'Error al agregar trabajo realizado: ' . $e->getMessage()
             ];
         }
     }
@@ -108,7 +108,7 @@ class ModeloTrabajoRealizado
             // 1. Obtener archivos antes de borrar el registro
             $l = $db->prepare("
             SELECT unnest(pdf_arr || img_arr) AS nombre_file 
-            FROM tblpre_trabajo 
+            FROM tbltrabajo_realizado 
             WHERE id = :id
         ");
             $l->bindParam(":id", $id, PDO::PARAM_INT);
@@ -116,7 +116,7 @@ class ModeloTrabajoRealizado
             $files = $l->fetchAll(PDO::FETCH_COLUMN);
 
             // 2. Borrar registro
-            $stmt = $db->prepare("DELETE FROM tblpre_trabajo WHERE id = :id");
+            $stmt = $db->prepare("DELETE FROM tbltrabajo_realizado WHERE id = :id");
             $stmt->bindParam(":id", $id, PDO::PARAM_INT);
             $stmt->execute();
 
@@ -129,7 +129,7 @@ class ModeloTrabajoRealizado
             }
 
             // 3. Eliminar archivos físicamente
-            $uploadDir = "/var/www/pre_trabajo/";
+            $uploadDir = "/var/www/trabajo_realizado/";
 
             foreach ($files as $fileName) {
                 $filePath = $uploadDir . $fileName;
@@ -140,12 +140,12 @@ class ModeloTrabajoRealizado
 
             return [
                 'status' => 'success',
-                'm' => 'Se eliminó el pre-trabajo correctamente.'
+                'm' => 'Se eliminó el trabajo realizado correctamente.'
             ];
         } catch (PDOException $e) {
             return [
                 'status' => 'danger',
-                'm' => 'No se pudo eliminar el pre-trabajo: ' . $e->getMessage()
+                'm' => 'No se pudo eliminar el trabajo realizado: ' . $e->getMessage()
             ];
         }
     }

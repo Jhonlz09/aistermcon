@@ -33,7 +33,6 @@ class ControladorInventario
     public function agregarInventario()
     {
         $img = null; // Inicializamos la variable img
-
         $existeCodigo = ModeloInventario::mdlIsCodigoExits($this->codigo);
 
         if ($existeCodigo) {
@@ -53,7 +52,6 @@ class ControladorInventario
                 // Ruta de subida
                 $uploadDir = '../../products/';
                 $uploadFile = $uploadDir . $fullNameFinal;
-
                 // Mover el archivo subido a la carpeta de destino
                 if (move_uploaded_file($_FILES['fileImg']['tmp_name'], $uploadFile)) {
                     // Guardar el nombre del archivo en la variable $img

@@ -543,7 +543,6 @@ class ModeloInventario
         }
     }
 
-
     public static function mdlConsultarHistorialProducto($id_producto, $anio)
     {
         try {
