@@ -594,8 +594,8 @@
                         data: 'precio'
                     },
                     { targets: 5, data: 'precio_envio', className: "text-center envio" , visible: false},
-                    { targets: 6, data: 'precio_descuento', className: "text-center descuento" , visible: false},
-                    { targets: 7, data: 'precio_carga', className: "text-center cargo" , visible: false},
+                    { targets: 6, data: 'precio_carga', className: "text-center cargo" , visible: false},
+                    { targets: 7, data: 'precio_descuento', className: "text-center descuento" , visible: false},
                     { targets: 8, data: 'precio_iva', className: "text-center impuesto_esp" , visible: false}
                 ],
                 processing: true,
@@ -674,8 +674,8 @@
                     if (esImportado) {
                         columnasEditables.push(
                             [5, 'precio_envio'],
-                            [6, 'precio_descuento'],
-                            [7, 'precio_carga'],
+                            [6, 'precio_carga'],
+                            [7, 'precio_descuento'],
                             [8, 'precio_iva'] 
                         );
                     }

@@ -140,7 +140,7 @@ class ModeloEntradas
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT e.id || ',' || b.id as id , i.codigo, e.cantidad_entrada,
-            u.nombre AS unidad, e.precio_uni::numeric AS precio, e.precio_envio,e.precio_carga,e.precio_descuento, e.precio_iva, e.precio_total_iva, i.descripcion
+            u.nombre AS unidad, e.precio_uni::numeric AS precio, e.precio_envio,e.precio_carga,e.precio_descuento, e.precio_iva::numeric, e.precio_total_iva, i.descripcion
             FROM tblentradas e
             JOIN tblinventario i ON e.id_producto = i.id
             JOIN tblfactura b ON e.id_factura = b.id 

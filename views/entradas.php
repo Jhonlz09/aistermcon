@@ -244,6 +244,7 @@
             data: datos_anio,
             minimumResultsForSearch: -1,
         })
+        
         setChange(cboAnio, anio);
 
         $(cboMeses).select2({
