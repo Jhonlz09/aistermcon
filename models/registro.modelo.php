@@ -9,47 +9,152 @@ class ModeloRegistro
 
     public $resultado;
 
-    static public function mdlRegistrarCompra($arr, $nro_factura, $proveedor, $fecha)
-    {
-        try {
-            $hora = date('H:i:s');
-            $fechaHora = $fecha . ' ' . $hora;
+    // static public function mdlRegistrarCompra($arr, $nro_factura, $proveedor, $fecha)
+    // {
+    //     try {
+    //         $hora = date('H:i:s');
+    //         $fechaHora = $fecha . ' ' . $hora;
 
-            $conexion = Conexion::ConexionDB();
-            $stmtF = $conexion->prepare("INSERT INTO tblfactura(fecha,nombre,id_proveedor) VALUES(:fecha, :nro_factura,:id_proveedor)");
-            $stmtF->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
-            $stmtF->bindParam(':nro_factura', $nro_factura, PDO::PARAM_STR);
-            $stmtF->bindParam(':id_proveedor', $proveedor, PDO::PARAM_INT);
-            // $stmtB->execute();
-            if ($stmtF->execute()) {
-                $id_factura = $conexion->lastInsertId();
-                // Recorre el array e inserta la entrada en tblentradas y actualiza tblinventario
-                foreach ($arr as $data) {
-                    // Divide la cadena en id, cantidad y precio
-                    list($id, $cantidad, $precio) = explode(',', $data);
+    //         $conexion = Conexion::ConexionDB();
+    //         $stmtF = $conexion->prepare("INSERT INTO tblfactura(fecha,nombre,id_proveedor) VALUES(:fecha, :nro_factura,:id_proveedor)");
+    //         $stmtF->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
+    //         $stmtF->bindParam(':nro_factura', $nro_factura, PDO::PARAM_STR);
+    //         $stmtF->bindParam(':id_proveedor', $proveedor, PDO::PARAM_INT);
+    //         if ($stmtF->execute()) {
+    //             $id_factura = $conexion->lastInsertId();
+    //             foreach ($arr as $data) {
+    //                 list($id, $cantidad, $precio) = explode(',', $data);
+                
+    //                 $stmtE = Conexion::ConexionDB()->prepare("INSERT INTO tblentradas(id_factura,cantidad_entrada, id_producto, precio_uni)
+    //                     VALUES(:id_factura, :cantidad, :id, :precio)");
+    //                 $stmtE->bindParam(':id_factura', $id_factura, PDO::PARAM_INT);
+    //                 $stmtE->bindParam(':cantidad', $cantidad, PDO::PARAM_STR);
+    //                 $stmtE->bindParam(':id', $id, PDO::PARAM_INT);
+    //                 $stmtE->bindParam(':precio', $precio, PDO::PARAM_STR);
+    //                 $stmtE->execute();
+    //             }
+    //         }
+    //         return array(
+    //             'status' => 'success',
+    //             'm' => 'La entrada fue registrada correctamente'
+    //         );
+    //     } catch (PDOException $e) {
+    //         return array(
+    //             'status' => 'danger',
+    //             'm' => 'No se pudo registrar la entrada: ' . $e->getMessage()
+    //         );
+    //     }
+    // }
 
-                    // $precio = str_replace('.', ',', $precio);
-                    // Inserta la entrada en tblentradas
-                    $stmtE = Conexion::ConexionDB()->prepare("INSERT INTO tblentradas(id_factura,cantidad_entrada, id_producto, precio_uni)
-                        VALUES(:id_factura, :cantidad, :id, :precio)");
-                    $stmtE->bindParam(':id_factura', $id_factura, PDO::PARAM_INT);
-                    $stmtE->bindParam(':cantidad', $cantidad, PDO::PARAM_STR);
-                    $stmtE->bindParam(':id', $id, PDO::PARAM_INT);
-                    $stmtE->bindParam(':precio', $precio, PDO::PARAM_STR);
-                    $stmtE->execute();
-                }
-            }
-            return array(
-                'status' => 'success',
-                'm' => 'La entrada fue registrada correctamente'
-            );
-        } catch (PDOException $e) {
-            return array(
-                'status' => 'danger',
-                'm' => 'No se pudo registrar la entrada: ' . $e->getMessage()
-            );
+    static public function mdlRegistrarCompra($arr, $nro_factura, $proveedor, $fecha, $is_importacion)
+{
+    $conexion = Conexion::ConexionDB();
+    
+    try {
+        $conexion->beginTransaction();
+        $hora = date('H:i:s');
+        $fechaHora = $fecha . ' ' . $hora;
+        
+        $stmtF = $conexion->prepare("INSERT INTO tblfactura(fecha, nombre, id_proveedor, importacion) 
+                                     VALUES(:fecha, :nro_factura, :id_proveedor, :importacion)");
+        $stmtF->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
+        $stmtF->bindParam(':nro_factura', $nro_factura, PDO::PARAM_STR);
+        $stmtF->bindParam(':id_proveedor', $proveedor, PDO::PARAM_INT);
+        $val_importacion = $is_importacion ? 'true' : 'false'; 
+        $stmtF->bindParam(':importacion', $val_importacion, PDO::PARAM_STR);
+
+        if (!$stmtF->execute()) {
+            throw new Exception("Error al guardar la cabecera de la factura.");
         }
+
+        $id_factura = $conexion->lastInsertId();
+        $sqlEntrada = "INSERT INTO tblentradas(
+                            id_factura, id_producto, cantidad_entrada, precio_uni, 
+                            precio_envio, precio_carga, precio_descuento, 
+                            precio_total, precio_iva
+                       ) VALUES (
+                            :id_factura, :id_producto, :cantidad, :precio_uni,
+                            :envio, :carga, :descuento,
+                            :base_imponible, :valor_iva
+                       )";
+        
+        $stmtE = $conexion->prepare($sqlEntrada);
+        foreach ($arr as $data) {
+            $envio = 0;
+            $carga = 0;
+            $descuento = 0;
+            $impuesto_val = 0;
+            $base_imponible = 0;
+
+            if ($is_importacion) {
+                $partes = explode(',', $data);
+                if(count($partes) < 7) throw new Exception("Formato de datos incorrecto para importación.");
+                $id = $partes[0];
+                $cantidad = $partes[1];
+                $precio = $partes[2];
+                $envio = $partes[3];
+                $descuento = $partes[4];
+                $carga = $partes[5];     // Cargo importación
+                $impuesto_val = $partes[6]; // Valor monetario manual
+                $bruto = ($cantidad * $precio);
+                $base_imponible = $bruto + $envio + $carga - $descuento;
+
+            } else {
+                $partes = explode(',', $data);
+                $id = $partes[0];
+                $cantidad = $partes[1];
+                $precio = $partes[2];
+
+                // Cálculo Base Simple
+                $base_imponible = $cantidad * $precio;
+                
+                // CÁLCULO IVA AUTOMÁTICO (Definir tu tasa por defecto aquí si PHP debe calcularlo)
+                // Ejemplo: 15% si no viene manual.
+                $tasa_iva = 0.15; 
+                $impuesto_val = $base_imponible * $tasa_iva;
+            }
+
+            // Validar que la base no sea negativa
+            if ($base_imponible < 0) $base_imponible = 0;
+
+            // Bind Parameters
+            $stmtE->bindValue(':id_factura', $id_factura, PDO::PARAM_INT);
+            $stmtE->bindValue(':id_producto', $id, PDO::PARAM_INT);
+            $stmtE->bindValue(':cantidad', $cantidad, PDO::PARAM_STR);
+            $stmtE->bindValue(':precio_uni', $precio, PDO::PARAM_STR);
+            
+            // Extras
+            $stmtE->bindValue(':envio', $envio, PDO::PARAM_STR);
+            $stmtE->bindValue(':carga', $carga, PDO::PARAM_STR);
+            $stmtE->bindValue(':descuento', $descuento, PDO::PARAM_STR);
+            
+            // Totales (Postgres MONEY type suele aceptar strings numéricos bien formados)
+            $stmtE->bindValue(':base_imponible', $base_imponible, PDO::PARAM_STR);
+            $stmtE->bindValue(':valor_iva', $impuesto_val, PDO::PARAM_STR);
+
+            if (!$stmtE->execute()) {
+                throw new Exception("Error al guardar el detalle del producto ID: " . $id);
+            }
+        }
+
+        // 5. COMMIT (Confirmar cambios si todo salió bien)
+        $conexion->commit();
+
+        return array(
+            'status' => 'success',
+            'm' => 'La entrada fue registrada correctamente'
+        );
+
+    } catch (Exception $e) {
+        // 6. ROLLBACK (Deshacer todo si hubo error)
+        $conexion->rollBack();
+        
+        return array(
+            'status' => 'danger',
+            'm' => 'No se pudo registrar la entrada: ' . $e->getMessage()
+        );
     }
+}
 
     static public function mdlRegistrarSalida($arr, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img)
     {

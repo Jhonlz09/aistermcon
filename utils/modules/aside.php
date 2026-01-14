@@ -239,11 +239,15 @@
                                                                     <thead>
                                                                         <tr>
                                                                             <th class="text-center">Nº</th>
-                                                                            <th></th>
+                                                                            <th>ID</th>
                                                                             <th>CANTIDAD</th>
                                                                             <th>UNIDAD</th>
                                                                             <th>P. UNIT.</th>
+                                                                            <th>ENVIO</th>
+                                                                            <th>CARGO IMP.</th>
+                                                                            <th>DTO.</th>
                                                                             <th>P. TOT.</th>
+                                                                            <th>IMP. ESP.</th>    
                                                                             <th>IVA</th>
                                                                             <th>P. FINAL</th>
                                                                             <th>DESCRIPCION</th>
@@ -321,6 +325,11 @@
                                                                                         <th class="text-center">CANTIDAD</th>
                                                                                         <th class="text-center">UNIDAD</th>
                                                                                         <th class="text-center">PRECIO UNIT.</th>
+                                                                                        <th class="text-center">ENVIO</th>
+                                                                                        <th class="text-center">CARGO IMP.</th>
+                                                                                        <th class="text-center">DTO.</th>
+                                                                                        <th class="text-center">IMP. ESP.</th>
+                                                                                        <th class="text-center">P. FINAL</th>
                                                                                         <th>DESCRIPCION</th>
                                                                                     </tr>
                                                                                 </thead>

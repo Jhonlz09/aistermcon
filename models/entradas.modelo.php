@@ -8,11 +8,11 @@ class ModeloEntradas
     static public function mdlListarEntradas($anio, $mes)
     {
         try {
-            $consulta = "SELECT e.id, i.codigo, e.cantidad_entrada, u.nombre AS unidad, '$ ' || e.precio_uni AS precio,
+            $consulta = "SELECT e.id, i.codigo, e.cantidad_entrada, u.nombre AS unidad, '$ ' || e.precio_uni AS precio, 
 			e.precio_total, e.precio_iva, e.precio_total_iva,
             i.descripcion, b.nombre || '  ' || p.nombre || ' - '|| TO_CHAR(b.fecha, 'DD/MM/YYYY HH24:MI') AS grupo,
             p.nombre as pro,b.nombre as nro_fac,b.id as id_boleta, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha, 
-            p.id as proveedor,ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY e.id) AS fila
+            p.id as proveedor,ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY e.id) AS fila, b.importacion
                 FROM tblentradas e
                     JOIN tblinventario i ON e.id_producto = i.id
 		            JOIN tblfactura b ON e.id_factura = b.id
@@ -140,7 +140,7 @@ class ModeloEntradas
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT e.id || ',' || b.id as id , i.codigo, e.cantidad_entrada,
-            u.nombre AS unidad, e.precio_uni::numeric AS precio, i.descripcion
+            u.nombre AS unidad, e.precio_uni::numeric AS precio, e.precio_envio,e.precio_carga,e.precio_descuento, e.precio_iva, e.precio_total_iva, i.descripcion
             FROM tblentradas e
             JOIN tblinventario i ON e.id_producto = i.id
             JOIN tblfactura b ON e.id_factura = b.id 

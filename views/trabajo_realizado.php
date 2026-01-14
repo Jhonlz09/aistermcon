@@ -158,9 +158,9 @@
                                     </label> -->
                                     <label class="combo d-flex justify-content-between" for="none">
                                         <span><i class="fas fa-file-import"></i> Informe de trabajo (PDF/IMG)</span>
-                                        <label class="d-flex align-items-center" for="isFinalizado" style="color:#5b5b5b;gap:.3rem"> Finalizado
-                                            <label class="switch-2" style="font-size:.8rem">
-                                                <input id="isFinalizado" class="switch__input" type="checkbox" onkeydown="toggleWithEnter(event, this)">
+                                        <label for="none" class="d-flex align-items-center"  style="color:#5b5b5b;gap:.3rem"> Finalizado
+                                            <label for="isFinalizado" class="switch-2" style="font-size:.8rem">
+                                                <input id="isFinalizado" class="switch__input" type="checkbox">
                                                 <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
                                                     <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11"></polyline>
                                                 </svg>

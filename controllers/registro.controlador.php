@@ -6,8 +6,9 @@ class ajaxRegistro
 {
     public function registrarCompra($datos, $nro_factura, $proveedor, $fecha)
     {
+        $is_importacion = isset($_POST['is_importado']) && $_POST['is_importado'] == '1' ? true : false;
+        $data = ModeloRegistro::mdlRegistrarCompra($datos, $nro_factura, $proveedor, $fecha, $is_importacion);
 
-        $data = ModeloRegistro::mdlRegistrarCompra($datos, $nro_factura, $proveedor, $fecha);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 

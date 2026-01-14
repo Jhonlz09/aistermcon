@@ -62,7 +62,7 @@
                                     <th>UND</th>
                                     <th class="text-center">P. UNIT.</th>
                                     <th class="text-center">P. TOT.</th>
-                                    <th class="text-center">IVA</th>
+                                    <th class="text-center">IMP. ESP/IVA</th>
                                     <th class="text-center">P. FINAL</th>
                                     <th>DESCRIPCION</th>
                                     <th></th>
@@ -297,9 +297,11 @@
         $('#tblEntradas').on('click', '#editE', function() {
             row = tabla.row($(this).closest('tr').next()).data();
             id_boleta = row[12];
+            const chkImportado = document.getElementById('isImportado_edit'); // Tu checkbox nuevo
             const fecha_id = row[13];
             const proveedor_id = row[14];
             const factura = row[11];
+            const importacion = row[16];
             const entrada_radio = document.getElementById('radio-1');
             const nro_factura = document.getElementById('nro_fac');
             setChange(cboProveedores, proveedor_id)
@@ -308,6 +310,9 @@
             entrada_radio.value = '5';
             entrada_radio.checked = true;
             entrada_radio.dispatchEvent(new Event('change'));
+            chkImportado.checked = importacion;
+            chkImportado.dispatchEvent(new Event('change'));
+            console.log('importacion', importacion);
             first_control.click();
             tblDetalleCompra.ajax.reload(null, false);
         });

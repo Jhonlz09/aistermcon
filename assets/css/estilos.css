@@ -563,6 +563,13 @@ a.dropdown-item[data-estado="PENDIENTE"]:active {
     color: red;
 }
 
+.input-table-compra {
+    width: 82px !important;
+    border-bottom-width: 2px !important;
+    padding: 0 !important;
+    font-size: 1.4rem !important
+}
+
 /* #radio-orden:checked~.glider, #r-orden:checked~.glider {
     transform: translateX(0);
     background-color: var(--label-new);
@@ -1842,16 +1849,16 @@ body.sidebar-collapse.sidebar-mini .main-sidebar:not(:hover) .nav-child-indent .
 /* Ocultar el texto del 3er nivel cuando está colapsado */
 
 body.sidebar-collapse .main-sidebar:hover .nav-sidebar.nav-child-indent .nav-treeview .nav-treeview .nav-link {
-        
-        /* Ajustamos el ancho restando los 2rem de indentación del nivel 3 */
-        width: calc(250px - .5rem * 2 - 2rem) !important;
-        
-        /* Aseguramos que el padding corresponda a la indentación para que el texto no quede pegado */
-       
-    }
 
-.text-dark-blue{
-    color:#4d6379 !important;
+    /* Ajustamos el ancho restando los 2rem de indentación del nivel 3 */
+    width: calc(250px - .5rem * 2 - 2rem) !important;
+
+    /* Aseguramos que el padding corresponda a la indentación para que el texto no quede pegado */
+
+}
+
+.text-dark-blue {
+    color: #4d6379 !important;
 }
 
 /* Icono chevron en padres */

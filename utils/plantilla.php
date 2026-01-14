@@ -77,62 +77,6 @@
     <script defer src="assets/plugins/jquery-tabledit/tabledit.min.js"></script>
     <script defer src="assets/plugins/chart.js/Chart.min.js"></script>
     <script defer src="assets/plugins/chart.js/ChartDataLabels.min.js"></script>
-    <!-- tinyMCE -->
-    <!-- <script defer src="assets/plugins/tinymce/tinymce.min.js"></script> -->
-    <style>
-        /* Estilos para el autocomplete de órdenes */
-        /* .ui-autocomplete.ui-front {
-            max-width: 650px !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-            border-radius: 6px !important;
-            border: 1px solid #e0e0e0 !important;
-            background-color: #fff !important;
-            z-index: 9999 !important;
-            padding: 8px 0 !important;
-        }
-        
-        .autocomplete-item-orden {
-            padding: 0 !important;
-            margin: 0 !important;
-            list-style: none !important;
-            border: none !important;
-        }
-        
-        .autocomplete-item-orden > div {
-            transition: all 0.2s ease !important;
-        }
-        
-        .autocomplete-item-orden:hover > div {
-            background-color: #f8f9fa !important;
-            padding-left: 20px !important;
-        }
-        
-        .autocomplete-item-orden.ui-state-active > div {
-            background-color: #e7f3ff !important;
-            border-left: 4px solid #007bff !important;
-            padding-left: 11px !important;
-            box-shadow: inset 0 2px 4px rgba(0, 123, 255, 0.1) !important;
-        }
-        
-        .ui-autocomplete li {
-            padding: 0 !important;
-            margin: 0 !important;
-            height: auto !important;
-            border: none !important;
-        }
-        
-        .ui-autocomplete > li {
-            margin-bottom: 4px !important;
-        }
-        
-        .ui-autocomplete > li:last-child {
-            margin-bottom: 0 !important;
-        }
-        
-        .ui-autocomplete > li:first-child {
-            margin-top: 0 !important;
-        } */
-    </style>
 </head>
 <?php if (isset($_SESSION['s_usuario'])) {
 ?>
@@ -596,15 +540,34 @@
                     "datatype": 'json',
                     "data": function(d) {
                         d.accion = 2,
-                            d.factura = id_boleta
+                        d.factura = id_boleta
                     }
                 },
-                // "dom": 'pt',
+                "dom": '<"row"<"col-sm-6"B><"col-sm-6 d-flex justify-content-end align-items-center" <"#contenedor-checkbox_edit"> >>t',
                 "lengthChange": true,
                 "ordering": false,
                 "responsive": true,
                 "autoWidth": false,
-                "paging": false,
+                "initComplete": function(settings, json) {
+                        const htmlCheckbox = `<label class="d-flex align-items-center justify-content-end py-2 mb-0"  style="color:#5b5b5b; gap:.5rem;cursor:pointer;padding-inline-end:1rem"> 
+                        <span>Importado</span>
+                        <label class="switch-2" for="isImportado_edit" style="font-size:.8rem">
+                            <input id="isImportado_edit" class="switch__input" type="checkbox" disabled>
+                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11"></polyline>
+                            </svg>
+                        </label>
+                    </label>`;
+                    // Inyectamos el HTML en el contenedor creado en el DOM
+                    $('#contenedor-checkbox_edit').append(htmlCheckbox);
+
+                     $('#isImportado_edit').on('change', function() {
+                        const showExtra = $(this).is(':checked');
+                        const columnasExtra = [5, 6, 7, 8]; 
+                        tblDetalleCompra.columns(columnasExtra).visible(showExtra);
+                        tblDetalleCompra.draw();
+                    });
+                },
                 columnDefs: [{
                         targets: 0,
                         data: 'id',
@@ -630,10 +593,21 @@
                         className: "text-center",
                         data: 'precio'
                     },
+                    { targets: 5, data: 'precio_envio', className: "text-center envio" , visible: false},
+                    { targets: 6, data: 'precio_descuento', className: "text-center descuento" , visible: false},
+                    { targets: 7, data: 'precio_carga', className: "text-center cargo" , visible: false},
+                    { targets: 8, data: 'precio_iva', className: "text-center impuesto_esp" , visible: false}
                 ],
                 processing: true,
                 serverSide: true,
-                dom: 'pt',
+                buttons: [{
+                        text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
+                        className: "btn btn-light text-danger",
+                        action: function(e, dt, node, config) {
+                            dt.clear().draw(); // Esta línea vacía los datos de la tabla
+                        }
+                    }]
+
             });
 
             $('#tblDetalleSalida').on('draw.dt', function() {
@@ -691,16 +665,26 @@
 
             $('#tblDetalleCompra').on('draw.dt', function() {
                 if (id_boleta != 0) {
+                    const esImportado = $('#isImportado_edit').is(':checked');
+                    let columnasEditables = [
+                        [1, 'codigo'],
+                        [2, 'cantidad_entrada'],
+                        [4, 'precio']
+                    ];
+                    if (esImportado) {
+                        columnasEditables.push(
+                            [5, 'precio_envio'],
+                            [6, 'precio_descuento'],
+                            [7, 'precio_carga'],
+                            [8, 'precio_iva'] 
+                        );
+                    }
                     $('#tblDetalleCompra').Tabledit({
                         url: 'controllers/Tabledit/acciones_entradas.php',
                         dataType: 'json',
                         columns: {
                             identifier: [0, 'id'],
-                            editable: [
-                                [1, 'codigo'],
-                                [2, 'cantidad_entrada'],
-                                [4, 'precio']
-                            ]
+                            editable: columnasEditables,
                         },
                         hideIdentifier: true,
                         restoreButton: false,
@@ -737,7 +721,9 @@
                         }
                     })
 
-                    $('#tblDetalleCompra').find('input[name="cantidad_entrada"]').attr({
+                    const selectorInputs = 'input[name="cantidad_entrada"], input[name="precio_envio"], input[name="precio_descuento"], input[name="precio_carga"], input[name="precio_iva"]';
+        
+                    $('#tblDetalleCompra').find(selectorInputs).attr({
                         'inputmode': 'numeric',
                         'autocomplete': 'off',
                         'onpaste': 'validarPegado(this, event)',
@@ -750,8 +736,9 @@
                         'autocomplete': 'off',
                         'onpaste': 'validarPegado(this, event)',
                         'onkeydown': 'validarTecla(event,this)',
-                        'oninput': 'validarNumber(this,/[^0-9.]/g,false,3)'
+                        'oninput': 'validarNumber(this,/[^0-9.]/g,false,4)'
                     });
+
                 }
 
             });
@@ -864,12 +851,36 @@
                 })
 
                 tblCompra = $('#tblCompra').DataTable({
-                    "dom": '<"row"<"col-sm-6"B><"col-sm-6"p>>t',
-                    "responsive": true,
+                    "dom": '<"row"<"col-sm-6"B><"col-sm-6 d-flex justify-content-end align-items-center" <"#contenedor-checkbox"> >>t',
                     "lengthChange": false,
                     "ordering": false,
                     "autoWidth": false,
                     "paging": false,
+                    "initComplete": function(settings, json) {
+                        const htmlCheckbox = `<label class="d-flex align-items-center justify-content-end mb-0"  style="color:#5b5b5b; gap:.5rem;cursor:pointer;padding-inline-end:1rem"> 
+                        <span>Importado</span>
+                        <label class="switch-2" for="isImportado" style="font-size:.8rem">
+                            <input id="isImportado" class="switch__input" type="checkbox">
+                            <svg class="switch__check" viewBox="0 0 16 16" width="16px" height="16px">
+                                <polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11"></polyline>
+                            </svg>
+                        </label>
+                    </label>`;
+                    // Inyectamos el HTML en el contenedor creado en el DOM
+                    $('#contenedor-checkbox').append(htmlCheckbox);
+
+                    $('#isImportado').on('change', function() {
+                        const isChecked = $(this).is(':checked');
+                        console.log("Checkbox estado:", isChecked);
+
+                        const showExtra = $(this).is(':checked');
+                        const columnasExtra = [5, 6, 7, 9]; 
+                        tblCompra.columns(columnasExtra).visible(showExtra);
+                        tblCompra.columns(10).visible(!showExtra);
+                        // Ajustar el ancho de las columnas automáticamente tras el cambio
+                        // tblCompra.columns.adjust().responsive.recalc();
+                    });
+                },
                     columnDefs: [{
                             targets: 0,
                             data: null,
@@ -896,6 +907,35 @@
                         {
                             targets: 4,
                             className: "text-center text-nowrap",
+                        },
+                        {
+                            targets: 5,
+                            className: "text-center text-nowrap",
+                            visible: false
+                        },
+                        {
+                            targets: 6,
+                            className: "text-center text-nowrap",
+                            visible: false
+                        },
+                        {
+                            targets: 7,
+                            className: "text-center text-nowrap",
+                            visible: false
+                        },
+                        {
+                            targets: 8,
+                            className: "text-center text-nowrap",
+                        },
+                        {
+                            targets: 9,
+                            className: "text-center text-nowrap",
+                            visible: false
+                        },
+                        {
+                            targets: 10,
+                            className: "text-center text-nowrap",
+                            visible: true
                         },
                     ],
                     buttons: [{
@@ -2071,10 +2111,18 @@
                         if (!isValid) {
                             return;
                         }
+
+                        const isImportado = $('#isImportado').is(':checked');
+
                         let clases = ['cantidad', 'precio'];
+
+                        if (isImportado) {
+                            clases.push('envio', 'descuento', 'cargo', 'impuesto_esp');
+                        }
                         formData.append('proveedor', cboProveedor.value);
                         formData.append('nro_factura', nro_factura.value);
                         formData.append('fecha', fecha.value);
+                        formData.append('is_importado', isImportado ? 1 : 0);
                         formData.append('accion', 1);
                         realizarRegistro(tblCompra, formData, clases, 1, 'productos', function(r) {
                             if (r) {
@@ -2750,18 +2798,22 @@
                             '',
                             ids,
                             `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
-            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
-            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-            oninput="validarNumber(this,/[^0-9.]/g)" value="${respuesta['cantidad']}">`,
+                            class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                            onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                            oninput="validarNumber(this,/[^0-9.]/g)" value="${respuesta['cantidad']}">`,
                             respuesta['nombre']
                         ];
 
                         if (tabla === tblCompra) {
                             nuevaFila.push(
-                                '$<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline precio" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,5)" value="0">',
-                                '<span class="total">$0.00</span>',
+                                '$<input type="text" class="form-control text-center d-inline precio input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,5)" value="0">',
+                                '$<input type="text" class="form-control text-center d-inline envio input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">',      // Envío
+                                '$<input type="text" class="form-control text-center d-inline cargo input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">',
+                                '$<input type="text" class="form-control text-center d-inline descuento input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">',  // Descuento
+                                '<span class="total">$0.00</span>',      
+                                '$<input type="text" class="form-control text-center d-inline impuesto_esp input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">', // Impuesto %
                                 '<span class="iva">$0.00</span>',
-                                '<span class="precio_final">$0.00</span>'
+                                '<span class="precio_final">$0.00</span>',
                             );
                         }
                         nuevaFila.push(
@@ -2770,7 +2822,7 @@
                         let inputHTML = "";
                         if (both) {
                             inputHTML = `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
-                class="form-control text-center d-inline entrada" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="">`;
+                        class="form-control text-center d-inline entrada" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="">`;
                         }
                         // Sólo agregar si existe
                         if (inputHTML !== "") {
@@ -2798,6 +2850,7 @@
                             $(inputBarras).val("");
                         };
                     }
+
                     if (selectedTab === '4') {
                         $.ajax({
                             url: "controllers/salidas.controlador.php",
@@ -2925,21 +2978,70 @@
                     }
                 }
 
-                $('#tblCompra').on('input keydown', '.cantidad, .precio', function() {
-                    // Encuentra la fila del input cambiado
-                    let $row = $(this).closest('tr');
-                    // Obtiene los valores de cantidad y precio
-                    let cantidad = parseFloat($row.find('.cantidad').val()) || 0;
-                    let precio = parseFloat($row.find('.precio').val()) || 0;
-                    // Calcula el total
-                    let precio_total = cantidad * precio;
-                    let iva = precio_total * iva_config / 100
-                    let precio_final = precio_total + iva;
-                    // Actualiza la columna del total
-                    $row.find('.total').text('$' + precio_total.toFixed(2));
-                    $row.find('.iva').text('$' + iva.toFixed(2));
-                    $row.find('.precio_final').text('$' + precio_final.toFixed(2));
-                });
+                $('#tblCompra').on('input keydown', '.cantidad, .precio, .envio, .descuento, .cargo, .impuesto_esp', function() {
+
+    let $row = $(this).closest('tr');
+    const isImportado = $('#isImportado').is(':checked');
+
+    // Función auxiliar para obtener valores numéricos y evitar NaN
+    const getVal = (selector) => {
+        let val = parseFloat($row.find(selector).val());
+        return isNaN(val) ? 0 : val;
+    };
+
+    // 1. Obtener valores básicos
+    let cantidad = getVal('.cantidad');
+    let precio = getVal('.precio');
+    
+    // Calculamos el Bruto inicial (Cant * Precio)
+    let precio_bruto = cantidad * precio;
+    
+    // Variables para el resultado
+    let base_imponible = 0; // Esto irá en la columna .total
+    let valor_impuesto = 0; // Esto será el valor monetario del impuesto
+    let precio_final = 0;   // Suma de base + impuesto
+
+    if (isImportado) {
+        // --- ESCENARIO MANUAL / FINALIZADO ---
+        let envio = getVal('.envio');
+        let cargo = getVal('.cargo');
+        let descuento = getVal('.descuento');
+        
+        // Aquí leemos DIRECTAMENTE el valor monetario, ya no es un porcentaje
+        let impuesto_manual_valor = getVal('.impuesto_esp'); 
+
+        // Fórmula de Base Imponible: (Bruto + Envío + Cargo) - Descuento
+        base_imponible = precio_bruto + envio + cargo - descuento;
+        
+        // Validación: La base no debería ser negativa
+        if(base_imponible < 0) base_imponible = 0;
+
+        // El impuesto es directamente lo que escribió el usuario
+        valor_impuesto = impuesto_manual_valor;
+
+    } else {
+        // --- ESCENARIO AUTOMÁTICO (Checkbox desmarcado) ---
+        base_imponible = precio_bruto;
+
+        // Aquí seguimos usando la configuración global de porcentaje (iva_config)
+        valor_impuesto = base_imponible * (iva_config / 100);
+    }
+
+    // --- CÁLCULO FINAL ---
+    precio_final = base_imponible + valor_impuesto;
+
+    // --- RENDERIZADO EN TABLA ---
+    
+    // 1. Columna TOTAL (Base Imponible antes de impuestos)
+    $row.find('.total').text('$' + base_imponible.toFixed(2));
+    
+    // 2. Columna IVA (Reflejamos el valor monetario del impuesto, sea calculado o manual)
+    $row.find('.iva').text('$' + valor_impuesto.toFixed(2));
+    
+    // 3. Columna PRECIO FINAL (Total a pagar)
+    $row.find('.precio_final').text('$' + precio_final.toFixed(2));
+});
+
                 inputBarras.addEventListener("input", function(event) {
                     event.preventDefault();
                     let codigo = this.value;
@@ -2972,11 +3074,9 @@
                                 let id = data[producto];
                                 let valores = clases.map(clase => {
                                     let inputElement = row.node().querySelector('.' + clase);
-                                    // Si inputElement es null, retornar data[5]
                                     return inputElement ? inputElement.value : data[5];
                                 });
                                 arr.push(id + "," + valores.join(","));
-                                // Agrega al FormData directamente en este ciclo si es necesario
                                 formData.append('arr[]', arr[index]);
                             });
                             $.ajax({
