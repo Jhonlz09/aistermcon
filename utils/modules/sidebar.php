@@ -64,10 +64,8 @@
                             if ($hasChildren) {
                                 renderSidebarMenu($item->children, $level + 1);
                             }
-
                             echo '</li>';
                         }
-
                         if ($level > 1) echo '</ul>';
                     }
                 }
@@ -122,6 +120,7 @@
                 const $link = $(this);
                 const vista = $link.data('vista');
                 const modulo = $link.data('modulo');
+                const $ctrlSide = $('#first_control');
                 // Si ya está activo, no hacemos nada
                 if ($link.hasClass('active')) {
                     e.preventDefault();
@@ -134,6 +133,10 @@
                 // Actualizar clases 'active'
                 $('ul.nav-sidebar .nav-link').removeClass('active');
                 $link.addClass('active');
+                if ($ctrlSide.hasClass('active')) {
+                    $ctrlSide.click();
+                    $ctrlSide.removeClass('active');
+                }
                 $link.parents('.has-treeview').each(function() {
                     $(this).children('a.nav-link').addClass('active');
                 });
