@@ -32,7 +32,7 @@ class ControladorPretrabajo
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    function limpiarNombreArchivo($nombre) {
+    public function limpiarNombreArchivo($nombre) {
         $nombre = iconv('UTF-8', 'ASCII//TRANSLIT', $nombre);
         $nombre = preg_replace('/[^A-Za-z0-9_\-\. ]/', '', $nombre);
         $nombre = str_replace(['/', '\\'], '-', $nombre);
