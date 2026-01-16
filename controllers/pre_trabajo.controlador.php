@@ -19,7 +19,7 @@ class ControladorPretrabajo
         $img_arr = [];
         if (isset($_FILES['pre_trabajo_files'])) {
             $files = $_FILES['pre_trabajo_files'];
-            $baseName = limpiarNombreArchivo($this->fecha . ' ' . $this->cliente);
+            $baseName = $this->limpiarNombreArchivo($this->fecha . ' ' . $this->cliente);
 
             $this->procesarArchivos($files, $uploadDir, $baseName, $year, $pdf_arr, $img_arr);
         }
@@ -50,7 +50,7 @@ class ControladorPretrabajo
 
         if (isset($_FILES['pre_trabajo_files'])) {
             $files = $_FILES['pre_trabajo_files'];
-            $baseName = limpiarNombreArchivo($this->fecha . ' ' . $this->cliente);
+            $baseName = $this->limpiarNombreArchivo($this->fecha . ' ' . $this->cliente);
             $this->procesarArchivos($files, $uploadDir, $baseName, $year, $pdf_arr, $img_arr);
         }
 
