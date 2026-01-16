@@ -19,7 +19,8 @@ class ControladorPretrabajo
         $img_arr = [];
         if (isset($_FILES['pre_trabajo_files'])) {
             $files = $_FILES['pre_trabajo_files'];
-            $baseName = $this->fecha . '   ' . $this->cliente;
+            $baseName = limpiarNombreArchivo($this->fecha . ' ' . $this->cliente);
+
             $this->procesarArchivos($files, $uploadDir, $baseName, $year, $pdf_arr, $img_arr);
         }
         // Convertir arrays a formato PostgreSQL TEXT[]
@@ -29,6 +30,14 @@ class ControladorPretrabajo
         $data = ModeloPretrabajo::mdlAgregarPretrabajo($this->fecha,$this->cliente,$this->detalles, $pdf_arr,$img_arr);
 
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    function limpiarNombreArchivo($nombre) {
+        $nombre = iconv('UTF-8', 'ASCII//TRANSLIT', $nombre);
+        $nombre = preg_replace('/[^A-Za-z0-9_\-\. ]/', '', $nombre);
+        $nombre = str_replace(['/', '\\'], '-', $nombre);
+        $nombre = preg_replace('/\s+/', ' ', $nombre);
+        return trim($nombre);
     }
 
     public function editarPretrabajo()
@@ -41,7 +50,7 @@ class ControladorPretrabajo
 
         if (isset($_FILES['pre_trabajo_files'])) {
             $files = $_FILES['pre_trabajo_files'];
-            $baseName = $this->fecha . '   ' . $this->cliente;
+            $baseName = limpiarNombreArchivo($this->fecha . ' ' . $this->cliente);
             $this->procesarArchivos($files, $uploadDir, $baseName, $year, $pdf_arr, $img_arr);
         }
 
