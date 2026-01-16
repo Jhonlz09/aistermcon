@@ -660,12 +660,5 @@ if (session_status() == PHP_SESSION_NONE) {
 
         observer.observe(container);
         observer2.observe(container2);
-
-        // function graficoTheme() {
-        //     if (document.body.classList.contains('dark-mode')) {
-        //         Chart.defaults.color = '#fff';
-        //         Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.18)'; // Cambia el color por defecto de las líneas del grid
-        //     }
-        // }
     })
 </script>

@@ -405,15 +405,12 @@
                 datos.append('rol', id_rol);
                 datos.append('accion', accion);
                 confirmarAccion(datos, 'usuarios', tabla, modal)
-                // nom.length > 0 && $('.ten').show();
             } else {
                 this.classList.add('was-validated');
                 validarClave(clave, sub)
                 validarConf(clave_, sub)
             }
         });
-
-       
     })
 
     function validarConf(input, sub) {

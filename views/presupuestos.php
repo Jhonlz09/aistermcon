@@ -1012,6 +1012,7 @@
             id.value = row["id"];
             desc.value = row["descripcion"];
             orden_nro.value = row["num_orden"];
+            fecha_new.value = row["fecha_pre"];
             precioConIva.value = parseFloat((row["precio_total"] ?? '').toString().replace(/[$,]/g, '')) || '';
             precioSinIva.value = parseFloat((row["precio_iva"] ?? '').toString().replace(/[$,]/g, '')) || '';
             setChange(cboClienteOrden, row["id_cliente"]);
