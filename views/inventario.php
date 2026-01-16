@@ -542,7 +542,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
     configuracionTable = {
         "dom": '<"row"<"col-md-6"B><"col-md-6"p>>t',
         "responsive": true,
-        "pageLength": 20, // Cambia este valor según tus necesidades
+        "pageLength": 20, 
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
@@ -553,9 +553,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 className: "text-center",
                 render: function(data, type, row, meta) {
                     if (type === 'display') {
-                        return meta.row + 1; // Devuelve el número de fila + 1
+                        return meta.row + 1; 
                     }
-                    return meta.row; // Devuelve el índice de la fila
+                    return meta.row;
                 }
             },
             {
@@ -598,12 +598,14 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 responsivePriority: 4,
                 className: "text-center",
                 render: function(data, type, row) {
+
+                    let imgSrc = `/aistermcon/utils/download.php?&file=${encodeURIComponent(data)}&route=products`;
                     if (data) {
                         return `<img
                         onclick="openModalImage(this)"
                         data-toggle="modal" 
                         data-target="#imageModal"
-                        src="../products/${data}" 
+                        src="${imgSrc}" 
                         class="img-thumbnail" 
                         loading="lazy" style="cursor:pointer;width: 50px; height: 50px;">`;
                     } else {
@@ -728,10 +730,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
     }
 
     function openModalImage(element) {
-        // Obtener la URL de la imagen desde el atributo data-img-src
         const imgSrc = element.src;
 
-        // Asignar la URL al src de la imagen dentro del modal
         const modalImage = document.getElementById('modalImage');
         modalImage.src = imgSrc;
     }
@@ -752,7 +752,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         idProductoActualStock = idProducto;
         const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
         
-        // Inicializar combo de año si no tiene datos
         if ($('#cboAnioVersion option').length === 0 && typeof datos_anio !== 'undefined') {
              $('#cboAnioVersion').select2({
                  data: datos_anio,
@@ -763,7 +762,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                  cargarVersionesStockInicial(idProductoActualStock, this.value);
              });
         }
-        // Setear año actual y cargar
         $('#cboAnioVersion').val(year_val).trigger('change');
         
         $('#modalVersionesStock').modal('show');
@@ -785,7 +783,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         .catch(e => console.error('Error:', e));
     }
 
-    // Mostrar versiones en el modal
     function mostrarVersionesStockInicial(versiones) {
         const container = document.getElementById('containerVersionesStock');
         const sinVersiones = document.getElementById('sinVersiones');
@@ -829,7 +826,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             </div>
         `).join('');
 
-        // Agregar event listeners
         document.querySelectorAll('.btn-edit-motivo').forEach(btn => {
             btn.onclick = function() {
                 const card = this.closest('.card');
@@ -863,7 +859,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
     }
     
-    // Guardar motivo
     function guardarMotivoVersion(idVersion, motivo) {
         fetch('controllers/inventario.controlador.php', {
             method: 'POST',
@@ -885,7 +880,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
     }
 
-    // Eliminar versión
     function eliminarVersionStock(idVersion) {
         fetch('controllers/inventario.controlador.php', {
             method: 'POST',
@@ -906,7 +900,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
     }
 
-    // Crear nueva versión
     function crearNuevaVersionStock() {
         const stock = document.getElementById('inputNuevoStockIni').value;
         const motivo = document.getElementById('inputMotivoStock').value;
@@ -936,7 +929,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 document.getElementById('inputMotivoStock').value = '';
                 cargarVersionesStockInicial(idProductoActualStock, year_val);
                 
-                // Actualizar el valor en el input principal si es el año actual
                 const anioActual = new Date().getFullYear();
                 if (parseInt(year_val) === anioActual) {
                      const stockInput = document.getElementById('stock_ini');
@@ -955,7 +947,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         const icona = document.getElementById('stock_icon');
         const divStockIni = document.getElementById('divStockIni');
 
-        // Agregar evento de cambio al input
         checkbox.addEventListener('change', function() {
             if (this.checked) {
                 accion_inv = 6;
@@ -980,7 +971,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             });
 
             tabla.on('draw.dt', function() {
-                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
+                if ($(window).width() >= 768) {
                     const b = document.body;
                     const s = b.scrollHeight + 20;
                     const w = window.innerHeight;
@@ -1127,13 +1118,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             let a = this.options[this.selectedIndex].text
             anio = a
             tblHistorial.ajax.reload();
-            // Parámetros POST
             const params = new URLSearchParams();
             params.append('accion', 13);
             params.append('anio', anio);
-            params.append('id_producto', id_producto); // Asegúrate de que id_producto esté definido
+            params.append('id_producto', id_producto); 
 
-            // Realizar el fetch
             fetch('controllers/inventario.controlador.php', {
                     method: 'POST',
                     body: params
@@ -1318,13 +1307,12 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     id_producto,
                     medidas: JSON.stringify(medidas)
                 }, function(res) {
-                    cargarMedidasTab(id_producto); // Recarga la lista desde BD
+                    cargarMedidasTab(id_producto);
                     $('#medidaCantidad').val('1');
                     $('#medidaAlto').val('');
                     $('#medidaAncho').val('');
                     accion_inv = 0;
                     tabla.ajax.reload();
-                    // Recarga la tabla de inventario
                 });
             } else {
                 alert('Completa todos los campos correctamente.');
@@ -1439,11 +1427,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             }
             let row = obtenerFila(this, tabla);
             document.getElementById('stockInicial').textContent = '0.00';
-            // stockInicial = stockInicial.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') // Ajusta la clave según tu tabla
-            let descripcion = row["descripcion"]; // Ajusta la clave según tu tabla
-            id_producto = row["id"]; // ID del producto
-            setChange(cboAnio, year);
-            // Actualizar los valores en el modal    
+            let descripcion = row["descripcion"]; 
+            id_producto = row["id"]; 
+            setChange(cboAnio, year); 
             document.getElementById('descripcionProducto').textContent = descripcion;
         });
 
@@ -1467,14 +1453,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             e.preventDefault();
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
-                // console.log('no valido')
                 return;
             }
 
             const data = new FormData();
-            const file = fileImg.files[0]; // Obtener el archivo
-
-            // Validar si el archivo es una imagen PNG, JPG o WebP
+            const file = fileImg.files[0]; 
             if (file && (file.type !== "image/png" && file.type !== "image/jpeg" && file.type !== "image/webp")) {
                 mostrarToast(
                     'warning',
@@ -1484,7 +1467,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 );
                 return;
             } else if (file) {
-                data.append('fileImg', file); // Si es válido, añadir el archivo al FormData
+                data.append('fileImg', file);
             }
 
             data.append('id', id.value);
@@ -1492,7 +1475,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             data.append('des', descripcion.value.trim().toUpperCase());
             data.append('sto', stock.value);
             data.append('st_min', stock_min.value);
-            // data.append('st_ini', stock_ini.value);
             data.append('st_mal', stock_mal.value);
             data.append('cat', cboCategoria.value);
             data.append('uni', cboUnidad.value);
@@ -1570,8 +1552,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 });
             }
         });
-
-        // Conexión botón crear versión con función global
         const btnCrearVer = document.getElementById('btnCrearVersionStock');
         if (btnCrearVer) {
             btnCrearVer.onclick = crearNuevaVersionStock;

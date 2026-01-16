@@ -12,19 +12,16 @@ class ModeloInventario
                 i.stock_mal,i.stock, '' as acciones,i.stock_min, c.id as categoria_id, 
                 u.id as unidad_id, p.id as percha_id,i.img,
                 (SELECT COUNT(*) FROM tblmedidas_producto m WHERE m.id_producto = i.id) AS cantidad_medidas,
-                
                 -- === STOCK INICIAL AUTOMÁTICO (AÑO ACTUAL) ===
-                COALESCE((
-                    SELECT si.stock_ini 
+                COALESCE((SELECT si.stock_ini 
                     FROM tblstock_inicial si 
-                    WHERE si.id_producto = i.id 
+                    WHERE si.id_producto = i.id
                       -- AQUÍ EL CAMBIO: Extraemos el año de la fecha actual del servidor
                       AND si.anio = CAST(EXTRACT(YEAR FROM CURRENT_DATE) AS INTEGER)
                     ORDER BY si.id DESC    
                     LIMIT 1                
                 ), 0) AS stock_ini
                 -- =============================================
-
             FROM tblinventario i
             JOIN tblcategoria c on c.id= i.id_categoria
             JOIN tblunidad u on u.id= i.id_unidad

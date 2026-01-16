@@ -53,7 +53,7 @@ function obtenerDPI($ruta_imagen) {
 if (!defined('MM_PER_INCH')) define('MM_PER_INCH', 25.4);
 
 $data_boleta = ModeloSalidas::mdlObtenerImgBoleta($id_boleta);
-$dir = __DIR__ . "/../../guia_img/";
+$dir =  "/var/www/guia_img/";
 
 $pdf = new FPDF();
 $pdf->AliasNbPages();

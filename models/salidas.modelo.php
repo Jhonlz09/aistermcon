@@ -14,7 +14,7 @@ class ModeloSalidas
     c.id AS id_cliente, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha, b.id_conductor,
     b.id_despachado, b.id_responsable,b.nro_guia,b.motivo,
     ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila,s.fabricado, 
-    b.fab, b.tras, TO_CHAR(b.fecha_retorno, 'YYYY-MM-DD') AS fecha_retorno
+    b.fab, b.tras, TO_CHAR(b.fecha_retorno, 'YYYY-MM-DD') AS fecha_retorno, b.autorizado
         FROM tblsalidas s
             JOIN tblinventario i ON s.id_producto = i.id
             JOIN tblboleta b ON s.id_boleta = b.id
@@ -120,7 +120,7 @@ class ModeloSalidas
             $imagenes = $e->fetchAll(PDO::FETCH_ASSOC);
 
             // 2. Eliminar las imágenes físicas del servidor
-            $Dir = __DIR__ . "/../../guia_img/"; // Directorio donde están las imágenes
+            $Dir =  "var/www/guia_img/"; // Directorio donde están las imágenes
             foreach ($imagenes as $imagen) {
                 // Suponiendo que 'nombre_imagen' contiene el nombre completo del archivo
                 $nombreImagen = $imagen['nombre_imagen'];
@@ -195,7 +195,7 @@ class ModeloSalidas
 
             $l->bindParam(":id", $ruta, PDO::PARAM_INT);
             if ($l->execute()) {
-                $uploadDir = __DIR__ . "/../../guia_img/"; // Directorio donde están las imágenes
+                $uploadDir = "/var/www/guia_img/"; // Directorio donde están las imágenes
                 $filePath = $uploadDir . $ruta;
 
                 if (file_exists($filePath)) {

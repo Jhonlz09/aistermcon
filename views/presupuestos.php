@@ -223,7 +223,7 @@
                                     <div id="dropzone-ae" class="dropzone dropzone-inline" style="border: 2px dashed #b3b3b3;">
                                         <div class="dz-message">Arrastra aquí o haz clic para subir PDF/WORD</div>
                                     </div>
-                                    <small class="text-muted">*Solo archivos PDF o Imagen (.pdf, .doc, .docx)</small>
+                                    <small class="text-muted">*Solo archivos PDF o Word (.pdf, .doc, .docx)</small>
                                 </div>
                             </div>
 
@@ -845,7 +845,7 @@
                     ruta: file.ruta,
                     ext: file.name.split('.').pop().toLowerCase(),
                     carpeta: carpeta,
-                    tipo: file.tipo // 👈 viene desde el mockFile
+                    tipo: file.tipo 
                 },
                 success: function(resp) {
                     console.log(`🗑️ Archivo eliminado: ${file.name}`, resp);
@@ -1038,13 +1038,10 @@
                 },
                 success: function(response) {
                     console.log('📁 Archivos cargados:', response);
-
                     if (!response.files || !Array.isArray(response.files)) return;
                     response.files.forEach(file => {
                         const filename = file.nombre_file.split('/').pop();
                         const ext = filename.split('.').pop().toLowerCase();
-
-                        // Tipos MIME para que Dropzone 
                         const extMap = {
                             pdf: 'application/pdf',
                             xls: 'application/vnd.ms-excel',
@@ -1055,17 +1052,14 @@
 
                         const type = extMap[ext] || ``;
 
-                        // Simulamos el archivo existente
                         const mockFile = {
                             name: filename,
-                            size: 123456, // puedes poner tamaño real si lo deseas
+                            size: 123456, 
                             type: type,
                             ruta: file.nombre_file,
-                            tipo: file.tipo, // 👈 para saber a qué Dropzone pertenece
+                            tipo: file.tipo,
                             isExisting: true
                         };
-
-                        // Asignamos al Dropzone correcto según 'tipo'
                         switch (file.tipo) {
                             case 'ppt':
                                 agregarMockFile(drop_pre, mockFile);
@@ -1100,7 +1094,6 @@
             let data = new FormData();
             data.append('id', id);
             data.append('estado', estado);
-            // data.append('id_cliente', id_cliente)
             data.append('accion', 5);
             confirmarAccion(data, 'presupuesto', tabla, modal, function(r) {
                 cargarAutocompletado(function(items) {
@@ -1114,10 +1107,7 @@
 
         form.addEventListener("submit", function(e) {
             e.preventDefault();
-            // desc.disabled = desc.value === '';
-            // nuevoCliente.disabled = nuevoCliente.value === '';
-            // precioConIva.disabled = precioConIva.value === '';
-            // precioSinIva.disabled = precioSinIva.value === '';
+
             let elementosAValidar = [orden_nro];
 
             if ($('#inputClienteContainer').is(':visible')) {
@@ -1133,14 +1123,6 @@
                 }
             });
             if (!isValid) return
-            // if (!this.checkValidity()) {
-            //     this.classList.add('was-validated');
-            //     desc.disabled = false;
-            //     precioConIva.disabled = false;
-            //     precioSinIva.disabled = false;
-            //     // nuevoCliente.disabled = false;
-            //     return;
-            // }
             let datos = obtenerDatosFormulario();
 
             if (accion == 2) {
@@ -1191,12 +1173,11 @@
             if (isManual) {
                 datos.append('isManual', isManual);
                 datos.append('cliente_manual', nuevoCliente.value.toUpperCase());
-                datos.append('cliente', nuevoCliente.value)
+                datos.append('cliente', nuevoCliente.value);
             }else{
                 datos.append('id_cliente', id_cli);
                 datos.append('cliente', cli_name)
             }
-
             drop_ord.getAcceptedFiles().forEach((file, index) => {
                 if (!file.isExisting) {
                     datos.append(`orden_files[${index}]`, file, file.name);
@@ -1207,13 +1188,11 @@
                     datos.append(`presupuesto_files[${index}]`, file, file.name);
                 }
             });
-
             drop_ae.getAcceptedFiles().forEach((file, index) => {
                 if (!file.isExisting) {
                     datos.append(`actas_files[${index}]`, file, file.name);
                 }
             });
-
             drop_oc.getAcceptedFiles().forEach((file, index) => {
                 if (!file.isExisting) {
                     datos.append(`orden_compra_files[${index}]`, file, file.name);

@@ -226,7 +226,6 @@
 
                     handleScroll(b, s, w);
                 }
-
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('e', JSON.stringify(tablaData));
             });

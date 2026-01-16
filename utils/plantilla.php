@@ -762,7 +762,7 @@
                     cboConductor = document.getElementById('cboConductor'),
                     cboConductorEntrada = document.getElementById('cboConductorEntrada'),
                     cboDespachado = document.getElementById('cboDespachado'),
-                    cboAutorizado = document.getElementById('cboAutorizado'),
+                    inpAutorizado = document.getElementById('inpAutorizado'),
                     cboResponsable = document.getElementById('cboResponsable'),
                     btnGuia = document.getElementById('btnGuardarGuia');
                 const audio = document.getElementById("scanner");
@@ -806,9 +806,9 @@
                     minimumResultsForSearch: -1,
                 });
 
-                $(cboAutorizado).select2({
-                    placeholder: 'SELECCIONE',
-                });
+                // $(cboAutorizado).select2({
+                //     placeholder: 'SELECCIONE',
+                // });
 
                 // $(cboResponsable).select2({
                 //     placeholder: 'SELECCIONE',
@@ -826,10 +826,7 @@
 
                 cargarCombo('Conductor', conductorPorDefecto, 2);
                 cargarCombo('ConductorEntrada', conductorPorDefecto, 2);
-
-
                 cargarCombo('FabricadoCon', '', 9);
-
                 cargarCombo('Despachado', bodegueroPorDefecto, 6);
                 cargarCombo('Responsable', '', 7, true).then(datos_ => {
                     datos_person = datos_;
@@ -838,8 +835,7 @@
                         width: 'auto',
                         data: datos_person
                     })
-                    console.log('Estos son los datos de las personadas', datos_person)
-
+                    // console.log('Estos son los datos de las personadas', datos_person)
                 });
 
                 cargarCombo('Unidad', '', 1, true).then(datos_ => {
@@ -1379,7 +1375,6 @@
                                                 const label = item.label.toLowerCase();
                                                 return palabras.every(palabra => label.includes(palabra));
                                             });
-
                                             // Ordenar por posición en label
                                             resultados.sort((a, b) => {
                                                 const labelA = a.label.toLowerCase();
@@ -1391,7 +1386,6 @@
                                                 return posA - posB;
                                             });
                                         }
-
                                         response(resultados);
                                     },
                                     minLength: 3,
@@ -1409,7 +1403,7 @@
                                     const $inner = $("<div style='display:flex;align-items:center;gap:10px;padding:4px 6px;'>");
                                     let $thumb;
                                     if (item.img) {
-                                        let imgSrc = '../products/' + item.img;
+                                        let imgSrc = `/aistermcon/utils/download.php?&file=${encodeURIComponent(item.img)}&route=products`;
                                         $thumb = $("<img/>").attr('src', imgSrc).attr('data-toggle', "modal").attr('data-target', "#modalImagenProducto").attr('data-img-src', imgSrc).attr('data-img-label', item.label).css({
                                             width: '48px',
                                             height: '48px',
@@ -1608,89 +1602,6 @@
                     }
                 });
 
-                // $('#tblDetalleFabEntrada tbody').on('click', 'td.dt-control', function() {
-                //     let tr = $(this).closest('tr');
-                //     let row = tblDetalleFabEntrada.row(tr);
-                //     let rowData = row.data();
-                //     let idUnico = rowData[9]; // Se asume que el ID del producto está en la segunda columna
-                //     let tablaId = `#tbl${idUnico}`;
-                //     id_prod_fab = idUnico;
-                //     if (row.child.isShown()) {
-                //         row.child.hide();
-                //         tr.removeClass('shown');
-                //     } else {
-                //         if (!tr.hasClass('loaded')) {
-                //             row.child(format(idUnico, true)).show();
-                //             tr.addClass('loaded');
-                //             let dataTable = $(tablaId).DataTable({
-                //                 dom: "t",
-                //                 paging: false,
-                //                 ordering: false,
-                //                 autoWidth: false,
-                //                 destroy: true, // Asegura que la tabla se reinicializa correctamente 
-                //                 ajax: {
-                //                     url: "controllers/inventario.controlador.php",
-                //                     dataSrc: "",
-                //                     type: "POST",
-                //                     data: function(d) {
-                //                         d.accion = 11;
-                //                         d.id_producto_fab = id_prod_fab;
-                //                     },
-                //                     dataSrc: function(json) {
-                //                         console.log("✅ Datos cargados:", json);
-                //                         $(tablaId).data('originalData', json); // Guardamos los datos originales
-                //                         // console.log($(tablaId).data('originalData'));
-
-                //                         return json;
-                //                     }
-                //                 },
-                //                 columns: [{
-                //                         title: "N°",
-                //                         data: null,
-                //                         render: function(data, type, row, meta) {
-                //                             return meta.row + 1;
-                //                         }
-                //                     },
-                //                     {
-                //                         title: "CODIGO",
-                //                         data: "codigo",
-                //                         visible: false
-                //                     },
-                //                     {
-                //                         title: "DESCRIPCION",
-                //                         data: "descripcion"
-                //                     },
-                //                     {
-                //                         title: "UND",
-                //                         data: "unidad",
-                //                         className: "text-center"
-                //                     },
-                //                     {
-                //                         title: "SALIDA",
-                //                         data: "cantidad_salida",
-                //                         className: "text-center",
-                //                     },
-                //                     {
-                //                         title: "ENTRADA",
-                //                         data: "retorno",
-                //                         className: "text-center",
-                //                         render: function(data, type, row) {
-                //                             data = (data === '-') ? '' : data;
-                //                             return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
-                //                             class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
-                //                             onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                //                             oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
-                //                         }
-                //                     },
-                //                 ],
-                //             });
-                //         } else {
-                //             row.child.show();
-                //         }
-                //         tr.addClass('shown');
-                //     }
-                // });
-
                 $('#tblOut').on('keydown', 'input.cantidad', moveFocusOnTab);
 
                 $(document).on('click', '.btnEliminaRow', function() {
@@ -1710,10 +1621,8 @@
                             confirmarAccion(src, 'fabricacion', null, '', function(res) {
                                 if (res) {
                                     cargarAutocompletado();
-                                    // console.log('datos', 'eliminando ...');
                                     tblDetalleFab.row(row.closest('tr')).remove().draw();
                                 }
-                                // Eliminar la fila seleccionada
                             })
                         }
                     });
@@ -1871,7 +1780,7 @@
                         const $inner = $("<div style='display:flex;align-items:center;gap:10px;padding:4px 6px;cursor:pointer;'>");
                         let $thumb;
                         if (item.img) {
-                            let imgSrc = '../products/' + item.img;
+                            let imgSrc = `/aistermcon/utils/download.php?&file=${encodeURIComponent(item.img)}&route=products`;
                             $thumb = $("<img/>").attr('src', imgSrc).attr('data-toggle', "modal").attr('data-target', "#modalImagenProducto").attr('data-img-src', imgSrc).attr('data-img-label', item.label).css({
                                 width: '48px',
                                 height: '48px',
@@ -2113,12 +2022,12 @@
                         }
 
                         const isImportado = $('#isImportado').is(':checked');
-
                         let clases = ['cantidad', 'precio'];
 
                         if (isImportado) {
                             clases.push('envio', 'descuento', 'cargo', 'impuesto_esp');
                         }
+
                         formData.append('proveedor', cboProveedor.value);
                         formData.append('nro_factura', nro_factura.value);
                         formData.append('fecha', fecha.value);
@@ -2131,7 +2040,7 @@
                             }
                         });
                     } else if (selectedTab === '2') {
-                        let elementosAValidar = [fecha, nro_guia, cboDespachado, cboConductor];
+                        let elementosAValidar = [fecha, nro_guia, cboDespachado, cboConductor, inpAutorizado];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -2155,6 +2064,7 @@
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
+                        formData.append('autorizado', inpAutorizado.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 2);
@@ -2195,7 +2105,7 @@
                             }
                         });
                     } else if (selectedTab === '3') {
-                        let elementosAValidar = [fecha_retorno];
+                        let elementosAValidar = [fecha_retorno, inpAutorizado];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -2211,6 +2121,7 @@
                         formData.append('nro_guia', nro_guiaEntrada.value);
                         formData.append('conductor', cboConductorEntrada.value);
                         formData.append('responsable', cboResponsable.value);
+                        formData.append('autorizado', inpAutorizado.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('fecha_retorno', fecha_retorno.value);
@@ -2247,7 +2158,7 @@
                             }
                         });
                     } else if (selectedTab === '4') {
-                        let elementosAValidar = [fecha, nro_orden, nro_guia, cboDespachado, cboResponsable, cboConductor];
+                        let elementosAValidar = [fecha, nro_orden, nro_guia, cboDespachado, cboResponsable, cboConductor, inpAutorizado];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             console.log(elemento);
@@ -2266,6 +2177,7 @@
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
+                        formData.append('autorizado', inpAutorizado.value);
                         formData.append('fecha', fecha.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('accion', 4);
@@ -2348,7 +2260,7 @@
                             }
                         });
                     } else if (selectedTab === '7') {
-                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
+                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab, inpAutorizado];
                         let isValid = true;
                         elementosAValidar.forEach(function(elemento) {
                             if (!elemento.checkValidity()) {
@@ -2422,6 +2334,7 @@
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
+                        formData.append('autorizado', inpAutorizado.value);
                         formData.append('fecha', fecha.value);
                         formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
@@ -2459,7 +2372,7 @@
                             }
                         });
                     } else if (selectedTab === '8') {
-                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab];
+                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab, inpAutorizado];
                         if (isTrasFab.checked) {
                             elementosAValidar.push(fecha_retorno);
                         }
@@ -2484,50 +2397,6 @@
 
                         // let datosPrincipales = [];
                         let datosModificados = [];
-                        // Recorre cada fila de la tabla principal (tblDetalleFab)
-                        // tblDetalleFab.rows().every(function() {
-                        //     let row = this;
-                        //     let tr = $(row.node());
-                        //     let rowData = row.data();
-                        //     let idUnico = rowData[0]; // Asumimos que el ID está en la primera columna
-                        //     let tablaSecundariaId = `#tbl${idUnico}`;
-                        //     console.log('tablaSecundariaId', tablaSecundariaId)
-                        //     let cantidad = $(this.node()).find('.entrada').val();
-                        //     let retorno =  $(this.node()).find('.entrada').val();
-                        //     let filaPrincipal = {
-                        //         id: idUnico,
-                        //         cantidad: $(this.node()).find('.cantidad').val(),
-                        //         unidad: $(this.node()).find('.id_unidad').val(),
-                        //         descripcion: $(this.node()).find('.descripcion').val().trim().toUpperCase(),
-                        //         retorno: retorno,
-                        //         productos: [],
-                        //     };
-                        //     // Obtener los datos originales de la tabla secundaria
-                        //     if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
-                        //         let tablaSecundaria = $(tablaSecundariaId).DataTable();
-                        //         let datosOriginales = $(tablaSecundariaId).data('originalData'); // Datos originales de la tabla secundaria
-                        //         console.log('datos Originales', datosOriginales)
-                        //         tablaSecundaria.rows().every(function() {
-                        //             let secData = this.data();
-                        //             console.log('secData', secData);
-                        //             let id_prod = secData["id_producto"];
-                        //             let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val());
-                        //             let entrada_modificada = parseFloat($(this.node()).find('.cantidad_retorno').val());
-                        //             console.log('cantidadModificada', cantidadModificada)
-                        //             console.log('retorno_modificada', entrada_modificada)
-                        //             filaPrincipal.productos.push({
-                        //                 codigo: secData['id'],
-                        //                 cantidad_old: secData['cantidad_salida'],
-                        //                 entrada_old: secData['retorno'],
-                        //                 cantidad: cantidadModificada,
-                        //                 retorno: entrada_modificada,
-                        //                 id_producto: id_prod,
-                        //             });
-
-                        //         });
-                        //     }
-                        //     datosModificados.push(filaPrincipal);
-                        // });
                         let error = true;
                         tblDetalleFab.rows().every(function() {
                             let row = this;
@@ -2580,7 +2449,6 @@
                                         error = false;
                                         return false; // Detiene el recorrido de la tabla secundaria
                                     }
-
                                     filaPrincipal.productos.push({
                                         codigo: secData['id'],
                                         cantidad_old: secData['cantidad_salida'],
@@ -2600,7 +2468,6 @@
                             return;
                         }
 
-
                         formData.append('datos', JSON.stringify(datosModificados));
                         formData.append('orden', id_orden_guia_fab);
                         formData.append('id_boleta', id_boleta_fab);
@@ -2611,6 +2478,7 @@
                         formData.append('responsable', cboResponsable.value);
                         formData.append('fecha', fecha.value);
                         formData.append('fecha_retorno', fecha_retorno.value);
+                        formData.append('autorizado', inpAutorizado.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('accion', 12);
                         dropzone.getAcceptedFiles().forEach((file, index) => {

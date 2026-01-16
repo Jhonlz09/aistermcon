@@ -82,39 +82,14 @@
     <!-- /.sidebar -->
 </aside>
 <!-- /.Main Sidebar Container -->
-
-<!-- <script>
-    $(document).ready(function() {
-        // Lógica de Activación de Menú (Active State)
-        $('#nav').on('click', 'a.nav-link', function(e) {
-            let $link = $(this);
-            let $li = $link.parent('li');
-            let hasChildren = $li.hasClass('has-treeview');
-            if (!hasChildren) {
-                // 1. Limpiar todos los activos previos
-                $('ul.nav-sidebar .nav-link').removeClass('active');
-                // 2. Activar el link actual
-                $link.addClass('active');
-                $link.parents('.has-treeview').each(function() {
-                    $(this).children('a.nav-link').addClass('active');
-                    // $(this).addClass('menu-open'); // Forzar apertura en AdminLTE
-                });
-            }
-        });
-    });
-</script> -->
-
-
 <script>
     (function($) {
-        // Estado inicial: sólo primer top-level activo
         $(function() {
             $('ul.nav-sidebar .nav-link').removeClass('active');
             const $firstTop = $('#nav > li.nav-item:first > a.nav-link');
             if ($firstTop.length) {
                 $firstTop.addClass('active');
             }
-
             // Handler delegado: único punto de entrada para clicks en links del menú
             $('#nav').on('click', 'a.nav-link', function(e) {
                 const $link = $(this);

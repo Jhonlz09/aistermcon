@@ -131,7 +131,7 @@
             cascadePanes: true,
             columns: [2, 8, 9],
             initCollapsed: true,
-            threshold: 0.8, // Ajusta este valor según tus necesidades
+            threshold: 0.8,
             dtOpts: {
                 select: {
                     style: 'multiple'
@@ -234,7 +234,7 @@
             tabla.rows().every(function() {
                 if (this.child.isShown()) {
                     this.child.hide();
-                    $(this.node()).removeClass('parent'); // opcional, para limpiar la clase que indica expansión
+                    $(this.node()).removeClass('parent'); 
                 }
             });
             tabla.draw(false)
@@ -261,7 +261,7 @@
             });
 
             tabla.on('draw.dt', function() {
-                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
+                if ($(window).width() >= 768) { 
                     const b = document.body;
                     const s = b.scrollHeight + 58;
                     const w = window.innerHeight;
@@ -334,16 +334,16 @@
         });
 
         $('#tblSalidas').on('click', '.btn_pdf', function(event) {
-            event.preventDefault(); // Evita la acción predeterminada
+            event.preventDefault();
             let rowData = tabla.row($(this).closest('tr').next()).data();
-            let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+            let boleta = rowData[10]; 
             enviarFormularioPDF('PDF/pdf_guia.php', boleta);
         });
 
         $('#tblSalidas').on('click', '.btn_pdf_img', function(event) {
-            event.preventDefault(); // Evita la acción predeterminada
+            event.preventDefault(); 
             let rowData = tabla.row($(this).closest('tr').next()).data();
-            let boleta = rowData[10]; // Asumiendo que el índice 10 es el de la boleta
+            let boleta = rowData[10]; 
             console.log(boleta);
             enviarFormularioPDF('PDF/pdf_guia_img.php', boleta);
         });
@@ -388,7 +388,7 @@
         });
 
         function formatNumber(value) {
-            return parseFloat(value).toString(); // quita ceros innecesarios como '1.00' => '1'
+            return parseFloat(value).toString(); 
         }
 
         function construirAcordeon(data) {
@@ -396,16 +396,14 @@
             // contenedor.innerHTML = "";
 
             contenedor.classList.remove('accordion-animate');
-            void contenedor.offsetWidth; // Forzar reflow
+            void contenedor.offsetWidth; 
             contenedor.classList.add('accordion-animate');
 
-            // Agrupar productos fabricados con sus materiales utilizados
             let grupos = [];
             let grupoActual = null;
 
             data.forEach(item => {
                 if (item.fabricado) {
-                    // Iniciar nuevo grupo
                     grupoActual = {
                         nombre: item.descripcion,
                         cantidad: parseFloat(item.tras ? item.salidas : item.retorno) || 0, // Mostrar retorno como cantidad fabricada
@@ -414,7 +412,6 @@
                     };
                     grupos.push(grupoActual);
                 } else if (grupoActual) {
-                    // Añadir como material del último grupo
                     grupoActual.materiales.push({
                         descripcion: item.descripcion,
                         unidad: item.unidad,
@@ -424,8 +421,6 @@
                     });
                 }
             });
-
-            // Construir el HTML del acordeón
             grupos.forEach((grupo, index) => {
                 const collapseId = `collapseGrupo_${index}`;
                 const headingId = `headingGrupo_${index}`;
@@ -482,29 +477,23 @@
 
             const modalBody = document.querySelector('#modalMateriales .modal-body');
             modalBody.classList.remove('animate-resize');
-            void modalBody.offsetWidth; // Forzar reflow
+            void modalBody.offsetWidth; 
             modalBody.classList.add('animate-resize');
         }
 
         function enviarFormularioPDF(action, boleta) {
-            // Crear el formulario dinámicamente
             var form = document.createElement('form');
             form.action = action;
             form.method = 'POST';
             form.autocomplete = 'off';
             form.target = '_blank';
-            // Crear el input oculto para la boleta
             var inputBoleta = document.createElement('input');
             inputBoleta.type = 'hidden';
             inputBoleta.name = 'id_boleta';
             inputBoleta.value = boleta;
-            // Añadir el input al formulario
             form.appendChild(inputBoleta);
-            // Añadir el formulario al DOM (se añade al body)
             document.body.appendChild(form);
-            // Enviar el formulario
             form.submit();
-            // Eliminar el formulario del DOM después de enviarlo
             document.body.removeChild(form);
         }
 
@@ -521,9 +510,8 @@
         }
 
         function obtenerDatosProdFab(id_boleta, tras) {
-            // Aquí deberías hacer una llamada AJAX para obtener los datos relacionados con id_boleta
             $.ajax({
-                url: 'controllers/salidas.controlador.php', // Cambiar por la URL de tu backend
+                url: 'controllers/salidas.controlador.php',
                 type: 'POST',
                 data: {
                     boleta: id_boleta,
@@ -536,10 +524,10 @@
                         response.forEach(item => {
                             let cantidad = tras ? item.salidas : item.retorno;
                             let nuevaFila = [
-                                item.id_fab, // ID único de la fila
-                                cantidad, // Cantidad
-                                item.id_unidad, // Unidad
-                                item.descripcion, // Descripción
+                                item.id_fab, 
+                                cantidad, 
+                                item.id_unidad, 
+                                item.descripcion,
                                 item.retorno,
                                 ''
                             ];
@@ -574,12 +562,15 @@
                 orden = row[7],
                 cliente = row[8],
                 fecha_return = row[23],
+                autorizado = row[24],
                 guia = row[17];
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
             const isfab = fab ? '7' : '2';
             const isfabValue = fab ? '8' : '4';
             const radio = document.getElementById('radio-' + isfab);
             const cancelar = document.getElementById('Cancelar');
+            const inpAutorizado = document.getElementById('inpAutorizado');
+            inpAutorizado.value = autorizado;
             let selectedItem = items_orden.find(item => item.cod === id_orden);
             if (fab) {
                 if (selectedItem) {
@@ -593,10 +584,9 @@
                     let nuevoItem = {
                         cod: id_orden,
                         label: `${orden}  ${cliente}`,
-                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                        value: id_orden 
                     };
                     $(nro_ordenFab).val(nuevoItem.label);
-                    // Simular la selección del nuevo item en el autocompletado
                     $(nro_ordenFab)
                         .autocomplete("instance")
                         ._trigger("select", null, {
@@ -611,22 +601,18 @@
                 obtenerDatosProdFab(id_boleta, tras);
             } else {
                 if (selectedItem) {
-                    // Asignamos el valor al input de autocompletado
                     $(nro_orden).val(selectedItem.label);
-                    // Simulamos la selección del ítem en el autocompletado
                     $(nro_orden)
                         .autocomplete("instance")
                         ._trigger("select", null, {
                             item: selectedItem
                         });
                 } else {
-                    // Crear un nuevo item con los datos disponibles
                     let nuevoItem = {
                         cod: id_orden,
                         label: `${orden}  ${cliente}`,
-                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                        value: id_orden 
                     };
-                    // Asignar el valor al input
                     $(nro_orden).val(nuevoItem.label);
                     $(nro_orden)
                         .autocomplete("instance")
@@ -648,10 +634,6 @@
             first_control.click();
 
             let src = new FormData();
-            // src.append('accion', 8);
-            // src.append('boleta', id_boleta);
-
-            // cargarFilesDropzone(src, dropzone, 'salidas', 'guia_img');
             cargarImagenesDropzone(id_boleta);
             dropzone.enable();
             if (eliminar) {
@@ -686,23 +668,19 @@
             let selectedItem = items_orden.find(item => item.cod === id_orden);
             if (fab) {
                 if (selectedItem) {
-                    // Asignamos el valor al input de autocompletado
                     $(nro_ordenFab).val(selectedItem.label);
-                    // Simulamos la selección del ítem en el autocompletado
                     $(nro_ordenFab)
                         .autocomplete("instance")
                         ._trigger("select", null, {
                             item: selectedItem
                         });
                 } else {
-                    // Crear un nuevo item con los datos disponibles
                     let nuevoItem = {
                         cod: id_orden,
                         label: `${orden}  ${cliente}`,
-                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                        value: id_orden 
                     };
                     $(nro_ordenFab).val(nuevoItem.label);
-                    // Simular la selección del nuevo item en el autocompletado
                     $(nro_ordenFab)
                         .autocomplete("instance")
                         ._trigger("select", null, {
@@ -716,23 +694,19 @@
                 isTrasFab.disabled = true;
             } else {
                 if (selectedItem) {
-                    // Asignamos el valor al input de autocompletado
                     $(nro_ordenEntrada).val(selectedItem.label);
-                    // Simulamos la selección del ítem en el autocompletado
                     $(nro_ordenEntrada)
                         .autocomplete("instance")
                         ._trigger("select", null, {
                             item: selectedItem
                         });
                 } else {
-                    // Crear un nuevo item con los datos disponibles
                     let nuevoItem = {
                         cod: id_orden,
                         label: `${orden}  ${cliente}`,
-                        value: id_orden // Esto depende de cómo lo uses en el autocomplete
+                        value: id_orden 
                     };
                     $(nro_ordenEntrada).val(nuevoItem.label);
-                    // Simular la selección del nuevo item en el autocompletado
                     $(nro_ordenEntrada)
                         .autocomplete("instance")
                         ._trigger("select", null, {
@@ -744,9 +718,6 @@
                 tblReturn.ajax.reload(null, false);
                 fecha_retorno.value = fecha_return == '' ? '' : fecha_return;
                 let src = new FormData();
-                // src.append('accion', 8);
-                // src.append('boleta', id_boleta);
-                // cargarFilesDropzone(src, dropzone, 'salidas', 'guia_img');
                 cargarImagenesDropzone(id_boleta);
                 dropzone.disable();
                 document.querySelector(".dropzone").classList.add("dropzone-disabled");
@@ -777,7 +748,7 @@
         function cargarImagenesDropzone(id_boleta) {
             dropzone.removeAllFilesWithoutServer();
             $.ajax({
-                url: 'controllers/salidas.controlador.php', // Ajusta esta URL a tu controlador PHP
+                url: 'controllers/salidas.controlador.php', 
                 type: 'POST',
                 "dataSrc": '',
                 data: {
@@ -785,21 +756,19 @@
                     'accion': 8
                 },
                 success: function(response) {
-                    console.log(response) // Limpia los archivos existentes
+                    console.log(response) 
                     response = JSON.parse(response);
                     response.files.forEach(imagen => {
                         const mockFile = {
-                            name: imagen.nombre_file || "Imagen", // Puedes asignar un nombre genérico si no guardas el nombre original
-                            size: 123456, // Valor genérico; Dropzone no valida este campo para imágenes precargadas
-                            ruta: imagen.nombre_file, // Ruta de la imagen en el servidor
+                            name: imagen.nombre_file || "Imagen",
+                            size: 123456, 
+                            ruta: imagen.nombre_file, 
                             isExisting: true
                         };
 
-                        // Añade la imagen simulando que ya está cargada
                         dropzone.emit('addedfile', mockFile);
-                        dropzone.emit('thumbnail', mockFile, '/guia_img/' + imagen.nombre_file);
                         dropzone.emit('complete', mockFile);
-                        dropzone.files.push(mockFile); // Añade el archivo a la lista interna de Dropzone
+                        dropzone.files.push(mockFile); 
                     });
                 },
             });

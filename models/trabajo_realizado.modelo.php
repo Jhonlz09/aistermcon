@@ -184,7 +184,6 @@ class ModeloTrabajoRealizado
             $stmt->bindParam(':ruta', $ruta, PDO::PARAM_STR);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
-            // 🧹 Eliminar archivo físico
             $baseDir = '/var/www/pre_trabajo/';
             $filePath = $baseDir . $ruta;
             if (file_exists($filePath)) {

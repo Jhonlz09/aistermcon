@@ -164,7 +164,7 @@
         "pageLength": 100,
         "ordering": false,
         "autoWidth": false,
-        "paging": true, // Esto deshabilita la paginación
+        "paging": true,
         "deferRender": true,
         rowGroup: {
             dataSrc: [9],
@@ -188,7 +188,7 @@
         </div>`;
 
                 return $('<tr/>')
-                    .append('<td colspan="9">' + groupText + '</td>') // Asegúrate de ajustar el colspan según el número de columnas en tu tabla
+                    .append('<td colspan="9">' + groupText + '</td>') 
                     .attr('data-name', group)
                     .toggleClass('collapsed', collapsed);
             }
@@ -264,19 +264,19 @@
                 placeholder: 'SELECCIONA UNA ORDEN',
                 data: datos_,
                 escapeMarkup: function(markup) {
-                    return markup; // Permitir que se renderice HTML
+                    return markup;
                 },
                 templateResult: function(data) {
                     if (!data.id) {
                         return data.text;
                     }
-                    return data.html; // Usamos el HTML personalizado
+                    return data.html; 
                 },
                 templateSelection: function(data) {
                     if (!data.id) {
                         return data.text;
                     }
-                    return data.html; // Usamos el HTML también en la selección
+                    return data.html; 
                 }
             });
             setChange(cboOrden_i, 0);

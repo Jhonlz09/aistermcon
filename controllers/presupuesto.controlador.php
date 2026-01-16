@@ -19,44 +19,35 @@ class ControladorPresupuesto
         $uploadDirActs   = "/var/www/actas_entrega/$year/";
         $uploadDirOrdCom = "/var/www/orden_compra/$year/";
 
-        // Variables de rutas relativas
         $pdf_pre = $xls_pre = $pdf_ord = $xls_ord = $doc_ae = $pdf_ae = null;
         $pdf_oc_arr = [];
         $img_oc_arr = [];
-
-        /* ------------------- 📄 PRESUPUESTO ------------------- */
         if (isset($_FILES['presupuesto_files'])) {
             $files = $_FILES['presupuesto_files'];
             $baseName = 'PPTO ' . $this->presupuesto . '   ' . $this->cliente;
             $this->procesarArchivos($files, $uploadDirPres, $baseName, $year, $pdf_pre, $xls_pre);
         }
 
-        /* ------------------- 📄 ACTAS ENTREGA ------------------- */
         if (isset($_FILES['actas_files'])) {
             $files = $_FILES['actas_files'];
             $baseName = 'AE ' . $this->presupuesto . '   ' . $this->cliente;
             $this->procesarArchivos($files, $uploadDirActs, $baseName, $year, $pdf_ae, $doc_ae);
         }
 
-        /* ------------------- 📄 ORDEN DE TRABAJO ------------------- */
         if (isset($_FILES['orden_files'])) {
             $files = $_FILES['orden_files'];
             $baseName = 'OT ' . $this->presupuesto . '   ' . $this->cliente;
             $this->procesarArchivos($files, $uploadDirOrd, $baseName, $year, $pdf_ord, $xls_ord);
         }
 
-        /* ------------------- 📄 ORDEN DE COMPRA (ARRAYS) ------------------- */
         if (isset($_FILES['orden_compra_files'])) {
             $files = $_FILES['orden_compra_files'];
             $baseName = $this->presupuesto . '   ' . $this->cliente;
             $this->procesarOrdenCompraArchivos($files, $uploadDirOrdCom, $baseName, $year, $pdf_oc_arr, $img_oc_arr);
         }
 
-        // Convertir arrays a formato PostgreSQL TEXT[]
         $pdf_oc = !empty($pdf_oc_arr) ? $this->arrayToPgArray($pdf_oc_arr) : null;
         $img_oc = !empty($img_oc_arr) ? $this->arrayToPgArray($img_oc_arr) : null;
-
-        /* ------------------- 📝 INSERTAR EN BD ------------------- */
         $data = ModeloPresupuesto::mdlAgregarPresupuesto(
             $this->descrip,
             $this->id_cliente,
@@ -87,45 +78,37 @@ class ControladorPresupuesto
         $uploadDirOrd = "/var/www/ordenes/$year/";
         $uploadDirActs = "/var/www/actas_entrega/$year/";
         $uploadDirOrdCom = "/var/www/orden_compra/$year/";
-
-        // Rutas nuevas (solo se llenan si llegan archivos nuevos)
         $pdf_pre = $xls_pre = $pdf_ord = $xls_ord = $doc_ae = $pdf_ae = null;
         $pdf_oc_arr = [];
         $img_oc_arr = [];
 
-        /* ------------------- 📄 PRESUPUESTO ------------------- */
         if (isset($_FILES['presupuesto_files'])) {
             $files = $_FILES['presupuesto_files'];
             $baseName = 'PPTO ' . $this->presupuesto . '   ' . $this->cliente;
             $this->procesarArchivos($files, $uploadDirPres, $baseName, $year, $pdf_pre, $xls_pre);
         }
 
-        /* ------------------- 📄 ACTAS ENTREGA ------------------- */
         if (isset($_FILES['actas_files'])) {
             $files = $_FILES['actas_files'];
             $baseName = 'AE ' . $this->presupuesto . '   ' . $this->cliente;
             $this->procesarArchivos($files, $uploadDirActs, $baseName, $year, $pdf_ae, $doc_ae);
         }
 
-        /* ------------------- 📄 ORDEN DE TRABAJO ------------------- */
         if (isset($_FILES['orden_files'])) {
             $files = $_FILES['orden_files'];
             $baseName = 'OT ' . $this->presupuesto . '   ' . $this->cliente;
             $this->procesarArchivos($files, $uploadDirOrd, $baseName, $year, $pdf_ord, $xls_ord);
         }
 
-        /* ------------------- 📄 ORDEN DE COMPRA (ARRAYS) ------------------- */
         if (isset($_FILES['orden_compra_files'])) {
             $files = $_FILES['orden_compra_files'];
             $baseName = $this->presupuesto . '   ' . $this->cliente;
             $this->procesarOrdenCompraArchivos($files, $uploadDirOrdCom, $baseName, $year, $pdf_oc_arr, $img_oc_arr);
         }
 
-        // Convertir arrays a formato PostgreSQL TEXT[]
         $pdf_oc = !empty($pdf_oc_arr) ? $this->arrayToPgArray($pdf_oc_arr) : null;
         $img_oc = !empty($img_oc_arr) ? $this->arrayToPgArray($img_oc_arr) : null;
 
-        // Actualizar en BD SOLO los campos que tengan cambios
         $data = ModeloPresupuesto::mdlEditarPresupuesto(
             $this->id,
             $this->descrip,
@@ -311,7 +294,6 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorPresupuesto();
         $data->id = $_POST["id"];
         $data->estado = $_POST["estado"];
-        // $data->id_cliente = $_POST["id_cliente"];
         $data->cambiarEstadoPresupuesto();
     } else if ($_POST["accion"] == 6) {
         $data = new ControladorPresupuesto();

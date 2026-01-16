@@ -29,14 +29,6 @@
 </div>
 <script>
     $(document).ready(function() {
-        // Borrar todo el localStorage
-        // let mode = localStorage.getItem('darkMode');
-
-        // localStorage.clear();
-
-        // // Restaurar la variable desde la copia de seguridad
-        // localStorage.setItem('darkMode', mode);
-
         const form = document.getElementById('formLogin'),
             btn = document.getElementById('iniciar'),
             user = document.getElementById('usuario'),
@@ -70,11 +62,8 @@
                         );
                         pass.value = '';
                         pass.focus();
-                        // $(btn).show();
                     btn.disabled = false;
-                        // validarLogin('La contraseña es incorrecta', false, btn, null, pass);
                     } else {
-                        // validarLogin('El usuario no existe', true, btn, user)
                         mostrarToast('Error',
                              "Error",
                             "fa-xmark",
@@ -82,8 +71,6 @@
                         );
                         user.value = '';
                         user.focus();
-                       
-                        // $(btn).show();
                     btn.disabled = false;
                     }
                 }
@@ -113,5 +100,4 @@
         });
     }
 </script>
-
 </html>

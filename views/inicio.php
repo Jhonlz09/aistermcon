@@ -638,17 +638,17 @@ if (session_status() == PHP_SESSION_NONE) {
                 lengthChange: false,
                 autoWidth: false,
                 dom: "t",
-                scrollY: "492px", // Altura del scroll vertical
-                scrollX: false, // Habilita scroll horizontal
-                scrollCollapse: true, // Para que se colapse si no hay muchos datos
+                scrollY: "492px", 
+                scrollX: false,
+                scrollCollapse: true,
                 columnDefs: colums
             });
 
             return dataTable;
         }
 
-        const container = document.getElementById('div-top'); // el div padre de tu tabla
-        const container2 = document.getElementById('div-poco'); // el div padre de tu tabla
+        const container = document.getElementById('div-top'); 
+        const container2 = document.getElementById('div-poco'); 
 
         const observer = new ResizeObserver(() => {
             tablaTop.columns.adjust();

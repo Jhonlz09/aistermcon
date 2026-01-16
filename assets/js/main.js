@@ -50,6 +50,7 @@ function limpiar(btn = false) {
     nro_orden.value = "";
     clearButton.style.display = "none";
     motivo.value = "";
+    inpAutorizado.value = "";
   } else if (selectedTab === "3") {
     setChange(cboConductorEntrada, conductorPorDefecto);
     setChange(cboDespachado, bodegueroPorDefecto);
@@ -58,6 +59,7 @@ function limpiar(btn = false) {
     fecha_retorno.value = `${year}-${mes}-${dia}`;
     nro_ordenEntrada.readOnly = false;
     nro_ordenEntrada.value = "";
+    inpAutorizado.value = "";
     clearButtonEntrada.style.display = "none";
     motivo.value = "";
   } else if (selectedTab === "4") {
@@ -71,6 +73,7 @@ function limpiar(btn = false) {
     nro_orden.readOnly = false;
     clearButton.style.display = "none";
     motivo.value = "";
+    inpAutorizado.value = "";
     salida_radio.value = "2";
     salida_radio.dispatchEvent(new Event("change"));
     btn ? (btn.style.display = "none") : null;
@@ -81,7 +84,7 @@ function limpiar(btn = false) {
     setChange(cboDespachado, bodegueroPorDefecto);
     cboDespachado.disabled = false;
     setChange(cboResponsable, 0);
-
+    inpAutorizado.value = "";
     cboResponsable.disabled = false;
     nro_guiaEntrada.value = "";
     nro_ordenEntrada.readOnly = false;
@@ -118,6 +121,7 @@ function limpiar(btn = false) {
     nro_ordenFab.readOnly = false;
     clearButtonFab.style.display = "none";
     motivo.value = "";
+    inpAutorizado.value = "";
     nro_gui.value = "";
     radio.value = "7";
     radio.dispatchEvent(new Event("change"));
@@ -158,15 +162,15 @@ function cargarCombo(id, s, a = 1, isDataCbo = false, anio = null) {
         for (let index = 0; index < respuesta.length; index++) {
           options += `<option value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
           if (anio !== null) {
-            let text = respuesta[index][1]; // Nombre del elemento
+            let text = respuesta[index][1];
             if (respuesta[index][2]) {
               text +=
                 ' <span class="alert alert-default-dark mb-0"><i class="fas fa-hammer-crash"></i> FAB</span>';
             }
             dataCbo.push({
               id: respuesta[index][0],
-              text: respuesta[index][1], // Guardamos el texto limpio
-              fab: respuesta[index][2], // Guardamos si es fabricado
+              text: respuesta[index][1],
+              fab: respuesta[index][2],
               html: `<div style="display:flex;justify-content:space-between;align-items:center;height:1.6rem;overflow:hidden;white-space:nowrap;width:auto;text-overflow:ellipsis">${text}</div>`, // HTML personalizado
             });
           } else if (isDataCbo) {
@@ -205,12 +209,9 @@ function cargarComboFabricado(s = 0) {
       var options = "";
       for (let index = 0; index < respuesta.length; index++) {
         options += `<option data-cant="${respuesta[index][2]}" data-und="${respuesta[index][3]}" data-name="${respuesta[index][4]}" value="${respuesta[index][0]}">${respuesta[index][1]}</option>`;
-        // dataCbo.push({ id: respuesta[index][0], text: respuesta[index][1] });
       }
       $(cbo1).html(options);
-      // $(cbo2).html(options);
       $(cbo1).val(s).trigger("change");
-      // $(cbo2).val(0).trigger("change");
     },
   });
 }
@@ -218,12 +219,10 @@ function cargarComboFabricado(s = 0) {
 function formatInputOrden(input) {
   let value = input.value;
 
-  // Agregar un espacio después de los dos primeros números si aún no está presente
   if (/^\d{2}\S/.test(value)) {
     value = value.replace(/^(\d{2})(\S)/, "$1 $2");
   }
 
-  // Agregar un espacio antes del sexto carácter sin importar si es un número o letra
   if (/^\d{2} \S{3}\S/.test(value)) {
     value = value.replace(/^(\d{2} \S{3})(\S)/, "$1 $2");
   }
@@ -234,7 +233,7 @@ function formatInputOrden(input) {
 function cargarFilesDropzone(datos, drop, ruta) {
   drop.removeAllFilesWithoutServer();
   $.ajax({
-    url: 'controllers/' + ruta + '.controlador.php', // Ajusta esta URL a tu controlador PHP
+    url: 'controllers/' + ruta + '.controlador.php',
     type: 'POST',
     "dataSrc": '',
     dataType: 'json',
@@ -244,10 +243,9 @@ function cargarFilesDropzone(datos, drop, ruta) {
     success: function (response) {
       console.log(response);
       response.files.forEach(file => {
-        if (!file.nombre_file) return; // Si no hay nombre de archivo, saltar
+        if (!file.nombre_file) return;
         const filename = file.nombre_file.split('/').pop();
         file
-        // Map de extensiones conocidas
         const extMap = {
           pdf: 'application/pdf',
           xls: 'application/vnd.ms-excel',
@@ -257,7 +255,7 @@ function cargarFilesDropzone(datos, drop, ruta) {
         };
 
         const ext = filename.split('.').pop().toLowerCase();
-        const type = extMap[ext] || ''; // Si no coincide, se envía como imagen
+        const type = extMap[ext] || '';
 
         const mockFile = {
           name: filename,
@@ -295,20 +293,16 @@ function fetchOrderId(nombre, fecha, callback) {
 
 function moveFocusOnTab(event) {
   if (event.key === "Tab") {
-    event.preventDefault(); // Evitar el comportamiento predeterminado del Tab
+    event.preventDefault();
 
-    // Obtener la fila actual y la tabla
     var currentRow = $(this).closest("tr");
     var currentTable = currentRow.closest("table").DataTable();
 
-    // Encontrar la siguiente fila
     var nextRow = currentRow.next();
 
-    // Si hay una siguiente fila, enfocar el input en esa fila
     if (nextRow.length) {
       nextRow.find("input.cantidad").focus();
     } else {
-      // Si no hay una siguiente fila, enfocar el input en la primera fila de la siguiente tabla (opcional)
       var nextTable = currentTable.table().node()
         .parentElement.nextElementSibling;
       if ($(nextTable).hasClass("dataTable")) {
@@ -329,18 +323,14 @@ function opcionSelect(select, name) {
 }
 
 function formatNumberInput(input) {
-  // Remove all non-numeric characters except for the decimal point
   let value = input.value.replace(/[^0-9.]/g, "");
 
-  // Split the value into integer and decimal parts
   let parts = value.split(".");
   let integerPart = parts[0];
   let decimalPart = parts.length > 1 ? "." + parts[1].slice(0, 2) : "";
 
-  // Format the integer part with commas
   integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-  // Set the formatted value back to the input
   input.value = integerPart + decimalPart;
 }
 
@@ -442,7 +432,6 @@ function cambiarModal(
 }
 
 function displayModal(elements, ...args) {
-  // Verificar si el número de elementos coincide con el número de argumentos
   if (elements.length !== args.length) {
     console.error(
       "El número de elementos no coincide con el número de argumentos."
@@ -450,7 +439,6 @@ function displayModal(elements, ...args) {
     return;
   }
 
-  // Iterar sobre los elementos y establecer sus estilos de visualización
   elements.forEach((element, index) => {
     element.style.display = args[index];
   });
@@ -462,14 +450,12 @@ function trimPaste(e, el) {
     .getData("text")
     .trim();
 
-  // Insertar texto en la posición actual del cursor
   const start = el.selectionStart;
   const end = el.selectionEnd;
   const textBefore = el.value.substring(0, start);
   const textAfter = el.value.substring(end);
   el.value = textBefore + pastedText + textAfter;
 
-  // Restaurar posición del cursor
   const newCursorPos = textBefore.length + pastedText.length;
   el.setSelectionRange(newCursorPos, newCursorPos);
 
@@ -521,15 +507,12 @@ function setChange(selectE, value) {
 
 function convertirArray(arr) {
   if (arr === null || arr === "{NULL}") {
-    // Devolver un arreglo vacío
     return [];
   }
 
   if (typeof arr === "string" && arr.includes("{")) {
-    // El arreglo tiene llaves, lo convertimos a corchetes y luego a un array
     return JSON.parse(arr.replace("{", "[").replace("}", "]"));
   } else {
-    // El arreglo ya es un array válido
     return arr;
   }
 }
@@ -547,8 +530,6 @@ function convertirArray(arr) {
 
 function parsePgArray(pgArrayStr) {
   if (!pgArrayStr) return [];
-
-  // Quita las llaves iniciales y finales
   let str = pgArrayStr.replace(/^{|}$/g, '').trim();
   if (!str) return [];
 
@@ -560,7 +541,6 @@ function parsePgArray(pgArrayStr) {
   for (let i = 0; i < str.length; i++) {
     const c = str[i];
 
-    // Detecta inicio/final de comillas simples o dobles
     if ((c === '"' || c === "'") && !inQuotes) {
       inQuotes = true;
       quoteChar = c;
@@ -571,7 +551,6 @@ function parsePgArray(pgArrayStr) {
       continue;
     }
 
-    // Si es coma fuera de comillas, termina elemento
     if (c === ',' && !inQuotes) {
       arr.push(current.trim());
       current = '';
@@ -582,7 +561,6 @@ function parsePgArray(pgArrayStr) {
 
   if (current) arr.push(current.trim());
 
-  // Quita comillas simples internas sobrantes
   console.log(arr.map(s => s.replace(/^'+|'+$/g, '').trim()));
   return arr.map(s => s.replace(/^'+|'+$/g, '').trim());
 }
@@ -608,7 +586,6 @@ function validarNumber(input, regex, ten = false, decimal = 2) {
 function validarPegado(input, e) {
   let pastedText = (e.clipboardData || window.clipboardData).getData("text");
   pastedText = pastedText.replace(/[^0-9.]/g, "");
-  // Obtener el valor actual del input
   const currentValue = input.value;
   const newValue =
     currentValue.slice(0, input.selectionStart) +
@@ -636,9 +613,7 @@ function validarTecla(e, input) {
 }
 
 function getFileIconSVG(file) {
-  // SVG PDF
   const pdfSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#de0000ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">PDF</text></svg>`;
-  // SVG Excel
   const excelSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#059500ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" font-weight="bold">XLS</text></svg>`;
   const imgSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#004ca3ff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" font-weight="bold">IMG</text></svg>`;
   const wordSVG = `<svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="#0045cfff"/><text x="24" y="32" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" font-weight="bold">DOC</text></svg>`;
@@ -658,18 +633,16 @@ function getFileIconSVG(file) {
     return wordSVG;
   }
   if (file.type.startsWith("image/")) {
-    return null; // Para imágenes, se usará la miniatura real
+    return null;
   }
   return imgSVG;
 }
 
 function obtenerEspacioLibreLocalStorage() {
-  // Tamaño máximo en bytes (aproximado)
   var tamanoMaximo = 5 * 1024 * 1024; // 5 MB
   var tamanoOcupado = JSON.stringify(localStorage).length;
   var espacioLibre = tamanoMaximo - tamanoOcupado;
 
-  // Retornar el resultado en KB o MB, según tu preferencia
   return espacioLibre < 1024
     ? espacioLibre.toFixed(2) + " KB"
     : (espacioLibre / 1024).toFixed(2) + " MB";
@@ -678,15 +651,12 @@ function obtenerEspacioLibreLocalStorage() {
 function obtenerEspacioOcupadoLocalStorage() {
   var tamanoOcupado = 0;
 
-  // Iterar sobre las claves y sumar sus tamaños
   for (var i = 0; i < localStorage.length; i++) {
     var clave = localStorage.key(i);
     var valor = localStorage.getItem(clave);
-    // Sumar el tamaño de la clave y el valor (aproximadamente)
-    tamanoOcupado += (clave.length + valor.length) * 2; // Multiplicar por 2 para tener una estimación en bytes (UTF-16)
+    tamanoOcupado += (clave.length + valor.length) * 2;
   }
 
-  // Retornar el resultado en KB o MB, según tu preferencia
   return tamanoOcupado < 1024
     ? tamanoOcupado.toFixed(2) + " bytes"
     : (tamanoOcupado / 1024).toFixed(2) + " KB";
@@ -696,16 +666,12 @@ function estilosSelect2(cbo, lbl, container = "single") {
   let labelElement = $("#" + lbl);
   let select2Container = $(cbo).next(".select2-container");
   let select2Span = select2Container.find(".select2-selection--" + container);
-  // let select2SpanMultiple = select2Container.find(".select2-selection--multiple");
 
-  // Añade la clase al select actual si tiene una opción seleccionada
   if ($(cbo).val() === null || $(cbo).val().length === 0) {
     select2Span.removeClass("selected-bor");
-    // select2SpanMultiple.removeClass("selected-bor");
     labelElement.removeClass("selected-bor");
   } else {
     select2Span.addClass("selected-bor");
-    // select2SpanMultiple.addClass("selected-bor");
     labelElement.addClass("selected-bor");
   }
 }
@@ -723,10 +689,9 @@ function validarClave(input, sub) {
 }
 
 async function updateAll(element) {
-  // Deshabilitar el botón (usando pointer-events) y cambiar el fondo a gris
   $(element).css({
-    "pointer-events": "none", // Deshabilitar clics
-    "background-color": "#d3d3d3", // Cambiar el fondo a gris
+    "pointer-events": "none",
+    "background-color": "#d3d3d3",
   });
 
   cargarAutocompletado(
@@ -741,17 +706,15 @@ async function updateAll(element) {
     "orden",
     6
   );
-  // Ejecutar la recarga de la tabla
   try {
     tabla.ajax.reload(null, false);
-    // Usar Promise.all para esperar todas las promesas
     await cargarDatos();
   } catch (error) {
     console.error("Error en la ejecución de alguna de las promesas:", error);
   } finally {
     $(element).css({
-      "pointer-events": "auto", // Reactivar el enlace
-      "background-color": "", // Restaurar el color original
+      "pointer-events": "auto",
+      "background-color": "",
     });
     mostrarToast(
       "success",
@@ -765,14 +728,12 @@ async function updateAll(element) {
 }
 
 async function cargarDatos() {
-  // Ejecutar todas las promesas en paralelo y esperar a que terminen
   const [autocompletado, proveedores, clientes, orden] = await Promise.all([
     cargarAutocompletado(),
     cargarCombo("Proveedores", "", 1, true),
     cargarCombo("Clientes", "", 1, true),
     cargarCombo("Orden", "", 3, true),
   ]);
-  // Asignar los resultados de las promesas
   datos_prove = proveedores;
   datos_cliente = clientes;
   datos_orden = orden;
@@ -783,7 +744,7 @@ function cargarAutocompletado(
   input = "codProducto",
   ruta = "inventario",
   action = 7,
-  filterType = 0  // 0: sin filtro dinámico, 1: filtro por palabras, 2: filtro para dimensiones
+  filterType = 0
 ) {
   $.ajax({
     url: "controllers/" + ruta + ".controlador.php",
@@ -829,7 +790,6 @@ function cargarAutocompletado(
       if (typeof callback === "function") {
         callback(items, filterType);
       } else {
-        // Si filterType > 0, crear source dinámico; si no, usar items directamente
         if (filterType > 0) {
           $("#" + input).autocomplete("option", "source", function (request, response) {
             const filteredItems = filterAutocompletadoItems(items, request.term, filterType);
@@ -848,7 +808,6 @@ function filterAutocompletadoItems(items, searchTerm, filterType) {
   let resultados = [];
 
   if (filterType === 2) {
-    // Filtrado para dimensiones (e.g., "8 x 1")
     const esPatronDimensiones = /^\d+\s*x\s*\d+/i.test(input);
 
     if (esPatronDimensiones) {
@@ -898,7 +857,6 @@ function filterAutocompletadoItems(items, searchTerm, filterType) {
       });
     }
   } else if (filterType === 1) {
-    // Filtrado simple por palabras
     const palabras = input.split(/\s+/).filter(p => p.length > 0);
     if (palabras.length === 0) {
       resultados = items;
@@ -909,7 +867,6 @@ function filterAutocompletadoItems(items, searchTerm, filterType) {
       });
     }
   } else {
-    // Sin filtro especial, retornar todos
     resultados = items;
   }
 
@@ -929,8 +886,8 @@ function clearInput(inputId, btn) {
 
 function evitarEnvio(event) {
   if (event.keyCode === 13) {
-    event.preventDefault(); // Evita que el formulario se envíe
-    return false; // Evita el envío del formulario
+    event.preventDefault();
+    return false;
   }
   return true;
 }

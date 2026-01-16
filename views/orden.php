@@ -260,7 +260,7 @@
     <!-- /.modal-dialog -->
 </div>
 <script>
-    var mostrarCol = '<?php echo $_SESSION["editar17"] || $_SESSION["eliminar17"] ?>';
+    var mostrarCol = '<?php echo $_SESSION["editar23"] || $_SESSION["eliminar23"] ?>';
     var editar = '<?php echo $_SESSION["editar23"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar23"] ?>';
     OverlayScrollbars(document.querySelector('.scroll-modal'), {

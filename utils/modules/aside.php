@@ -16,7 +16,7 @@
                                 <div class="row" style="align-items:normal">
                                     <div class="col-md-6 d-flex">
                                         <div class="tabs" style="margin-block: 0.5rem 1.8rem ">
-                                            <?php if ($_SESSION["crear4"] && !$_SESSION["crear9"]) : ?>
+                                            <?php if ($_SESSION["crear4"] && !(isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true)) : ?>
                                                 <input type="radio" id="radio-2" name="tabs" value="2" checked />
                                                 <label class="tab" for="radio-2">Salida</label>
                                                 <input type="radio" id="radio-3" name="tabs" value="3" />
@@ -25,7 +25,7 @@
                                                 <label class="tab" for="radio-7">Fabricacion</label>
                                                 <span style="width:33.3%;" class="glider"></span>
                                             <?php endif; ?>
-                                            <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                            <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && !$_SESSION["crear4"]) : ?>
                                                 <script>
                                                     selectedTab = '1';
                                                 </script>
@@ -33,7 +33,7 @@
                                                 <label class="tab" for="radio-1"> Compra</label>
                                                 <span style="width: 100%;transform:translate(0)" class="glider"></span>
                                             <?php endif; ?>
-                                            <?php if ($_SESSION["crear9"] && $_SESSION["crear4"]) : ?>
+                                            <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && $_SESSION["crear4"]) : ?>
                                                 <input type="radio" id="radio-2" name="tabs" value="2" checked />
                                                 <label class="tab" for="radio-2">Salida</label>
                                                 <input type="radio" id="radio-3" name="tabs" value="3" />
@@ -49,7 +49,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                        <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && !$_SESSION["crear4"]) : ?>
                                             <div id="div_orden" style="display:none;line-height:1">
                                             <?php else : ?>
                                                 <div id="div_orden" style="display:block;line-height:1">
@@ -65,7 +65,7 @@
                                                     </div>
                                                 </div>
                                                 </div>
-                                                <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                                <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && !$_SESSION["crear4"]) : ?>
                                                     <div class="form-group m-0" id="div_proveedor" style="display:block;line-height:1">
                                                     <?php else : ?>
                                                         <div class="form-group m-0" id="div_proveedor" style="display:none;line-height:1">
@@ -140,7 +140,7 @@
                                                     <input id="nro_guiaFab" maxlength="9" inputmode="numeric" autocomplete="off" style="font-size:1.2rem;border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" oninput="validarNumber(this,/[^0-9]/g)" placeholder="Ingrese el nro. de guia" required>
                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                 </div>
-                                                <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                                <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && !$_SESSION["crear4"]) : ?>
                                                     <div class="col" id="div_nrofac" style="display:block">
                                                     <?php else : ?>
                                                         <div class="col" id="div_nrofac" style="display:none">
@@ -152,7 +152,7 @@
                                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                                         </div>
                                                         </div>
-                                                        <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                                        <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true)&& !$_SESSION["crear4"]) : ?>
                                                             <div class="col-sm-4" id="div_nroguia" style="display:none">
                                                             <?php else : ?>
                                                                 <div class="col-sm-4" id="div_nroguia">
@@ -169,7 +169,7 @@
                                                                     <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 </div>
-                                                                <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                                                <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && !$_SESSION["crear4"]) : ?>
                                                                     <div class="col-sm-4" id="div_conductor" style="display:none">
                                                                     <?php else : ?>
                                                                         <div class="col-sm-4" id="div_conductor" style="display:block">
@@ -229,7 +229,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                                    <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && !$_SESSION["crear4"]) : ?>
                                                         <div id="form-1" style="display: block" class="card-body form-container">
                                                         <?php else : ?>
                                                             <div id="form-1" class="card-body form-container">
@@ -259,7 +259,7 @@
                                                                 </table>
                                                             </div>
                                                             </div>
-                                                            <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                                            <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && !$_SESSION["crear4"]) : ?>
                                                                 <div id="form-2" class="form-container">
                                                                 <?php else : ?>
                                                                     <div id="form-2" style="display:block;" class="form-container">
@@ -413,7 +413,7 @@
 
 
                                                 <div class="col-xl-3">
-                                                    <?php if ($_SESSION["crear9"] && !$_SESSION["crear4"]) : ?>
+                                                    <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && !$_SESSION["crear4"]) : ?>
                                                         <div class="card" id="card_person" style="display: none;">
                                                         <?php else : ?>
                                                             <div class="card" id="card_person" style="display: block;">
@@ -431,13 +431,15 @@
                                                                 </div>
                                                                 <div class="form-group" style="margin-bottom:1.6rem;">
                                                                     <label id="lbl" class="mb-0 combo"><i class="fas fa-clipboard-check"></i> Autorizado por</label>
-                                                                    <div class="row">
+                                                                    <!-- <div class="row">
                                                                         <div class="col-12">
                                                                             <select id="cboAutorizado" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark">
                                                                             </select>
                                                                             <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                         </div>
-                                                                    </div>
+                                                                    </div> -->
+                                                                    <input style="border-bottom: 2px solid var(--select-border-bottom);" type="text" class="form-control form-control-sm" id="inpAutorizado" placeholder="Inserta un nombre" required/>
+                                                                    <div class="invalid-feedback">*Campo obligatorio.</div>
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <label id="lbl" class="mb-0 combo"><i class="fas fa-user-helmet-safety"></i> Responsable</label>
@@ -509,6 +511,15 @@
                 console.log("Archivo subido exitosamente:", response);
             });
 
+            dzInstance.on("addedfile", function(file) {
+                    var dzImage = file.previewElement.querySelector('.dz-image');
+                    if (dzImage) {
+                            console.log(file.ruta);
+                            const imageUrl = `/aistermcon/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=guia_img`;
+                            dzImage.innerHTML = `<img src="${imageUrl}" style="object-fit:cover;border-radius:6px;"alt="preview">`;
+                    }
+                });
+
             dzInstance.on("removedfile", function(file) {
                 if (removeAllFilesCalled) {
                     // console.log("Archivo eliminado solo del contenedor, no del servidor.");
@@ -531,6 +542,8 @@
                 } else {
                     console.log("Imagen no existente en el servidor, eliminada solo del cliente.");
                 }
+
+                
             });
 
             // Función para limpiar los archivos del contenedor sin afectar al servidor

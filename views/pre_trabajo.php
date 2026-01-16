@@ -84,7 +84,6 @@
                 </button>
             </div>
             <div class="modal-body" id="contenedorPDFs">
-                <!-- Aquí se insertarán los iframes de los PDFs -->
             </div>
         </div>
     </div>
@@ -193,9 +192,9 @@
                 className: "text-center",
                 render: function(data, type, row, meta) {
                     if (type === 'display') {
-                        return meta.row + 1; // Devuelve el número de fila + 1
+                        return meta.row + 1;
                     }
-                    return meta.row; // Devuelve el índice de la fila
+                    return meta.row; 
                 }
             },
             {
@@ -213,16 +212,13 @@
                 render: function(data, type, row) {
                     const pdfArr = parsePgArray(row.pdf_arr);
                     const imgArr = parsePgArray(row.img_arr);
-                    // console.log('Archivos PDF:', pdfArr);
-                    // console.log('Archivos IMG:', imgArr);
-                    // Badges
+                 
                     const pdfBadge = pdfArr.length > 0 ? `<span class="badge badge-info navbar-badge">${pdfArr.length}</span>` : '';
                     const imgBadge = imgArr.length > 0 ? `<span class="badge badge-info navbar-badge">${imgArr.length}</span>` : '';
 
                     const pdfIcon = `<i class='fas fa-file-pdf'>${pdfBadge}</i>`;
                     const imgIcon = `<i class='fas fa-file-jpg'>${imgBadge}</i>`;
 
-                    // Función para crear botón
                     const btn = (arr, icon, color, title) => {
                         if (!arr || arr.length === 0) {
                             return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'>${icon}</span>`;
@@ -264,24 +260,18 @@
             alert("No hay archivos para mostrar.");
             return;
         }
-
-        // Detecta tipo por extensión del primer archivo
         const ext = archivos[0].toLowerCase().split('.').pop();
         const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
         const isPdf = ext === 'pdf';
 
         if (isPdf) {
-            // 🔹 Manejo de PDFs con cache para evitar recarga
             const contenedor = document.getElementById('contenedorPDFs');
 
-            // Hash único por conjunto de archivos
             const hash = archivos.join('|');
 
-            // Revisamos si ya existe un contenedor cacheado para estos archivos
             let cachedDiv = document.querySelector(`#contenedorPDFs div[data-hash='${hash}']`);
 
             if (!cachedDiv) {
-                // Si no existe, creamos el contenido
                 cachedDiv = document.createElement('div');
                 cachedDiv.dataset.hash = hash;
                 cachedDiv.classList.add('pdf-group');
@@ -320,14 +310,12 @@
 
                 contenedor.appendChild(cachedDiv);
             }
-            // Ocultamos todos los grupos y mostramos solo el seleccionado
             document.querySelectorAll('#contenedorPDFs .pdf-group').forEach(div => div.style.display = 'none');
             cachedDiv.style.display = 'flex';
             $('#modalVerPDFs').modal('show');
         }
 
         if (isImage) {
-            // 🔹 Manejo de imágenes en carrusel
             const indicators = document.querySelector('#carouselPreview .carousel-indicators');
             const inner = document.querySelector('#carouselPreview .carousel-inner');
             indicators.innerHTML = '';
@@ -423,7 +411,6 @@
                             const imageUrl = `/aistermcon/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=pre_trabajo`;
                             dzImage.innerHTML = `<img src="${imageUrl}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;"alt="preview">`;
                         } else if (file.type.startsWith("image/")) {
-                            // Mostrar miniatura real de la imagen
                             var reader = new FileReader();
                             reader.onload = function(e) {
                                 dzImage.innerHTML = `<img src="${e.target.result}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" alt="preview">`;
@@ -438,15 +425,15 @@
                 this.on("removedfile", function(file) {
                     console.log(file.name);
                     if (removeAllFilesCalled) {
-                        return; // No realizar ninguna acción con el servidor
+                        return;
                     }
                     if (file.isExisting) eliminarArchivo(file);
                 });
 
                 this.removeAllFilesWithoutServer = function() {
-                    removeAllFilesCalled = true; // Indicamos que se ha llamado a removeAllFiles
-                    this.removeAllFiles(true); // Limpiar archivos del contenedor
-                    removeAllFilesCalled = false; // Resetear la bandera después de la limpieza
+                    removeAllFilesCalled = true;
+                    this.removeAllFiles(true);
+                    removeAllFilesCalled = false;
                 };
             }
         });
@@ -534,18 +521,14 @@
                     response.files.forEach(file => {
                         const filename = file.nombre_file.split('/').pop();
                         const ext = filename.split('.').pop().toLowerCase();
-
-                        // Tipos MIME para que Dropzone 
                         const extMap = {
                             pdf: 'application/pdf',
                         };
 
                         const type = extMap[ext] || ``;
-
-                        // Simulamos el archivo existente
                         const mockFile = {
                             name: filename,
-                            size: 123456, // puedes poner tamaño real si lo deseas
+                            size: 123456,
                             type: type,
                             ruta: file.nombre_file,
                             isExisting: true
@@ -584,7 +567,6 @@
             });
             datos.append('accion', accion);
             confirmarAccion(datos, 'pre_trabajo', tabla, modal, function(r) {})
-
         });
     })
 </script>

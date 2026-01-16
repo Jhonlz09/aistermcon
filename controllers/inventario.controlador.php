@@ -50,7 +50,7 @@ class ControladorInventario
                 // Nombre final del archivo basado en el código
                 $fullNameFinal = $this->codigo . '.' . $extension;
                 // Ruta de subida
-                $uploadDir = '../../products/';
+                $uploadDir = '/var/www/products/';
                 $uploadFile = $uploadDir . $fullNameFinal;
                 // Mover el archivo subido a la carpeta de destino
                 if (move_uploaded_file($_FILES['fileImg']['tmp_name'], $uploadFile)) {
@@ -104,7 +104,7 @@ class ControladorInventario
             return;
         }
 
-        $uploadDir = '../../products/';
+        $uploadDir = '/var/www/products/';
 
         // Si se subió una nueva imagen, validarla y guardarla
         if (isset($_FILES['fileImg']) && $_FILES['fileImg']['size'] > 0) {
@@ -268,7 +268,6 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->stock = $_POST["sto"];
         $data->stock_min = $_POST["st_min"];
         $data->stock_mal = $_POST["st_mal"];
-        $data->stock_ini = $_POST["st_ini"];
         $data->categoria = $_POST["cat"];
         $data->unidad = $_POST["uni"];
         $data->percha = $_POST["ubi"];

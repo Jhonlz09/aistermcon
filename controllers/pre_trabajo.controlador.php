@@ -144,14 +144,11 @@ class ControladorPretrabajo
         $data = ModeloPretrabajo::mdlObtenerTodosLosArchivos($this->id);
 
         if (empty($data)) {
-            // Si no hay imágenes, retorna un arreglo vacío
             echo json_encode([
                 'files' => [],
             ]);
             return;
         }
-
-        // Si hay imágenes, retornarlas en el JSON
         echo json_encode([
             'files' => $data,
         ]);

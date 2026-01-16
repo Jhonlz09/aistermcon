@@ -504,9 +504,8 @@ class ModeloPresupuesto
             $l->execute();
             $files = $l->fetchAll(PDO::FETCH_ASSOC);
 
-            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
+            return $files ?: [];
         } catch (PDOException $e) {
-            // Retornar un mensaje de error descriptivo
             return "Error en la consulta: " . $e->getMessage();
         }
     }
@@ -514,24 +513,18 @@ class ModeloPresupuesto
     static public function mdlObtenerTodosLosArchivos($id)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare(" SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_ord, xls_ord], NULL)) AS nombre_file, 'ord' AS tipo
+            $l = Conexion::ConexionDB()->prepare("SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_ord, xls_ord], NULL)) AS nombre_file, 'ord' AS tipo
             FROM tblpresupuesto
             WHERE id = :id
-
             UNION ALL
-
             SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_pre, xls_pre], NULL)) AS nombre_file, 'ppt' AS tipo
             FROM tblpresupuesto
             WHERE id = :id
-
             UNION ALL
-
             SELECT unnest(ARRAY_REMOVE(ARRAY[pdf_ae, doc_ae], NULL)) AS nombre_file, 'ae' AS tipo
             FROM tblpresupuesto
             WHERE id = :id
-
             UNION ALL
-
             SELECT unnest(pdf_oc || img_oc) AS nombre_file, 'oc' AS tipo
             FROM tblpresupuesto
             WHERE id = :id");
@@ -540,9 +533,8 @@ class ModeloPresupuesto
             $l->execute();
             $files = $l->fetchAll(PDO::FETCH_ASSOC);
 
-            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
+            return $files ?: []; 
         } catch (PDOException $e) {
-            // Retornar un mensaje de error descriptivo
             return "Error en la consulta: " . $e->getMessage();
         }
     }
@@ -553,14 +545,12 @@ class ModeloPresupuesto
             $l = Conexion::ConexionDB()->prepare("SELECT unnest(array[pdf_pre, xls_pre]) AS nombre_file
                 FROM tblpresupuesto
                 WHERE id = :id");
-
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             $l->execute();
             $files = $l->fetchAll(PDO::FETCH_ASSOC);
 
-            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
+            return $files ?: [];
         } catch (PDOException $e) {
-            // Retornar un mensaje de error descriptivo
             return "Error en la consulta: " . $e->getMessage();
         }
     }
@@ -576,9 +566,8 @@ class ModeloPresupuesto
             $l->execute();
             $files = $l->fetchAll(PDO::FETCH_ASSOC);
 
-            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
+            return $files ?: [];
         } catch (PDOException $e) {
-            // Retornar un mensaje de error descriptivo
             return "Error en la consulta: " . $e->getMessage();
         }
     }
@@ -588,13 +577,11 @@ class ModeloPresupuesto
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT unnest(pdf_oc || img_oc) AS nombre_file
                     FROM tblpresupuesto WHERE id =:id");
-
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             $l->execute();
             $files = $l->fetchAll(PDO::FETCH_ASSOC);
-            return $files ?: []; // Retorna un arreglo vacío si no hay resultados
+            return $files ?: []; 
         } catch (PDOException $e) {
-            // Retornar un mensaje de error descriptivo
             return "Error en la consulta: " . $e->getMessage();
         }
     }
@@ -644,11 +631,11 @@ class ModeloPresupuesto
 
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             if ($l->execute()) {
-                $uploadDir = "var/www/pre_trabajo/"; // Directorio donde están las imágenes
+                $uploadDir = "var/www/pre_trabajo/";
                 $filePath = $uploadDir . $ruta;
 
                 if (file_exists($filePath)) {
-                    unlink($filePath); // Eliminar archivo
+                    unlink($filePath);
                 }
             };
         } catch (PDOException $e) {
@@ -656,31 +643,10 @@ class ModeloPresupuesto
         }
     }
 
-    // static public function mdlEliminarFileOrden($id, $ruta, $ext, $carpeta)
-    // {
-    //     try {
-    //         $l = Conexion::ConexionDB()->prepare("UPDATE tblpresupuesto SET " . ($ext === 'pdf' ? 'pdf_ord' : 'xls_ord') . " = NULL WHERE id = :id");
-
-    //         $l->bindParam(":id", $id, PDO::PARAM_INT);
-    //         if ($l->execute()) {
-    //             $uploadDir = "var/www/". $carpeta. "/" ; // Directorio donde están las imágenes
-    //             $filePath = $uploadDir . $ruta;
-
-    //             if (file_exists($filePath)) {
-    //                 unlink($filePath); // Eliminar archivo
-    //             }
-    //         };
-    //     } catch (PDOException $e) {
-    //         return "Error en la consulta: " . $e->getMessage();
-    //     }
-    // }
-
     static public function mdlEliminarArchivo($id, $ruta, $ext, $carpeta, $tipo)
     {
         try {
             $db = Conexion::ConexionDB();
-
-            // 📌 Mapeo de columnas normales
             $columnas = [
                 'ppt' => ['pdf' => 'pdf_pre', 'xls' => 'xls_pre', 'xlsx' => 'xls_pre'],
                 'ord' => ['pdf' => 'pdf_ord', 'xls' => 'xls_ord', 'xlsx' => 'xls_ord'],
@@ -693,8 +659,6 @@ class ModeloPresupuesto
                 } else {
                     $columna = 'img_oc';
                 }
-
-                // Eliminar la ruta específica del array en PostgreSQL
                 $sql = "UPDATE tblpresupuesto 
                     SET {$columna} = array_remove({$columna}, :ruta)
                     WHERE id = :id";
@@ -703,7 +667,6 @@ class ModeloPresupuesto
                 $stmt->bindParam(':id', $id, PDO::PARAM_INT);
                 $stmt->execute();
             } else {
-                // 🧠 CASO NORMAL: columnas simples
                 if (!isset($columnas[$tipo][$ext])) {
                     throw new Exception("Tipo de archivo no soportado: $tipo / $ext");
                 }
@@ -713,8 +676,6 @@ class ModeloPresupuesto
                 $stmt->bindParam(':id', $id, PDO::PARAM_INT);
                 $stmt->execute();
             }
-
-            // 🧹 Eliminar archivo físico
             $baseDir = '/var/www/' . $carpeta . '/';
             $filePath = $baseDir . $ruta;
             if (file_exists($filePath)) {
