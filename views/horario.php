@@ -2435,7 +2435,6 @@
                 rowData._id_orden = selectedItemOrden;
                 filas.push(rowData);
             }
-
             tblPerson.rows.add(filas).draw(false);
             tblEmpleadoH.rows().deselect();
             $('.fil-rol').prop('checked', false);
@@ -2466,10 +2465,12 @@
         }
 
         function handleAutocompleteSelect(event, ui) {
+            this.value = ui.item.label;
             this.readOnly = true;
             $(this).attr("data-id", ui.item.cod);
             const btn = this.parentElement.querySelector("button");
             if (btn) btn.style.display = "block";
+            return false;
         }
 
         $('#editRow').on('click', function() {
@@ -2586,9 +2587,11 @@
                     return false;
                 },
                 select: function(event, ui) {
+                    nro_ordenHorario.value = ui.item.label;
                     nro_ordenHorario.readOnly = true;
                     id_orden_horario = ui.item.cod;
                     clearButtonObraH.style.display = "block";
+                    return false;
                 },
             }).data("ui-autocomplete")._renderItem = function(ul, item) {
                 const $li = $("<li>");
