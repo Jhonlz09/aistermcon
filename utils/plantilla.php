@@ -1815,7 +1815,6 @@
 
                 cargarAutocompletado(function(items) {
                     items_orden = items;
-                    
                     // Configuración común para los autocompletes de orden
                     const sourceFunction = function(request, response) {
                         const input = request.term.toLowerCase().trim();

@@ -12,13 +12,8 @@ class ModeloOrden
     static public function mdlListarOrden($anio, $estado)
     {
         try {
-            $consulta = "SELECT o.id, p.num_orden, 
-                        c.nombre AS cliente, 
-                        p.descripcion,  
-                        o.estado,
-                        '' AS acciones, 
-                        p.id_cliente, 
-                        p.pdf_ord, 
+            $consulta = "SELECT o.id, p.num_orden,c.nombre AS cliente, 
+                        p.descripcion,o.estado,'' AS acciones,p.id_cliente,p.pdf_ord, 
                         TO_CHAR(o.fecha, 'DD/MM/YYYY') AS fecha, 
                         COALESCE(TO_CHAR(o.fecha_ope, 'DD/MM/YYYY'), '') AS fecha_ope, 
                         COALESCE(TO_CHAR(o.fecha_fin, 'DD/MM/YYYY'), '') AS fecha_fin, 

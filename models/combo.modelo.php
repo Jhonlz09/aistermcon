@@ -184,8 +184,10 @@ class ModeloCombos
     {
         try {
             $e = Conexion::ConexionDB()->prepare("SELECT o.id, 
-            p.num_orden || ' ' || c.nombre AS descripcion, o.estado AS estado_obra, 
-            EXTRACT(YEAR FROM o.fecha) AS anio 
+            p.num_orden || ' ' || c.nombre AS label, 
+            o.estado AS cantidad, 
+            EXTRACT(YEAR FROM o.fecha) AS anio,
+            p.descripcion AS descripcion_orden
                 FROM tblorden o 
 				JOIN tblpresupuesto p ON o.id = p.id
                 JOIN tblclientes c ON p.id_cliente = c.id

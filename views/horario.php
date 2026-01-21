@@ -2591,11 +2591,34 @@
                     clearButtonObraH.style.display = "block";
                 },
             }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                // let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                return $("<li>").append(
-                    "<div>" + item.label + "<div class='d-flex justify-content-between align-items-center'><strong class='large-text'>ESTADO: " +
-                    item.cantidad + " </strong><span>AÑO: " + item.anio + "</span></div></div>"
-                ).appendTo(ul);
+                const $li = $("<li>");
+                const $div = $("<div style='flex-direction:column'>");
+                // Línea principal: Número de orden + Cliente
+                const $title = $("<div style='font-weight:600;white-space:normal; word-wrap:break-word;line-height:1.4'>");
+                $title.text(item.label);
+                // Línea de descripción
+                let $descHtml = '';
+                if (item.descripcion_orden && item.descripcion_orden.trim() !== '') {
+                    const $desc = $("<div style='font-size: 0.8rem;color: #7c8b8c; margin-bottom:8px;white-space:normal;word-wrap:break-word;line-height:1.3;'>");
+                    $desc.text(item.descripcion_orden);
+                    $descHtml = $desc;
+                }
+                // Línea secundaria: Estado y Año con mejor espaciado
+                const $details = $("<div style='display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; gap: 15px;'>");
+                const $estado = $("<span style='color:#828282; font-weight: 600;'>").html("ESTADO: <strong style='color: #007bff; font-weight: 700;'>" + item.cantidad + "</strong>");
+                const $anio = $("<span style='color:#999;font-weight:500'>AÑO: <span style='color:#666;'>" + item.anio + "</span></span>");
+                
+                $details.append($estado).append($anio);
+                $div.append($title);
+
+                if ($descHtml) {
+                    $div.append($descHtml);
+                }
+
+                $div.append($details);
+                $li.append($div);
+                
+                return $li.appendTo(ul);
             };
         }, null, 'combo', 13);
 
