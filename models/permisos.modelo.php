@@ -5,7 +5,7 @@ class PermisosModelo
 {
     static public function mdlObtenerPermisos($id)
     {
-        $stmt = Conexion::ConexionDB()->prepare("SELECT m.id,m.modulo,m.icon,m.vista, pm.crear, pm.editar,pm.eliminar
+        $stmt = Conexion::ConexionDB()->prepare("SELECT m.id,m.modulo,m.icon,m.vista, pm.crear, pm.editar,pm.eliminar, pm.aprobar
             FROM tblusuario u JOIN tblperfil p on u.id_perfil = p.id
             JOIN tblperfil_modulo pm on pm.id_perfil = p.id
             JOIN tblmodulo m on m.id = pm.id_modulo
@@ -19,7 +19,7 @@ class PermisosModelo
     static public function mdlObtenerPermisoSubmenu($id_usuario, $modulo)
     {
         $stmt = Conexion::ConexionDB()->prepare("SELECT m.id,m.modulo,m.icon,m.vista, 
-            pm.crear, pm.editar,pm.eliminar
+            pm.crear, pm.editar,pm.eliminar, pm.aprobar
             FROM tblusuario u  
             JOIN tblperfil p on u.id_perfil = p.id
             JOIN tblperfil_modulo pm on pm.id_perfil = p.id

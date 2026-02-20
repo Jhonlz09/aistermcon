@@ -290,6 +290,14 @@
                                     style="margin-bottom:.75rem;background:#3f6791 linear-gradient(180deg, #3f6791, #0b4395) repeat-x; color:#fff"
                                     class="btn w-100"><i class="fas fa-floppy-disk"></i><span class="button-text">
                                     </span>Guardar</button>
+                                <button type="button" id="btnAprobarDespacho"
+                                    style="margin-bottom:.75rem;"
+                                    class="btn bg-gradient-success w-100"><i class="fas fa-clipboard-check"></i><span class="button-text">
+                                    </span>Aprobar</button>
+                                <button type="button" id="btnRevertirDespacho"
+                                    style="margin-bottom:.75rem; display:none;"
+                                    class="btn bg-gradient-danger w-100"><i class="fas fa-times-circle"></i><span class="button-text">
+                                    </span>Revertir Aprobación</button>
                                 <button type="button" id="CerrarDespacho" style="border-color:#d6d8df69"
                                     class="btn bg-gradient-light w-100"><i class="fas fa-right-from-bracket"></i><span
                                         class="button-text"> </span>Cancelar</button>
@@ -334,7 +342,6 @@
             visible: mostrarCol ? true : false,
             render: function (data, type, row, full, meta) {
                 let color = row.estado ? 'success' : 'yellow';
-                let icon = row.estado ? 'eye' : 'pencil';
                 let botones = '<center style="white-space: nowrap;">';
                 
                 // Botón PDF
@@ -344,10 +351,10 @@
 
                 if (editar) {
                     botones += "<button type='button' class='btn bg-gradient-warning btnEditar' title='Editar'>" +
-                         `<i class='fas fa-${icon}'></i>` +
+                         `<i class='fas fa-pencil'></i>` +
                         "</button> ";
                 }
-                if (aprobar && !row.estado){
+                if (aprobar){
                     botones += `<button type='button' class='btn bg-gradient-${color} btnAprobar'  title='Aprobar'>` +
                         " <i class='fa fa-clipboard-check'></i>" +
                         "</button> ";
@@ -631,12 +638,6 @@
 
                 tablaMateriales.clear();
                 tablaHerramientas.clear();
-                
-                // Reset columns visibility
-                tablaMateriales.column(6).visible(false); // CANT APRO hidden
-                tablaMateriales.column(7).visible(true);  // ACCIONES shown
-                tablaHerramientas.column(6).visible(false); // CANT APRO hidden
-                tablaHerramientas.column(7).visible(true);  // ACCIONES shown
 
                 tablaMateriales.draw();
                 tablaHerramientas.draw();
@@ -688,6 +689,17 @@
                     dt.clear().draw(); // Esta línea vacía los datos de la tabla
                 }
             },
+            {
+                text: "<i class='fa-regular fa-check-square fa-xl'style='color: #28a745'></i> Aprobar todo",
+                className: "btn btn-light text-success",
+                action: function (e, dt, node, config) {
+                    dt.rows().every(function() {
+                        let rowNode = this.node();
+                        let cantSol = $(rowNode).find('.cantidad').val();
+                        $(rowNode).find('.aprobada').val(cantSol);
+                    });
+                }
+            }
             ],
             "columns": [
                 { data: null, className: "text-center", render: function (data, type, row, meta) { return meta.row + 1; } },
@@ -733,7 +745,6 @@
                 },
                 {
                     data: "cant_apro",
-                    visible: false,
                     className: "text-center",
                     render: function (data, type, row) {
                         let readonlyAttr = isAprobadoActual ? 'readonly' : '';
@@ -768,14 +779,27 @@
             "ordering": false,
             "autoWidth": false,
             "paging": false,
-             buttons: [{
-                text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
-                className: "btn btn-light text-danger",
-                action: function (e, dt, node, config) {
-                    dt.clear().draw(); // Esta línea vacía los datos de la tabla
+            buttons: [
+                {
+                    text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
+                    className: "btn btn-light text-danger",
+                    action: function (e, dt, node, config) {
+                        dt.clear().draw(); // Esta línea vacía los datos de la tabla
+                    }
+                },
+                {
+                    text: "<i class='fa-regular fa-check-square fa-xl'style='color: #28a745'></i> Aprobar todo",
+                    className: "btn btn-light text-success",
+                    action: function (e, dt, node, config) {
+                        dt.rows().every(function() {
+                            let rowNode = this.node();
+                            let cantSol = $(rowNode).find('.cantidad').val();
+                            $(rowNode).find('.aprobada').val(cantSol);
+                        });
+                    }
                 }
-            },
             ],
+            
             "columns": [
                 { data: null, className: "text-center", render: function (data, type, row, meta) { return meta.row + 1; } },
                 { data: "codigo" },
@@ -820,7 +844,6 @@
                 },
                 {
                     data: "cant_apro",
-                    visible: false,
                     className: "text-center",
                     render: function (data, type, row) {
                         let readonlyAttr = typeof isAprobadoActual !== 'undefined' && isAprobadoActual ? 'readonly' : '';
@@ -1066,11 +1089,122 @@
             });
         }
 
+        // Aprobar desde Formulario (Guarda cant_apro y cambia estado)
+        if (btnAprobarDespacho) {
+            btnAprobarDespacho.addEventListener('click', function (e) {
+                e.preventDefault();
+                // Validar campos requeridos
+                const fecha = document.getElementById('fecha_des').value;
+                const responsable = $(cboResponsableSol).val();
+
+                if (!id_solicitud_edit) {
+                    mostrarToast('warning', 'Advertencia', 'fa-exclamation-triangle', 'No se ha seleccionado una solicitud para aprobar. Por favor, edite una solicitud guardada primero.');
+                    return;
+                }
+
+                if (!fecha || !responsable || !id_orden_sol) {
+                    mostrarToast('warning', 'Advertencia', 'fa-exclamation-triangle', 'Por favor complete todos los campos obligatorios (Fecha, Orden, Responsable).');
+                    return;
+                }
+
+                // Recolectar datos de las filas
+                let filas = [];
+
+                function procesarTablaAprobacion(tablaInstancia) {
+                    tablaInstancia.rows().every(function () {
+                        let rowNode = this.node();
+                        let cant_sol = $(rowNode).find('.cantidad').val() || 0;
+                        let cant_apro = $(rowNode).find('.aprobada').val() || 0;
+
+                        if (cant_sol > 0 || cant_apro > 0) {
+                            filas.push({
+                                id_producto: $(rowNode).attr('data-id'),
+                                cant_sol: cant_sol,
+                                cant_apro: cant_apro
+                            });
+                        }
+                    });
+                }
+
+                procesarTablaAprobacion(tablaMateriales);
+                procesarTablaAprobacion(tablaHerramientas);
+
+                if (filas.length === 0) {
+                    mostrarToast('warning', 'Advertencia', 'fa-exclamation-triangle', 'Debe haber al menos un producto para aprobar.');
+                    return;
+                }
+
+                let datos = new FormData();
+                datos.append('accion', 18); // Acción para Aprobar + Guardar
+                datos.append('id_solicitud', id_solicitud_edit);
+                datos.append('id_orden', id_orden_sol);
+                datos.append('fecha', fecha);
+                datos.append('id_responsable', responsable);
+                datos.append('notas', inpNotas.value);
+                datos.append('filas', JSON.stringify(filas));
+
+                confirmarEliminar('esta', 'solicitud para su aprobación', function (r) {
+                    if (r) {
+                        let originalText = btnAprobarDespacho.innerHTML;
+                        btnAprobarDespacho.disabled = true;
+                        btnAprobarDespacho.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Aprobando...';
+
+                        confirmarAccion(datos, 'solicitud_mh', tabla, '', function (r) {
+                            btnAprobarDespacho.disabled = false;
+                            btnAprobarDespacho.innerHTML = originalText;
+                            if (r && r.status === 'success') {
+                                // Limpiar variables/formulario o recargar el Datatable
+                                id_solicitud_edit = null;
+                                ocultarFormulario();
+                            }
+                        });
+                    }
+                }, 'aprobar de forma definitiva', 'Se guardarán las cantidades ingresadas y completaremos la solicitud.', 'Sí, aprobar');
+            });
+        }
+
+        if (btnRevertirDespacho) {
+            btnRevertirDespacho.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (!id_solicitud_edit) return;
+
+                let src = new FormData();
+                src.append('accion', 10); // Revertir usando AprobarSolicitud
+                src.append('id', id_solicitud_edit);
+                src.append('estado', false);
+
+                confirmarEliminar('de', 'solicitud de despacho', function (r) {
+                    if (r) {
+                        let originalText = btnRevertirDespacho.innerHTML;
+                        btnRevertirDespacho.disabled = true;
+                        btnRevertirDespacho.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Revirtiendo...';
+
+                        confirmarAccion(src, 'solicitud_mh', tabla, '', function (r) {
+                            btnRevertirDespacho.disabled = false;
+                            btnRevertirDespacho.innerHTML = originalText;
+                            if (r && r.status === 'success') {
+                                id_solicitud_edit = null;
+                                ocultarFormulario();
+                            }
+                        });
+                    }
+                }, 'revertir la aprobación de', 'El estado de la solicitud volverá a PENDIENTE.', 'Sí, revertir');
+            });
+        }
 
         // Evento Editar (Delegado)
         $('#tblDespacho tbody').on('click', '.btnEditar', function () {
             let row = obtenerFila(this, tabla);
             let id_solicitud = row["id"];
+            let estadoBool = (row["estado"] == 1 || row["estado"] == true || row["estado"] == '1');
+            
+            if (estadoBool) {
+                $('#btnAprobarDespacho').hide();
+                $('#btnRevertirDespacho').show();
+            } else {
+                $('#btnAprobarDespacho').show();
+                $('#btnRevertirDespacho').hide();
+            }
 
             // 1. Obtener datos de la solicitud (Header)
             let datos = new FormData();
@@ -1097,28 +1231,8 @@
                         // Llenar campos
                         fecha_des.value = respuesta.fecha;
                         $(cboResponsableSol).val(respuesta.id_responsable).trigger('change');
-                          inpNotas.value = respuesta.notas || '';
-
-                        isAprobadoActual = respuesta.estado === true;
-
-                        fecha_des.readOnly = isAprobadoActual;
-                        $(cboResponsableSol).prop('disabled', isAprobadoActual);
-                          inpNotas.readOnly = isAprobadoActual;
-
-                        if (isAprobadoActual) {
-                            btnGuardarDespacho.style.display = 'none';
-                            div_productos.style.display = 'none';
-                        } else {
-                            btnGuardarDespacho.style.display = '';
-                            div_productos.style.display = '';
-                        }
-
+                        inpNotas.value = respuesta.notas || '';
                         // Toggle columns visibility based on status
-                        tablaMateriales.column(6).visible(isAprobadoActual);
-                        tablaMateriales.column(7).visible(!isAprobadoActual);
-                        tablaHerramientas.column(6).visible(isAprobadoActual);
-                        tablaHerramientas.column(7).visible(!isAprobadoActual);
-
                         // *** Autocomplete Trigger Logic ***
                         id_orden_sol = respuesta.id_orden;
                         let ordenLabel = respuesta.orden_label; // Asegurar que el modelo retorne esto

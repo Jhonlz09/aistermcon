@@ -10,28 +10,28 @@ class ModeloRegistro
     public $resultado;
 
     static public function mdlRegistrarCompra($arr, $nro_factura, $proveedor, $fecha, $is_importacion)
-{
-    $conexion = Conexion::ConexionDB();
-    
-    try {
-        $conexion->beginTransaction();
-        $hora = date('H:i:s');
-        $fechaHora = $fecha . ' ' . $hora;
-        
-        $stmtF = $conexion->prepare("INSERT INTO tblfactura(fecha, nombre, id_proveedor, importacion) 
+    {
+        $conexion = Conexion::ConexionDB();
+
+        try {
+            $conexion->beginTransaction();
+            $hora = date('H:i:s');
+            $fechaHora = $fecha . ' ' . $hora;
+
+            $stmtF = $conexion->prepare("INSERT INTO tblfactura(fecha, nombre, id_proveedor, importacion) 
                                      VALUES(:fecha, :nro_factura, :id_proveedor, :importacion)");
-        $stmtF->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
-        $stmtF->bindParam(':nro_factura', $nro_factura, PDO::PARAM_STR);
-        $stmtF->bindParam(':id_proveedor', $proveedor, PDO::PARAM_INT);
-        $val_importacion = $is_importacion ? 'true' : 'false'; 
-        $stmtF->bindParam(':importacion', $val_importacion, PDO::PARAM_STR);
+            $stmtF->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
+            $stmtF->bindParam(':nro_factura', $nro_factura, PDO::PARAM_STR);
+            $stmtF->bindParam(':id_proveedor', $proveedor, PDO::PARAM_INT);
+            $val_importacion = $is_importacion ? 'true' : 'false';
+            $stmtF->bindParam(':importacion', $val_importacion, PDO::PARAM_STR);
 
-        if (!$stmtF->execute()) {
-            throw new Exception("Error al guardar la cabecera de la factura.");
-        }
+            if (!$stmtF->execute()) {
+                throw new Exception("Error al guardar la cabecera de la factura.");
+            }
 
-        $id_factura = $conexion->lastInsertId();
-        $sqlEntrada = "INSERT INTO tblentradas(
+            $id_factura = $conexion->lastInsertId();
+            $sqlEntrada = "INSERT INTO tblentradas(
                             id_factura, id_producto, cantidad_entrada, precio_uni, 
                             precio_envio, precio_carga, precio_descuento, 
                             precio_total, precio_iva
@@ -40,84 +40,86 @@ class ModeloRegistro
                             :envio, :carga, :descuento,
                             :base_imponible, :valor_iva
                        )";
-        
-        $stmtE = $conexion->prepare($sqlEntrada);
-        foreach ($arr as $data) {
-            $envio = 0;
-            $carga = 0;
-            $descuento = 0;
-            $impuesto_val = 0;
-            $base_imponible = 0;
 
-            if ($is_importacion) {
-                $partes = explode(',', $data);
-                if(count($partes) < 7) throw new Exception("Formato de datos incorrecto para importación.");
-                $id = $partes[0];
-                $cantidad = $partes[1];
-                $precio = $partes[2];
-                $envio = $partes[3];
-                $descuento = $partes[4];
-                $carga = $partes[5];     // Cargo importación
-                $impuesto_val = $partes[6]; // Valor monetario manual
-                $bruto = ($cantidad * $precio);
-                $base_imponible = $bruto + $envio + $carga - $descuento;
+            $stmtE = $conexion->prepare($sqlEntrada);
+            foreach ($arr as $data) {
+                $envio = 0;
+                $carga = 0;
+                $descuento = 0;
+                $impuesto_val = 0;
+                $base_imponible = 0;
 
-            } else {
-                $partes = explode(',', $data);
-                $id = $partes[0];
-                $cantidad = $partes[1];
-                $precio = $partes[2];
+                if ($is_importacion) {
+                    $partes = explode(',', $data);
+                    if (count($partes) < 7)
+                        throw new Exception("Formato de datos incorrecto para importación.");
+                    $id = $partes[0];
+                    $cantidad = $partes[1];
+                    $precio = $partes[2];
+                    $envio = $partes[3];
+                    $descuento = $partes[4];
+                    $carga = $partes[5];     // Cargo importación
+                    $impuesto_val = $partes[6]; // Valor monetario manual
+                    $bruto = ($cantidad * $precio);
+                    $base_imponible = $bruto + $envio + $carga - $descuento;
 
-                // Cálculo Base Simple
-                $base_imponible = $cantidad * $precio;
-                
-                // CÁLCULO IVA AUTOMÁTICO (Definir tu tasa por defecto aquí si PHP debe calcularlo)
-                // Ejemplo: 15% si no viene manual.
-                $tasa_iva = 0.15; 
-                $impuesto_val = $base_imponible * $tasa_iva;
+                } else {
+                    $partes = explode(',', $data);
+                    $id = $partes[0];
+                    $cantidad = $partes[1];
+                    $precio = $partes[2];
+
+                    // Cálculo Base Simple
+                    $base_imponible = $cantidad * $precio;
+
+                    // CÁLCULO IVA AUTOMÁTICO (Definir tu tasa por defecto aquí si PHP debe calcularlo)
+                    // Ejemplo: 15% si no viene manual.
+                    $tasa_iva = 0.15;
+                    $impuesto_val = $base_imponible * $tasa_iva;
+                }
+
+                // Validar que la base no sea negativa
+                if ($base_imponible < 0)
+                    $base_imponible = 0;
+
+                // Bind Parameters
+                $stmtE->bindValue(':id_factura', $id_factura, PDO::PARAM_INT);
+                $stmtE->bindValue(':id_producto', $id, PDO::PARAM_INT);
+                $stmtE->bindValue(':cantidad', $cantidad, PDO::PARAM_STR);
+                $stmtE->bindValue(':precio_uni', $precio, PDO::PARAM_STR);
+
+                // Extras
+                $stmtE->bindValue(':envio', $envio, PDO::PARAM_STR);
+                $stmtE->bindValue(':carga', $carga, PDO::PARAM_STR);
+                $stmtE->bindValue(':descuento', $descuento, PDO::PARAM_STR);
+
+                // Totales (Postgres MONEY type suele aceptar strings numéricos bien formados)
+                $stmtE->bindValue(':base_imponible', $base_imponible, PDO::PARAM_STR);
+                $stmtE->bindValue(':valor_iva', $impuesto_val, PDO::PARAM_STR);
+
+                if (!$stmtE->execute()) {
+                    throw new Exception("Error al guardar el detalle del producto ID: " . $id);
+                }
             }
 
-            // Validar que la base no sea negativa
-            if ($base_imponible < 0) $base_imponible = 0;
+            // 5. COMMIT (Confirmar cambios si todo salió bien)
+            $conexion->commit();
 
-            // Bind Parameters
-            $stmtE->bindValue(':id_factura', $id_factura, PDO::PARAM_INT);
-            $stmtE->bindValue(':id_producto', $id, PDO::PARAM_INT);
-            $stmtE->bindValue(':cantidad', $cantidad, PDO::PARAM_STR);
-            $stmtE->bindValue(':precio_uni', $precio, PDO::PARAM_STR);
-            
-            // Extras
-            $stmtE->bindValue(':envio', $envio, PDO::PARAM_STR);
-            $stmtE->bindValue(':carga', $carga, PDO::PARAM_STR);
-            $stmtE->bindValue(':descuento', $descuento, PDO::PARAM_STR);
-            
-            // Totales (Postgres MONEY type suele aceptar strings numéricos bien formados)
-            $stmtE->bindValue(':base_imponible', $base_imponible, PDO::PARAM_STR);
-            $stmtE->bindValue(':valor_iva', $impuesto_val, PDO::PARAM_STR);
+            return array(
+                'status' => 'success',
+                'm' => 'La entrada fue registrada correctamente'
+            );
 
-            if (!$stmtE->execute()) {
-                throw new Exception("Error al guardar el detalle del producto ID: " . $id);
-            }
+        } catch (Exception $e) {
+            // 6. ROLLBACK (Deshacer todo si hubo error)
+            $conexion->rollBack();
+
+            return array(
+                'status' => 'danger',
+                'm' => 'No se pudo registrar la entrada: ' . $e->getMessage()
+            );
         }
-
-        // 5. COMMIT (Confirmar cambios si todo salió bien)
-        $conexion->commit();
-
-        return array(
-            'status' => 'success',
-            'm' => 'La entrada fue registrada correctamente'
-        );
-
-    } catch (Exception $e) {
-        // 6. ROLLBACK (Deshacer todo si hubo error)
-        $conexion->rollBack();
-        
-        return array(
-            'status' => 'danger',
-            'm' => 'No se pudo registrar la entrada: ' . $e->getMessage()
-        );
     }
-}
 
     static public function mdlRegistrarSalida($arr, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado)
     {
@@ -226,7 +228,7 @@ class ModeloRegistro
                         throw new Exception("Stock insuficiente para el producto $descripPro.");
                     }
                 }
-                $sqlInsertFab =  $tras ?  "INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,:salida,:uni, true)" : "INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,0,:uni, true)";
+                $sqlInsertFab = $tras ? "INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,:salida,:uni, true)" : "INSERT INTO tblinventario(codigo,descripcion,stock,id_unidad,fabricado) VALUES (generar_codigo_pf(),:des,0,:uni, true)";
                 $stmtInsertFabricado = $conexion->prepare($sqlInsertFab);
                 $stmtInsertFabricado->bindParam(":des", $des, PDO::PARAM_STR);
                 if ($tras) {
@@ -236,7 +238,7 @@ class ModeloRegistro
                 $stmtInsertFabricado->execute();
                 $id_producto_fab = $conexion->lastInsertId('tblinventario_id_seq');
 
-                $sqlSalida = $tras  ? "INSERT INTO tblsalidas(id_boleta, cantidad_salida, id_producto, fabricado) VALUES(:id_boleta, :cantidad, :id, true)" : "INSERT INTO tblsalidas(id_boleta, retorno, id_producto, fabricado) VALUES(:id_boleta, :cantidad, :id, true)";
+                $sqlSalida = $tras ? "INSERT INTO tblsalidas(id_boleta, cantidad_salida, id_producto, fabricado) VALUES(:id_boleta, :cantidad, :id, true)" : "INSERT INTO tblsalidas(id_boleta, retorno, id_producto, fabricado) VALUES(:id_boleta, :cantidad, :id, true)";
                 $stmtSalida = $conexion->prepare($sqlSalida);
                 $stmtSalida->bindParam(':id', $id_producto_fab, PDO::PARAM_INT);
                 $stmtSalida->bindParam(':cantidad', $cantidadFabricada, PDO::PARAM_INT);
@@ -317,7 +319,7 @@ class ModeloRegistro
                     if ($diferencia > 0 && $stockActual < $diferencia) {
                         throw new Exception(
                             "Stock insuficiente para el producto '$descripPro'. " .
-                                "Aumento requerido: $diferencia, Disponible: $stockActual"
+                            "Aumento requerido: $diferencia, Disponible: $stockActual"
                         );
                     }
                 }
@@ -438,20 +440,20 @@ class ModeloRegistro
         try {
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
-            $motivo = ''; 
+            $motivo = '';
             $contador = 0;
             $arr = json_decode($arrJSON, true);
             foreach ($arr as $data) {
-                $cantidad = isset($data['cantidad']) ? (int)$data['cantidad'] : 0;
+                $cantidad = isset($data['cantidad']) ? (int) $data['cantidad'] : 0;
                 $descripcion = isset($data['descripcion']) ? trim($data['descripcion']) : '';
                 if ($cantidad == 0) {
                     throw new Exception("La cantidad de los productos no puede ser 0");
                 }
                 if ($contador < 5) {
-                    $primeraPalabra = explode(' ', trim($descripcion))[0]; 
+                    $primeraPalabra = explode(' ', trim($descripcion))[0];
                     $motivo .= ($contador > 0 ? ', ' : '') . $primeraPalabra;
                 }
-                $contador++; 
+                $contador++;
             }
             if ($contador > 5) {
                 $motivo .= '...';
@@ -492,9 +494,9 @@ class ModeloRegistro
             // Validar el stock disponible para cada producto
             foreach ($arr as $data) {
                 // list($cantidad, $unidad, $descripcion, $precio) = explode(',', $data);
-                $cantidad = isset($data['cantidad']) ? (float)$data['cantidad'] : 0;
+                $cantidad = isset($data['cantidad']) ? (float) $data['cantidad'] : 0;
                 $descripcion = isset($data['descripcion']) ? trim($data['descripcion']) : '';
-                $precio = isset($data['precio_uni']) ? (float)$data['precio_uni'] : 0;
+                $precio = isset($data['precio_uni']) ? (float) $data['precio_uni'] : 0;
 
                 if ($cantidad == 0) {
                     throw new Exception("La cantidad de los productos no puede ser 0");
@@ -629,7 +631,7 @@ class ModeloRegistro
         $stmtB->bindParam(':orden', $id_orden, PDO::PARAM_INT);
         $stmtB->bindParam(':nro_guia', $nro_guia, PDO::PARAM_STR);
         $stmtB->bindParam(':motivo', $motivo, PDO::PARAM_STR);
-        $stmtB->bindParam(':autorizado', $autorizado, PDO::PARAM_STR);
+        $stmtB->bindParam(':autorizado', $autorizado, PDO::PARAM_INT);
         $stmtB->bindParam(':fabricacion', $fab, PDO::PARAM_BOOL);
 
         if ($tras) {
@@ -657,7 +659,7 @@ class ModeloRegistro
         $stm->bindParam(':fecha', $fechaHora, PDO::PARAM_STR);
         $stm->execute();
 
-        $_SESSION["sc_cot"] = $conexion->lastInsertId('secuencia_cotizacion') + 1;
+        $_SESSION["sc_cot"] = $conexion->lastInsertId('secuencia_cotizacion');
 
         return $conexion->lastInsertId('tblcotizacion_id_seq');
     }
@@ -682,7 +684,7 @@ class ModeloRegistro
         return $conexion->lastInsertId('tblcotizacion_id_seq');
     }
 
-    static private function insertarBoletaEntrada($conexion, $id_orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado, $autorizado='')
+    static private function insertarBoletaEntrada($conexion, $id_orden, $fecha, $fecha_entrada, $motivo, $conductor, $responsable, $despachado, $autorizado = '')
     {
         $hora = date('H:i:s');
         $fechaHora = $fecha . ' ' . $hora;
@@ -707,7 +709,7 @@ class ModeloRegistro
         } else {
             $stmtB->bindParam(':responsable', $responsable, PDO::PARAM_INT);
         }
-        $stmtB->bindParam(':autorizado', $autorizado, PDO::PARAM_STR);
+        $stmtB->bindParam(':autorizado', $autorizado, PDO::PARAM_INT);
         $stmtB->bindParam(':motivo', $motivo, PDO::PARAM_STR);
         $stmtB->execute();
         return $conexion->lastInsertId('tblboleta_id_seq'); // Nota: 'tblboleta_id_seq' es el nombre de la secuencia
@@ -741,7 +743,7 @@ class ModeloRegistro
     static private function insertarCotizacion($conexion, $id_cotizacion, $arr)
     {
         foreach ($arr as $data) {
-            $cantidad = (float)$data['cantidad'];
+            $cantidad = (float) $data['cantidad'];
             $unidad = $data['id_unidad'];
             $descripcion = mb_strtoupper(trim($data['descripcion']), 'UTF-8');
 
@@ -760,10 +762,10 @@ class ModeloRegistro
     {
         foreach ($arr as $data) {
             // list($cantidad, $unidad, $descripcion, $precio) = explode(',', $data);
-            $cantidad = (float)$data['cantidad'];
+            $cantidad = (float) $data['cantidad'];
             $unidad = $data['id_unidad'];
             $descripcion = mb_strtoupper(trim($data['descripcion']), 'UTF-8');
-            $precio = (float)$data['precio_uni'];
+            $precio = (float) $data['precio_uni'];
 
             $stm = $conexion->prepare("INSERT INTO tbldetalle_cotizacion(id_cotizacion, cantidad, id_unidad, descripcion, precio_uni) VALUES(:id_cotizacion, :cantidad, :unidad, :descripcion, :precio)");
             $stm->bindParam(':id_cotizacion', $id_cotizacion, PDO::PARAM_INT);
@@ -788,7 +790,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlEditarRegistroSalida($id_boleta, $orden,  $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado)
+    static public function mdlEditarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -805,7 +807,7 @@ class ModeloRegistro
             $stmtB->bindParam(':motivo', $motivo, PDO::PARAM_STR);
             $stmtB->bindParam(':conductor', $conductor, PDO::PARAM_INT);
             $stmtB->bindParam(':despachado', $despachado, PDO::PARAM_INT);
-            $stmtB->bindParam(':autorizado', $autorizado, PDO::PARAM_STR);
+            $stmtB->bindParam(':autorizado', $autorizado, PDO::PARAM_INT);
             if ($responsable === '') {
                 $stmtB->bindValue(':responsable', null, PDO::PARAM_NULL);
             } else {
@@ -815,7 +817,8 @@ class ModeloRegistro
                 if (!empty($img)) {
                     self::guardarImagenesSalida($conexion, $id_boleta, $img);
                 }
-            };
+            }
+            ;
 
             return array(
                 'status' => 'success',

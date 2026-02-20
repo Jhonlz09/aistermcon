@@ -23,13 +23,13 @@ class ControladorConfiguracion
 
     public function editarConfigGuia()
     {
-        $data = ModeloConfiguracion::mdlEditarConfigGuia($this->ruc,$this->emisor,$this->dir, $this->tel, $this->correo1);
+        $data = ModeloConfiguracion::mdlEditarConfigGuia($this->ruc, $this->emisor, $this->dir, $this->tel, $this->correo1);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     public function editarConfigPref()
     {
-        $data = ModeloConfiguracion::mdlEditarConfigPref($this->nombre,$this->emisor);
+        $data = ModeloConfiguracion::mdlEditarConfigPref($this->nombre, $this->emisor, $this->dir);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -64,25 +64,26 @@ if (isset($_POST["accion"])) {
         $data->iva = $_POST["iva"];
         $data->sc = $_POST["nro_cot"];
         $data->editarConfigCompra();
-    }else if ($_POST["accion"] == 4) {
+    } else if ($_POST["accion"] == 4) {
         $data->ruc = $_POST["ruc"];
         $data->emisor = $_POST["emisor"];
         $data->dir = $_POST["dir"];
         $data->tel = $_POST["tel"];
         $data->correo1 = $_POST["correo1"];
         $data->editarConfigGuia();
-    }else if ($_POST["accion"] == 5) {
+    } else if ($_POST["accion"] == 5) {
         $data->nombre = $_POST["bodeguero"];
         $data->emisor = $_POST["conductor"];
+        $data->dir = $_POST["autorizado"];
         $data->editarConfigPref();
-    }else if ($_POST["accion"] == 6) {
+    } else if ($_POST["accion"] == 6) {
         $data->correo1 = $_POST["correos"];
         $data->editarConfigOpe();
-    }else if ($_POST["accion"] == 7) {
+    } else if ($_POST["accion"] == 7) {
         $data->sbu = $_POST["sbu"];
         $data->editarConfigRRHH();
     }
-}else{
+} else {
     $data = new ControladorConfiguracion();
     $data->obtenerCorreos();
 }

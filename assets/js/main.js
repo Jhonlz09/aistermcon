@@ -20,15 +20,17 @@ function confirmarEliminar(
   name,
   callback,
   opcion = "eliminar",
-  subtitle = "Una vez eliminado no podrá recuperarlo"
+  subtitle = "Una vez eliminado no podrá recuperarlo",
+  confirmText = "Sí, Eliminar",
+  cancelText = "Cancelar"
 ) {
   Swal.fire({
     title: "¿Está seguro de " + opcion + " " + art + " " + name + "?",
     text: subtitle,
     icon: "warning",
     showCancelButton: true,
-    confirmButtonText: "Sí, Eliminar",
-    cancelButtonText: "Cancelar",
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
   }).then((result) => {
     if (result.value) {
       callback(true);
@@ -360,6 +362,12 @@ function confirmarAccion(
       } else if (isSuccess) {
         $(modal).modal("hide");
       }
+      
+      // Hook para refrescar autocomplete de la vista de almacén
+      if (isSuccess && ruta === 'solicitud_mh' && typeof window.actualizarAutocompleteOut === 'function') {
+          window.actualizarAutocompleteOut();
+      }
+
       if (showToast) {
         mostrarToast(
           r.status,
@@ -890,4 +898,76 @@ function evitarEnvio(event) {
     return false;
   }
   return true;
+}
+
+function setupOrdenAutocomplete(inputSelector, items, onSelectCallback) {
+  const sourceFunction = function (request, response) {
+    const input = request.term.toLowerCase().trim();
+    const resultados = items.filter(item => {
+      const label = item.label.toLowerCase();
+      const codigo = (item.cod || '').toString().toLowerCase();
+      return label.includes(input) || codigo.includes(input);
+    }).sort((a, b) => {
+      const labelA = a.label.toLowerCase();
+      const labelB = b.label.toLowerCase();
+      const inputLower = input.toLowerCase();
+      const posA = labelA.indexOf(inputLower);
+      const posB = labelB.indexOf(inputLower);
+      if (posA === 0 && posB !== 0) return -1;
+      if (posA !== 0 && posB === 0) return 1;
+      return posA - posB;
+    });
+    response(resultados);
+  };
+
+  $(inputSelector).autocomplete({
+    source: sourceFunction,
+    minLength: 1,
+    autoFocus: true,
+    focus: function () {
+      return false;
+    },
+    select: function (event, ui) {
+      if (typeof onSelectCallback === 'function') {
+        const result = onSelectCallback(event, ui, this);
+        if (result === false) return false;
+      }
+      // Default behavior if callback doesn't return false (though in this case we likely always want false)
+      $(this).val(ui.item.label);
+      return false;
+    },
+  }).on('focus', function () {
+    if ($(this).val().length >= 1 && !$(this).prop('readonly')) {
+      $(this).autocomplete('search', $(this).val());
+    }
+  }).data("ui-autocomplete")._renderItem = function (ul, item) {
+    const $li = $("<li class='autocomplete-item-orden'>");
+    const $div = $("<div style='flex-direction:column'>");
+    // Línea principal: Número de orden + Cliente
+    const $title = $("<div style='font-weight:600;white-space:normal; word-wrap:break-word;line-height:1.4'>");
+    $title.text(item.label);
+    // Línea de descripción
+    let $descHtml = '';
+    if (item.descripcion_orden && item.descripcion_orden.trim() !== '') {
+      const $desc = $("<div style='font-size: 0.8rem;color: #7c8b8c; margin-bottom:8px;white-space:normal;word-wrap:break-word;line-height:1.3;'>");
+      $desc.text(item.descripcion_orden);
+      $descHtml = $desc;
+    }
+    // Línea secundaria: Estado y Año con mejor espaciado
+    const $details = $("<div style='display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; gap: 15px;'>");
+    const $estado = $("<span style='color:#828282; font-weight: 600;'>").html("ESTADO: <strong style='color: #007bff; font-weight: 700;'>" + item.cantidad + "</strong>");
+    const $anio = $("<span style='color:#999;font-weight:500'>AÑO: <span style='color:#666;'>" + item.anio + "</span></span>");
+
+    $details.append($estado).append($anio);
+    $div.append($title);
+
+    if ($descHtml) {
+      $div.append($descHtml);
+    }
+
+    $div.append($details);
+    $li.append($div);
+
+    return $li.appendTo(ul);
+  };
 }

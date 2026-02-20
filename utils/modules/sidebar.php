@@ -38,7 +38,6 @@
                             echo '<li class="nav-item ' . ($hasChildren ? 'has-treeview' : '') . '">';
 
                             // Enlace (A)
-                            $href = '#';
                             $id = $item->modulo;
                             $vista = $item->vista ?? '';
 

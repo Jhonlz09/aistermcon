@@ -3,7 +3,8 @@
 <head>
     <title>Movimientos</title>
     <!-- <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css"> -->
-    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet"
+        type="text/css" />
     <!-- <link href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" rel="stylesheet" type="text/css" /> -->
 </head>
 
@@ -14,7 +15,7 @@
             <div class="col-auto">
                 <h1 class="col-p">Movimientos</h1>
             </div>
-            <?php if (isset($_SESSION["crear4"]) && $_SESSION["crear4"] === true) : ?>
+            <?php if (isset($_SESSION["crear4"]) && $_SESSION["crear4"] === true): ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modal">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -37,18 +38,23 @@
                                     <h3 class="card-title ">Listado de movimientos</h3>
                                 </div>
                                 <div class=" col col-sm-auto">
-                                    <select id="cboAnio" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                                    <select id="cboAnio" class="form-control select2 select2-dark"
+                                        data-dropdown-css-class="select2-dark">
                                     </select>
                                 </div>
                                 <div class="col-sm-auto">
-                                    <select name="cboMeses" id="cboMeses" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                                    <select name="cboMeses" id="cboMeses" class="form-control select2 select2-dark"
+                                        data-dropdown-css-class="select2-dark">
                                         <option value="null">TODO</option>
                                     </select>
                                 </div>
                                 <div class="col-sm">
                                     <div style="margin-block:.4rem;height:33px;" class="input-group">
-                                        <span class="input-group-text" style="height:30px;"><i class="fas fa-search icon"></i></span>
-                                        <input autocomplete="off" style="border:none;" style="height:30px" type="search" id="_search" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                        <span class="input-group-text" style="height:30px;"><i
+                                                class="fas fa-search icon"></i></span>
+                                        <input autocomplete="off" style="border:none;" style="height:30px" type="search"
+                                            id="_search" oninput="Buscar(tabla,this)" class="form-control float-right"
+                                            placeholder="Buscar">
                                     </div>
                                 </div>
                             </div>
@@ -87,7 +93,8 @@
 </section>
 <!-- /.Contenido -->
 <!-- Modal -->
-<div class="modal fade" id="modalMateriales" tabindex="-1" role="dialog" aria-labelledby="modalMaterialesLabel" aria-hidden="true">
+<div class="modal fade" id="modalMateriales" tabindex="-1" role="dialog" aria-labelledby="modalMaterialesLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header bg-gradient-yellow d-flex justify-content-between align-items-center">
@@ -98,7 +105,8 @@
                 </h5>
                 <!-- Ícono y botón a la derecha -->
                 <div class="d-flex align-items-center">
-                    <i id="btn_pdf_fab" class="fas fa-file-lines mr-3 fa-xl" style="transition: color 0.3s ease;cursor:pointer" title="Informe de productos fabricados"></i>
+                    <i id="btn_pdf_fab" class="fas fa-file-lines mr-3 fa-xl"
+                        style="transition: color 0.3s ease;cursor:pointer" title="Informe de productos fabricados"></i>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -138,14 +146,14 @@
                 }
             },
         },
-        initComplete: function() {
+        initComplete: function () {
             $('.dtsp-titleRow').remove();
         },
         rowGroup: {
             dataSrc: [4],
-            startRender: function(rows, group) {
+            startRender: function (rows, group) {
                 var collapsed = !!collapsedGroups[group];
-                rows.nodes().each(function(r) {
+                rows.nodes().each(function (r) {
                     $(r).toggleClass('collapsedrow', !collapsed);
                 });
                 const fabricacion = rows.data().pluck('fab')[0];
@@ -170,71 +178,71 @@
             }
         },
         columnDefs: [{
-                targets: 0,
-                data: 'fila',
-                className: "text-center",
-            },
-            {
-                targets: 2,
-                responsivePriority: 1,
-                render: function(data, type, row, meta) {
-                    return '<a href="javascript:void(0)" class="text-dark">' + data + '</a>';
+            targets: 0,
+            data: 'fila',
+            className: "text-center",
+        },
+        {
+            targets: 2,
+            responsivePriority: 1,
+            render: function (data, type, row, meta) {
+                return '<a href="javascript:void(0)" class="text-dark">' + data + '</a>';
+            }
+        },
+        {
+            targets: 3,
+            className: "text-center",
+            responsivePriority: 2,
+        },
+        {
+            targets: 4,
+            visible: false,
+        },
+        {
+            targets: 5,
+            className: "text-center",
+            render: function (data, type, row, meta) {
+                if (data === null) {
+                    return '-';
+                } else {
+                    return data;
                 }
-            },
-            {
-                targets: 3,
-                className: "text-center",
-                responsivePriority: 2,
-            },
-            {
-                targets: 4,
-                visible: false,
-            },
-            {
-                targets: 5,
-                className: "text-center",
-                render: function(data, type, row, meta) {
-                    if (data === null) {
-                        return '-';
-                    } else {
-                        return data;
-                    }
+            }
+        },
+        {
+            targets: 6,
+            className: "text-center",
+            render: function (data, type, row, meta) {
+                if (data === null) {
+                    return '-';
+                } else {
+                    return data;
                 }
-            },
-            {
-                targets: 6,
-                className: "text-center",
-                render: function(data, type, row, meta) {
-                    if (data === null) {
-                        return '-';
-                    } else {
-                        return data;
-                    }
-                }
-            },
-            {
-                targets: 7,
-                visible: false,
-            }, {
-                targets: 8,
-                visible: false,
-            }, {
-                targets: 9,
-                visible: false,
-            },
+            }
+        },
+        {
+            targets: 7,
+            visible: false,
+        }, {
+            targets: 8,
+            visible: false,
+        }, {
+            targets: 9,
+            visible: false,
+        },
         ],
     }
 
 
-    $('#tblSalidas tbody').on('click', 'tr.dtrg-start', function() {
+    $('#tblSalidas tbody').on('click', 'tr.dtrg-start', function () {
         if ($(event.target).closest('.txt-wrap-sm').length === 0) {
             let scrollPosition = $(window).scrollTop();
             var name = $(this).data('name');
             collapsedGroups[name] = !collapsedGroups[name];
-            tabla.rows().every(function() {
+            tabla.rows().every(function () {
                 if (this.child.isShown()) {
                     this.child.hide();
-                    $(this.node()).removeClass('parent'); 
+                    $(this.node()).removeClass('parent');
                 }
             });
             tabla.draw(false)
@@ -242,7 +250,7 @@
         }
     });
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         let anio = year;
         let mes = month;
         let id_boleta_pdf;
@@ -252,7 +260,7 @@
                     "url": "controllers/salidas.controlador.php",
                     "type": "POST",
                     "dataSrc": '',
-                    data: function(data) {
+                    data: function (data) {
                         data.anio = anio;
                         data.mes = mes;
                     }
@@ -260,8 +268,8 @@
                 ...configuracionTable
             });
 
-            tabla.on('draw.dt', function() {
-                if ($(window).width() >= 768) { 
+            tabla.on('draw.dt', function () {
+                if ($(window).width() >= 768) {
                     const b = document.body;
                     const s = b.scrollHeight + 58;
                     const w = window.innerHeight;
@@ -300,7 +308,7 @@
         setChange(cboMeses, mes);
 
 
-        $(cboAnio).on("change", function() {
+        $(cboAnio).on("change", function () {
             let a = this.options[this.selectedIndex].text
             if (a == anio) {
                 return;
@@ -311,12 +319,12 @@
             } else {
                 mes = cboMeses.value;
             }
-            tabla.ajax.reload(function() {
+            tabla.ajax.reload(function () {
                 tabla.searchPanes.resizePanes();
             }, false);
         });
 
-        $(cboMeses).on("change", function() {
+        $(cboMeses).on("change", function () {
             let m = this.value;
             if (m == mes) {
                 return;
@@ -328,27 +336,27 @@
             }
 
             anio = cboAnio.options[cboAnio.selectedIndex].text;
-            tabla.ajax.reload(function() {
+            tabla.ajax.reload(function () {
                 tabla.searchPanes.resizePanes();
             }, false);
         });
 
-        $('#tblSalidas').on('click', '.btn_pdf', function(event) {
+        $('#tblSalidas').on('click', '.btn_pdf', function (event) {
             event.preventDefault();
             let rowData = tabla.row($(this).closest('tr').next()).data();
-            let boleta = rowData[10]; 
+            let boleta = rowData[10];
             enviarFormularioPDF('PDF/pdf_guia.php', boleta);
         });
 
-        $('#tblSalidas').on('click', '.btn_pdf_img', function(event) {
-            event.preventDefault(); 
+        $('#tblSalidas').on('click', '.btn_pdf_img', function (event) {
+            event.preventDefault();
             let rowData = tabla.row($(this).closest('tr').next()).data();
-            let boleta = rowData[10]; 
+            let boleta = rowData[10];
             console.log(boleta);
             enviarFormularioPDF('PDF/pdf_guia_img.php', boleta);
         });
 
-        $('#tblSalidas tbody').on('click', '.btn_show', function() {
+        $('#tblSalidas tbody').on('click', '.btn_show', function () {
             const row = tabla.row($(this).closest('tr').next()).data();
             id_boleta_pdf = row[10];
             // console.log(id_boleta_row);
@@ -356,7 +364,7 @@
             cargarProductosFabricados(id_boleta_pdf);
         });
 
-        btn_pdf_fab.addEventListener('click', function() {
+        btn_pdf_fab.addEventListener('click', function () {
             console.log(id_boleta_pdf);
             enviarFormularioPDF('PDF/pdf_guia_fab.php', id_boleta_pdf);
         });
@@ -364,15 +372,15 @@
 
         function cargarProductosFabricados(id_boleta) {
             fetch('controllers/fabricacion.controlador.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        accion: 5,
-                        id_boleta: id_boleta,
-                    }),
-                })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    accion: 5,
+                    id_boleta: id_boleta,
+                }),
+            })
                 .then(response => response.json())
                 .then(data => {
                     console.log(data)
@@ -383,12 +391,12 @@
                 });
         }
 
-        $('#modalMateriales').on('hidden.bs.modal', function() {
+        $('#modalMateriales').on('hidden.bs.modal', function () {
             document.getElementById("accordionMateriales").innerHTML = '';
         });
 
         function formatNumber(value) {
-            return parseFloat(value).toString(); 
+            return parseFloat(value).toString();
         }
 
         function construirAcordeon(data) {
@@ -396,7 +404,7 @@
             // contenedor.innerHTML = "";
 
             contenedor.classList.remove('accordion-animate');
-            void contenedor.offsetWidth; 
+            void contenedor.offsetWidth;
             contenedor.classList.add('accordion-animate');
 
             let grupos = [];
@@ -477,7 +485,7 @@
 
             const modalBody = document.querySelector('#modalMateriales .modal-body');
             modalBody.classList.remove('animate-resize');
-            void modalBody.offsetWidth; 
+            void modalBody.offsetWidth;
             modalBody.classList.add('animate-resize');
         }
 
@@ -518,15 +526,15 @@
                     accion: 10
                 },
                 dataType: 'json',
-                success: function(response) {
+                success: function (response) {
                     if (response) {
                         tblDetalleFab.clear().draw();
                         response.forEach(item => {
                             let cantidad = tras ? item.salidas : item.retorno;
                             let nuevaFila = [
-                                item.id_fab, 
-                                cantidad, 
-                                item.id_unidad, 
+                                item.id_fab,
+                                cantidad,
+                                item.id_unidad,
                                 item.descripcion,
                                 item.retorno,
                                 ''
@@ -540,13 +548,13 @@
                         console.error('No se encontraron datos para el id_boleta:', id_boleta);
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error('Error al obtener los datos:', error);
                 }
             });
         }
 
-        $('#tblSalidas').on('click', '#editS', function() {
+        $('#tblSalidas').on('click', '#editS', function () {
             let row = tabla.row($(this).closest('tr').next()).data()
             id_boleta = row[10];
             id_boleta_fab = row[10];
@@ -569,8 +577,8 @@
             const isfabValue = fab ? '8' : '4';
             const radio = document.getElementById('radio-' + isfab);
             const cancelar = document.getElementById('Cancelar');
-            const inpAutorizado = document.getElementById('inpAutorizado');
-            inpAutorizado.value = autorizado;
+            const cboAutorizado = document.getElementById('cboAutorizado');
+            cboAutorizado.value = autorizado;
             let selectedItem = items_orden.find(item => item.cod === id_orden);
             if (fab) {
                 if (selectedItem) {
@@ -584,7 +592,7 @@
                     let nuevoItem = {
                         cod: id_orden,
                         label: `${orden}  ${cliente}`,
-                        value: id_orden 
+                        value: id_orden
                     };
                     $(nro_ordenFab).val(nuevoItem.label);
                     $(nro_ordenFab)
@@ -611,7 +619,7 @@
                     let nuevoItem = {
                         cod: id_orden,
                         label: `${orden}  ${cliente}`,
-                        value: id_orden 
+                        value: id_orden
                     };
                     $(nro_orden).val(nuevoItem.label);
                     $(nro_orden)
@@ -645,7 +653,7 @@
 
 
 
-        $('#tblSalidas').on('click', '#editR', function() {
+        $('#tblSalidas').on('click', '#editR', function () {
             row = tabla.row($(this).closest('tr').next()).data()
             id_boleta = row[10];
             id_boleta_fab = id_boleta;
@@ -678,7 +686,7 @@
                     let nuevoItem = {
                         cod: id_orden,
                         label: `${orden}  ${cliente}`,
-                        value: id_orden 
+                        value: id_orden
                     };
                     $(nro_ordenFab).val(nuevoItem.label);
                     $(nro_ordenFab)
@@ -704,7 +712,7 @@
                     let nuevoItem = {
                         cod: id_orden,
                         label: `${orden}  ${cliente}`,
-                        value: id_orden 
+                        value: id_orden
                     };
                     $(nro_ordenEntrada).val(nuevoItem.label);
                     $(nro_ordenEntrada)
@@ -732,12 +740,12 @@
             first_control.click();
         });
 
-        $('#tblSalidas').on('click', '#eliS', function() {
+        $('#tblSalidas').on('click', '#eliS', function () {
             const boleta = tabla.row($(this).closest('tr').next()).data()[10];
             let src = new FormData();
             src.append('accion', 3);
             src.append('id', boleta);
-            confirmarEliminar('la', 'salida', function(r) {
+            confirmarEliminar('la', 'salida', function (r) {
                 if (r) {
                     confirmarAccion(src, 'salidas', tabla);
                     cargarAutocompletado();
@@ -748,27 +756,27 @@
         function cargarImagenesDropzone(id_boleta) {
             dropzone.removeAllFilesWithoutServer();
             $.ajax({
-                url: 'controllers/salidas.controlador.php', 
+                url: 'controllers/salidas.controlador.php',
                 type: 'POST',
                 "dataSrc": '',
                 data: {
                     'boleta': id_boleta,
                     'accion': 8
                 },
-                success: function(response) {
-                    console.log(response) 
+                success: function (response) {
+                    console.log(response)
                     response = JSON.parse(response);
                     response.files.forEach(imagen => {
                         const mockFile = {
                             name: imagen.nombre_file || "Imagen",
-                            size: 123456, 
-                            ruta: imagen.nombre_file, 
+                            size: 123456,
+                            ruta: imagen.nombre_file,
                             isExisting: true
                         };
 
                         dropzone.emit('addedfile', mockFile);
                         dropzone.emit('complete', mockFile);
-                        dropzone.files.push(mockFile); 
+                        dropzone.files.push(mockFile);
                     });
                 },
             });

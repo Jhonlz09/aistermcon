@@ -59,6 +59,14 @@ class ControladorCombos
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
+    public function listarAutorizado()
+    {
+
+        $data = ModeloCombos::mdlListarAutorizado();
+
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
     public function listarProductoFab()
     {
 
@@ -116,12 +124,15 @@ if (isset($_POST['accion']) && $_POST['accion'] == 1) {
     $data = new ControladorCombos();
     $data->anio = $_POST["anio"];
     $data->listarNumOrden();
-// } else if (isset($_POST['accion']) && $_POST['accion'] == 4) {
+    // } else if (isset($_POST['accion']) && $_POST['accion'] == 4) {
 //     $data = new ControladorCombos();
 //     $data->listarClientesActivos();
 } else if (isset($_POST['accion']) && $_POST['accion'] == 6) {
     $data = new ControladorCombos();
     $data->listarDespachado();
+} else if (isset($_POST['accion']) && $_POST['accion'] == 14) {
+    $data = new ControladorCombos();
+    $data->listarAutorizado();
 } else if (isset($_POST['accion']) && $_POST['accion'] == 7) {
     $formatoInvertido = isset($_POST['invertido']) ? filter_var($_POST['invertido'], FILTER_VALIDATE_BOOLEAN) : false;
     $data = new ControladorCombos();
@@ -138,11 +149,11 @@ if (isset($_POST['accion']) && $_POST['accion'] == 1) {
 } else if (isset($_POST['accion']) && $_POST['accion'] == 11) {
     $data = new ControladorCombos();
     $data->listarOrdenEstadoFilter();
-}else if (isset($_POST['accion']) && $_POST['accion'] == 12) {
+} else if (isset($_POST['accion']) && $_POST['accion'] == 12) {
     $data = new ControladorCombos();
     $data->anio = $_POST["anio"];
     $data->listarOrdenHorario();
-}else if (isset($_POST['accion']) && $_POST['accion'] == 13) {
+} else if (isset($_POST['accion']) && $_POST['accion'] == 13) {
     $data = new ControladorCombos();
     $data->listarOrdenActivaHorario();
 }

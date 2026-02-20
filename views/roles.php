@@ -233,6 +233,7 @@
                             <div class="text-center" style="width: 25%"><i class="fas fa-plus"></i> Crear</div>
                             <div class="text-center" style="width: 25%"><i class="fas fa-pen"></i> Editar</div>
                             <div class="text-center" style="width: 25%"><i class="fas fa-trash"></i> Borrar</div>
+                            <div class="text-center" style="width: 25%"><i class="fas fa-clipboard-check"></i> Aprobar Solic M/H</div>
                         </div>
                     </div>
 
@@ -384,6 +385,7 @@
                 let crear = item.find('.check-crear').is(':checked');
                 let editar = item.find('.check-editar').is(':checked');
                 let eliminar = item.find('.check-eliminar').is(':checked');
+                let aprobar = item.find('.check-aprobar').is(':checked');
 
                 if (ver) {
                     datosPermisos.push({
@@ -391,7 +393,8 @@
                         ver: ver,
                         crear: crear,
                         editar: editar,
-                        eliminar: eliminar
+                        eliminar: eliminar,
+                        aprobar: aprobar
                     });
                 }
             });
@@ -503,6 +506,12 @@
                             <svg class="switch__check" viewBox="0 0 16 16" width="22px" height="22px"><polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>
                         </label>
                     </div>
+                    <div class="control-box">
+                        <label class="switch-2">
+                            <input class="switch__input check-aprobar" type="checkbox" disabled>
+                            <svg class="switch__check" viewBox="0 0 16 16" width="22px" height="22px"><polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>
+                        </label>
+                    </div>
                 </div>
             </div>`;
         });
@@ -523,6 +532,7 @@
                 if (p.crear == 1 || p.crear === true) row.find('.check-crear').prop('checked', true);
                 if (p.editar == 1 || p.editar === true) row.find('.check-editar').prop('checked', true);
                 if (p.eliminar == 1 || p.eliminar === true) row.find('.check-eliminar').prop('checked', true);
+                if (p.aprobar == 1 || p.aprobar === true) row.find('.check-aprobar').prop('checked', true);
             }
         });
     }
@@ -539,6 +549,7 @@
         else if (checkbox.hasClass('check-crear')) typeClass = '.check-crear';
         else if (checkbox.hasClass('check-editar')) typeClass = '.check-editar';
         else if (checkbox.hasClass('check-eliminar')) typeClass = '.check-eliminar';
+        else if (checkbox.hasClass('check-borrar')) typeClass = '.check-borrar';
 
         // 1. Gestión de la PROPIA fila
         // Si tocamos "Ver", habilitamos/deshabilitamos los inputs vecinos

@@ -92,7 +92,7 @@ class ModeloRoles
     public static function mdlgetPermisos($id)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT pm.id_modulo, pm.crear, pm.editar, pm.eliminar 
+            $l = Conexion::ConexionDB()->prepare("SELECT pm.id_modulo, pm.crear, pm.editar, pm.eliminar, pm.aprobar
             FROM tblperfil_modulo pm
             JOIN tblmodulo m on m.id = pm.id_modulo
             WHERE id_perfil=:id ORDER BY id_modulo");
@@ -117,8 +117,8 @@ class ModeloRoles
             $stmtDelete->bindParam(":id", $id, PDO::PARAM_INT);
             $stmtDelete->execute();
             // 3. INSERTAR los nuevos permisos
-            $query = "INSERT INTO tblperfil_modulo (id_perfil, id_modulo, crear, editar, eliminar) 
-                    VALUES (:id, :modulo, :crear, :editar, :eliminar)";
+            $query = "INSERT INTO tblperfil_modulo (id_perfil, id_modulo, crear, editar, eliminar,aprobar) 
+                    VALUES (:id, :modulo, :crear, :editar, :eliminar, :aprobar)";
 
             $stmtInsert = $conexion->prepare($query);
 
@@ -128,11 +128,13 @@ class ModeloRoles
                 $crear = $permiso['crear'] === 'true' || $permiso['crear'] === true ? 'true' : 'false';
                 $editar = $permiso['editar'] === 'true' || $permiso['editar'] === true ? 'true' : 'false';
                 $eliminar = $permiso['eliminar'] === 'true' || $permiso['eliminar'] === true ? 'true' : 'false';
+                $aprobar = $permiso['aprobar'] === 'true' || $permiso['aprobar'] === true ? 'true' : 'false';
                 $stmtInsert->bindParam(":id", $id, PDO::PARAM_INT);
                 $stmtInsert->bindParam(":modulo", $permiso['id_modulo'], PDO::PARAM_INT);
                 $stmtInsert->bindParam(":crear", $crear, PDO::PARAM_BOOL);
                 $stmtInsert->bindParam(":editar", $editar, PDO::PARAM_BOOL);
                 $stmtInsert->bindParam(":eliminar", $eliminar, PDO::PARAM_BOOL);
+                $stmtInsert->bindParam(":aprobar", $aprobar, PDO::PARAM_BOOL);
                 $stmtInsert->execute();
             }
 

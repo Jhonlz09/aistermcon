@@ -585,9 +585,6 @@
         }
     };
     $(document).ready(function() {
-
-
-
         let anio = year;
         let estado_presupuesto = 'null';
         if (!$.fn.DataTable.isDataTable('#tblPresupuesto')) {

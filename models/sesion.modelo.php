@@ -21,7 +21,8 @@ class SesionModelo
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_OBJ);
 
-        if (!$user) return "invalid_username";
+        if (!$user)
+            return "invalid_username";
 
         // 2. Validar clave
         if (!password_verify($password, $user->clave_usuario)) {
@@ -40,63 +41,67 @@ class SesionModelo
 
         // 6. Guardar los permisos CRUD individuales como antes:
         foreach ($permisosUsuario as $p) {
-            $_SESSION["crear{$p->id}"]    = (bool)$p->crear;
-            $_SESSION["editar{$p->id}"]   = (bool)$p->editar;
-            $_SESSION["eliminar{$p->id}"] = (bool)$p->eliminar;
+            $_SESSION["crear{$p->id}"] = (bool) $p->crear;
+            $_SESSION["editar{$p->id}"] = (bool) $p->editar;
+            $_SESSION["eliminar{$p->id}"] = (bool) $p->eliminar;
+            $_SESSION["aprobar{$p->id}"] = (bool) $p->eliminar;
         }
 
         // 7. Configuración general
         $config = self::mdlObtenerConfiguracion()[0];
 
-        $_SESSION["empresa"]     = $config->empresa;
-        $_SESSION["iva"]         = $config->iva;
-        $_SESSION["sbu"]         = $config->sbu;
-        $_SESSION["emisor"]      = $config->emisor;
-        $_SESSION["ruc"]         = $config->ruc;
-        $_SESSION["matriz"]      = $config->matriz;
-        $_SESSION["correo1"]     = $config->correo1;
-        $_SESSION["correo2"]     = $config->correo2;
-        $_SESSION["telefono"]    = $config->telefonos;
+        $_SESSION["empresa"] = $config->empresa;
+        $_SESSION["iva"] = $config->iva;
+        $_SESSION["sbu"] = $config->sbu;
+        $_SESSION["emisor"] = $config->emisor;
+        $_SESSION["ruc"] = $config->ruc;
+        $_SESSION["matriz"] = $config->matriz;
+        $_SESSION["correo1"] = $config->correo1;
+        $_SESSION["correo2"] = $config->correo2;
+        $_SESSION["telefono"] = $config->telefonos;
         $_SESSION["entrada_mul"] = $config->entrada;
-        $_SESSION["bodeguero"]   = $config->bodeguero;
-        $_SESSION["conductor"]   = $config->conductor;
-        $_SESSION["sc_cot"]      = $config->sc_cot;
+        $_SESSION["bodeguero"] = $config->bodeguero;
+        $_SESSION["autorizado"] = $config->autorizado;
+        $_SESSION["conductor"] = $config->conductor;
+        $_SESSION["sc_cot"] = $config->sc_cot;
+        $_SESSION["sc_desp"] = $config->sc_desp;
+
 
         return "success";
     }
 
 
-    static private function buildTree(array $elements, $parentId = 0) 
-{
-    $branch = array();
+    static private function buildTree(array $elements, $parentId = 0)
+    {
+        $branch = array();
 
-    // Aseguramos que parentId sea entero para comparaciones estrictas
-    // (PostgreSQL puede devolver null, strings o ints)
-    $parentId = ($parentId === null || strtoupper((string)$parentId) === 'NULL') ? 0 : (int)$parentId;
+        // Aseguramos que parentId sea entero para comparaciones estrictas
+        // (PostgreSQL puede devolver null, strings o ints)
+        $parentId = ($parentId === null || strtoupper((string) $parentId) === 'NULL') ? 0 : (int) $parentId;
 
-    foreach ($elements as $element) {
-        // Normalización al vuelo (más rápido que pre-procesar todo el array antes)
-        // Convertimos el id_padre actual a 0 si es null/vacío
-        $elementParent = ($element->id_padre === null || strtoupper((string)$element->id_padre) === 'NULL') ? 0 : (int)$element->id_padre;
-        
-        if ($elementParent === $parentId) {
-            $children = self::buildTree($elements, $element->id);
-            
-            if ($children) {
-                $element->children = $children;
+        foreach ($elements as $element) {
+            // Normalización al vuelo (más rápido que pre-procesar todo el array antes)
+            // Convertimos el id_padre actual a 0 si es null/vacío
+            $elementParent = ($element->id_padre === null || strtoupper((string) $element->id_padre) === 'NULL') ? 0 : (int) $element->id_padre;
+
+            if ($elementParent === $parentId) {
+                $children = self::buildTree($elements, $element->id);
+
+                if ($children) {
+                    $element->children = $children;
+                }
+
+                // Normalización de booleanos para el frontend (si es necesario)
+                $element->crear = filter_var($element->crear, FILTER_VALIDATE_BOOLEAN);
+                $element->editar = filter_var($element->editar, FILTER_VALIDATE_BOOLEAN);
+                $element->eliminar = filter_var($element->eliminar, FILTER_VALIDATE_BOOLEAN);
+
+                $branch[] = $element;
             }
-            
-            // Normalización de booleanos para el frontend (si es necesario)
-            $element->crear = filter_var($element->crear, FILTER_VALIDATE_BOOLEAN);
-            $element->editar = filter_var($element->editar, FILTER_VALIDATE_BOOLEAN);
-            $element->eliminar = filter_var($element->eliminar, FILTER_VALIDATE_BOOLEAN);
-
-            $branch[] = $element;
         }
-    }
 
-    return $branch;
-}
+        return $branch;
+    }
 
     static public function mdlObtenerPermisos($id)
     {
@@ -110,7 +115,8 @@ class SesionModelo
                 m.id_padre,
                 pm.crear,
                 pm.editar,
-                pm.eliminar
+                pm.eliminar,
+                pm.aprobar
             FROM tblusuario u
             JOIN tblperfil_modulo pm ON pm.id_perfil = u.id_perfil
             JOIN tblmodulo m ON m.id = pm.id_modulo
@@ -118,17 +124,16 @@ class SesionModelo
 
             UNION
 
-            -- 2. RECURSIVIDAD: Buscar los padres de los módulos encontrados
-            -- (Aunque no tengan permisos explícitos en tblperfil_modulo)
             SELECT 
-                padre.id, 
+                padre.id,
                 padre.modulo, 
                 padre.icon, 
                 padre.vista, 
                 padre.id_padre,
                 false AS crear,    -- Los padres autogenerados no tienen CRUD activo
                 false AS editar,
-                false AS eliminar
+                false AS eliminar,
+                false AS aprobar
             FROM tblmodulo padre
             INNER JOIN arbol_modulos hijo ON hijo.id_padre = padre.id
         )
@@ -146,11 +151,13 @@ class SesionModelo
 
     static public function mdlObtenerConfiguracion()
     {
-        $stmt = Conexion::ConexionDB()->prepare("SELECT empresa, iva, emisor, ruc, matriz, correo1,  correo2, telefonos, entradamultiple AS entrada, bodeguero, conductor, sbu,
+        $stmt = Conexion::ConexionDB()->prepare("SELECT empresa, iva, emisor, ruc, matriz, correo1,  correo2, telefonos, entradamultiple AS entrada, bodeguero, conductor, sbu, autorizado,
                 (SELECT last_value + increment_by FROM pg_sequences 
-                    WHERE schemaname = 'public' AND sequencename = 'secuencia_cotizacion') AS sc_cot 
+                    WHERE schemaname = 'public' AND sequencename = 'secuencia_cotizacion') AS sc_cot ,
+                (SELECT last_value + increment_by FROM pg_sequences 
+                    WHERE schemaname = 'public' AND sequencename = 'secuencia_despacho') AS sc_desp 
                     FROM tblconfiguracion");
-        
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS);
     }

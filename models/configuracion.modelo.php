@@ -73,6 +73,7 @@ class ModeloConfiguracion
             // Almacenar valores en variables de sesión
             $_SESSION["iva"] = $iva;
             $_SESSION["sc_cot"] = $sc;
+            
 
             return array(
                 'status' => 'success',
@@ -93,7 +94,7 @@ class ModeloConfiguracion
         }
     }
 
-     static public function mdlEditarConfigRRHH($sbu)
+    static public function mdlEditarConfigRRHH($sbu)
     {
         try {
             // Conexión a la base de datos
@@ -161,21 +162,24 @@ class ModeloConfiguracion
         }
     }
 
-    public static function mdlEditarConfigPref($id_bodeguero, $id_conductor)
+    public static function mdlEditarConfigPref($id_bodeguero, $id_conductor, $id_autorizado)
     {
         try {
             $conexion = Conexion::ConexionDB();
 
             // Actualiza los valores de id_bodeguero y id_conductor en la tabla tblconfiguracion
-            $sql = "UPDATE tblconfiguracion SET bodeguero = :id_bodeguero, conductor = :id_conductor";
+            $sql = "UPDATE tblconfiguracion SET bodeguero = :id_bodeguero, conductor = :id_conductor, autorizado = :id_autorizado";
             $e = $conexion->prepare($sql);
             $e->bindParam(':id_bodeguero', $id_bodeguero);
             $e->bindParam(':id_conductor', $id_conductor);
+            $e->bindParam(':id_autorizado', $id_autorizado);
             $e->execute();
 
             // Actualiza las sesiones con los nuevos valores
             $_SESSION["bodeguero"] = $id_bodeguero;
             $_SESSION["conductor"] = $id_conductor;
+            $_SESSION["autorizado"] = $id_autorizado;
+
 
             return array(
                 'status' => 'success',
@@ -223,7 +227,7 @@ class ModeloConfiguracion
         }
     }
 
-    
+
 
     public static function mdlObtenerCorreos()
     {
@@ -232,22 +236,22 @@ class ModeloConfiguracion
             $sql = "SELECT correo_destinatario FROM tblconfiguracion LIMIT 1"; // Ajusta según tu consulta
             $stmt = $conexion->prepare($sql);
             $stmt->execute();
-    
+
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($result) {
                 // Extrae el valor de la cadena y elimina las llaves
                 $correos = $result['correo_destinatario'];
                 $correos = trim($correos, '{}'); // Elimina las llaves al principio y al final
                 $correos = explode(',', $correos); // Convierte la cadena a un array usando la coma como delimitador
-    
+
                 // Limpia los espacios y las comillas alrededor de cada correo
-                $correos = array_map(function($correo) {
+                $correos = array_map(function ($correo) {
                     return trim($correo, " '");
                 }, $correos);
-    
+
                 return $correos; // Devuelve el array de correos
             }
-    
+
             return [];
         } catch (PDOException $e) {
             return array(

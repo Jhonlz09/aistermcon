@@ -7,14 +7,17 @@ class ModeloSolicitudDespacho
     /**
      * Listar todas las solicitudes de despacho
      */
-    static public function mdlListarSolicitudes()
+    static public function mdlListarSolicitudes($anio)
     {
         try {
             $consulta = "SELECT sd.id, sd.num_sol,
 				TO_CHAR(sd.fecha, 'DD/MM/YYYY') AS fecha,
 				p.num_orden || ' ' || c.nombre as cliente,
-				e1.nombre || ' ' || e3.apellido as responsable,
-				e3.nombre || ' ' || e3.apellido as autorizado,
+				split_part(e1.apellido, ' ', 1) || ' ' ||  split_part(e1.nombre, ' ', 1) as responsable,
+				COALESCE(
+                    split_part(e3.apellido, ' ', 1) || ' ' || split_part(e3.nombre, ' ', 1),
+                    u.nombres
+                ) as autorizado,
                 sd.estado,
                 '' as acciones,
 				    o.id as id_orden,
@@ -23,13 +26,16 @@ class ModeloSolicitudDespacho
             LEFT JOIN tblorden o ON sd.id_orden = o.id
 			LEFT JOIN tblpresupuesto p ON p.id = o.id
 			LEFT JOIN tblclientes c On c.id = p.id_cliente
-            LEFT JOIN tblboleta b ON sd.id_boleta = b.id
             LEFT JOIN tblempleado e1 ON sd.id_responsable = e1.id
             LEFT JOIN tblempleado e2 ON sd.id_despachado = e2.id
             LEFT JOIN tblempleado e3 ON sd.id_autorizado = e3.id
+            LEFT JOIN tblusuario u ON sd.id_usuario_autorizado = u.id
+            WHERE EXTRACT(YEAR FROM sd.fecha) = :anio
+            AND sd.anulado = false
             ORDER BY sd.id DESC";
-            
+
             $l = Conexion::ConexionDB()->prepare($consulta);
+            $l->bindParam(":anio", $anio, PDO::PARAM_INT);
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
@@ -39,6 +45,7 @@ class ModeloSolicitudDespacho
             );
         }
     }
+
     /**
      * Consultar una solicitud específica
      */
@@ -49,15 +56,20 @@ class ModeloSolicitudDespacho
                 sd.id, 
                 sd.num_sol, 
                 sd.id_orden,
-                sd.id_boleta,
+                p.num_orden || ' ' || c.nombre as orden_label,
+                p.num_orden as orden,
+                c.nombre as cliente,
                 sd.estado,
-                TO_CHAR(sd.fecha, 'DD/MM/YYYY HH24:MI') AS fecha,
+                TO_CHAR(sd.fecha, 'YYYY-MM-DD') AS fecha,
                 sd.id_responsable,
-                sd.id_despachado,
-                sd.id_autorizado
+                sd.id_autorizado,
+                sd.notas
             FROM tblsolicitud_despacho sd
+            LEFT JOIN tblorden o ON sd.id_orden = o.id
+            LEFT JOIN tblpresupuesto p ON p.id = o.id
+            LEFT JOIN tblclientes c On c.id = p.id_cliente
             WHERE sd.id = :id";
-            
+
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             $l->execute();
@@ -76,15 +88,15 @@ class ModeloSolicitudDespacho
     static public function mdlConsultarDetalleSolicitud($id_solicitud)
     {
         try {
-            $consulta = "SELECT dd.id,dd.id_producto,i.codigo,i.descripcion,c.nombre as categoria,u.nombre as unidad,dd.cant_sol,dd.cant_apro,i.stock,dd.anulado,
+            $consulta = "SELECT dd.id,dd.id_producto,i.codigo,i.descripcion,c.nombre as categoria,i.id_categoria,u.nombre as unidad,dd.cant_sol,dd.cant_apro,i.stock,i.img,
                 '' as acciones
             FROM tbldetalle_despacho dd
             JOIN tblinventario i ON dd.id_producto = i.id
             JOIN tblcategoria c ON i.id_categoria = c.id
             JOIN tblunidad u ON i.id_unidad = u.id
-            WHERE dd.id_solic_despacho = :id
+            WHERE dd.id_solic_despacho = :id AND dd.cant_sol > 0
             ORDER BY dd.id";
-            
+
             $l = Conexion::ConexionDB()->prepare($consulta);
             $l->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
             $l->execute();
@@ -98,105 +110,29 @@ class ModeloSolicitudDespacho
     }
 
     /**
-     * Crear nueva solicitud de despacho
-     */
-    static public function mdlCrearSolicitud($id_orden, $id_boleta, $id_responsable)
-    {
-        try {
-            $conexion = Conexion::ConexionDB();
-            $conexion->beginTransaction();
-
-            $consulta = "INSERT INTO tblsolicitud_despacho 
-                (id_orden, id_boleta, id_responsable, estado, fecha)
-                VALUES (:id_orden, :id_boleta, :id_responsable, true, NOW())
-                RETURNING id";
-            
-            $stmt = $conexion->prepare($consulta);
-            $stmt->bindParam(":id_orden", $id_orden, PDO::PARAM_INT);
-            $stmt->bindParam(":id_boleta", $id_boleta, PDO::PARAM_INT);
-            $stmt->bindParam(":id_responsable", $id_responsable, PDO::PARAM_INT);
-            $stmt->execute();
-
-            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-            $id_nueva_solicitud = $resultado['id'];
-
-            $conexion->commit();
-
-            return array(
-                'status' => 'success',
-                'm' => 'Solicitud creada exitosamente',
-                'id' => $id_nueva_solicitud
-            );
-        } catch (PDOException $e) {
-            $conexion->rollBack();
-            return array(
-                'status' => 'error',
-                'm' => "Error al crear la solicitud: " . $e->getMessage()
-            );
-        }
-    }
-
-    /**
-     * Agregar filas a una solicitud
-     */
-    static public function mdlAgregarFilasSolicitud($cantidad_filas, $id_solicitud)
-    {
-        try {
-            $conexion = Conexion::ConexionDB();
-            $conexion->beginTransaction();
-
-            $consulta = "INSERT INTO tbldetalle_despacho 
-                (id_producto, id_solic_despacho, cant_sol, cant_apro, anulado)
-                VALUES (NULL, :id_solicitud, 0, 0, false)";
-            
-            $stmt = $conexion->prepare($consulta);
-            $stmt->bindParam(":id_solicitud", $id_solicitud, PDO::PARAM_INT);
-
-            for ($i = 0; $i < $cantidad_filas; $i++) {
-                $stmt->execute();
-            }
-
-            $conexion->commit();
-
-            return array(
-                'status' => 'success',
-                'm' => 'Filas agregadas exitosamente'
-            );
-        } catch (PDOException $e) {
-            $conexion->rollBack();
-            return array(
-                'status' => 'error',
-                'm' => "Error al agregar filas: " . $e->getMessage()
-            );
-        }
-    }
-
-    /**
      * Actualizar fila de detalle en solicitud
      */
     static public function mdlActualizarFilaSolicitud($id_fila, $params)
     {
         try {
             $conexion = Conexion::ConexionDB();
-            
+
             $consulta = "UPDATE tbldetalle_despacho SET 
                 id_producto = :id_producto,
                 cant_sol = :cant_sol,
                 cant_apro = :cant_apro,
-                anulado = :anulado
             WHERE id = :id";
-            
+
             $stmt = $conexion->prepare($consulta);
             $stmt->bindParam(":id", $id_fila, PDO::PARAM_INT);
             $stmt->bindParam(":id_producto", $params['id_producto'], PDO::PARAM_INT);
             $stmt->bindParam(":cant_sol", $params['cant_sol'], PDO::PARAM_STR);
             $stmt->bindParam(":cant_apro", $params['cant_apro'], PDO::PARAM_STR);
-            $stmt->bindParam(":anulado", $params['anulado'], PDO::PARAM_BOOL);
             $stmt->execute();
 
             return array(
                 'status' => 'success',
-                'm' => 'Fila actualizada exitosamente'
+                'm' => 'Fila actualizada correctamente'
             );
         } catch (PDOException $e) {
             return array(
@@ -218,14 +154,14 @@ class ModeloSolicitudDespacho
             // Actualizar filas si es necesario
             if (isset($params['filas']) && $params['isFilas'] == 'true') {
                 $filas = json_decode($params['filas'], true);
-                
+
                 foreach ($filas as $fila) {
                     $consulta = "UPDATE tbldetalle_despacho SET 
                         id_producto = :id_producto,
                         cant_sol = :cant_sol,
                         cant_apro = :cant_apro
                     WHERE id = :id";
-                    
+
                     $stmt = $conexion->prepare($consulta);
                     $stmt->bindParam(":id", $fila['id'], PDO::PARAM_INT);
                     $stmt->bindParam(":id_producto", $fila['id_producto'], PDO::PARAM_INT);
@@ -241,7 +177,7 @@ class ModeloSolicitudDespacho
                 id_boleta = :id_boleta,
                 id_responsable = :id_responsable
             WHERE id = :id";
-            
+
             $stmt = $conexion->prepare($consulta);
             $stmt->bindParam(":id", $params['id'], PDO::PARAM_INT);
             $stmt->bindParam(":id_orden", $params['id_orden'], PDO::PARAM_INT);
@@ -253,7 +189,7 @@ class ModeloSolicitudDespacho
 
             return array(
                 'status' => 'success',
-                'm' => 'Solicitud actualizada exitosamente'
+                'm' => 'Solicitud actualizada correctamente'
             );
         } catch (PDOException $e) {
             $conexion->rollBack();
@@ -271,7 +207,7 @@ class ModeloSolicitudDespacho
     {
         try {
             $conexion = Conexion::ConexionDB();
-            
+
             $consulta = "DELETE FROM tbldetalle_despacho WHERE id = :id";
             $stmt = $conexion->prepare($consulta);
             $stmt->bindParam(":id", $id_fila, PDO::PARAM_INT);
@@ -279,7 +215,7 @@ class ModeloSolicitudDespacho
 
             return array(
                 'status' => 'success',
-                'm' => 'Fila eliminada exitosamente'
+                'm' => 'Fila eliminada correctamente'
             );
         } catch (PDOException $e) {
             return array(
@@ -307,178 +243,13 @@ class ModeloSolicitudDespacho
 
             return array(
                 'status' => 'success',
-                'm' => 'Filas eliminadas exitosamente'
+                'm' => 'Filas eliminadas correctamente'
             );
         } catch (PDOException $e) {
             $conexion->rollBack();
             return array(
                 'status' => 'error',
                 'm' => "Error al eliminar: " . $e->getMessage()
-            );
-        }
-    }
-
-    /**
-     * Eliminar solicitud
-     */
-    static public function mdlEliminarSolicitud($id_solicitud)
-    {
-        try {
-            $conexion = Conexion::ConexionDB();
-            $conexion->beginTransaction();
-
-            // Eliminar detalles primero
-            $consulta = "DELETE FROM tbldetalle_despacho WHERE id_solic_despacho = :id";
-            $stmt = $conexion->prepare($consulta);
-            $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
-            $stmt->execute();
-
-            // Luego eliminar la solicitud
-            $consulta = "DELETE FROM tblsolicitud_despacho WHERE id = :id";
-            $stmt = $conexion->prepare($consulta);
-            $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
-            $stmt->execute();
-
-            $conexion->commit();
-
-            return array(
-                'status' => 'success',
-                'm' => 'Solicitud eliminada exitosamente'
-            );
-        } catch (PDOException $e) {
-            $conexion->rollBack();
-            return array(
-                'status' => 'error',
-                'm' => "Error al eliminar: " . $e->getMessage()
-            );
-        }
-    }
-
-    /**
-     * Cargar productos por categoría
-     */
-    static public function mdlCargarProductosPorCategoria()
-    {
-        try {
-            $consulta = "SELECT 
-                c.id as categoria_id,
-                c.nombre as categoria,
-                json_agg(
-                    json_build_object(
-                        'id', i.id,
-                        'codigo', i.codigo,
-                        'descripcion', i.descripcion,
-                        'stock', i.stock,
-                        'unidad', u.nombre
-                    ) ORDER BY i.descripcion
-                ) as productos
-            FROM tblinventario i
-            JOIN tblcategoria c ON i.id_categoria = c.id
-            JOIN tblunidad u ON i.id_unidad = u.id
-            WHERE i.estado = true AND i.stock > 0
-            GROUP BY c.id, c.nombre
-            ORDER BY c.nombre";
-            
-            $stmt = Conexion::ConexionDB()->prepare($consulta);
-            $stmt->execute();
-            $resultados = $stmt->fetchAll();
-
-            // Procesar resultados para convertir JSON
-            foreach ($resultados as &$row) {
-                $row['productos'] = json_decode($row['productos'], true);
-            }
-
-            return $resultados;
-        } catch (PDOException $e) {
-            return array(
-                'status' => 'error',
-                'm' => "Error en la consulta: " . $e->getMessage()
-            );
-        }
-    }
-
-    /**
-     * Autorizar solicitud
-     */
-    static public function mdlAutorizarSolicitud($id_solicitud, $id_autorizado)
-    {
-        try {
-            $conexion = Conexion::ConexionDB();
-            
-            $consulta = "UPDATE tblsolicitud_despacho SET 
-                id_autorizado = :id_autorizado,
-                estado = true
-            WHERE id = :id";
-            
-            $stmt = $conexion->prepare($consulta);
-            $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
-            $stmt->bindParam(":id_autorizado", $id_autorizado, PDO::PARAM_INT);
-            $stmt->execute();
-
-            return array(
-                'status' => 'success',
-                'm' => 'Solicitud autorizada exitosamente'
-            );
-        } catch (PDOException $e) {
-            return array(
-                'status' => 'error',
-                'm' => "Error al autorizar: " . $e->getMessage()
-            );
-        }
-    }
-
-    /**
-     * Confirmar despacho
-     */
-    static public function mdlConfirmarDespacho($id_solicitud, $id_despachado)
-    {
-        try {
-            $conexion = Conexion::ConexionDB();
-            $conexion->beginTransaction();
-
-            // Actualizar solicitud
-            $consulta = "UPDATE tblsolicitud_despacho SET 
-                id_despachado = :id_despachado,
-                estado = false
-            WHERE id = :id";
-            
-            $stmt = $conexion->prepare($consulta);
-            $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
-            $stmt->bindParam(":id_despachado", $id_despachado, PDO::PARAM_INT);
-            $stmt->execute();
-
-            // Actualizar stock de productos
-            $consultaStock = "SELECT id_producto, cant_apro FROM tbldetalle_despacho 
-                WHERE id_solic_despacho = :id_solicitud AND cant_apro > 0 AND anulado = false";
-            
-            $stmtStock = $conexion->prepare($consultaStock);
-            $stmtStock->bindParam(":id_solicitud", $id_solicitud, PDO::PARAM_INT);
-            $stmtStock->execute();
-            
-            $detalles = $stmtStock->fetchAll();
-
-            foreach ($detalles as $detalle) {
-                $consultaUpdate = "UPDATE tblinventario SET 
-                    stock = stock - :cantidad
-                WHERE id = :id_producto";
-                
-                $stmtUpdate = $conexion->prepare($consultaUpdate);
-                $stmtUpdate->bindParam(":id_producto", $detalle['id_producto'], PDO::PARAM_INT);
-                $stmtUpdate->bindParam(":cantidad", $detalle['cant_apro'], PDO::PARAM_STR);
-                $stmtUpdate->execute();
-            }
-
-            $conexion->commit();
-
-            return array(
-                'status' => 'success',
-                'm' => 'Despacho confirmado exitosamente'
-            );
-        } catch (PDOException $e) {
-            $conexion->rollBack();
-            return array(
-                'status' => 'error',
-                'm' => "Error al confirmar despacho: " . $e->getMessage()
             );
         }
     }
@@ -490,24 +261,420 @@ class ModeloSolicitudDespacho
     {
         try {
             $conexion = Conexion::ConexionDB();
-            
-            $consulta = "UPDATE tbldetalle_despacho SET 
+
+            $consulta = "UPDATE tblsolicitud_despacho SET 
                 anulado = true
-            WHERE id_solic_despacho = :id";
-            
+            WHERE id = :id";
+
             $stmt = $conexion->prepare($consulta);
             $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
             $stmt->execute();
 
             return array(
                 'status' => 'success',
-                'm' => 'Solicitud anulada exitosamente'
+                'm' => 'Solicitud de despacho anulada correctamente'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'error',
                 'm' => "Error al anular: " . $e->getMessage()
             );
+        }
+    }
+    /**
+     * Consultar producto por código para autocompletado
+     */
+    static public function mdlConsultarProductoPorCodigo($codigo)
+    {
+        try {
+            $consulta = "SELECT 
+                i.id,
+                i.codigo,
+                i.descripcion,
+                i.stock,
+                u.nombre as unidad,
+                i.id_categoria,
+                i.img
+            FROM tblinventario i
+            JOIN tblunidad u ON i.id_unidad = u.id
+            WHERE i.codigo = :codigo AND i.estado = true";
+
+            $stmt = Conexion::ConexionDB()->prepare($consulta);
+            $stmt->bindParam(":codigo", $codigo, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'error',
+                'm' => "Error en la consulta: " . $e->getMessage()
+            );
+        }
+    }
+    /**
+     * Guardar solicitud completa (Cabecera y Detalles)
+     */
+    static public function mdlGuardarSolicitudCompleta($datos)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+
+            // 1. Insertar Cabecera
+            $consulta = "INSERT INTO tblsolicitud_despacho 
+                (num_sol, id_orden, fecha, id_responsable, notas)
+                VALUES (generar_num_despacho(), :id_orden, :fecha, :id_responsable, :notas)
+                RETURNING id";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(":id_orden", $datos['id_orden'], PDO::PARAM_INT);
+            $stmt->bindParam(":fecha", $datos['fecha']); // Timestamp o string fecha
+            $stmt->bindParam(":notas", $datos['notas']);
+            $stmt->bindParam(":id_responsable", $datos['id_responsable'], PDO::PARAM_INT);
+            
+            if (!$stmt->execute()) {
+                throw new Exception("Error al guardar la cabecera de la solicitud.");
+            }
+
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            $id_solicitud = $resultado['id'];
+
+            // 2. Insertar Detalles
+            if (!empty($datos['filas'])) {
+                $filas = json_decode($datos['filas'], true);
+                
+                $consultaDetalle = "INSERT INTO tbldetalle_despacho 
+                    (id_producto, id_solic_despacho, cant_sol, cant_apro, anulado)
+                    VALUES (:id_producto, :id_solicitud, :cant_sol, :cant_apro, false)";
+                
+                $stmtDetalle = $conexion->prepare($consultaDetalle);
+
+                foreach ($filas as $fila) {
+                    $stmtDetalle->bindParam(":id_producto", $fila['id_producto'], PDO::PARAM_INT);
+                    $stmtDetalle->bindParam(":id_solicitud", $id_solicitud, PDO::PARAM_INT);            
+                    $stmtDetalle->bindParam(":cant_sol", $fila['cant_sol'], PDO::PARAM_STR);
+                    $stmtDetalle->bindParam(":cant_apro", $fila['cant_apro'], PDO::PARAM_STR);
+                    
+                    if (!$stmtDetalle->execute()) {
+                        throw new Exception("Error al guardar el detalle del producto ID: " . $fila['id_producto']);
+                    }
+                }
+            }
+
+            // Obtener el siguiente valor de la secuencia para mantener el contador actualizado
+            $stmtSeq = $conexion->prepare("SELECT last_value + increment_by AS sc_desp FROM pg_sequences WHERE schemaname = 'public' AND sequencename = 'secuencia_despacho'");
+            $stmtSeq->execute();
+            $seqResult = $stmtSeq->fetch(PDO::FETCH_ASSOC);
+            $next_seq = null;
+            if ($seqResult) {
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $_SESSION["sc_desp"] = $seqResult['sc_desp'];
+                $next_seq = $seqResult['sc_desp'] + 1;
+            }
+
+            $conexion->commit();
+
+            return array(
+                'status' => 'success',
+                'm' => 'Solicitud guardada correctamente',
+                'id' => $id_solicitud,
+                'nc' => $next_seq
+            );
+
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'error',
+                'm' => "Error al guardar la solicitud: " . $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Actualizar solicitud completa (Cabecera y Detalles)
+     */
+    static public function mdlActualizarSolicitudCompleta($params)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+
+            $id_solicitud = $params['id_solicitud'];
+
+            // 1. Actualizar tblsolicitud_despacho
+            $consulta = "UPDATE tblsolicitud_despacho SET 
+                id_orden = :id_orden,
+                fecha = :fecha,
+                id_responsable = :id_responsable,
+                notas = :notas
+            WHERE id = :id";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
+            $stmt->bindParam(":id_orden", $params['id_orden'], PDO::PARAM_INT);
+            $stmt->bindParam(":fecha", $params['fecha'], PDO::PARAM_STR);
+            $stmt->bindParam(":id_responsable", $params['id_responsable'], PDO::PARAM_INT);
+            $stmt->bindParam(":notas", $params['notas'], PDO::PARAM_STR);
+
+            if (!$stmt->execute()) {
+                throw new Exception("Error al actualizar la cabecera de la solicitud.");
+            }
+
+            // 2. Eliminar detalles existentes
+            $consultaDelete = "DELETE FROM tbldetalle_despacho WHERE id_solic_despacho = :id";
+            $stmtDelete = $conexion->prepare($consultaDelete);
+            $stmtDelete->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
+            
+            if (!$stmtDelete->execute()) {
+                throw new Exception("Error al preparar la actualización de los detalles.");
+            }
+
+            // 3. Insertar nuevos detalles
+            if (isset($params['filas']) && !empty($params['filas'])) {
+                $filas = json_decode($params['filas'], true);
+                
+                $consultaDetalle = "INSERT INTO tbldetalle_despacho (id_solic_despacho, id_producto, cant_sol, cant_apro) 
+                                    VALUES (:id_solic_despacho, :id_producto, :cant_sol, :cant_apro)";
+                $stmtDetalle = $conexion->prepare($consultaDetalle);
+
+                foreach ($filas as $fila) {
+                    $cant_apro = isset($fila['cant_apro']) ? $fila['cant_apro'] : 0;
+                    
+                    $stmtDetalle->bindParam(":id_solic_despacho", $id_solicitud, PDO::PARAM_INT);
+                    $stmtDetalle->bindParam(":id_producto", $fila['id_producto'], PDO::PARAM_INT);
+                    $stmtDetalle->bindParam(":cant_sol", $fila['cant_sol'], PDO::PARAM_STR);
+                    $stmtDetalle->bindParam(":cant_apro", $cant_apro, PDO::PARAM_STR);
+                    
+                    if (!$stmtDetalle->execute()) {
+                        throw new Exception("Error al actualizar el detalle del producto ID: " . $fila['id_producto']);
+                    }
+                }
+            }
+
+            $conexion->commit();
+
+            return array(
+                'status' => 'success',
+                'm' => 'Solicitud editada correctamente',
+                'id' => $id_solicitud
+            );
+
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'error',
+                'm' => "Error al actualizar la solicitud de despacho: " . $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Aprobar solicitud completa (Actualiza cabecera, detalles y estado)
+     */
+    static public function mdlAprobarSolicitudCompleta($params)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+
+            $id_solicitud = $params['id_solicitud'];
+
+            // 1. Actualizar tblsolicitud_despacho y estado = true
+            $consulta = "UPDATE tblsolicitud_despacho SET 
+                id_orden = :id_orden,
+                fecha = :fecha,
+                id_responsable = :id_responsable,
+                notas = :notas,
+                estado = true,
+                id_usuario_autorizado = :id_usuario_autorizado
+            WHERE id = :id";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
+            $stmt->bindParam(":id_orden", $params['id_orden'], PDO::PARAM_INT);
+            $stmt->bindParam(":fecha", $params['fecha'], PDO::PARAM_STR);
+            $stmt->bindParam(":id_responsable", $params['id_responsable'], PDO::PARAM_INT);
+            $stmt->bindParam(":notas", $params['notas'], PDO::PARAM_STR);
+            $stmt->bindParam(":id_usuario_autorizado", $params['id_usuario_autorizado'], PDO::PARAM_INT);
+
+            if (!$stmt->execute()) {
+                throw new Exception("Error al actualizar la cabecera y estado de la solicitud.");
+            }
+
+            // 2. Eliminar detalles existentes para reinsertarlos limpiamente
+            $consultaDelete = "DELETE FROM tbldetalle_despacho WHERE id_solic_despacho = :id";
+            $stmtDelete = $conexion->prepare($consultaDelete);
+            $stmtDelete->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
+            
+            if (!$stmtDelete->execute()) {
+                throw new Exception("Error al preparar la actualización de los detalles.");
+            }
+
+            // 3. Insertar nuevos detalles con cant_apro guardada
+            if (isset($params['filas']) && !empty($params['filas'])) {
+                $filas = json_decode($params['filas'], true);
+                
+                $consultaDetalle = "INSERT INTO tbldetalle_despacho (id_solic_despacho, id_producto, cant_sol, cant_apro) 
+                                    VALUES (:id_solic_despacho, :id_producto, :cant_sol, :cant_apro)";
+                $stmtDetalle = $conexion->prepare($consultaDetalle);
+
+                foreach ($filas as $fila) {
+                    $cant_apro = isset($fila['cant_apro']) ? $fila['cant_apro'] : 0;
+                    
+                    $stmtDetalle->bindParam(":id_solic_despacho", $id_solicitud, PDO::PARAM_INT);
+                    $stmtDetalle->bindParam(":id_producto", $fila['id_producto'], PDO::PARAM_INT);
+                    $stmtDetalle->bindParam(":cant_sol", $fila['cant_sol'], PDO::PARAM_STR);
+                    $stmtDetalle->bindParam(":cant_apro", $cant_apro, PDO::PARAM_STR);
+                    
+                    if (!$stmtDetalle->execute()) {
+                        throw new Exception("Error al actualizar el detalle del producto ID: " . $fila['id_producto']);
+                    }
+                }
+            }
+
+            $conexion->commit();
+
+            return array(
+                'status' => 'success',
+                'm' => 'Solicitud aprobada y guardada correctamente',
+                'id' => $id_solicitud
+            );
+
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'error',
+                'm' => "Error al aprobar la solicitud: " . $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Cambiar estado solicitud (Aprobar/Desaprobar)
+     */
+    static public function mdlAprobarSolicitud($id_solicitud, $id_usuario, $estado)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+
+            $estado_bool = filter_var($estado, FILTER_VALIDATE_BOOLEAN);
+
+            // 1. Actualizar estado y usuario autorizado
+            $consulta = "UPDATE tblsolicitud_despacho SET 
+                estado = :estado,
+                id_usuario_autorizado = :id_usuario
+            WHERE id = :id";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
+            $stmt->bindParam(":estado", $estado_bool, PDO::PARAM_BOOL);
+            $stmt->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // 2. Actualizar cantidad aprobada = cantidad solicitada
+            $consultaDetalle = "UPDATE tbldetalle_despacho SET 
+                cant_apro = cant_sol 
+            WHERE id_solic_despacho = :id";
+            
+            $stmtDetalle = $conexion->prepare($consultaDetalle);
+            $stmtDetalle->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
+            $stmtDetalle->execute();
+
+            $conexion->commit();
+
+            return array(
+                'status' => 'success',
+                'm' => 'Estado de la solicitud actualizado correctamente'
+            );
+        } catch (PDOException $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'error',
+                'm' => "Error al aprobar: " . $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Listar Solicitudes aprobadas sin boleta
+     */
+    static public function mdlListarSolicitudesAprobadasSinBoleta()
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $consulta = "SELECT DISTINCT sd.id, sd.num_sol, 'MATERIAL' as texto, sd.id_orden
+                FROM tblsolicitud_despacho sd
+                JOIN tbldetalle_despacho dd ON sd.id = dd.id_solic_despacho
+                JOIN tblinventario i ON dd.id_producto = i.id
+                LEFT JOIN tblboleta b ON sd.id = b.id_solicitud_despacho
+                LEFT JOIN tblorden o ON sd.id_orden = o.id
+                WHERE sd.estado = true AND sd.anulado = false AND b.id IS NULL AND i.id_categoria = 1
+                
+                UNION
+                
+                SELECT DISTINCT sd.id, sd.num_sol, 'HERRAMIENTA' as texto, sd.id_orden
+                FROM tblsolicitud_despacho sd
+                JOIN tbldetalle_despacho dd ON sd.id = dd.id_solic_despacho
+                JOIN tblinventario i ON dd.id_producto = i.id
+                LEFT JOIN tblboleta b ON sd.id = b.id_solicitud_despacho
+                LEFT JOIN tblorden o ON sd.id_orden = o.id
+                WHERE sd.estado = true AND sd.anulado = false AND b.id IS NULL AND i.id_categoria != 1
+                
+                ORDER BY num_sol DESC, texto";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->execute();
+            $filas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $respuesta = [];
+            foreach ($filas as $fila) {
+                $respuesta[] = array(
+                    "id" => $fila['id'], 
+                    "label" => $fila['num_sol'] . ' - ' . $fila['texto'], 
+                    "num_sol" => $fila['num_sol'],
+                    "texto" => $fila['texto'],
+                    "id_orden" => $fila['id_orden']
+                );
+            }
+            return $respuesta;
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Consultar detalles de solicitud por tipo (MATERIAL o HERRAMIENTA)
+     */
+    static public function mdlConsultarDetalleSolicitudPorTipo($id_solicitud, $tipo)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            
+            // Si el tipo es MATERIAL, filtramos categoría 1. Si es HERRAMIENTA, filtramos diferentes de 1.
+            $filtro_categoria = ($tipo == 'MATERIAL') ? "c.id_categoria = 1" : "c.id_categoria != 1";
+
+            $consulta = "SELECT 
+                            c.id,
+                            c.codigo, 
+                            c.descripcion, 
+                            u.nombre as unidad,
+                            a.cant_apro
+                        FROM tbldetalle_despacho a
+                        INNER JOIN tblinventario c ON a.id_producto = c.id
+                        LEFT JOIN tblunidad u ON c.id_unidad = u.id
+                        WHERE a.id_solic_despacho = :id
+                        AND $filtro_categoria";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return array("error" => $e->getMessage());
         }
     }
 }

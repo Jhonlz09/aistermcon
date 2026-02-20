@@ -6,7 +6,8 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <!-- Google Font: Source Sans Pro -->
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback'>
+    <link rel='stylesheet'
+        href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback'>
     <!-- Font Awesome Icons -->
     <link rel='stylesheet' href='assets/css/icon/icon.min.css'>
     <!-- Theme style -->
@@ -17,15 +18,19 @@
     <link rel='stylesheet' href='assets/plugins/jquery-ui/jquery-ui.min.css'>
     <!-- DataTables -->
     <link href='assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' rel='stylesheet' type='text/css' />
-    <link href='assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' rel='stylesheet' type='text/css' />
+    <link href='assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' rel='stylesheet'
+        type='text/css' />
     <link href='assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' rel='stylesheet' type='text/css' />
-    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet"
+        type="text/css" />
     <link href="assets/plugins/datatables-scroller/css/scroller.bootstrap4.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/plugins/daterange-vanilla/daterange.min.css" rel="stylesheet">
 
     <noscript>
-        <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-        <link rel="stylesheet" href="assets/plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css" type="text/css" />
+        <link href="assets/plugins/datatables-searchpanes/css/searchPanes.bootstrap4.min.css" rel="stylesheet"
+            type="text/css" />
+        <link rel="stylesheet" href="assets/plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css"
+            type="text/css" />
         <!-- <link rel="stylesheet" href="assets/plugins/datatables-select/css/select.bootstrap4.min.css" /> -->
     </noscript>
     <!-- SweetAlert2 -->
@@ -51,9 +56,12 @@
     <script src='assets/plugins/datatables-scroller/js/scroller.bootstrap4.min.js'></script>
     <script src='assets/plugins/datatables/jquery.dataTables.min.js' type='text/javascript'></script>
     <script defer src='assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' type='text/javascript'></script>
-    <script defer src='assets/plugins/datatables-responsive/js/dataTables.responsive.min.js' type='text/javascript'></script>
-    <script defer src='assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' type='text/javascript'></script>
-    <script defer src='assets/plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js' type='text/javascript'></script>
+    <script defer src='assets/plugins/datatables-responsive/js/dataTables.responsive.min.js'
+        type='text/javascript'></script>
+    <script defer src='assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js'
+        type='text/javascript'></script>
+    <script defer src='assets/plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js'
+        type='text/javascript'></script>
     <!-- SweetAlert -->
     <script defer src='assets/plugins/sweetalert2/sweetalert2.min.js'></script>
     <!-- Select2 -->
@@ -69,8 +77,10 @@
     <script defer src="assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script defer src="assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script defer src="assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js"></script>
-    <script defer src="assets/plugins/datatables-searchpanes/js/dataTables.searchPanes.min.js" type="text/javascript"></script>
-    <script defer src="assets/plugins/datatables-searchpanes/js/searchPanes.bootstrap4.min.js" type="text/javascript"></script>
+    <script defer src="assets/plugins/datatables-searchpanes/js/dataTables.searchPanes.min.js"
+        type="text/javascript"></script>
+    <script defer src="assets/plugins/datatables-searchpanes/js/searchPanes.bootstrap4.min.js"
+        type="text/javascript"></script>
     <script defer src="assets/plugins/datatables-select/js/dataTables.select.min.js" type="text/javascript"></script>
     <script defer src="assets/plugins/datatables-select/js/select.bootstrap4.min.js" type="text/javascript"></script>
     <!-- Tabledit -->
@@ -79,7 +89,7 @@
     <script defer src="assets/plugins/chart.js/ChartDataLabels.min.js"></script>
 </head>
 <?php if (isset($_SESSION['s_usuario'])) {
-?>
+    ?>
     <script>
         // var calendarInstance = null;
         var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblProdFab, tblDetalleFab;
@@ -93,6 +103,7 @@
         let scroll = false;
         let sub = false;
         let items_orden = [];
+        let audio;
         let id_orden_guia_salida;
         let id_orden_guia_entrada;
         let id_orden_guia_fab;
@@ -120,57 +131,58 @@
             });
         }
         const datos_meses = [{
-                id: 1,
-                text: 'ENERO'
-            },
-            {
-                id: 2,
-                text: 'FEBRERO'
-            },
-            {
-                id: 3,
-                text: 'MARZO'
-            },
-            {
-                id: 4,
-                text: 'ABRIL'
-            },
-            {
-                id: 5,
-                text: 'MAYO'
-            },
-            {
-                id: 6,
-                text: 'JUNIO'
-            },
-            {
-                id: 7,
-                text: 'JULIO'
-            },
-            {
-                id: 8,
-                text: 'AGOSTO'
-            },
-            {
-                id: 9,
-                text: 'SEPTIEMBRE'
-            },
-            {
-                id: 10,
-                text: 'OCTUBRE'
-            },
-            {
-                id: 11,
-                text: 'NOVIEMBRE'
-            },
-            {
-                id: 12,
-                text: 'DICIEMBRE'
-            },
+            id: 1,
+            text: 'ENERO'
+        },
+        {
+            id: 2,
+            text: 'FEBRERO'
+        },
+        {
+            id: 3,
+            text: 'MARZO'
+        },
+        {
+            id: 4,
+            text: 'ABRIL'
+        },
+        {
+            id: 5,
+            text: 'MAYO'
+        },
+        {
+            id: 6,
+            text: 'JUNIO'
+        },
+        {
+            id: 7,
+            text: 'JULIO'
+        },
+        {
+            id: 8,
+            text: 'AGOSTO'
+        },
+        {
+            id: 9,
+            text: 'SEPTIEMBRE'
+        },
+        {
+            id: 10,
+            text: 'OCTUBRE'
+        },
+        {
+            id: 11,
+            text: 'NOVIEMBRE'
+        },
+        {
+            id: 12,
+            text: 'DICIEMBRE'
+        },
         ];
     </script>
 
-    <body class='hold-transition sidebar-mini layout-fixed sidebar-mini-xs layout-navbar-fixed' style="background-color: #f4f6f9;">
+    <body class='hold-transition sidebar-mini layout-fixed sidebar-mini-xs layout-navbar-fixed'
+        style="background-color: #f4f6f9;">
         <!-- Preloader -->
         <div class='preloader flex-column justify-content-center align-items-center'>
             <img class='animation__shake' src='assets/img/loading.svg' alt='AdminLTELogo' height='80' width='80'>
@@ -184,7 +196,7 @@
             <!-- Content Wrapper.-->
             <div class='content-wrapper'>
                 <?php
-                include_once 'views/inicio.php'  ?>
+                include_once 'views/inicio.php' ?>
             </div>
 
             <?php
@@ -280,9 +292,10 @@
             const isEntrada = <?php echo ($_SESSION["entrada_mul"]) ? 1 : 0; ?>;
             const isSuperAdmin = <?php echo ($_SESSION["s_usuario"]->id_perfil == 1) ? 1 : 0; ?>;
             const bodegueroPorDefecto = <?php echo ($_SESSION["bodeguero"] == null) ? 0 : $_SESSION["bodeguero"]; ?>;
+            const autorizadoPorDefecto = <?php echo ($_SESSION["autorizado"] == null) ? 4 : $_SESSION["autorizado"]; ?>;
             const conductorPorDefecto = <?php echo ($_SESSION["conductor"] == null) ? 0 : $_SESSION["conductor"]; ?>;
 
-            document.addEventListener('click', function() {
+            document.addEventListener('click', function () {
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", "utils/database/save_session.php", true);
                 xhr.send();
@@ -291,7 +304,7 @@
             function checkSession() {
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", "utils/database/check_session.php", true);
-                xhr.onreadystatechange = function() {
+                xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4 && xhr.status == 200) {
                         var response = JSON.parse(xhr.responseText);
                         if (response.status == 'expired') {
@@ -327,13 +340,13 @@
                 scroll = false;
                 // console.log('Cargando contenido: ' + id);
 
-                $('.' + contenedor).load(contenido, function() {
+                $('.' + contenedor).load(contenido, function () {
                     if (tablaData) {
                         // Restaurar los datos de la tabla desde localStorage
                         tabla = $("#" + tbl).DataTable({
                             ...configuracionTable
                         })
-                        tabla.on('draw.dt', function() {
+                        tabla.on('draw.dt', function () {
                             const b = document.body;
                             const s = b.scrollHeight;
                             const w = window.innerHeight;
@@ -355,7 +368,7 @@
                 });
             }
 
-            jQuery.ui.autocomplete.prototype._resizeMenu = function() {
+            jQuery.ui.autocomplete.prototype._resizeMenu = function () {
                 var ul = this.menu.element;
                 ul.outerWidth(this.element.outerWidth());
             }
@@ -441,49 +454,49 @@
                     url: "controllers/salidas.controlador.php",
                     dataSrc: "",
                     type: "POST",
-                    data: function(d) {
+                    data: function (d) {
                         d.accion = accion_salida;
                         d.boleta = id_boleta;
                     }
                 },
                 columnDefs: [{
-                        targets: 0,
-                        data: null,
-                        className: "text-center",
-                        render: function(data, type, row, meta) {
-                            if (type === 'display') {
-                                return meta.row + 1;
-                            }
-                            return meta.row;
+                    targets: 0,
+                    data: null,
+                    className: "text-center",
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            return meta.row + 1;
                         }
-                    },
-                    {
-                        targets: 2,
-                        className: "text-center",
-                    },
-                    {
-                        targets: 3,
-                        className: "text-center ",
-                    },
-                    {
-                        targets: 4,
-                        className: "text-center",
-                        data: null, // Puedes usar "null" si no estás asociando esta columna con un campo específico en tus datos
-                        render: function(data, type, row) {
-                            // Definir el valor del input
-                            let value = (row.retorno === null) ? '' : row.retorno;
+                        return meta.row;
+                    }
+                },
+                {
+                    targets: 2,
+                    className: "text-center",
+                },
+                {
+                    targets: 3,
+                    className: "text-center ",
+                },
+                {
+                    targets: 4,
+                    className: "text-center",
+                    data: null, // Puedes usar "null" si no estás asociando esta columna con un campo específico en tus datos
+                    render: function (data, type, row) {
+                        // Definir el valor del input
+                        let value = (row.retorno === null) ? '' : row.retorno;
 
-                            // Definir el HTML del input
-                            let inputHTML = '<input value="' + value + '" type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline retorno" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" >';
+                        // Definir el HTML del input
+                        let inputHTML = '<input value="' + value + '" type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline retorno" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" >';
 
-                            // Condicional para id_perfil_sistema
-                            if (isEntrada || isSuperAdmin) {
-                                return inputHTML;
-                            } else {
-                                return row.isentrada ? row.retorno : inputHTML;
-                            }
+                        // Condicional para id_perfil_sistema
+                        if (isEntrada || isSuperAdmin) {
+                            return inputHTML;
+                        } else {
+                            return row.isentrada ? row.retorno : inputHTML;
                         }
-                    },
+                    }
+                },
                 ],
             });
 
@@ -492,7 +505,7 @@
                     "url": "controllers/salidas.controlador.php",
                     "type": "POST",
                     "datatype": 'json',
-                    "data": function(d) {
+                    "data": function (d) {
                         d.accion = 7,
                             d.boleta = id_boleta
                     }
@@ -504,29 +517,29 @@
                 "autoWidth": false,
                 "paging": false,
                 columnDefs: [{
-                        targets: 0,
-                        data: 'id',
-                        className: "text-center",
-                    },
-                    {
-                        targets: 1,
-                        className: "text-center",
-                        data: 'codigo'
-                    },
-                    {
-                        targets: 2,
-                        className: "text-center",
-                        data: 'cantidad_salida'
-                    },
-                    {
-                        targets: 3,
-                        className: "text-center",
-                        data: 'unidad'
-                    },
-                    {
-                        targets: 4,
-                        data: 'descripcion'
-                    },
+                    targets: 0,
+                    data: 'id',
+                    className: "text-center",
+                },
+                {
+                    targets: 1,
+                    className: "text-center",
+                    data: 'codigo'
+                },
+                {
+                    targets: 2,
+                    className: "text-center",
+                    data: 'cantidad_salida'
+                },
+                {
+                    targets: 3,
+                    className: "text-center",
+                    data: 'unidad'
+                },
+                {
+                    targets: 4,
+                    data: 'descripcion'
+                },
                 ],
                 processing: true,
                 serverSide: true,
@@ -538,9 +551,9 @@
                     "url": "controllers/entradas.controlador.php",
                     "type": "POST",
                     "datatype": 'json',
-                    "data": function(d) {
+                    "data": function (d) {
                         d.accion = 2,
-                        d.factura = id_boleta
+                            d.factura = id_boleta
                     }
                 },
                 "dom": '<"row"<"col-sm-6"B><"col-sm-6 d-flex justify-content-end align-items-center" <"#contenedor-checkbox_edit"> >>t',
@@ -548,8 +561,8 @@
                 "ordering": false,
                 "responsive": true,
                 "autoWidth": false,
-                "initComplete": function(settings, json) {
-                        const htmlCheckbox = `<label class="d-flex align-items-center justify-content-end py-2 mb-0"  style="color:#5b5b5b; gap:.5rem;cursor:pointer;padding-inline-end:1rem"> 
+                "initComplete": function (settings, json) {
+                    const htmlCheckbox = `<label class="d-flex align-items-center justify-content-end py-2 mb-0"  style="color:#5b5b5b; gap:.5rem;cursor:pointer;padding-inline-end:1rem"> 
                         <span>Importado</span>
                         <label class="switch-2" for="isImportado_edit" style="font-size:.8rem">
                             <input id="isImportado_edit" class="switch__input" type="checkbox" disabled>
@@ -561,56 +574,56 @@
                     // Inyectamos el HTML en el contenedor creado en el DOM
                     $('#contenedor-checkbox_edit').append(htmlCheckbox);
 
-                     $('#isImportado_edit').on('change', function() {
+                    $('#isImportado_edit').on('change', function () {
                         const showExtra = $(this).is(':checked');
-                        const columnasExtra = [5, 6, 7, 8]; 
+                        const columnasExtra = [5, 6, 7, 8];
                         tblDetalleCompra.columns(columnasExtra).visible(showExtra);
                         tblDetalleCompra.draw();
                     });
                 },
                 columnDefs: [{
-                        targets: 0,
-                        data: 'id',
-                        className: "text-center",
-                    },
-                    {
-                        targets: 1,
-                        className: "text-center",
-                        data: 'codigo'
-                    },
-                    {
-                        targets: 2,
-                        className: "text-center",
-                        data: 'cantidad_entrada'
-                    },
-                    {
-                        targets: 3,
-                        className: "text-center",
-                        data: 'unidad'
-                    },
-                    {
-                        targets: 4,
-                        className: "text-center",
-                        data: 'precio'
-                    },
-                    { targets: 5, data: 'precio_envio', className: "text-center envio" , visible: false},
-                    { targets: 6, data: 'precio_carga', className: "text-center cargo" , visible: false},
-                    { targets: 7, data: 'precio_descuento', className: "text-center descuento" , visible: false},
-                    { targets: 8, data: 'precio_iva', className: "text-center impuesto_esp" , visible: false}
+                    targets: 0,
+                    data: 'id',
+                    className: "text-center",
+                },
+                {
+                    targets: 1,
+                    className: "text-center",
+                    data: 'codigo'
+                },
+                {
+                    targets: 2,
+                    className: "text-center",
+                    data: 'cantidad_entrada'
+                },
+                {
+                    targets: 3,
+                    className: "text-center",
+                    data: 'unidad'
+                },
+                {
+                    targets: 4,
+                    className: "text-center",
+                    data: 'precio'
+                },
+                { targets: 5, data: 'precio_envio', className: "text-center envio", visible: false },
+                { targets: 6, data: 'precio_carga', className: "text-center cargo", visible: false },
+                { targets: 7, data: 'precio_descuento', className: "text-center descuento", visible: false },
+                { targets: 8, data: 'precio_iva', className: "text-center impuesto_esp", visible: false }
                 ],
                 processing: true,
                 serverSide: true,
                 buttons: [{
-                        text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
-                        className: "btn btn-light text-danger",
-                        action: function(e, dt, node, config) {
-                            dt.clear().draw(); // Esta línea vacía los datos de la tabla
-                        }
-                    }]
+                    text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
+                    className: "btn btn-light text-danger",
+                    action: function (e, dt, node, config) {
+                        dt.clear().draw(); // Esta línea vacía los datos de la tabla
+                    }
+                }]
 
             });
 
-            $('#tblDetalleSalida').on('draw.dt', function() {
+            $('#tblDetalleSalida').on('draw.dt', function () {
                 // console.log("ID BOLETA EN EL DRA ES: " + id_boleta)
                 if (id_boleta != 0) {
                     $('#tblDetalleSalida').Tabledit({
@@ -638,7 +651,7 @@
                                 action: 'delete'
                             }
                         },
-                        onSuccess: function(data, textStatus, jqXHR) {
+                        onSuccess: function (data, textStatus, jqXHR) {
                             let isSuccess = data.status === 'success';
                             mostrarToast(
                                 data.status,
@@ -663,7 +676,7 @@
                 }
             });
 
-            $('#tblDetalleCompra').on('draw.dt', function() {
+            $('#tblDetalleCompra').on('draw.dt', function () {
                 if (id_boleta != 0) {
                     const esImportado = $('#isImportado_edit').is(':checked');
                     let columnasEditables = [
@@ -676,7 +689,7 @@
                             [5, 'precio_envio'],
                             [6, 'precio_carga'],
                             [7, 'precio_descuento'],
-                            [8, 'precio_iva'] 
+                            [8, 'precio_iva']
                         );
                     }
                     $('#tblDetalleCompra').Tabledit({
@@ -706,7 +719,7 @@
                                 action: 'restore'
                             }
                         },
-                        onSuccess: function(data, textStatus, jqXHR) {
+                        onSuccess: function (data, textStatus, jqXHR) {
                             let isSuccess = data.status === 'success';
                             mostrarToast(
                                 data.status,
@@ -722,7 +735,7 @@
                     })
 
                     const selectorInputs = 'input[name="cantidad_entrada"], input[name="precio_envio"], input[name="precio_descuento"], input[name="precio_carga"], input[name="precio_iva"]';
-        
+
                     $('#tblDetalleCompra').find(selectorInputs).attr({
                         'inputmode': 'numeric',
                         'autocomplete': 'off',
@@ -748,7 +761,7 @@
                 fecha_retorno = document.getElementById('fecha_retorno'),
                 motivo = document.getElementById('inpMotivo');
 
-            $(document).ready(function() {
+            $(document).ready(function () {
                 const nro_guia = document.getElementById('nro_guia'),
                     nro_guiaEntrada = document.getElementById('nro_guiaEntrada'),
                     nro_guiaFab = document.getElementById('nro_guiaFab'),
@@ -756,20 +769,19 @@
                     nro_orden = document.getElementById('nro_orden'),
                     nro_ordenEntrada = document.getElementById('nro_ordenEntrada'),
                     nro_ordenFab = document.getElementById('nro_ordenFab'),
-                    // cboOrdenFab = document.getElementById('cboOrdenFab'),
                     form_guia = document.getElementById('form_guia'),
                     cboProveedor = document.getElementById('cboProveedores'),
                     cboConductor = document.getElementById('cboConductor'),
                     cboConductorEntrada = document.getElementById('cboConductorEntrada'),
                     cboDespachado = document.getElementById('cboDespachado'),
-                    inpAutorizado = document.getElementById('inpAutorizado'),
+                    cboAutorizado = document.getElementById('cboAutorizado'),
                     cboResponsable = document.getElementById('cboResponsable'),
                     btnGuia = document.getElementById('btnGuardarGuia');
-                const audio = document.getElementById("scanner");
+                audio = document.getElementById("scanner");
                 const addProFab = document.getElementById("addProFab")
                 const isTrasFab = document.getElementById('isTrasFab');
 
-                isTrasFab.addEventListener('click', function() {
+                isTrasFab.addEventListener('click', function () {
                     nro_guiaFab.disabled = !isTrasFab.checked;
                 });
 
@@ -806,13 +818,10 @@
                     minimumResultsForSearch: -1,
                 });
 
-                // $(cboAutorizado).select2({
-                //     placeholder: 'SELECCIONE',
-                // });
-
-                // $(cboResponsable).select2({
-                //     placeholder: 'SELECCIONE',
-                // });
+                $(cboAutorizado).select2({
+                    placeholder: 'SELECCIONE',
+                    minimumResultsForSearch: -1,
+                });
 
                 cargarCombo('Proveedores', '', 1, true).then(datos_ => {
                     datos_prove = datos_;
@@ -828,6 +837,7 @@
                 cargarCombo('ConductorEntrada', conductorPorDefecto, 2);
                 cargarCombo('FabricadoCon', '', 9);
                 cargarCombo('Despachado', bodegueroPorDefecto, 6);
+                cargarCombo('Autorizado', autorizadoPorDefecto, 14);
                 cargarCombo('Responsable', '', 7, true).then(datos_ => {
                     datos_person = datos_;
                     $(cboResponsable).select2({
@@ -852,7 +862,7 @@
                     "ordering": false,
                     "autoWidth": false,
                     "paging": false,
-                    "initComplete": function(settings, json) {
+                    "initComplete": function (settings, json) {
                         const htmlCheckbox = `<label class="d-flex align-items-center justify-content-end mb-0"  style="color:#5b5b5b; gap:.5rem;cursor:pointer;padding-inline-end:1rem"> 
                         <span>Importado</span>
                         <label class="switch-2" for="isImportado" style="font-size:.8rem">
@@ -862,165 +872,268 @@
                             </svg>
                         </label>
                     </label>`;
-                    // Inyectamos el HTML en el contenedor creado en el DOM
-                    $('#contenedor-checkbox').append(htmlCheckbox);
+                        // Inyectamos el HTML en el contenedor creado en el DOM
+                        $('#contenedor-checkbox').append(htmlCheckbox);
 
-                    $('#isImportado').on('change', function() {
-                        const isChecked = $(this).is(':checked');
-                        console.log("Checkbox estado:", isChecked);
+                        $('#isImportado').on('change', function () {
+                            const isChecked = $(this).is(':checked');
+                            console.log("Checkbox estado:", isChecked);
 
-                        const showExtra = $(this).is(':checked');
-                        const columnasExtra = [5, 6, 7, 9]; 
-                        tblCompra.columns(columnasExtra).visible(showExtra);
-                        tblCompra.columns(10).visible(!showExtra);
-                        // Ajustar el ancho de las columnas automáticamente tras el cambio
-                        // tblCompra.columns.adjust().responsive.recalc();
-                    });
-                },
+                            const showExtra = $(this).is(':checked');
+                            const columnasExtra = [5, 6, 7, 9];
+                            tblCompra.columns(columnasExtra).visible(showExtra);
+                            tblCompra.columns(10).visible(!showExtra);
+                            // Ajustar el ancho de las columnas automáticamente tras el cambio
+                            // tblCompra.columns.adjust().responsive.recalc();
+                        });
+                    },
                     columnDefs: [{
-                            targets: 0,
-                            data: null,
-                            className: "text-center",
-                            render: function(data, type, row, meta) {
-                                if (type === 'display') {
-                                    return meta.row + 1;
-                                }
-                                return meta.row;
+                        targets: 0,
+                        data: null,
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                            if (type === 'display') {
+                                return meta.row + 1;
                             }
-                        },
-                        {
-                            targets: 1,
-                            visible: false
-                        },
-                        {
-                            targets: 2,
-                            className: "text-center",
-                        },
-                        {
-                            targets: 3,
-                            className: "text-center ",
-                        },
-                        {
-                            targets: 4,
-                            className: "text-center text-nowrap",
-                        },
-                        {
-                            targets: 5,
-                            className: "text-center text-nowrap",
-                            visible: false
-                        },
-                        {
-                            targets: 6,
-                            className: "text-center text-nowrap",
-                            visible: false
-                        },
-                        {
-                            targets: 7,
-                            className: "text-center text-nowrap",
-                            visible: false
-                        },
-                        {
-                            targets: 8,
-                            className: "text-center text-nowrap",
-                        },
-                        {
-                            targets: 9,
-                            className: "text-center text-nowrap",
-                            visible: false
-                        },
-                        {
-                            targets: 10,
-                            className: "text-center text-nowrap",
-                            visible: true
-                        },
+                            return meta.row;
+                        }
+                    },
+                    {
+                        targets: 1,
+                        visible: false
+                    },
+                    {
+                        targets: 2,
+                        className: "text-center",
+                    },
+                    {
+                        targets: 3,
+                        className: "text-center ",
+                    },
+                    {
+                        targets: 4,
+                        className: "text-center text-nowrap",
+                    },
+                    {
+                        targets: 5,
+                        className: "text-center text-nowrap",
+                        visible: false
+                    },
+                    {
+                        targets: 6,
+                        className: "text-center text-nowrap",
+                        visible: false
+                    },
+                    {
+                        targets: 7,
+                        className: "text-center text-nowrap",
+                        visible: false
+                    },
+                    {
+                        targets: 8,
+                        className: "text-center text-nowrap",
+                    },
+                    {
+                        targets: 9,
+                        className: "text-center text-nowrap",
+                        visible: false
+                    },
+                    {
+                        targets: 10,
+                        className: "text-center text-nowrap",
+                        visible: true
+                    },
                     ],
                     buttons: [{
                         text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
                         className: "btn btn-light text-danger",
-                        action: function(e, dt, node, config) {
+                        action: function (e, dt, node, config) {
                             dt.clear().draw(); // Esta línea vacía los datos de la tabla
                         }
                     }]
                 });
 
                 tblOut = $('#tblOut').DataTable({
-                    "dom": '<"row"<"col-sm-8"B><"col-sm-4"p>>t',
+                    "dom": '<"row"<"col-sm-6"B><"col-sm-6 d-flex justify-content-end align-items-center" <"#contenedor-autocomplete-out"> >>t',
                     "responsive": true,
                     "lengthChange": false,
                     "ordering": false,
                     "autoWidth": false,
                     "paging": false,
-                    columnDefs: [{
-                            targets: 0,
-                            data: null,
-                            className: "text-center",
-                            render: function(data, type, row, meta) {
-                                if (type === 'display') {
-                                    return meta.row + 1;
+                    "initComplete": function (settings, json) {
+                        const htmlAuto = `<div class="d-flex align-items-center position-relative w-100" style="max-width: 300px;">
+                            <i class="fa-solid fa-clipboard-list position-absolute" style="left: 10px; color: #6c757d; z-index: 4;"></i>
+                            <input type="text" id="autoSolicitudOut" class="form-control form-control-sm" placeholder="Seleccionar solicitud..." style="padding-left:30px;width:100%;">
+                            <button class="clear-btn-inp" type="button" id="clearBtnAutoSol" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:4;border:none;background:transparent;font-size:1.2rem;line-height:1;padding:0;color:#6c757d;">&times;</button>
+                        </div>`;
+                        $('#contenedor-autocomplete-out').append(htmlAuto);
+
+                        // Lógica del botón clear
+                        $('#clearBtnAutoSol').on('click', function () {
+                            let inp = $('#autoSolicitudOut');
+                            inp.val('');
+                            inp.prop('readonly', false);
+                            $(this).hide();
+
+                            // Habilitar tabla y buscador de productos
+                            $('#div_productos input').prop('readonly', false);
+                            $('#tblOut tbody input.cantidad').prop('readonly', false);
+
+                            // Mostrar columna de acciones
+                            tblOut.column(5).visible(true);
+
+                            // Limpiar tabla 
+                            tblOut.clear().draw();
+
+                            // Limpiar input de orden si fue asignado automáticamente 
+                            let clearButton = document.getElementById('clearButton');
+                            clearButton.click();
+                        });
+
+                        // Extraer lógica de carga a una función global para poder actualizarla
+                        window.actualizarAutocompleteOut = function() {
+                            $.ajax({
+                                url: "controllers/solicitud_mh.controlador.php",
+                                method: "POST",
+                                data: { accion: 16 },
+                                dataType: "json",
+                                success: function (respuesta) {
+                                    // Destruir instancia anterior si existe
+                                    if ($("#autoSolicitudOut").data("ui-autocomplete")) {
+                                        $("#autoSolicitudOut").autocomplete("destroy");
+                                    }
+                                    
+                                    $("#autoSolicitudOut").autocomplete({
+                                        source: respuesta,
+                                        minLength: 0,
+                                        appendTo: "#contenedor-autocomplete-out",
+                                        select: function (event, ui) {
+                                        $(this).val(ui.item.label);
+                                        let id_solicitud = ui.item.id;
+                                        let tipo = ui.item.texto;
+
+                                        // Setear la Orden asociada usando Autocomplete trigger
+                                        let nro_orden = $('#nro_orden');
+                                        if (ui.item.id_orden && nro_orden.data("ui-autocomplete")) {
+                                            let selectedItem = items_orden.find(item => item.cod == ui.item.id_orden);
+                                            if (selectedItem) {
+                                                nro_orden.autocomplete("instance")._trigger("select", null, { item: selectedItem });
+                                            }
+                                        }
+                                        
+                                        $.ajax({
+                                            url: "controllers/solicitud_mh.controlador.php",
+                                            method: "POST",
+                                            data: { accion: 17, id: id_solicitud, tipo: tipo },
+                                            dataType: "json",
+                                            success: function (respuesta) {
+                                                if (respuesta && respuesta.length > 0) {
+                                                    respuesta.forEach((item) => {
+                                                        // Validar si el producto ya existe en tblOut
+                                                        let existingRowOut = tblOut.row("#producto_" + item.codigo);
+                                                        if (existingRowOut.any()) {
+                                                            var cantidadInput = existingRowOut.node().querySelector('.cantidad');
+                                                            cantidadInput.value = parseFloat(cantidadInput.value) + parseFloat(item.cant_apro);
+                                                        } else {
+                                                            let nuevaFila = [
+                                                                '',
+                                                                item.id,
+                                                                `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
+                                                                class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                                                                onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                                                                oninput="validarNumber(this,/[^0-9.]/g)" value="${parseFloat(item.cant_apro)}" readonly>`,
+                                                                item.unidad,
+                                                                item.descripcion,
+                                                                `<center>
+                                                                <span class='btnEliminaRow text-danger' style='cursor:pointer' data-bs-toggle='tooltip' 
+                                                                    data-bs-placement='top' title='Eliminar producto'> 
+                                                                    <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'></i>
+                                                                </span>
+                                                                    </center>`
+                                                            ];
+
+                                                            tblOut.row.add(nuevaFila).node().id = "producto_" + item.codigo;
+                                                        }
+                                                    });
+                                                    try {
+                                                        audio.play();
+                                                    } catch (e) { }
+                                                    tblOut.draw(false);
+
+                                                    // Bloquear tabla, buscador e input actual, mostrar botón X
+                                                    $('#autoSolicitudOut').prop('readonly', true);
+                                                    $('#clearBtnAutoSol').show();
+                                                    $('#div_productos input').prop('readonly', true);
+                                                    $('#tblOut tbody input.cantidad').prop('readonly', true);
+                                                    
+                                                    // Ocultar columna de acciones
+                                                    tblOut.column(5).visible(false);
+
+                                                    mostrarToast("success", "Completado", "fa-check", "Productos agregados a la tabla.");
+                                                } else {
+                                                    mostrarToast("warning", "Aviso", "fa-exclamation", "La solicitud no contiene productos de este tipo.");
+                                                    $('#autoSolicitudOut').val('');
+                                                }
+                                            }
+                                        });
+                                        return false;
+                                    }
+                                }).on('focus', function () {
+                                    if ($(this).val().length >= 1 && !$(this).prop('readonly')) {
+                                        $(this).autocomplete('search', $(this).val());
+                                    }
+                                }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                                    let badgeColor = item.texto === 'MATERIAL' ? 'alert-default-danger' : 'alert-default-warning';
+                                    let content = `<div class="d-flex align-items-center justify-content-between">
+                                        <strong>${item.num_sol}</strong>
+                                        <span class="alert mb-0 ${badgeColor}">${item.texto}</span>
+                                    </div>`;
+                                    
+                                        return $("<li>").append(content).appendTo(ul);
+                                    };
                                 }
-                                return meta.row;
+                            });
+                        };
+
+                        // Llamar la primera vez
+                        window.actualizarAutocompleteOut();
+                    },
+                    columnDefs: [{
+                        targets: 0,
+                        data: null,
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                            if (type === 'display') {
+                                return meta.row + 1;
                             }
-                        },
-                        {
-                            targets: 1,
-                            visible: false
-                        },
-                        {
-                            targets: 2,
-                            className: "text-center",
-                        },
-                        {
-                            targets: 3,
-                            className: "text-center ",
-                        },
-                        {
-                            targets: 5,
-                            className: "text-center",
-                        },
+                            return meta.row;
+                        }
+                    },
+                    {
+                        targets: 1,
+                        visible: false
+                    },
+                    {
+                        targets: 2,
+                        className: "text-center",
+                    },
+                    {
+                        targets: 3,
+                        className: "text-center ",
+                    },
+                    {
+                        targets: 5,
+                        className: "text-center",
+                    },
 
                     ],
                     buttons: [{
-                            text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
-                            className: "btn btn-light text-danger",
-                            action: function(e, dt, node, config) {
-                                dt.clear().draw(); // Esta línea vacía los datos de la tabla
-                            }
-                        },
-                        // {
-                        //     text: "<i class='fa-regular fa-layer-plus fa-xl'></i> Nuevo Prod.",
-                        //     className: "btn btn-light text-success btnNuevoPro",
-                        //     action: function(e, dt, node, config) {
-
-                        //     }
-                        // },
-                        // {
-                        //     text: "<i class='fa-regular fa-hammer fa-xl'></i> Agregar a Prod.",
-                        //     className: "btn btn-light text-info",
-                        //     action: function(e, dt, node, config) {
-                        //         tblOut.rows().every(function() {
-                        //             let row = $(this.node());
-                        //             let rowData = this.data();
-                        //             let inputValue = row.find('input.cantidad').val();
-                        //             rowData[2] = '<input type="text" style="width:82px;border-bottom-width:2px;padding:0;font-size:1.4rem" class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" value="' + inputValue + '">',
-                        //                 // Agregar la fila con los valores actualizados a tblFab
-                        //                 tblFab.row.add([rowData[0], rowData[1], rowData[2], rowData[3], rowData[4], rowData[5]]).draw(false);
-                        //         });
-
-                        //         // Opcional: Limpiar todas las filas de tblOut después de transferir
-                        //         tblOut.clear().draw();
-                        //         $('#modal-fab').modal("show");
-                        //     }
-                        // },
-                        // {
-                        //     text: "<i class='fa-regular fa-building-magnifying-glass fa-xl'></i> Consultar Prod.",
-                        //     className: "btn btn-light text-dark btnAgregarPro",
-                        //     action: function(e, dt, node, config) {
-                        //         // formFabCon.reset();
-                        //         // formFabCon.classList.remove('was-validated');
-                        //         setChange(cboFabricadoCon, 0)
-                        //         $('#modal-consul').modal("show");
-                        //     }
-                        // },
+                        text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
+                        className: "btn btn-light text-danger",
+                        action: function (e, dt, node, config) {
+                            dt.clear().draw(); // Esta línea vacía los datos de la tabla
+                        }
+                    },
                     ]
                 });
 
@@ -1032,41 +1145,41 @@
                     "autoWidth": false,
                     "paging": false,
                     columnDefs: [{
-                            targets: 0,
-                            data: null,
-                            className: "text-center",
-                            render: function(data, type, row, meta) {
-                                if (type === 'display') {
-                                    return meta.row + 1;
-                                }
-                                return meta.row;
+                        targets: 0,
+                        data: null,
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                            if (type === 'display') {
+                                return meta.row + 1;
                             }
-                        },
-                        {
-                            targets: 1,
-                            visible: false
-                        },
-                        {
-                            targets: 2,
-                            className: "text-center",
-                        },
-                        {
-                            targets: 3,
-                            className: "text-center ",
-                        },
-                        {
-                            targets: 5,
-                            className: "text-center",
-                        },
+                            return meta.row;
+                        }
+                    },
+                    {
+                        targets: 1,
+                        visible: false
+                    },
+                    {
+                        targets: 2,
+                        className: "text-center",
+                    },
+                    {
+                        targets: 3,
+                        className: "text-center ",
+                    },
+                    {
+                        targets: 5,
+                        className: "text-center",
+                    },
 
                     ],
                     buttons: [{
                         text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
                         className: "btn btn-light text-danger",
-                        action: function(e, dt, node, config) {
+                        action: function (e, dt, node, config) {
                             dt.clear().draw(); // Esta línea vacía los datos de la tabla
                         }
-                    }, ]
+                    },]
                 });
 
                 tblProdFab = $('#tblProdFab').DataTable({
@@ -1076,57 +1189,57 @@
                     "autoWidth": false,
                     "paging": false,
                     columnDefs: [{
-                            targets: 0,
-                            data: null,
-                            className: 'dt-control',
-                            orderable: false,
-                            defaultContent: '',
-                            render: function(data, type, row, meta) {
-                                if (type === 'display') {
-                                    return meta.row + 1;
-                                }
-                                return meta.row;
+                        targets: 0,
+                        data: null,
+                        className: 'dt-control',
+                        orderable: false,
+                        defaultContent: '',
+                        render: function (data, type, row, meta) {
+                            if (type === 'display') {
+                                return meta.row + 1;
                             }
-                        },
-                        {
-                            targets: 1,
-                            className: "text-center",
-                            render: function(data, type, row) {
-                                return `<input type="text" class="form-control text-center cantidad" value="${data || 1}" 
+                            return meta.row;
+                        }
+                    },
+                    {
+                        targets: 1,
+                        className: "text-center",
+                        render: function (data, type, row) {
+                            return `<input type="text" class="form-control text-center cantidad" value="${data || 1}" 
                                 style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.2rem" maxlength="6"
                                 inputmode="numeric" onfocus="selecTexto(this)" autocomplete="off" oninput="validarNumber(this,/[^0-9.]/g)">`;
-                            }
-                        },
-                        {
-                            targets: 2,
-                            className: "text-center ",
-                            render: function(data, type, row) {
-                                return `<select class="form-control select2 id_unidad" data-dropdown-css-class="select2-dark" required>
+                        }
+                    },
+                    {
+                        targets: 2,
+                        className: "text-center ",
+                        render: function (data, type, row) {
+                            return `<select class="form-control select2 id_unidad" data-dropdown-css-class="select2-dark" required>
                                 </select>`;
-                            }
-                        },
-                        {
-                            targets: 3,
-                            render: function(data, type, row) {
-                                return `<input type="text" class="form-control descripcion" value="${data || ''}" 
+                        }
+                    },
+                    {
+                        targets: 3,
+                        render: function (data, type, row) {
+                            return `<input type="text" class="form-control descripcion" value="${data || ''}" 
                             style="width:100%;border-bottom-width:2px;margin:auto;font-size:1.1rem" 
                             autocomplete="off" onfocus="selecTexto(this)" spellcheck="false">`;
-                            }
-                        },
-                        {
-                            targets: 4,
-                            className: "text-center",
-                            render: function(data, type, row) {
-                                return `<center>
+                        }
+                    },
+                    {
+                        targets: 4,
+                        className: "text-center",
+                        render: function (data, type, row) {
+                            return `<center>
                             <span class='btnEliminaRow text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
                             data-bs-placement='top' title='Eliminar producto'> 
                                 <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
                                 </i> </span>
                             </center>`;
-                            }
                         }
+                    }
                     ],
-                    createdRow: function(row, data, dataIndex) {
+                    createdRow: function (row, data, dataIndex) {
                         const selectElement = $(row).find('.id_unidad');
                         cargarOpcionesSelect(selectElement, data.id_unidad, '100%');
 
@@ -1140,72 +1253,72 @@
                     "autoWidth": false,
                     "paging": false,
                     columnDefs: [{
-                            targets: 0,
-                            data: null,
-                            className: 'dt-control',
-                            orderable: false,
-                            defaultContent: '',
-                            render: function(data, type, row, meta) {
-                                if (type === 'display') {
-                                    return meta.row + 1;
-                                }
-                                return meta.row;
+                        targets: 0,
+                        data: null,
+                        className: 'dt-control',
+                        orderable: false,
+                        defaultContent: '',
+                        render: function (data, type, row, meta) {
+                            if (type === 'display') {
+                                return meta.row + 1;
                             }
-                        },
-                        {
-                            targets: 1,
-                            className: "text-center",
-                            render: function(data, type, row) {
-                                return `<input type="text" class="form-control text-center cantidad" value="${data || 1}" 
+                            return meta.row;
+                        }
+                    },
+                    {
+                        targets: 1,
+                        className: "text-center",
+                        render: function (data, type, row) {
+                            return `<input type="text" class="form-control text-center cantidad" value="${data || 1}" 
                                 style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.2rem" maxlength="6"
                                 inputmode="numeric" onfocus="selecTexto(this)" autocomplete="off" oninput="validarNumber(this,/[^0-9.]/g)">`;
-                            }
-                        },
-                        {
-                            targets: 2,
-                            className: "text-center ",
-                            render: function(data, type, row) {
-                                return `<select class="form-control select2 id_unidad" data-dropdown-css-class="select2-dark" required>
+                        }
+                    },
+                    {
+                        targets: 2,
+                        className: "text-center ",
+                        render: function (data, type, row) {
+                            return `<select class="form-control select2 id_unidad" data-dropdown-css-class="select2-dark" required>
                                 </select>`;
-                            }
-                        },
-                        {
-                            targets: 3,
-                            render: function(data, type, row) {
-                                return `<input type="text" class="form-control descripcion" value="${data || ''}" 
+                        }
+                    },
+                    {
+                        targets: 3,
+                        render: function (data, type, row) {
+                            return `<input type="text" class="form-control descripcion" value="${data || ''}" 
                             style="width:100%;border-bottom-width:2px;margin:auto;font-size:1.1rem" 
                             autocomplete="off" onfocus="selecTexto(this)" spellcheck="false">`;
-                            }
-                        },
-                        {
-                            targets: 4,
-                            visible: false,
-                            render: function(data, type, row) {
-                                return `<input type="text" class="form-control text-center entrada" value="${data || ''}" 
+                        }
+                    },
+                    {
+                        targets: 4,
+                        visible: false,
+                        render: function (data, type, row) {
+                            return `<input type="text" class="form-control text-center entrada" value="${data || ''}" 
                             style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.1rem" 
                             autocomplete="off" onfocus="selecTexto(this)" spellcheck="false">`;
-                            }
-                        },
-                        {
-                            targets: 5,
-                            className: "text-center",
-                            render: function(data, type, row) {
-                                return `<center>
+                        }
+                    },
+                    {
+                        targets: 5,
+                        className: "text-center",
+                        render: function (data, type, row) {
+                            return `<center>
                             <span class='btnEliminaRowFab text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
                             data-bs-placement='top' title='Eliminar producto'> 
                                 <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
                                 </i> </span>
                             </center>`;
-                            }
                         }
+                    }
                     ],
-                    createdRow: function(row, data, dataIndex) {
+                    createdRow: function (row, data, dataIndex) {
                         const selectElement = $(row).find('.id_unidad');
                         cargarOpcionesSelect(selectElement, data[2], '100%');
                     },
                 });
 
-                addProFab.addEventListener('click', function() {
+                addProFab.addEventListener('click', function () {
                     agregarFilaFab();
                 });
 
@@ -1219,7 +1332,7 @@
                                 id_boleta: id_boleta_fab
                             },
                             dataType: "json",
-                            success: function(r) {
+                            success: function (r) {
                                 if (r.status === 'success') {
                                     let nuevaFila = [r.id, '1', '', '', ''];
                                     tblDetalleFab.row.add(nuevaFila).draw(false).node();
@@ -1251,7 +1364,7 @@
                     return (isEntrada ? '' : textLabel) + tableHtml;
                 }
 
-                $('#tblProdFab tbody').on('click', 'td.dt-control', function() {
+                $('#tblProdFab tbody').on('click', 'td.dt-control', function () {
                     let tr = $(this).closest('tr'); // Encuentra la fila más cercana
                     let row = tblProdFab.row(tr); // Obtiene la fila de DataTable
                     let rowData = row.data(); // Obtiene los datos de la fila
@@ -1277,42 +1390,42 @@
                                 paging: false,
                                 data: null,
                                 columnDefs: [{
-                                        targets: 0,
-                                        title: "N°",
-                                        data: null,
-                                        render: function(data, type, row, meta) {
-                                            return type === 'display' ? meta.row + 1 : meta.row;
-                                        }
-                                    },
-                                    {
-                                        targets: 1,
-                                        title: "CODIGO",
-                                        visible: false
-                                    },
-                                    {
-                                        targets: 2,
-                                        title: "CANT."
-                                    },
-                                    {
-                                        targets: 3,
-                                        title: "UND",
-                                        className: "text-center"
-                                    },
-                                    {
-                                        targets: 4,
-                                        title: "DESCRIPCION",
-                                        className: "text-center"
-                                    },
-                                    {
-                                        targets: 5,
-                                        title: "ENTRADA",
-                                        className: "text-center"
-                                    },
-                                    {
-                                        targets: 6,
-                                        title: "ACCIONES",
-                                        className: "text-center"
+                                    targets: 0,
+                                    title: "N°",
+                                    data: null,
+                                    render: function (data, type, row, meta) {
+                                        return type === 'display' ? meta.row + 1 : meta.row;
                                     }
+                                },
+                                {
+                                    targets: 1,
+                                    title: "CODIGO",
+                                    visible: false
+                                },
+                                {
+                                    targets: 2,
+                                    title: "CANT."
+                                },
+                                {
+                                    targets: 3,
+                                    title: "UND",
+                                    className: "text-center"
+                                },
+                                {
+                                    targets: 4,
+                                    title: "DESCRIPCION",
+                                    className: "text-center"
+                                },
+                                {
+                                    targets: 5,
+                                    title: "ENTRADA",
+                                    className: "text-center"
+                                },
+                                {
+                                    targets: 6,
+                                    title: "ACCIONES",
+                                    className: "text-center"
+                                }
                                 ]
                             });
                         }
@@ -1320,9 +1433,9 @@
                         // Evitar la reinicialización del autocompletado
                         let searchBox = $(`#search-${idUnico}`);
                         if (!searchBox.data("ui-autocomplete")) {
-                            cargarAutocompletado(function(items) {
+                            cargarAutocompletado(function (items) {
                                 searchBox.autocomplete({
-                                    source: function(request, response) {
+                                    source: function (request, response) {
                                         const input = request.term.toLowerCase().trim();
 
                                         // Detectar patrón "número x número" (dimensiones)
@@ -1390,14 +1503,14 @@
                                     },
                                     minLength: 3,
                                     autoFocus: true,
-                                    focus: function() {
+                                    focus: function () {
                                         return false;
                                     },
-                                    select: function(event, ui) {
+                                    select: function (event, ui) {
                                         CargarProductos(ui.item.cod, null, $(tablaId).DataTable(), '', true);
                                         return false;
                                     }
-                                }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                                }).data("ui-autocomplete")._renderItem = function (ul, item) {
                                     let cantidad = (item.cantidad || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                                     const $node = $("<li>");
                                     const $inner = $("<div style='display:flex;align-items:center;gap:10px;padding:4px 6px;'>");
@@ -1411,14 +1524,14 @@
                                             borderRadius: '4px',
                                             cursor: 'pointer'
                                         });
-                                        $thumb.on('click', function(e) {
+                                        $thumb.on('click', function (e) {
                                             e.preventDefault();
                                             e.stopPropagation();
                                             e.stopImmediatePropagation();
                                             $('#imgProductoModal').attr('src', $(this).attr('data-img-src'));
                                             $('#modalImagenTitulo').text($(this).attr('data-img-label'));
                                             // Asegura que Bootstrap modal se dispare después de actualizar contenido
-                                            setTimeout(function() {
+                                            setTimeout(function () {
                                                 if (!$('#modalImagenProducto').hasClass('show')) {
                                                     $('#modalImagenProducto').modal('show');
                                                 }
@@ -1439,7 +1552,7 @@
                     }
                 });
 
-                $('#tblDetalleFab tbody').on('click', 'td.dt-control', function() {
+                $('#tblDetalleFab tbody').on('click', 'td.dt-control', function () {
                     let tr = $(this).closest('tr');
                     let row = tblDetalleFab.row(tr);
                     let rowData = row.data();
@@ -1456,9 +1569,9 @@
                             let searchBox = $(`#search-${idUnico}`);
                             // Evitar reinicialización del autocompletado
                             if (!searchBox.data("ui-autocomplete")) {
-                                cargarAutocompletado(function(items) {
+                                cargarAutocompletado(function (items) {
                                     searchBox.autocomplete({
-                                        source: function(request, response) {
+                                        source: function (request, response) {
                                             const input = request.term.toLowerCase().trim();
                                             const palabras = input.split(/\s+/);
 
@@ -1471,14 +1584,14 @@
                                         },
                                         minLength: 3,
                                         autoFocus: true,
-                                        focus: function() {
+                                        focus: function () {
                                             return false;
                                         },
-                                        select: function(event, ui) {
+                                        select: function (event, ui) {
                                             CargarProductos(ui.item.cod, null, $(tablaId).DataTable(), id_prod_fab, true);
                                             return false;
                                         }
-                                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                                    }).data("ui-autocomplete")._renderItem = function (ul, item) {
                                         // console.log(item);
                                         let res = item.cantidad.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                                         return $("<li>").append(
@@ -1498,11 +1611,11 @@
                                     url: "controllers/inventario.controlador.php",
                                     dataSrc: "",
                                     type: "POST",
-                                    data: function(d) {
+                                    data: function (d) {
                                         d.accion = 11;
                                         d.id_producto_fab = id_prod_fab;
                                     },
-                                    dataSrc: function(json) {
+                                    dataSrc: function (json) {
                                         // console.log("✅ Datos cargados:", json);
                                         $(tablaId).data('originalData', json); // Guardamos los datos originales
                                         // console.log($(tablaId).data('originalData'));
@@ -1521,77 +1634,77 @@
 
                                 // },
                                 columns: [{
-                                        title: "N°",
-                                        data: null,
-                                        render: function(data, type, row, meta) {
-                                            return meta.row + 1;
-                                        }
-                                    },
-                                    {
-                                        title: "CODIGO",
-                                        data: "codigo",
-                                        visible: false
-                                    },
-                                    {
-                                        title: "DESCRIPCION",
-                                        data: "descripcion"
-                                    },
-                                    {
-                                        title: "UND",
-                                        data: "unidad",
-                                        className: "text-center"
-                                    },
+                                    title: "N°",
+                                    data: null,
+                                    render: function (data, type, row, meta) {
+                                        return meta.row + 1;
+                                    }
+                                },
+                                {
+                                    title: "CODIGO",
+                                    data: "codigo",
+                                    visible: false
+                                },
+                                {
+                                    title: "DESCRIPCION",
+                                    data: "descripcion"
+                                },
+                                {
+                                    title: "UND",
+                                    data: "unidad",
+                                    className: "text-center"
+                                },
 
-                                    // {
-                                    //     title: "SALIDA",
-                                    //     data: "cantidad_salida",
-                                    //     className: "text-center",
-                                    //     render: function(data, type, row) {
-                                    //         return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
-                                    //         class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
-                                    //         onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                                    //         oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
-                                    //     }
-                                    // },
-                                    {
-                                        title: "SALIDA",
-                                        data: "cantidad_salida",
-                                        className: "text-center",
-                                        render: function(data, type, row) {
-                                            return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
+                                // {
+                                //     title: "SALIDA",
+                                //     data: "cantidad_salida",
+                                //     className: "text-center",
+                                //     render: function(data, type, row) {
+                                //         return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
+                            //         class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                            //         onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                            //         oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
+                                //     }
+                                // },
+                                {
+                                    title: "SALIDA",
+                                    data: "cantidad_salida",
+                                    className: "text-center",
+                                    render: function (data, type, row) {
+                                        return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
                                             class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
                                             onpate="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
                                             oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
-                                        }
-                                    },
-                                    {
-                                        title: "ENTRADA",
-                                        data: 'retorno',
-                                        className: "text-center",
-                                        render: function(data, type, row) {
-                                            data = (data === '-') ? '' : data;
-                                            return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
+                                    }
+                                },
+                                {
+                                    title: "ENTRADA",
+                                    data: 'retorno',
+                                    className: "text-center",
+                                    render: function (data, type, row) {
+                                        data = (data === '-') ? '' : data;
+                                        return `<input type="text" style="width:102px;border-bottom-width:2px;margin:auto;font-size:1.4rem"  
                                             class="form-control text-center d-inline cantidad_retorno" inputmode="numeric" autocomplete="off" 
                                             onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
                                             oninput="validarNumber(this,/[^0-9.]/g)" value="${data}">`;
-                                        }
-                                    },
+                                    }
+                                },
 
-                                    {
-                                        title: "ACCIONES",
-                                        data: null,
-                                        className: "text-center",
-                                        render: function(data, type, row) {
-                                            return `<center>
+                                {
+                                    title: "ACCIONES",
+                                    data: null,
+                                    className: "text-center",
+                                    render: function (data, type, row) {
+                                        return `<center>
                                     <span class='btnEliminaRowServer text-danger' style='cursor:pointer;' data-bs-toggle='tooltip' 
                                     data-bs-placement='top' title='Eliminar producto'> 
                                         <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'> 
                                         </i> </span>
                                     </center>`;
-                                        }
                                     }
+                                }
                                 ],
-                                createdRow: function(row, data, dataIndex) {
+                                createdRow: function (row, data, dataIndex) {
                                     $(row).attr('id', 'producto_' + data.codigo);
                                 }
                             });
@@ -1604,21 +1717,21 @@
 
                 $('#tblOut').on('keydown', 'input.cantidad', moveFocusOnTab);
 
-                $(document).on('click', '.btnEliminaRow', function() {
+                $(document).on('click', '.btnEliminaRow', function () {
                     let tabla = $(this).closest('table').DataTable(); // Obtener la DataTable correspondiente
                     tabla.row($(this).closest('tr')).remove().draw(); // Eliminar la fila seleccionada
                 });
 
-                $(document).on('click', '.btnEliminaRowFab', function() {
+                $(document).on('click', '.btnEliminaRowFab', function () {
                     const e = obtenerFila(this, tblDetalleFab)
                     const row = $(this);
                     const id = e[0];
                     let src = new FormData();
                     src.append('accion', 2);
                     src.append('id', id);
-                    confirmarEliminar('este', 'producto fabricado y los productos utilizados', function(res) {
+                    confirmarEliminar('este', 'producto fabricado y los productos utilizados', function (res) {
                         if (res) {
-                            confirmarAccion(src, 'fabricacion', null, '', function(res) {
+                            confirmarAccion(src, 'fabricacion', null, '', function (res) {
                                 if (res) {
                                     cargarAutocompletado();
                                     tblDetalleFab.row(row.closest('tr')).remove().draw();
@@ -1628,7 +1741,7 @@
                     });
                 });
 
-                $(document).on('click', '.btnEliminaRowServer', function() {
+                $(document).on('click', '.btnEliminaRowServer', function () {
                     let tablaUni = $(this).closest('table').DataTable(); // Obtener la DataTable correspondiente
                     const e = obtenerFila(this, tablaUni)
                     const row = $(this);
@@ -1642,9 +1755,9 @@
                     let src = new FormData();
                     src.append('accion', 4);
                     src.append('id', id_row_d);
-                    confirmarEliminar('este', 'producto utilizado', function(res) {
+                    confirmarEliminar('este', 'producto utilizado', function (res) {
                         if (res) {
-                            confirmarAccion(src, 'fabricacion', null, '', function(res) {
+                            confirmarAccion(src, 'fabricacion', null, '', function (res) {
                                 if (res) {
                                     cargarAutocompletado();
                                     tablaUni.row(row.closest('tr')).remove().draw();
@@ -1654,46 +1767,12 @@
                     });
                 });
 
-                // const clearButton = document.getElementById("clearButton"),
-                //     clearButtonFab = document.getElementById("clearButtonFab"),
-                //     clearButtonEntrada = document.getElementById("clearButtonEntrada");
-                // nro_orden.addEventListener("mouseenter", function() {
-                //     if (nro_orden.readOnly) {
-                //         clearButton.style.display = "block";
-                //     }
-                // });
-
-                // // Ocultar la X cuando el mouse sale del input
-                // nro_orden.addEventListener("mouseleave", function() {
-                //     clearButton.style.display = "none";
-                // });
-                // clearButton.addEventListener("click", function() {
-                //     nro_orden.readOnly = false; // Desbloquea el input
-                //     nro_orden.value = "";
-                //     nro_orden.focus();
-                //     clearButton.style.display = "none"; // Oculta la X
-                // });
-
-                // clearButtonEntrada.addEventListener("click", function() {
-                //     nro_ordenEntrada.readOnly = false; // Desbloquea el input
-                //     nro_ordenEntrada.value = "";
-                //     nro_ordenEntrada.focus()
-                //     clearButtonEntrada.style.display = "none"; // Oculta la X
-                // });
-
-                // clearButtonFab.addEventListener("click", function() {
-                //     nro_ordenFab.readOnly = false; // Desbloquea el input
-                //     nro_ordenFab.value = "";
-                //     nro_ordenFab.focus()
-                //     clearButtonFab.style.display = "none"; // Oculta la X
-                // });
-
-                cargarAutocompletado(function(items) {
+                cargarAutocompletado(function (items) {
                     $(inputauto).autocomplete({
                         // source: items,
                         autoFocus: true,
                         minLength: 3,
-                        source: function(request, response) {
+                        source: function (request, response) {
                             const input = request.term.toLowerCase().trim();
 
                             // Detectar patrón "número x número" (dimensiones)
@@ -1761,20 +1840,20 @@
 
                             response(resultados);
                         },
-                        focus: function() {
+                        focus: function () {
                             return false;
                         },
-                        select: function(event, ui) {
+                        select: function (event, ui) {
                             CargarProductos(ui.item.cod);
                             valid_orden = true;
                             return false;
                         },
-                    }).on('focus', function() {
+                    }).on('focus', function () {
                         // Mostrar listado al retomar el foco si hay 3+ caracteres
                         if ($(this).val().length >= 3) {
                             $(this).autocomplete('search', $(this).val());
                         }
-                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                    }).data("ui-autocomplete")._renderItem = function (ul, item) {
                         let cantidad = (item.cantidad || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                         const $node = $("<li>");
                         const $inner = $("<div style='display:flex;align-items:center;gap:10px;padding:4px 6px;cursor:pointer;'>");
@@ -1788,14 +1867,14 @@
                                 borderRadius: '4px',
                                 cursor: 'pointer'
                             });
-                            $thumb.on('click', function(e) {
+                            $thumb.on('click', function (e) {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 e.stopImmediatePropagation();
                                 $('#imgProductoModal').attr('src', $(this).attr('data-img-src'));
                                 $('#modalImagenTitulo').text($(this).attr('data-img-label'));
                                 // Asegura que Bootstrap modal se dispare después de actualizar contenido
-                                setTimeout(function() {
+                                setTimeout(function () {
                                     if (!$('#modalImagenProducto').hasClass('show')) {
                                         $('#modalImagenProducto').modal('show');
                                     }
@@ -1813,168 +1892,41 @@
                     };
                 });
 
-                cargarAutocompletado(function(items) {
+                // Callbacks defined here for reuse
+                const onSelectOrden = function (event, ui) {
+                    nro_orden.value = ui.item.label;
+                    nro_orden.readOnly = true;
+                    id_orden_guia_salida = ui.item.cod;
+                    nro_orden.parentNode.querySelector(".ten").style.display = "none";
+                    let clearButton = document.getElementById('clearButton');
+                    clearButton.style.display = "block";
+                    nro_orden.focus();
+                    return false;
+                };
+
+                const onSelectOrdenEntrada = function (event, ui) {
+                    nro_ordenEntrada.value = ui.item.label;
+                    nro_ordenEntrada.readOnly = true;
+                    id_orden_guia_entrada = ui.item.cod;
+                    let clearButtonEntrada = document.getElementById('clearButtonEntrada');
+                    clearButtonEntrada.style.display = "block";
+                    return false;
+                };
+
+                const onSelectOrdenFab = function (event, ui) {
+                    nro_ordenFab.value = ui.item.label;
+                    nro_ordenFab.readOnly = true;
+                    id_orden_guia_fab = ui.item.cod;
+                    let clearButtonFab = document.getElementById('clearButtonFab');
+                    clearButtonFab.style.display = "block";
+                    return false;
+                };
+
+                cargarAutocompletado(function (items) {
                     items_orden = items;
-                    // Configuración común para los autocompletes de orden
-                    const sourceFunction = function(request, response) {
-                        const input = request.term.toLowerCase().trim();
-                        const resultados = items.filter(item => {
-                            const label = item.label.toLowerCase();
-                            const codigo = (item.cod || '').toString().toLowerCase();
-                            return label.includes(input) || codigo.includes(input);
-                        }).sort((a, b) => {
-                            const labelA = a.label.toLowerCase();
-                            const labelB = b.label.toLowerCase();
-                            const inputLower = input.toLowerCase();
-                            const posA = labelA.indexOf(inputLower);
-                            const posB = labelB.indexOf(inputLower);
-                            if (posA === 0 && posB !== 0) return -1;
-                            if (posA !== 0 && posB === 0) return 1;
-                            return posA - posB;
-                        });
-                        response(resultados);
-                    };
-
-                    $(nro_orden).autocomplete({
-                        source: sourceFunction,
-                        minLength: 1,
-                        autoFocus: true,
-                        focus: function() {
-                            return false;
-                        },
-                        select: function(event, ui) {
-                            nro_orden.value = ui.item.label;
-                            nro_orden.readOnly = true;
-                            id_orden_guia_salida = ui.item.cod;
-                            nro_orden.parentNode.querySelector(".ten").style.display = "none";
-                            clearButton.style.display = "block";
-                            nro_orden.focus();
-                            return false;
-                        },
-                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                        const $li = $("<li>");
-                        const $div = $("<div style='flex-direction:column'>");
-                        // Línea principal: Número de orden + Cliente
-                        const $title = $("<div style='font-weight:600;white-space:normal; word-wrap:break-word;line-height:1.4'>");
-                        $title.text(item.label);
-                        // Línea de descripción
-                        let $descHtml = '';
-                        if (item.descripcion_orden && item.descripcion_orden.trim() !== '') {
-                            const $desc = $("<div style='font-size: 0.8rem;color: #7c8b8c; margin-bottom:8px;white-space:normal;word-wrap:break-word;line-height:1.3;'>");
-                            $desc.text(item.descripcion_orden);
-                            $descHtml = $desc;
-                        }
-                        // Línea secundaria: Estado y Año con mejor espaciado
-                        const $details = $("<div style='display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; gap: 15px;'>");
-                        const $estado = $("<span style='color:#828282; font-weight: 600;'>").html("ESTADO: <strong style='color: #007bff; font-weight: 700;'>" + item.cantidad + "</strong>");
-                        const $anio = $("<span style='color:#999;font-weight:500'>AÑO: <span style='color:#666;'>" + item.anio + "</span></span>");
-                        
-                        $details.append($estado).append($anio);
-                        $div.append($title);
-
-                        if ($descHtml) {
-                            $div.append($descHtml);
-                        }
-
-                        $div.append($details);
-                        $li.append($div);
-                        
-                        return $li.appendTo(ul);
-                    };
-
-                    $(nro_ordenEntrada).autocomplete({
-                        source: sourceFunction,
-                        minLength: 1,
-                        autoFocus: true,
-                        focus: function() {
-                            return false;
-                        },
-                        select: function(event, ui) {
-                            nro_ordenEntrada.value = ui.item.label;
-                            nro_ordenEntrada.readOnly = true;
-                            id_orden_guia_entrada = ui.item.cod;
-                            clearButtonEntrada.style.display = "block";
-                            return false;
-                        },
-                    }).on('focus', function() {
-                        if ($(this).val().length >= 1) {
-                            $(this).autocomplete('search', $(this).val());
-                        }
-                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                        const $li = $("<li>");
-                        const $div = $("<div style='flex-direction:column;'>");
-                        // Línea principal: Número de orden + Cliente
-                        const $title = $("<div style='font-weight: 600; white-space: normal; word-wrap:break-word; line-height: 1.4;'>");
-                        $title.text(item.label);
-                        // Línea de descripción
-                        let $descHtml = '';
-                        if (item.descripcion_orden && item.descripcion_orden.trim() !== '') {
-                            const $desc = $("<div style='font-size: 0.8rem; color: #7c8b8c; margin-bottom: 8px; white-space: normal; word-wrap: break-word; line-height: 1.3;'>");
-                            $desc.text(item.descripcion_orden);
-                            $descHtml = $desc;
-                        }
-                        // Línea secundaria: Estado y Año con mejor espaciado
-                        const $details = $("<div style='display:flex;justify-content:space-between;align-items:center; font-size:0.85rem;gap:15px;'>");
-                        const $estado = $("<span style='color:#828282;font-weight:600;'>").html("ESTADO: <strong style='color: #007bff; font-weight: 700;'>" + item.cantidad + "</strong>");
-                        const $anio = $("<span style='color:#999;font-weight:500'>AÑO: <span style='color:#666;'>" + item.anio + "</span></span>");
-                        $details.append($estado).append($anio);
-                        $div.append($title);
-                        if ($descHtml) {
-                            $div.append($descHtml);
-                        }
-                        $div.append($details);
-                        $li.append($div);
-                        return $li.appendTo(ul);
-                    };
-                    
-                    $(nro_ordenFab).autocomplete({
-                        source: sourceFunction,
-                        minLength: 1,
-                        autoFocus: true,
-                        focus: function() {
-                            return false;
-                        },
-                        select: function(event, ui) {
-                            nro_ordenFab.value = ui.item.label;
-                            nro_ordenFab.readOnly = true;
-                            id_orden_guia_fab = ui.item.cod;
-                            clearButtonFab.style.display = "block";
-                            return false;
-                        },
-                    }).on('focus', function() {
-                        // Al retomar el foco, mostrar el listado si hay valor
-                        if ($(this).val().length >= 1) {
-                            $(this).autocomplete('search', $(this).val());
-                        }
-                    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                        const $li = $("<li class='autocomplete-item-orden'>");
-                        const $div = $("<div style='flex-direction:column'>");
-                        // Línea principal: Número de orden + Cliente
-                        const $title = $("<div style='font-weight:600;white-space:normal;word-wrap:break-word;line-height:1.4;'>");
-                        $title.text(item.label);
-                        // Línea de descripción
-                        let $descHtml = '';
-                        if (item.descripcion_orden && item.descripcion_orden.trim() !== '') {
-                            const $desc = $("<div style='font-size: 0.8rem; color: #7c8b8c; margin-bottom: 8px; white-space: normal; word-wrap: break-word; line-height: 1.3;'>");
-                            $desc.text(item.descripcion_orden);
-                            $descHtml = $desc;
-                        }
-                        
-                        // Línea secundaria: Estado y Año con mejor espaciado
-                        const $details = $("<div style='display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; gap: 15px;'>");
-                        const $estado = $("<span style='color:#828282; font-weight: 600;'>").html("ESTADO: <strong style='color: #007bff; font-weight: 700;'>" + item.cantidad + "</strong>");
-                        const $anio = $("<span style='color: #999; font-weight: 500;'>AÑO: <span style='color: #666;'>" + item.anio + "</span></span>");
-                        
-                        $details.append($estado).append($anio);
-                        $div.append($title);
-                        if ($descHtml) {
-                            $div.append($descHtml);
-                        }
-                        $div.append($details);
-                        $li.append($div);
-                        
-                        return $li.appendTo(ul);
-                    };
+                    setupOrdenAutocomplete(nro_orden, items, onSelectOrden);
+                    setupOrdenAutocomplete(nro_ordenEntrada, items, onSelectOrdenEntrada);
+                    setupOrdenAutocomplete(nro_ordenFab, items, onSelectOrdenFab);
                 }, null, 'orden', 6)
 
                 let action;
@@ -2000,7 +1952,7 @@
                     card_conductor = document.getElementById('card_conductor'),
                     card_conductorEntrada = document.getElementById('card_conductorE');
 
-                form_guia.addEventListener("submit", function(e) {
+                form_guia.addEventListener("submit", function (e) {
                     e.preventDefault();
                     btnGuia.click();
                 });
@@ -2010,7 +1962,7 @@
                     if (selectedTab === '1') {
                         let elementosAValidar = [fecha, cboProveedor, nro_factura];
                         let isValid = true;
-                        elementosAValidar.forEach(function(elemento) {
+                        elementosAValidar.forEach(function (elemento) {
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
@@ -2032,16 +1984,16 @@
                         formData.append('fecha', fecha.value);
                         formData.append('is_importado', isImportado ? 1 : 0);
                         formData.append('accion', 1);
-                        realizarRegistro(tblCompra, formData, clases, 1, 'productos', function(r) {
+                        realizarRegistro(tblCompra, formData, clases, 1, 'productos', function (r) {
                             if (r) {
                                 form_guia.classList.remove('was-validated');
                                 limpiar();
                             }
                         });
                     } else if (selectedTab === '2') {
-                        let elementosAValidar = [fecha, nro_guia, cboDespachado, cboConductor, inpAutorizado];
+                        let elementosAValidar = [fecha, nro_guia, cboDespachado, cboConductor, cboAutorizado];
                         let isValid = true;
-                        elementosAValidar.forEach(function(elemento) {
+                        elementosAValidar.forEach(function (elemento) {
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
@@ -2063,7 +2015,7 @@
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
-                        formData.append('autorizado', inpAutorizado.value);
+                        formData.append('autorizado', cboAutorizado.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 2);
@@ -2072,41 +2024,23 @@
                                 formData.append(`imagenes[${index}]`, file, file.name);
                             }
                         });
-                        realizarRegistro(tblOut, formData, clases, 1, 'productos', function(r) {
+                        realizarRegistro(tblOut, formData, clases, 1, 'productos', function (r) {
                             if (r) {
                                 dropzone.removeAllFiles(false);
                                 form_guia.classList.remove('was-validated');
                                 limpiar();
-                                cargarAutocompletado(function(items, filterType) {
+                                cargarAutocompletado(function (items, filterType) {
                                     items_orden = items;
-                                    const sourceFunction = function(request, response) {
-                                        const input = request.term.toLowerCase().trim();
-                                        const resultados = items.filter(item => {
-                                            const label = item.label.toLowerCase();
-                                            const codigo = (item.cod || '').toString().toLowerCase();
-                                            return label.includes(input) || codigo.includes(input);
-                                        }).sort((a, b) => {
-                                            const labelA = a.label.toLowerCase();
-                                            const labelB = b.label.toLowerCase();
-                                            const inputLower = input.toLowerCase();
-                                            const posA = labelA.indexOf(inputLower);
-                                            const posB = labelB.indexOf(inputLower);
-                                            if (posA === 0 && posB !== 0) return -1;
-                                            if (posA !== 0 && posB === 0) return 1;
-                                            return posA - posB;
-                                        });
-                                        response(resultados);
-                                    };
-                                    $('#nro_orden').autocomplete("option", "source", sourceFunction);
-                                    $('#nro_ordenEntrada').autocomplete("option", "source", sourceFunction);
-                                    $('#nro_ordenFab').autocomplete("option", "source", sourceFunction);
+                                    setupOrdenAutocomplete(nro_orden, items, onSelectOrden);
+                                    setupOrdenAutocomplete(nro_ordenEntrada, items, onSelectOrdenEntrada);
+                                    setupOrdenAutocomplete(nro_ordenFab, items, onSelectOrdenFab);
                                 }, null, 'orden', 6)
                             }
                         });
                     } else if (selectedTab === '3') {
-                        let elementosAValidar = [fecha_retorno, inpAutorizado];
+                        let elementosAValidar = [fecha_retorno, cboAutorizado];
                         let isValid = true;
-                        elementosAValidar.forEach(function(elemento) {
+                        elementosAValidar.forEach(function (elemento) {
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
@@ -2120,46 +2054,28 @@
                         formData.append('nro_guia', nro_guiaEntrada.value);
                         formData.append('conductor', cboConductorEntrada.value);
                         formData.append('responsable', cboResponsable.value);
-                        formData.append('autorizado', inpAutorizado.value);
+                        formData.append('autorizado', cboAutorizado.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('fecha', fecha.value);
                         formData.append('accion', 8);
-                        realizarRegistro(tblIn, formData, clases, 1, 'productos', function(r) {
+                        realizarRegistro(tblIn, formData, clases, 1, 'productos', function (r) {
                             if (r) {
                                 dropzone.removeAllFiles(false);
                                 limpiar();
-                                cargarAutocompletado(function(items, filterType) {
+                                cargarAutocompletado(function (items, filterType) {
                                     items_orden = items;
-                                    const sourceFunction = function(request, response) {
-                                        const input = request.term.toLowerCase().trim();
-                                        const resultados = items.filter(item => {
-                                            const label = item.label.toLowerCase();
-                                            const codigo = (item.cod || '').toString().toLowerCase();
-                                            return label.includes(input) || codigo.includes(input);
-                                        }).sort((a, b) => {
-                                            const labelA = a.label.toLowerCase();
-                                            const labelB = b.label.toLowerCase();
-                                            const inputLower = input.toLowerCase();
-                                            const posA = labelA.indexOf(inputLower);
-                                            const posB = labelB.indexOf(inputLower);
-                                            if (posA === 0 && posB !== 0) return -1;
-                                            if (posA !== 0 && posB === 0) return 1;
-                                            return posA - posB;
-                                        });
-                                        response(resultados);
-                                    };
-                                    $('#nro_orden').autocomplete("option", "source", sourceFunction);
-                                    $('#nro_ordenEntrada').autocomplete("option", "source", sourceFunction);
-                                    $('#nro_ordenFab').autocomplete("option", "source", sourceFunction);
+                                    setupOrdenAutocomplete(nro_orden, items, onSelectOrden);
+                                    setupOrdenAutocomplete(nro_ordenEntrada, items, onSelectOrdenEntrada);
+                                    setupOrdenAutocomplete(nro_ordenFab, items, onSelectOrdenFab);
                                 }, null, 'orden', 6)
                             }
                         });
                     } else if (selectedTab === '4') {
-                        let elementosAValidar = [fecha, nro_orden, nro_guia, cboDespachado, cboResponsable, cboConductor, inpAutorizado];
+                        let elementosAValidar = [fecha, nro_orden, nro_guia, cboDespachado, cboResponsable, cboConductor, cboAutorizado];
                         let isValid = true;
-                        elementosAValidar.forEach(function(elemento) {
+                        elementosAValidar.forEach(function (elemento) {
                             console.log(elemento);
                             if (!elemento.checkValidity()) {
                                 isValid = false;
@@ -2176,7 +2092,7 @@
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
-                        formData.append('autorizado', inpAutorizado.value);
+                        formData.append('autorizado', cboAutorizado.value);
                         formData.append('fecha', fecha.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('accion', 4);
@@ -2193,7 +2109,7 @@
                             dataType: "json",
                             contentType: false,
                             processData: false,
-                            success: function(r) {
+                            success: function (r) {
                                 let isSuccess = r.status === "success";
 
                                 mostrarToast(r.status,
@@ -2212,7 +2128,7 @@
                     } else if (selectedTab === '5') {
                         let elementosAValidar = [fecha, cboProveedor, nro_factura];
                         let isValid = true;
-                        elementosAValidar.forEach(function(elemento) {
+                        elementosAValidar.forEach(function (elemento) {
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
@@ -2234,7 +2150,7 @@
                             dataType: "json",
                             contentType: false,
                             processData: false,
-                            success: function(r) {
+                            success: function (r) {
                                 let isSuccess = r.status === "success";
                                 mostrarToast(r.status,
                                     isSuccess ? "Completado" : "Error",
@@ -2253,15 +2169,15 @@
                         formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('nro_guia', nro_guia.value)
                         formData.append('accion', 3);
-                        realizarRegistro(tblReturn, formData, clases, 0, 'productos', function(response) {
+                        realizarRegistro(tblReturn, formData, clases, 0, 'productos', function (response) {
                             if (response) {
                                 btnCancelarTrans.click();
                             }
                         });
                     } else if (selectedTab === '7') {
-                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab, inpAutorizado];
+                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab, cboAutorizado];
                         let isValid = true;
-                        elementosAValidar.forEach(function(elemento) {
+                        elementosAValidar.forEach(function (elemento) {
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
@@ -2270,7 +2186,7 @@
                         if (!isValid) {
                             return;
                         }
-                        tblProdFab.rows().every(function() {
+                        tblProdFab.rows().every(function () {
                             let row = this;
                             let tr = $(row.node());
                             let rowData = row.data(); // Obtiene los datos de la fila
@@ -2280,7 +2196,7 @@
                         // Ahoa obtenemos los datos
                         let datosPrincipales = [];
                         let error = false;
-                        tblProdFab.rows().every(function() {
+                        tblProdFab.rows().every(function () {
                             let rowData = this.data();
                             let idUnico = rowData[0];
                             let tablaSecundariaId = `#tbl${idUnico}`;
@@ -2293,7 +2209,7 @@
                             };
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
-                                tablaSecundaria.rows().every(function() {
+                                tablaSecundaria.rows().every(function () {
                                     let secData = this.data();
 
                                     let cantidad = parseFloat($(this.node()).find('.cantidad').val());
@@ -2333,7 +2249,7 @@
                         formData.append('conductor', cboConductor.value);
                         formData.append('despachado', cboDespachado.value);
                         formData.append('responsable', cboResponsable.value);
-                        formData.append('autorizado', inpAutorizado.value);
+                        formData.append('autorizado', cboAutorizado.value);
                         formData.append('fecha', fecha.value);
                         formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
@@ -2351,7 +2267,7 @@
                             dataType: "json",
                             contentType: false,
                             processData: false,
-                            success: function(r) {
+                            success: function (r) {
                                 let isSuccess = r.status === "success";
                                 mostrarToast(r.status,
                                     isSuccess ? "Completado" : "Error",
@@ -2361,7 +2277,7 @@
                                     tabla ? tabla.ajax.reload(null, false) : ''
                                     cargarAutocompletado();
                                     limpiar();
-                                    cargarAutocompletado(function(items) {
+                                    cargarAutocompletado(function (items) {
                                         items_orden = items;
                                         $('#nro_orden').autocomplete("option", "source", items);
                                         $('#nro_ordenEntrada').autocomplete("option", "source", items);
@@ -2371,12 +2287,12 @@
                             }
                         });
                     } else if (selectedTab === '8') {
-                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab, inpAutorizado];
+                        let elementosAValidar = [fecha, nro_ordenFab, nro_guiaFab, cboAutorizado];
                         if (isTrasFab.checked) {
                             elementosAValidar.push(fecha_retorno);
                         }
                         let isValid = true;
-                        elementosAValidar.forEach(function(elemento) {
+                        elementosAValidar.forEach(function (elemento) {
                             if (!elemento.checkValidity()) {
                                 isValid = false;
                                 form_guia.classList.add('was-validated');
@@ -2386,7 +2302,7 @@
                             return;
                         }
 
-                        tblDetalleFab.rows().every(function() {
+                        tblDetalleFab.rows().every(function () {
                             let row = this;
                             let tr = $(row.node());
                             let rowData = row.data();
@@ -2397,7 +2313,7 @@
                         // let datosPrincipales = [];
                         let datosModificados = [];
                         let error = true;
-                        tblDetalleFab.rows().every(function() {
+                        tblDetalleFab.rows().every(function () {
                             let row = this;
                             let tr = $(row.node());
                             let rowData = row.data();
@@ -2432,7 +2348,7 @@
                             if ($.fn.dataTable.isDataTable(tablaSecundariaId)) {
                                 let tablaSecundaria = $(tablaSecundariaId).DataTable();
 
-                                tablaSecundaria.rows().every(function() {
+                                tablaSecundaria.rows().every(function () {
                                     let secData = this.data();
                                     let cantidadModificada = parseFloat($(this.node()).find('.cantidad').val()) || 0;
                                     let entradaModificada = parseFloat($(this.node()).find('.cantidad_retorno').val()) || 0;
@@ -2477,7 +2393,7 @@
                         formData.append('responsable', cboResponsable.value);
                         formData.append('fecha', fecha.value);
                         formData.append('fecha_retorno', fecha_retorno.value);
-                        formData.append('autorizado', inpAutorizado.value);
+                        formData.append('autorizado', cboAutorizado.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('accion', 12);
                         dropzone.getAcceptedFiles().forEach((file, index) => {
@@ -2494,7 +2410,7 @@
                             dataType: "json",
                             contentType: false,
                             processData: false,
-                            success: function(r) {
+                            success: function (r) {
                                 let isSuccess = r.status === "success";
                                 mostrarToast(r.status,
                                     isSuccess ? "Completado" : "Error",
@@ -2512,7 +2428,7 @@
                 });
 
                 tabs.forEach(tab => {
-                    tab.addEventListener('change', function() {
+                    tab.addEventListener('change', function () {
                         selectedTab = this.value;
                         form_guia.classList.remove('was-validated');
                         const selectedForm = document.getElementById(`form-${selectedTab}`);
@@ -2651,7 +2567,7 @@
                         if (barras) inputBarras.disabled = true;
                         var cantidadInput = row.node().querySelector('.cantidad');
                         cantidadInput.value = parseFloat(cantidadInput.value) + 1;
-                        audio.onended = function() {
+                        audio.onended = function () {
                             if (barras) {
                                 inputBarras.disabled = false;
                                 inputBarras.focus();
@@ -2660,7 +2576,7 @@
                         };
                     }
 
-                    function agregarFila(respuesta, tabla, both = false, ids = respuesta['id'], ) {
+                    function agregarFila(respuesta, tabla, both = false, ids = respuesta['id'],) {
                         let nuevaFila = [
                             '',
                             ids,
@@ -2677,7 +2593,7 @@
                                 '$<input type="text" class="form-control text-center d-inline envio input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">',      // Envío
                                 '$<input type="text" class="form-control text-center d-inline cargo input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">',
                                 '$<input type="text" class="form-control text-center d-inline descuento input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">',  // Descuento
-                                '<span class="total">$0.00</span>',      
+                                '<span class="total">$0.00</span>',
                                 '$<input type="text" class="form-control text-center d-inline impuesto_esp input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">', // Impuesto %
                                 '<span class="iva">$0.00</span>',
                                 '<span class="precio_final">$0.00</span>',
@@ -2705,11 +2621,11 @@
                         tabla.row.add(nuevaFila).node().id = "producto_" + respuesta['codigo'];
                         tabla.draw(false);
 
-                        audio.onplay = function() {
+                        audio.onplay = function () {
                             $(inputauto).val("");
                         };
 
-                        audio.onended = function() {
+                        audio.onended = function () {
                             if (barras) {
                                 inputBarras.disabled = false;
                                 inputBarras.focus();
@@ -2728,7 +2644,7 @@
                                 'id_boleta': id_boleta
                             },
                             dataType: 'json',
-                            success: function(r) {
+                            success: function (r) {
                                 manejarRespuesta(r, tblDetalleSalida, tabla);
                             }
                         });
@@ -2742,7 +2658,7 @@
                                 'id_factura': id_boleta
                             },
                             dataType: 'json',
-                            success: function(r) {
+                            success: function (r) {
                                 manejarRespuesta(r, tblDetalleCompra, tabla);
                             }
                         });
@@ -2790,7 +2706,7 @@
                                 'id': p
                             },
                             dataType: 'json',
-                            success: function(respuesta) {
+                            success: function (respuesta) {
                                 if (respuesta) {
                                     audio.play();
                                     if (barras) inputBarras.disabled = true;
@@ -2814,7 +2730,7 @@
                                                 'id_boleta': id_boleta_fab
                                             },
                                             dataType: 'json',
-                                            success: function(res) {
+                                            success: function (res) {
                                                 if (res.status === 'success') {
                                                     console.log(res)
                                                     let nuevaFila = {
@@ -2845,71 +2761,71 @@
                     }
                 }
 
-                $('#tblCompra').on('input keydown', '.cantidad, .precio, .envio, .descuento, .cargo, .impuesto_esp', function() {
+                $('#tblCompra').on('input keydown', '.cantidad, .precio, .envio, .descuento, .cargo, .impuesto_esp', function () {
 
-    let $row = $(this).closest('tr');
-    const isImportado = $('#isImportado').is(':checked');
+                    let $row = $(this).closest('tr');
+                    const isImportado = $('#isImportado').is(':checked');
 
-    // Función auxiliar para obtener valores numéricos y evitar NaN
-    const getVal = (selector) => {
-        let val = parseFloat($row.find(selector).val());
-        return isNaN(val) ? 0 : val;
-    };
+                    // Función auxiliar para obtener valores numéricos y evitar NaN
+                    const getVal = (selector) => {
+                        let val = parseFloat($row.find(selector).val());
+                        return isNaN(val) ? 0 : val;
+                    };
 
-    // 1. Obtener valores básicos
-    let cantidad = getVal('.cantidad');
-    let precio = getVal('.precio');
-    
-    // Calculamos el Bruto inicial (Cant * Precio)
-    let precio_bruto = cantidad * precio;
-    
-    // Variables para el resultado
-    let base_imponible = 0; // Esto irá en la columna .total
-    let valor_impuesto = 0; // Esto será el valor monetario del impuesto
-    let precio_final = 0;   // Suma de base + impuesto
+                    // 1. Obtener valores básicos
+                    let cantidad = getVal('.cantidad');
+                    let precio = getVal('.precio');
 
-    if (isImportado) {
-        // --- ESCENARIO MANUAL / FINALIZADO ---
-        let envio = getVal('.envio');
-        let cargo = getVal('.cargo');
-        let descuento = getVal('.descuento');
-        
-        // Aquí leemos DIRECTAMENTE el valor monetario, ya no es un porcentaje
-        let impuesto_manual_valor = getVal('.impuesto_esp'); 
+                    // Calculamos el Bruto inicial (Cant * Precio)
+                    let precio_bruto = cantidad * precio;
 
-        // Fórmula de Base Imponible: (Bruto + Envío + Cargo) - Descuento
-        base_imponible = precio_bruto + envio + cargo - descuento;
-        
-        // Validación: La base no debería ser negativa
-        if(base_imponible < 0) base_imponible = 0;
+                    // Variables para el resultado
+                    let base_imponible = 0; // Esto irá en la columna .total
+                    let valor_impuesto = 0; // Esto será el valor monetario del impuesto
+                    let precio_final = 0;   // Suma de base + impuesto
 
-        // El impuesto es directamente lo que escribió el usuario
-        valor_impuesto = impuesto_manual_valor;
+                    if (isImportado) {
+                        // --- ESCENARIO MANUAL / FINALIZADO ---
+                        let envio = getVal('.envio');
+                        let cargo = getVal('.cargo');
+                        let descuento = getVal('.descuento');
 
-    } else {
-        // --- ESCENARIO AUTOMÁTICO (Checkbox desmarcado) ---
-        base_imponible = precio_bruto;
+                        // Aquí leemos DIRECTAMENTE el valor monetario, ya no es un porcentaje
+                        let impuesto_manual_valor = getVal('.impuesto_esp');
 
-        // Aquí seguimos usando la configuración global de porcentaje (iva_config)
-        valor_impuesto = base_imponible * (iva_config / 100);
-    }
+                        // Fórmula de Base Imponible: (Bruto + Envío + Cargo) - Descuento
+                        base_imponible = precio_bruto + envio + cargo - descuento;
 
-    // --- CÁLCULO FINAL ---
-    precio_final = base_imponible + valor_impuesto;
+                        // Validación: La base no debería ser negativa
+                        if (base_imponible < 0) base_imponible = 0;
 
-    // --- RENDERIZADO EN TABLA ---
-    
-    // 1. Columna TOTAL (Base Imponible antes de impuestos)
-    $row.find('.total').text('$' + base_imponible.toFixed(2));
-    
-    // 2. Columna IVA (Reflejamos el valor monetario del impuesto, sea calculado o manual)
-    $row.find('.iva').text('$' + valor_impuesto.toFixed(2));
-    
-    // 3. Columna PRECIO FINAL (Total a pagar)
-    $row.find('.precio_final').text('$' + precio_final.toFixed(2));
-});
+                        // El impuesto es directamente lo que escribió el usuario
+                        valor_impuesto = impuesto_manual_valor;
 
-                inputBarras.addEventListener("input", function(event) {
+                    } else {
+                        // --- ESCENARIO AUTOMÁTICO (Checkbox desmarcado) ---
+                        base_imponible = precio_bruto;
+
+                        // Aquí seguimos usando la configuración global de porcentaje (iva_config)
+                        valor_impuesto = base_imponible * (iva_config / 100);
+                    }
+
+                    // --- CÁLCULO FINAL ---
+                    precio_final = base_imponible + valor_impuesto;
+
+                    // --- RENDERIZADO EN TABLA ---
+
+                    // 1. Columna TOTAL (Base Imponible antes de impuestos)
+                    $row.find('.total').text('$' + base_imponible.toFixed(2));
+
+                    // 2. Columna IVA (Reflejamos el valor monetario del impuesto, sea calculado o manual)
+                    $row.find('.iva').text('$' + valor_impuesto.toFixed(2));
+
+                    // 3. Columna PRECIO FINAL (Total a pagar)
+                    $row.find('.precio_final').text('$' + precio_final.toFixed(2));
+                });
+
+                inputBarras.addEventListener("input", function (event) {
                     event.preventDefault();
                     let codigo = this.value;
                     if (codigo.length >= 5) {
@@ -2920,7 +2836,7 @@
 
             function realizarRegistro(table, formData, clases, producto = 1, header = 'productos', callback = null) {
                 let count = 0;
-                table.rows().eq(0).each(function(index) {
+                table.rows().eq(0).each(function (index) {
                     count = count + 1;
                 });
                 if (count > 0) {
@@ -2935,7 +2851,7 @@
                         timerProgressBar: true,
                     }).then((result) => {
                         if (result.value) {
-                            table.rows().eq(0).each(function(index) {
+                            table.rows().eq(0).each(function (index) {
                                 let row = table.row(index);
                                 let data = row.data();
                                 let id = data[producto];
@@ -2954,7 +2870,7 @@
                                 dataType: "json",
                                 contentType: false,
                                 processData: false,
-                                success: function(r) {
+                                success: function (r) {
                                     let isSuccess = r.status === "success";
                                     mostrarToast(r.status,
                                         isSuccess ? "Completado" : "Error",
@@ -2977,18 +2893,23 @@
                 }
             }
         </script>
+
         <!-- Modal para ver imagen completa del producto -->
-        <div class="modal fade" id="modalImagenProducto" tabindex="-1" role="dialog" aria-labelledby="modalImagenTitulo" aria-hidden="true">
+        <div class="modal fade" id="modalImagenProducto" tabindex="-1" role="dialog" aria-labelledby="modalImagenTitulo"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:fit-content;">
-                <div class="modal-content bg-white" style="border-radius:8px;border:none;box-shadow:0 8px 24px rgba(0,0,0,0.25);">
+                <div class="modal-content bg-white"
+                    style="border-radius:8px;border:none;box-shadow:0 8px 24px rgba(0,0,0,0.25);">
                     <div class="modal-header bg-gradient-dark border-0 py-2 px-3">
                         <h5 class="modal-title text-white" id="modalImagenTitulo">Imagen del Producto</h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="font-size:1.5rem;">
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close"
+                            style="font-size:1.5rem;">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body d-flex justify-content-center align-items-center p-0" style="background:#fff;">
-                        <img id="imgProductoModal" src="" alt="Imagen del producto" style="width:auto;height:auto;max-width:90vw;max-height:80vh;object-fit:contain;display:block;">
+                        <img id="imgProductoModal" src="" alt="Imagen del producto"
+                            style="width:auto;height:auto;max-width:90vw;max-height:80vh;object-fit:contain;display:block;">
                     </div>
                 </div>
             </div>
