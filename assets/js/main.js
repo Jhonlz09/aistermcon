@@ -52,7 +52,6 @@ function limpiar(btn = false) {
     nro_orden.value = "";
     clearButton.style.display = "none";
     motivo.value = "";
-    inpAutorizado.value = "";
   } else if (selectedTab === "3") {
     setChange(cboConductorEntrada, conductorPorDefecto);
     setChange(cboDespachado, bodegueroPorDefecto);
@@ -61,7 +60,6 @@ function limpiar(btn = false) {
     fecha_retorno.value = `${year}-${mes}-${dia}`;
     nro_ordenEntrada.readOnly = false;
     nro_ordenEntrada.value = "";
-    inpAutorizado.value = "";
     clearButtonEntrada.style.display = "none";
     motivo.value = "";
   } else if (selectedTab === "4") {
@@ -75,7 +73,6 @@ function limpiar(btn = false) {
     nro_orden.readOnly = false;
     clearButton.style.display = "none";
     motivo.value = "";
-    inpAutorizado.value = "";
     salida_radio.value = "2";
     salida_radio.dispatchEvent(new Event("change"));
     btn ? (btn.style.display = "none") : null;
@@ -86,7 +83,6 @@ function limpiar(btn = false) {
     setChange(cboDespachado, bodegueroPorDefecto);
     cboDespachado.disabled = false;
     setChange(cboResponsable, 0);
-    inpAutorizado.value = "";
     cboResponsable.disabled = false;
     nro_guiaEntrada.value = "";
     nro_ordenEntrada.readOnly = false;
@@ -123,7 +119,6 @@ function limpiar(btn = false) {
     nro_ordenFab.readOnly = false;
     clearButtonFab.style.display = "none";
     motivo.value = "";
-    inpAutorizado.value = "";
     nro_gui.value = "";
     radio.value = "7";
     radio.dispatchEvent(new Event("change"));
