@@ -236,8 +236,10 @@
                                     </div>
                                     <!-- Tab Fabricacion -->
                                     <div class="tab-pane fade" id="tabFab" role="tabpanel">
-                                        <div class="d-flex justify-content-center align-items-center" style="min-height: 100px; border: 1px solid #ccc; border-end-start-radius: 8px; border-end-end-radius: 8px;">
-                                            <h4 class="text-muted"><i class="fas fa-hammer-crash mr-2"></i> PRÓXIMAMENTE...</h4>
+                                        <div class="d-flex justify-content-center align-items-center"
+                                            style="min-height: 100px; border: 1px solid #ccc; border-end-start-radius: 8px; border-end-end-radius: 8px;">
+                                            <h4 class="text-muted"><i class="fas fa-hammer-crash mr-2"></i>
+                                                PRÓXIMAMENTE...</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -333,10 +335,19 @@
             data: "acciones",
             visible: mostrarCol ? true : false,
             render: function (data, type, row, full, meta) {
+                if (row.anulado) {
+                    return `
+                        <center style='white-space: nowrap;'>
+                            <span title='Anulado' style='cursor:not-allowed;font-style: italic;' disabled>
+                                ANULADO <i class='fas fa-ban'></i>
+                            </span>
+                        </center>`;
+                }
+
                 let color = row.estado ? 'success' : 'yellow';
                 let icon = row.estado ? 'eye' : 'pencil';
                 let botones = '<center style="white-space: nowrap;">';
-                
+
                 // Botón PDF
                 botones += `<button type='button' class='btn bg-gradient-info btnImprimirPDF' title='Imprimir PDF' onclick="window.open('PDF/pdf_solicitud_despacho.php?id=${row.id}', '_blank')">
                                 <i class='fas fa-file-pdf'></i>
@@ -344,10 +355,10 @@
 
                 if (editar) {
                     botones += "<button type='button' class='btn bg-gradient-warning btnEditar' title='Editar'>" +
-                         `<i class='fas fa-${icon}'></i>` +
+                        `<i class='fas fa-${icon}'></i>` +
                         "</button> ";
                 }
-                if (aprobar && !row.estado){
+                if (aprobar && !row.estado) {
                     botones += `<button type='button' class='btn bg-gradient-${color} btnAprobar'  title='Aprobar'>` +
                         " <i class='fa fa-clipboard-check'></i>" +
                         "</button> ";
@@ -363,7 +374,7 @@
         }
         ],
         "columns": [
-            { data: null}, // Index defined in columnDefs
+            { data: null }, // Index defined in columnDefs
             { data: "num_sol" },
             { data: "fecha" },
             { data: "cliente" },
@@ -372,6 +383,17 @@
                 data: "estado",
                 className: "text-center",
                 render: function (data, type, row) {
+
+                   if (row.anulado) {
+                    let btnReanudar = isSuperAdmin ? "<button type='button' class='btn bg-gradient-danger btnReanudar'  title='Desanular'> <i class='fa fa-ban'></i>" : "<span title='Anulado' style='cursor:not-allowed;font-style: italic;' disabled> ANULADO <i class='fas fa-ban'></i></span>";
+
+                    return `
+                        <center style='white-space: nowrap;'>
+                            ${btnReanudar} 
+                        </button>
+                        </center>`;
+                }
+
                     let clase = data ? 'success' : 'warning';
                     let icon = data ? 'file-check' : 'clock';
                     let estado = data ? 'APROBADO' : 'PENDIENTE';
@@ -409,7 +431,7 @@
             nro_orden_sol = document.getElementById('nro_orden_sol'),
             cboResponsableSol = document.getElementById('cboResponsableSol'),
             cboAnioSol = document.getElementById('cboAnioSol')
-            btnGuardarDespacho = document.getElementById('btnGuardarDespacho'),
+        btnGuardarDespacho = document.getElementById('btnGuardarDespacho'),
             div_productos = document.getElementById('div-productos'),
             div_header = document.getElementById('div_header');
 
@@ -421,7 +443,7 @@
 
         setChange(cboAnioSol, anio);
 
-        $(cboAnioSol).on("change", function() {
+        $(cboAnioSol).on("change", function () {
             let a = this.options[this.selectedIndex].text
             if (a == anio) {
                 return;
@@ -588,9 +610,9 @@
                     "dataSrc": '',
                     data: function (data) {
                         data.anio = anio;
-                    }
+                    },
                 },
-                ...configuracionTable
+                ...configuracionTable,
             });
 
             tabla.on('draw.dt', function () {
@@ -620,18 +642,18 @@
                 clearButtonSol.click()
                 id_orden_sol = null;
                 id_solicitud_edit = null;
-                
+
                 // Reset state for new request
                 isAprobadoActual = false;
                 fecha_des.readOnly = false;
                 $(cboResponsableSol).prop('disabled', false);
-                  inpNotas.readOnly = false;
+                inpNotas.readOnly = false;
                 btnGuardarDespacho.style.display = '';
                 div_productos.style.display = '';
 
                 tablaMateriales.clear();
                 tablaHerramientas.clear();
-                
+
                 // Reset columns visibility
                 tablaMateriales.column(6).visible(false); // CANT APRO hidden
                 tablaMateriales.column(7).visible(true);  // ACCIONES shown
@@ -768,7 +790,7 @@
             "ordering": false,
             "autoWidth": false,
             "paging": false,
-             buttons: [{
+            buttons: [{
                 text: "<i class='fa-regular fa-trash-can fa-xl'style='color: #bd0000'></i> Borrar todo",
                 className: "btn btn-light text-danger",
                 action: function (e, dt, node, config) {
@@ -1029,7 +1051,7 @@
                 confirmarEliminar('la', 'solicitud', function (r) {
                     if (r) {
 
-                      
+
                         let originalText = btnGuardarDespacho.innerHTML;
                         btnGuardarDespacho.disabled = true;
                         btnGuardarDespacho.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
@@ -1044,7 +1066,7 @@
                                     console.log('nc', r.nc);
                                     nc = r.nc;
                                 }
-                                
+
                                 ocultarFormulario();
                                 // tabla.ajax.reload(); // updateAll or confirmarAccion already reloads? confirmarAccion reloads if tabla passed.
                                 // Limpiar formulario
@@ -1097,13 +1119,13 @@
                         // Llenar campos
                         fecha_des.value = respuesta.fecha;
                         $(cboResponsableSol).val(respuesta.id_responsable).trigger('change');
-                          inpNotas.value = respuesta.notas || '';
+                        inpNotas.value = respuesta.notas || '';
 
                         isAprobadoActual = respuesta.estado === true;
 
                         fecha_des.readOnly = isAprobadoActual;
                         $(cboResponsableSol).prop('disabled', isAprobadoActual);
-                          inpNotas.readOnly = isAprobadoActual;
+                        inpNotas.readOnly = isAprobadoActual;
 
                         if (isAprobadoActual) {
                             btnGuardarDespacho.style.display = 'none';
@@ -1200,6 +1222,20 @@
             });
         });
 
+        // Evento Reanudar/Desanular (Delegado)
+        $('#tblDespacho tbody').on('click', '.btnReanudar', function () {
+            let row = obtenerFila(this, tabla);
+            const id_ = row["id"];
+            let src = new FormData();
+            src.append('accion', 13);
+            src.append('id', id_);
+            confirmarEliminar('esta', 'solicitud de despacho', function (r) {
+                if (r) {
+                    confirmarAccion(src, 'solicitud_mh', tabla, '', null);
+                }
+            }, 'reanudar', 'La solicitud volverá a estar PENDIENTE.', 'Sí, reanudar');
+        });
+
         // Evento Aprobar (Delegado)
         $('#tblDespacho tbody').on('click', '.btnAprobar', function () {
             let row = obtenerFila(this, tabla);
@@ -1209,10 +1245,10 @@
             src.append('accion', 10);
             src.append('id', id_);
             src.append('estado', nuevoEstado);
-            
+
             let accionTexto = nuevoEstado ? 'aprobar' : 'revertir la aprobación de';
-            let confirmacionTexto = nuevoEstado ? 
-                "Se actualizará el estado y las cantidades solicitadas serán aprobadas." : 
+            let confirmacionTexto = nuevoEstado ?
+                "Se actualizará el estado y las cantidades solicitadas serán aprobadas." :
                 "El estado de la solicitud volverá a PENDIENTE.";
 
             // Reutilizando confirmarEliminar para confirmación genérica

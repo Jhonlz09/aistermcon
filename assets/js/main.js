@@ -130,9 +130,9 @@ function limpiar(btn = false) {
 
 function cargarOpcionesSelect(selectElement, value, size = "110%") {
   selectElement.select2({
-    data: datos_uni,
-    minimumResultsForSearch: -1,
-    width: size,
+    data:datos_uni,
+    minimumResultsForSearch:-1,
+    width:size,
   });
   if (value) {
     selectElement.val(value).trigger("change");
@@ -168,7 +168,7 @@ function cargarCombo(id, s, a = 1, isDataCbo = false, anio = null) {
               id: respuesta[index][0],
               text: respuesta[index][1],
               fab: respuesta[index][2],
-              html: `<div style="display:flex;justify-content:space-between;align-items:center;height:1.6rem;overflow:hidden;white-space:nowrap;width:auto;text-overflow:ellipsis">${text}</div>`, // HTML personalizado
+              html: `<div style="display:flex;justify-content:space-between;align-items:center;height:1.6rem;overflow:hidden;white-space:nowrap;width:auto;text-overflow:ellipsis">${text}</div>`,
             });
           } else if (isDataCbo) {
             dataCbo.push({

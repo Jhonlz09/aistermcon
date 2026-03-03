@@ -189,19 +189,19 @@ function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $ob
     
     // Table width = 180 (Margin 15 + 180 + Right Margin 15 = 210)
     
-    // ROW 1: ORDEN, FECHA (DIA, MES, AÑO headers)
+    // ROW 1: ORDEN, FECHA DE SOLICITUD
     $pdf->Cell(120, 5, iconv('UTF-8', 'windows-1252', ' ORDEN DE TRABAJO No.: ' . $orden), 1, 0, 'L');
-    $pdf->Cell(30, 5, iconv('UTF-8', 'windows-1252', 'FECHA DE SOLICITUD'), 1, 0, 'C');
-    $pdf->Cell(10, 5, 'DIA', 1, 0, 'C');
-    $pdf->Cell(10, 5, 'MES', 1, 0, 'C');
-    $pdf->Cell(10, 5, iconv('UTF-8', 'windows-1252', 'AÑO'), 1, 1, 'C');
-
-    // ROW 2: CLIENTE, FECHA RETORNO (Values DIA, MES, AÑO for FECHA DE SOLICITUD)
-    $pdf->Cell(120, 5, iconv('UTF-8', 'windows-1252', ' CLIENTE: ' . $cliente), 1, 0, 'L');
-    $pdf->Cell(30, 5, iconv('UTF-8', 'windows-1252', 'FECHA RETORNO:'), 1, 0, 'C');
+    $pdf->Cell(30, 5, iconv('UTF-8', 'windows-1252', 'FECHA DE SOLICITUD:'), 1, 0, 'C');
     $pdf->Cell(10, 5, $dia, 1, 0, 'C');
     $pdf->Cell(10, 5, $mes, 1, 0, 'C');
     $pdf->Cell(10, 5, $ano, 1, 1, 'C');
+
+    // ROW 2: CLIENTE, FECHA RETORNO
+    $pdf->Cell(120, 5, iconv('UTF-8', 'windows-1252', ' CLIENTE: ' . $cliente), 1, 0, 'L');
+    $pdf->Cell(30, 5, iconv('UTF-8', 'windows-1252', 'FECHA RETORNO:'), 1, 0, 'C');
+    $pdf->Cell(10, 5, '', 1, 0, 'C'); // Día vacío
+    $pdf->Cell(10, 5, '', 1, 0, 'C'); // Mes vacío
+    $pdf->Cell(10, 5, '', 1, 1, 'C'); // Año vacío
 
     // ROW 3: TIPO DE TRABAJO
     $pdf->Cell(180, 5, iconv('UTF-8', 'windows-1252', ' TIPO DE TRABAJO: '), 1, 1, 'L');

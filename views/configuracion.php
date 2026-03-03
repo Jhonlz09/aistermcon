@@ -154,7 +154,6 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group row mb-3">
-                                                    <!-- El label ocupa 6 columnas -->
                                                     <label for="inputNroCompra"
                                                         class="col-sm-6 col-form-label d-flex align-items-center text-wrap">
                                                         <i class="fas fa-arrow-up-9-1 mr-1"></i> Nº de orden de compra
@@ -209,6 +208,10 @@
                                                     </button>
                                                 </div>
                                                 <br>
+                                                <h5 style="font-weight:bold;"> <i class="fas fa-tickets nav-icon"></i>
+                                                Solicitud de despacho</h5>
+                                            <hr>
+                                            
                                                 <div class="col-sm-12 p-0">
                                                     <button class="btn btn-primary btn-small w-100 text-center"
                                                         id="btnGuardarOpe">
@@ -216,6 +219,8 @@
                                                     </button>
                                                 </div>
                                             </form>
+                                           
+                                            
                                         </div>
                                     </div>
                                     <div class="tab-pane fade" id="vert-tabs-rrhh" role="tabpanel"

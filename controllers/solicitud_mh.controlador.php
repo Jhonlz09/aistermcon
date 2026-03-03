@@ -92,6 +92,13 @@ class ControladorSolicitudDespacho
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
+    // Desanular / Reanudar solicitud
+    public function reanudarSolicitud()
+    {
+        $data = ModeloSolicitudDespacho::mdlReanudarSolicitud($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
 
     // Consultar producto por código (para autocompletado)
     public function listarSolicitudesAprobadasSinBoleta()
@@ -165,7 +172,11 @@ if ($_POST["accion"] == 1) {
         // Anular solicitud
         $data->id = $_POST["id"];
         $data->anularSolicitud();
-    }  else if ($_POST["accion"] == 14) {
+    } else if ($_POST["accion"] == 13) {
+        // Reanudar solicitud
+        $data->id = $_POST["id"];
+        $data->reanudarSolicitud();
+    } else if ($_POST["accion"] == 14) {
         // Guardar solicitud completa
         $params = [
             'id_orden' => $_POST["id_orden"] ?? null,

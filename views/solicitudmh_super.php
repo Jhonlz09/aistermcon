@@ -319,7 +319,7 @@
     var aprobar = '<?php echo $_SESSION["aprobar5"] ?>';
     var nc = '<?php echo $_SESSION["sc_desp"] ?? 1; ?>';
 
-    console.log('secuencia', nc);
+    // console.log('secuencia', nc);
 
     configuracionTable = {
         "responsive": true,
@@ -341,6 +341,17 @@
             data: "acciones",
             visible: mostrarCol ? true : false,
             render: function (data, type, row, full, meta) {
+
+                if (row.anulado) {
+                    let btnReanudar = isSuperAdmin ? "<button type='button' class='btn bg-gradient-danger btnReanudar'  title='Desanular'> <i class='fa fa-ban'></i>" : "<span title='Anulado' style='cursor:not-allowed;font-style: italic;' disabled> ANULADO <i class='fas fa-ban'></i></span>";
+
+                    return `
+                        <center style='white-space: nowrap;'>
+                            ${btnReanudar} 
+                        </button>
+                        </center>`;
+                }
+
                 let color = row.estado ? 'success' : 'yellow';
                 let botones = '<center style="white-space: nowrap;">';
                 
@@ -379,6 +390,15 @@
                 data: "estado",
                 className: "text-center",
                 render: function (data, type, row) {
+                    
+                    if (row.anulado) {
+                        return `
+                        <center style='white-space: nowrap;'>
+                            <span title='Anulado' style='cursor:not-allowed;font-style: italic;' disabled>
+                                ANULADO <i class='fas fa-ban'></i>
+                            </span>
+                        </center>`;
+                    }
                     let clase = data ? 'success' : 'warning';
                     let icon = data ? 'file-check' : 'clock';
                     let estado = data ? 'APROBADO' : 'PENDIENTE';
@@ -595,9 +615,9 @@
                     "dataSrc": '',
                     data: function (data) {
                         data.anio = anio;
-                    }
                 },
-                ...configuracionTable
+            },
+                ...configuracionTable,
             });
 
             tabla.on('draw.dt', function () {
@@ -1312,6 +1332,20 @@
                     confirmarAccion(src, 'solicitud_mh', tabla, '', null);
                 }
             });
+        });
+
+        // Evento Reanudar/Desanular (Delegado)
+        $('#tblDespacho tbody').on('click', '.btnReanudar', function () {
+            let row = obtenerFila(this, tabla);
+            const id_ = row["id"];
+            let src = new FormData();
+            src.append('accion', 13);
+            src.append('id', id_);
+            confirmarEliminar('esta', 'solicitud de despacho', function (r) {
+                if (r) {
+                    confirmarAccion(src, 'solicitud_mh', tabla, '', null);
+                }
+            }, 'reanudar', 'La solicitud volverá a estar PENDIENTE.', 'Sí, reanudar');
         });
 
         // Evento Aprobar (Delegado)
