@@ -639,7 +639,7 @@ class ModeloSolicitudDespacho
                 FROM tblsolicitud_despacho sd
                 JOIN tbldetalle_despacho dd ON sd.id = dd.id_solic_despacho
                 JOIN tblinventario i ON dd.id_producto = i.id
-                LEFT JOIN tblboleta b ON sd.id = b.id_solicitud_despacho
+                LEFT JOIN tblboleta b ON sd.id = b.id_solicitud_despacho AND b.is_material = true
                 LEFT JOIN tblorden o ON sd.id_orden = o.id
                 WHERE sd.estado = true AND sd.anulado = false AND b.id IS NULL AND i.id_categoria = 1
                 
@@ -649,7 +649,7 @@ class ModeloSolicitudDespacho
                 FROM tblsolicitud_despacho sd
                 JOIN tbldetalle_despacho dd ON sd.id = dd.id_solic_despacho
                 JOIN tblinventario i ON dd.id_producto = i.id
-                LEFT JOIN tblboleta b ON sd.id = b.id_solicitud_despacho
+                LEFT JOIN tblboleta b ON sd.id = b.id_solicitud_despacho AND b.is_material = false
                 LEFT JOIN tblorden o ON sd.id_orden = o.id
                 WHERE sd.estado = true AND sd.anulado = false AND b.id IS NULL AND i.id_categoria != 1
                 
