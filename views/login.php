@@ -5,7 +5,18 @@
 <div class="container-login">
     <div class="wrap-login">
         <form autocomplete="off" class="needs-validation-login login-form" id="formLogin" method="post" novalidate>
-            <span class="login-form-title"> <img style="height:3rem;margin-top: -6px;" src="assets/img/logo_menu.png" alt="logo aistermcon"> AISTERMCON</span>
+            <span class="login-form-title"> 
+                <?php
+                    // Buscar el archivo del logo, sin importar su extensión
+                    $logoPath = 'assets/img/logo_menu.png'; // Fallback por defecto
+                    $archivosLogo = glob('assets/img/logo_menu.*');
+                    if (!empty($archivosLogo)) {
+                        $logoPath = $archivosLogo[0]; // Toma el primero que encuentre
+                    }
+                    $v = file_exists($logoPath) ? filemtime($logoPath) : time();
+                ?>
+                <img style="height:3rem;margin-top: -6px;" src="<?php echo $logoPath . '?v=' . $v; ?>" alt="logo aistermcon"> AISTERMCON
+            </span>
             <div class="wrap-input100">
                 <i class="fa-solid fa-user icon"></i>
                 <input autocomplete="off" class="input100" type="text" id="usuario" name="usuario" placeholder="Usuario" required>
