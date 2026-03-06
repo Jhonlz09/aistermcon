@@ -2,7 +2,16 @@
 <aside style="backdrop-filter:blur(85px);-webkit-backdrop-filter:blur(85px);white-space:nowrap;overflow-x:hidden" class="main-sidebar sidebar-light-lightblue elevation-4">
     <!-- Brand Logo -->
     <a href="" class="brand-link">
-        <img src="assets/img/logo_menu.png" alt="logo" class="brand-image" />
+        <?php
+            // Buscar el archivo del logo, sin importar su extensión
+            $logoPath = 'assets/img/logo_menu.png'; // Fallback por defecto
+            $archivosLogo = glob('assets/img/logo_menu.*');
+            if (!empty($archivosLogo)) {
+                $logoPath = $archivosLogo[0]; // Toma el primero que encuentre
+            }
+            $v = file_exists($logoPath) ? filemtime($logoPath) : time();
+        ?>
+        <img src="<?php echo $logoPath . '?v=' . $v; ?>" alt="logo" class="brand-image" />
         <span style="font-family: 'Source Sans Pro';" class="brand-text font-weight-bold"><?php echo isset($_SESSION["empresa"]) ? $_SESSION["empresa"] : ''; ?></span><br>
     </a>
     <!-- Sidebar -->
@@ -85,9 +94,25 @@
     (function($) {
         $(function() {
             $('ul.nav-sidebar .nav-link').removeClass('active');
-            const $firstTop = $('#nav > li.nav-item:first > a.nav-link');
-            if ($firstTop.length) {
-                $firstTop.addClass('active');
+            
+            const vistaInicio = '<?php echo isset($_SESSION["vista_inicio"]) ? $_SESSION["vista_inicio"] : ""; ?>';
+            let $activeLink;
+
+            if (vistaInicio !== "") {
+                // Buscamos el enlace cuyo data-vista coincida con vistaInicio + '.php'
+                $activeLink = $('#nav').find('a.nav-link[data-vista="' + vistaInicio + '.php"]');
+            }
+
+            // Si no encuentra la vista de inicio específica o no hay vista inicio, usamos el primer enlace como respaldo (comportamiento original)
+            if (!$activeLink || $activeLink.length === 0) {
+                $activeLink = $('#nav > li.nav-item:first > a.nav-link');
+            }
+
+            if ($activeLink.length) {
+                $activeLink.addClass('active');
+                // Si está dentro de submenús, desplegar y activar menú padre
+                $activeLink.parents('.has-treeview').addClass('menu-open');
+                $activeLink.parents('.has-treeview').children('a.nav-link').addClass('active');
             }
             // Handler delegado: único punto de entrada para clicks en links del menú
             $('#nav').on('click', 'a.nav-link', function(e) {

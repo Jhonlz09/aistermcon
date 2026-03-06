@@ -1,5 +1,4 @@
-<?php require_once "../utils/database/config.php"; ?>
-
+<?php require_once __DIR__ . "/../utils/database/config.php"; ?>
 <head>
     <title>Perfil</title>
     <style>
@@ -217,8 +216,16 @@
 <div class="modal fade" id="modalR">
     <div class="modal-dialog modal-xl modal-rol modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-light">
+            <div class="modal-header bg-gradient-light align-items-center">
                 <h4 class="modal-title"><i class="fa-solid fa-user-check"></i><span> Permisos</span></h4>
+                
+                <div class="d-flex align-items-center ml-4" style="min-width: 300px;">
+                    <label class="mb-0 mr-2 text-nowrap" style="font-size: 1rem;">Vista Inicio:</label>
+                    <select id="cboVistaInicio" class="form-control select2" data-dropdown-css-class="select2-dark"style="width: 100%;">
+                        <option value="" selected disabled>Seleccione</option>
+                    </select>
+                </div>
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -226,6 +233,7 @@
             <div class="modal-body p-0">
                 <form id="formPermisos" autocomplete="off">
                     <input type="hidden" id="id_rol_permiso" value="">
+
                     <div style="background-color:#001f3fcf;" class="d-flex justify-content-between align-items-center text-white p-3 rounded-top">
                         <div style="width: 40%;">MÓDULO</div>
                         <div class="d-flex justify-content-around" style="width: 60%;">
@@ -302,6 +310,11 @@
             });
         }
 
+        $('#cboVistaInicio').select2({
+            dropdownParent: $('#modalR'),
+            placeholder: 'Seleccione'
+        });
+
         // --- LÓGICA DE MODALES ---
         let accion = 0;
         // Referencias a elementos
@@ -369,12 +382,16 @@
         // Esto reemplaza al 'onchange' inline y maneja todos los casos
         $('#permisosContainer').on('change', '.switch__input', function() {
             handlePermissionChange($(this));
+            if ($(this).hasClass('check-ver')) {
+                actualizarSelectVistaInicio();
+            }
         });
 
         // 3. Guardar Permisos (AJUSTADO PARA DIVS)
         $('#btnGuardarRol').on('click', function() {
             let datosPermisos = [];
             let idPerfil = id_rol_permiso.val();
+            let vistaInicioId = $('#cboVistaInicio').val();
 
             // Iteramos sobre los DIVS .permiso-item
             $('#permisosContainer .permiso-item').each(function() {
@@ -405,6 +422,7 @@
                 data: {
                     'id_perfil': idPerfil,
                     'datos': JSON.stringify(datosPermisos),
+                    'vista_inicio_id': vistaInicioId,
                     'accion': 6
                 },
                 dataType: "json",
@@ -476,7 +494,7 @@
             let iconClass = nivel === 0 ? 'fa-lg text-navy mr-2' : (nivel === 1 ? 'fa-sm text-dark-blue mr-2' : 'fa-xs text-muted mr-2');
 
             html += `
-            <div class="permiso-item item-nivel-${nivel}" data-idmodulo="${modulo.id}" data-padre="${modulo.id_padre}" data-nivel="${nivel}">
+            <div class="permiso-item item-nivel-${nivel}" data-idmodulo="${modulo.id}" data-padre="${modulo.id_padre}" data-nivel="${nivel}" data-vista="${modulo.vista}">
                 <div class="col-nombre">
                     <i class="fas tab-icon ${modulo.icon} ${iconClass}"></i>
                     <span class="module-name">${modulo.modulo}</span>
@@ -535,6 +553,40 @@
                 if (p.aprobar == 1 || p.aprobar === true) row.find('.check-aprobar').prop('checked', true);
             }
         });
+
+        actualizarSelectVistaInicio();
+        
+        let pInicio = permisosUsuario.find(p => p.vista_inicio == 1 || p.vista_inicio === '1' || p.vista_inicio === true);
+        if (pInicio) {
+            $('#cboVistaInicio').val(pInicio.id_modulo).trigger('change');
+        } else {
+            $('#cboVistaInicio').val('').trigger('change');
+        }
+    }
+
+    function actualizarSelectVistaInicio() {
+        let select = $('#cboVistaInicio');
+        let valActual = select.val();
+        select.empty();
+        select.append('<option value="" selected disabled>Seleccione</option>');
+
+        $('#permisosContainer .permiso-item').each(function() {
+            let item = $(this);
+            let checkVer = item.find('.check-ver').is(':checked');
+            if (checkVer) {
+                let idModulo = item.data('idmodulo');
+                let nombreModulo = item.find('.module-name').text();
+                let vista = item.data('vista');
+                
+                if (vista && vista !== 'null' && vista !== '') {
+                    select.append(new Option(nombreModulo, idModulo));
+                }
+            }
+        });
+        
+        if (valActual && select.find(`option[value="${valActual}"]`).length > 0) {
+            select.val(valActual).trigger('change');
+        }
     }
 
     // --- NUEVA FUNCIÓN MAESTRA DE PROPAGACIÓN ---

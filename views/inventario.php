@@ -1,5 +1,4 @@
-<?php require_once "../utils/database/config.php";
-
+<?php require_once __DIR__ . "/../utils/database/config.php";
 $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 ?>
 

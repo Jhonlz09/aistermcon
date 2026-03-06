@@ -36,6 +36,15 @@ class SesionModelo
         // 4. Cargar permisos completos (módulos + CRUD)
         $permisosUsuario = self::mdlObtenerPermisos($user->id);
 
+        $vistaInicio = 'inicio';
+        foreach ($permisosUsuario as $p) {
+            if ($p->vista_inicio == 1 && !empty($p->vista)) {
+                $vistaInicio = rtrim(str_replace('.php', '', $p->vista), '/');
+                break;
+            }
+        }
+        $_SESSION["vista_inicio"] = $vistaInicio;
+
         // 5. Construir árbol del menú (recursivo)
         $_SESSION["menuTree"] = self::buildTree($permisosUsuario);
 
@@ -113,6 +122,7 @@ class SesionModelo
                 m.icon, 
                 m.vista, 
                 m.id_padre,
+                pm.vista_inicio,
                 pm.crear,
                 pm.editar,
                 pm.eliminar,
@@ -130,6 +140,7 @@ class SesionModelo
                 padre.icon, 
                 padre.vista, 
                 padre.id_padre,
+                CAST(0 AS smallint) AS vista_inicio,
                 false AS crear,    -- Los padres autogenerados no tienen CRUD activo
                 false AS editar,
                 false AS eliminar,

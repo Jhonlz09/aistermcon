@@ -14,10 +14,11 @@ class ModeloSalidas
     c.id AS id_cliente, TO_CHAR(b.fecha, 'YYYY-MM-DD') AS fecha, b.id_conductor,
     b.id_despachado, b.id_responsable,b.nro_guia,b.motivo,
     ROW_NUMBER() OVER (PARTITION BY b.id ORDER BY s.id) AS fila,s.fabricado, 
-    b.fab, b.tras, TO_CHAR(b.fecha_retorno, 'YYYY-MM-DD') AS fecha_retorno, b.autorizado
+    b.fab, b.tras, TO_CHAR(b.fecha_retorno, 'YYYY-MM-DD') AS fecha_retorno, b.autorizado, b.id_solicitud_despacho, b.is_material, sd.num_sol
         FROM tblsalidas s
             JOIN tblinventario i ON s.id_producto = i.id
             JOIN tblboleta b ON s.id_boleta = b.id
+            LEFT JOIN tblsolicitud_despacho sd ON b.id_solicitud_despacho = sd.id
             JOIN tblorden o ON b.id_orden = o.id
             JOIN tblpresupuesto p ON o.id = p.id              
             JOIN tblclientes c ON p.id_cliente = c.id         

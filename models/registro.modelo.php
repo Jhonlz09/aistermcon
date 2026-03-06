@@ -121,7 +121,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlRegistrarSalida($arr, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado)
+    static public function mdlRegistrarSalida($arr, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado, $id_solicitud = null, $is_material = null)
     {
         try {
             $conexion = Conexion::ConexionDB();
@@ -143,7 +143,7 @@ class ModeloRegistro
                 }
             }
 
-            $id_boleta = self::insertarBoleta($conexion, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, $autorizado);
+            $id_boleta = self::insertarBoleta($conexion, $orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, $autorizado, false, false, $id_solicitud, $is_material);
 
             self::insertarSalidas($conexion, $id_boleta, $arr);
 
@@ -568,7 +568,7 @@ class ModeloRegistro
         }
     }
 
-    static private function actualizarBoleta($conexion, $id_boleta, $id_orden, $fecha, $fecha_retorno, $nro_guia, $conductor, $despachado, $responsable, $motivo, $autorizado, $tras = false)
+    static private function actualizarBoleta($conexion, $id_boleta, $id_orden, $fecha, $fecha_retorno, $nro_guia, $conductor, $despachado, $responsable, $motivo, $autorizado, $tras = false, $id_solicitud = null, $is_material = null)
     {
         $fechaHora = $fecha . ' ' . date('H:i:s');
         // Campos base a actualizar
@@ -581,7 +581,9 @@ class ModeloRegistro
             'id_despachado = :despachado',
             'id_responsable = :responsable',
             'motivo = :motivo',
-            'autorizado = :autorizado'
+            'autorizado = :autorizado',
+            'id_solicitud_despacho = :id_solicitud',
+            'is_material = :is_material'
         ];
 
         // Agregar campo "tras" solo si es verdadero
@@ -599,6 +601,9 @@ class ModeloRegistro
         $stmtB->bindParam(':autorizado', $autorizado, PDO::PARAM_STR);
         $stmtB->bindParam(':fecha_retorno', $fecha_retorno, PDO::PARAM_STR);
         $stmtB->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
+        $stmtB->bindValue(':id_solicitud', $id_solicitud ?: null, $id_solicitud ? PDO::PARAM_INT : PDO::PARAM_NULL);
+        $is_material_val = $is_material == '1' || $is_material === true || $is_material === 1 ? 'true' : 'false';
+        $stmtB->bindValue(':is_material', $is_material !== null ? $is_material_val : null, PDO::PARAM_STR);
 
         if ($tras) {
             $stmtB->bindParam(':tras', $tras, PDO::PARAM_BOOL);
@@ -610,13 +615,13 @@ class ModeloRegistro
         return $stmtB->execute();
     }
 
-    static private function insertarBoleta($conexion, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, $autorizado = '', $fab = false, $tras = false)
+    static private function insertarBoleta($conexion, $id_orden, $fecha, $nro_guia, $conductor, $despachado, $responsable, $motivo, $autorizado = '', $fab = false, $tras = false, $id_solicitud = null, $is_material = null)
     {
         $fechaHora = $fecha . ' ' . date('H:i:s');
 
         // Campos y valores base
-        $campos = ['fecha', 'id_orden', 'nro_guia', 'id_conductor', 'id_despachado', 'id_responsable', 'motivo', 'fab', 'autorizado'];
-        $valores = [':fecha', ':orden', ':nro_guia', ':conductor', ':despachado', ':responsable', ':motivo', ':fabricacion', ':autorizado'];
+        $campos = ['fecha', 'id_orden', 'nro_guia', 'id_conductor', 'id_despachado', 'id_responsable', 'motivo', 'fab', 'autorizado', 'id_solicitud_despacho', 'is_material'];
+        $valores = [':fecha', ':orden', ':nro_guia', ':conductor', ':despachado', ':responsable', ':motivo', ':fabricacion', ':autorizado', ':id_solicitud', ':is_material'];
 
         // Agregar "tras" solo si es verdadero
         if ($tras) {
@@ -642,6 +647,10 @@ class ModeloRegistro
         $stmtB->bindValue(':conductor', $conductor ?: null, $conductor ? PDO::PARAM_INT : PDO::PARAM_NULL);
         $stmtB->bindValue(':despachado', $despachado ?: null, $despachado ? PDO::PARAM_INT : PDO::PARAM_NULL);
         $stmtB->bindValue(':responsable', $responsable ?: null, $responsable ? PDO::PARAM_INT : PDO::PARAM_NULL);
+        $stmtB->bindValue(':id_solicitud', $id_solicitud ?: null, $id_solicitud ? PDO::PARAM_INT : PDO::PARAM_NULL);
+        
+        $is_material_val = $is_material == '1' || $is_material === true || $is_material === 1 ? 'true' : 'false';
+        $stmtB->bindValue(':is_material', $is_material !== null ? $is_material_val : 'false', PDO::PARAM_STR);
 
         $stmtB->execute();
         return $conexion->lastInsertId('tblboleta_id_seq');
@@ -790,15 +799,15 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlEditarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado)
+    static public function mdlEditarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado, $id_solicitud = null, $is_material = null)
     {
         try {
             $conexion = Conexion::ConexionDB();
             $stmtB = $conexion->prepare("UPDATE tblboleta
             SET fecha = to_timestamp(:fecha || ' ' || to_char(fecha, 'HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS'),
             id_conductor = :conductor,id_despachado = :despachado,
-            id_responsable = :responsable,nro_guia = :nro_guia, id_orden = :orden, motivo=:motivo, autorizado=:autorizado
-            WHERE id=:id_boleta");
+            id_responsable = :responsable,nro_guia = :nro_guia, id_orden = :orden, motivo=:motivo, autorizado=:autorizado, id_solicitud_despacho = :id_solicitud, is_material = :is_material
+            WHERE id = :id_boleta");
 
             $stmtB->bindParam(':fecha', $fecha, PDO::PARAM_STR);
             $stmtB->bindParam(':id_boleta', $id_boleta, PDO::PARAM_INT);
@@ -813,6 +822,11 @@ class ModeloRegistro
             } else {
                 $stmtB->bindParam(':responsable', $responsable, PDO::PARAM_INT);
             }
+            
+            $stmtB->bindValue(':id_solicitud', $id_solicitud ?: null, $id_solicitud ? PDO::PARAM_INT : PDO::PARAM_NULL);
+            $is_material_val = $is_material == '1' || $is_material === true || $is_material === 1 ? 'true' : 'false';
+            $stmtB->bindValue(':is_material', $is_material !== null ? $is_material_val : null, PDO::PARAM_STR);
+
             if ($stmtB->execute()) {
                 if (!empty($img)) {
                     self::guardarImagenesSalida($conexion, $id_boleta, $img);

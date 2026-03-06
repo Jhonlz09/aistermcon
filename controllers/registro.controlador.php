@@ -12,12 +12,12 @@ class ajaxRegistro
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function registrarSalida($datos, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado)
+    public function registrarSalida($datos, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado, $id_solicitud, $is_material)
     {
         if ($img === null) {
             $img = []; // Define un array vacío si no se enviaron imágenes
         }
-        $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado);
+        $data = ModeloRegistro::mdlRegistrarSalida($datos, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $img, $autorizado, $id_solicitud, $is_material);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -28,14 +28,14 @@ class ajaxRegistro
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    public function editarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes, $autorizado)
+    public function editarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes, $autorizado, $id_solicitud, $is_material)
     {
 
         if ($imagenes === null) {
             $imagenes = []; // Define un array vacío si no se enviaron imágenes
         }
 
-        $data = ModeloRegistro::mdlEditarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes, $autorizado);
+        $data = ModeloRegistro::mdlEditarRegistroSalida($id_boleta, $orden, $nro_guia, $fecha, $conductor, $despachado, $responsable, $motivo, $imagenes, $autorizado, $id_solicitud, $is_material);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -99,12 +99,16 @@ if (isset($_POST["accion"])) {
         $registro->registrarCompra($_POST["arr"], $_POST["nro_factura"], $_POST["proveedor"], $_POST["fecha"]);
     } else if ($accion == 2) {
         $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : null;
-        $registro->registrarSalida($_POST["arr"], $_POST["orden"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"], $imagenes, $_POST["autorizado"]);
+        $id_solicitud = isset($_POST["id_solicitud_despacho"]) ? $_POST["id_solicitud_despacho"] : null;
+        $is_material = isset($_POST["is_material"]) ? $_POST["is_material"] : null;
+        $registro->registrarSalida($_POST["arr"], $_POST["orden"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"], $imagenes, $_POST["autorizado"], $id_solicitud, $is_material);
     } else if ($accion == 3) {
         $registro->registrarRetorno($_POST["arr"], $_POST["boleta"], $_POST["fecha_retorno"], $_POST["nro_guia"], $_POST["autorizado"]);
     } else if ($accion == 4) {
         $imagenes = isset($_FILES["imagenes"]) ? $_FILES["imagenes"] : null;
-        $registro->editarRegistroSalida($_POST["id_boleta"], $_POST["orden"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"],  $imagenes, $_POST["autorizado"]);
+        $id_solicitud = isset($_POST["id_solicitud_despacho"]) ? $_POST["id_solicitud_despacho"] : null;
+        $is_material = isset($_POST["is_material"]) ? $_POST["is_material"] : null;
+        $registro->editarRegistroSalida($_POST["id_boleta"], $_POST["orden"], $_POST["nro_guia"], $_POST["fecha"], $_POST["conductor"], $_POST["despachado"], $_POST["responsable"], $_POST["motivo"],  $imagenes, $_POST["autorizado"], $id_solicitud, $is_material);
     } else if ($accion == 5) {
         $registro->editarRegistroCompra($_POST["id_factura"], $_POST["nro_factura"], $_POST["proveedor"], $_POST["fecha"]);
     } else if ($accion == 6) {

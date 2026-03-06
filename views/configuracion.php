@@ -1,5 +1,4 @@
-<?php require_once "../utils/database/config.php"; ?>
-
+<?php require_once __DIR__ . "/../utils/database/config.php"; ?>
 <head>
     <title>Configuración</title>
 </head>
@@ -82,7 +81,8 @@
                                                         Logo</label>
                                                     <div class="col-sm">
                                                         <input class="form-control border-2" type="file" name="logo"
-                                                            id="logo" accept=".png, .jpg, .jpeg">
+                                                            id="logo" accept=".png, .jpg, .jpeg, .webp">
+                                                        <small class="form-text text-muted">*Formatos permitidos: .png, .jpg, .jpeg, .webp (Se recomienda escala 1:1)</small>
                                                     </div>
                                                 </div>
                                                 <br>
@@ -552,6 +552,11 @@
                 transform: (element) => element.value.trim().toUpperCase()
             },
             {
+                id: 'logo',
+                key: 'logo',
+                transform: (element) => element.files.length > 0 ? element.files[0] : ''
+            },
+            {
                 key: 'accion',
                 value: 1
             }
@@ -693,6 +698,8 @@
                         nro_sec_cotiz = r.sc;
                     } else if (r && form == formConfigRRHH) {
                         sbu_config = parseFloat(r.sbu);
+                    } else if (r && form == formConfigD) {
+                        window.location.reload();
                     }
                 });
             });

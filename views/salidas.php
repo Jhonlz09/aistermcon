@@ -1,4 +1,4 @@
-<?php require_once "../utils/database/config.php"; ?>
+<?php require_once __DIR__ . "/../utils/database/config.php"; ?>
 
 <head>
     <title>Movimientos</title>
@@ -571,6 +571,9 @@
                 cliente = row[8],
                 fecha_return = row[23],
                 autorizado = row[24],
+                id_solicitud = row[25],
+                is_material = row[26],
+                num_solicitud = row[27],
                 guia = row[17];
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
             const isfab = fab ? '7' : '2';
@@ -608,6 +611,31 @@
                 fecha_retorno.value = fecha_return == '' ? '' : fecha_return;
                 obtenerDatosProdFab(id_boleta, tras);
             } else {
+                let autoSolOut = $('#autoSolicitudOut');
+                
+                // Limpiar previamente
+                let clearBtn = document.getElementById('clearBtnAutoSol');
+                if(clearBtn) clearBtn.click();
+                
+                if (id_solicitud) {
+                    let selectedSol = window.items_solicitud ? window.items_solicitud.find(item => item.id == id_solicitud) : null;
+                    if (selectedSol) {
+                        let itemForSelect = Object.assign({}, selectedSol, { silentLoad: true });
+                        autoSolOut.val(itemForSelect.label);
+                        if (autoSolOut.data('ui-autocomplete')) {
+                            autoSolOut.autocomplete("instance")._trigger("select", null, { item: itemForSelect });
+                        }
+                    } else {
+                        // Respaldo manual usando variable num_sol de BD
+                        let tipo_str = is_material ? 'MATERIAL' : 'HERRAMIENTA';
+                        let label_str = num_solicitud + ' - ' + tipo_str;
+                        autoSolOut.val(label_str);
+                        autoSolOut.data("id_solicitud", id_solicitud);
+                        autoSolOut.data("is_material", is_material);
+                    }
+                    if(clearBtn) clearBtn.style.display = 'block';
+                }
+                
                 if (selectedItem) {
                     $(nro_orden).val(selectedItem.label);
                     $(nro_orden)
@@ -667,6 +695,10 @@
                 fab = row[21],
                 tras = row[22],
                 fecha_return = row[23],
+                autorizado = row[24],
+                id_solicitud = row[25],
+                is_material = row[26],
+                num_solicitud = row[27],
                 orden = row[7],
                 cliente = row[8],
                 isfab = fab ? '7' : '3',
@@ -720,6 +752,31 @@
                         ._trigger("select", null, {
                             item: nuevoItem
                         });
+                }
+                
+                let autoSolOut = $('#autoSolicitudOut');
+                
+                // Limpiar previamente
+                let clearBtn = document.getElementById('clearBtnAutoSol');
+                if(clearBtn) clearBtn.click();
+                
+                if (id_solicitud) {
+                    let selectedSol = window.items_solicitud ? window.items_solicitud.find(item => item.id == id_solicitud) : null;
+                    if (selectedSol) {
+                        let itemForSelect = Object.assign({}, selectedSol, { silentLoad: true });
+                        autoSolOut.val(itemForSelect.label);
+                        if (autoSolOut.data('ui-autocomplete')) {
+                            autoSolOut.autocomplete("instance")._trigger("select", null, { item: itemForSelect });
+                        }
+                    } else {
+                        // Respaldo manual usando variable num_sol de BD
+                        let tipo_str = is_material ? 'MATERIAL' : 'HERRAMIENTA';
+                        let label_str = num_solicitud + ' - ' + tipo_str;
+                        autoSolOut.val(label_str);
+                        autoSolOut.data("id_solicitud", id_solicitud);
+                        autoSolOut.data("is_material", is_material);
+                    }
+                    if(clearBtn) clearBtn.style.display = 'block';
                 }
                 setChange(cboConductor, conductor)
                 nro_guiaEntrada.value = guia;

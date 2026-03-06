@@ -38,9 +38,9 @@ class ControladorRoles
     //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     // }
 
-    public function savePermisos($datos)
+    public function savePermisos($datos, $vistaInicioId = null)
     {
-        $resultado = ModeloRoles::mdlSavePermisos($this->id,$datos);
+        $resultado = ModeloRoles::mdlSavePermisos($this->id, $datos, $vistaInicioId);
         echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
     }
 
@@ -85,7 +85,8 @@ if (!isset($_POST["accion"])) {
         $data = new ControladorRoles();
         $data->id = $_POST["id_perfil"];
         $datos = json_decode($_POST["datos"], true);
-        $data->savePermisos($datos);
+        $vistaInicioId = isset($_POST["vista_inicio_id"]) ? $_POST["vista_inicio_id"] : null;
+        $data->savePermisos($datos, $vistaInicioId);
     }else if($_POST["accion"] == 7) {
         $data = new ControladorRoles();
         $data->ctrObtenerModulos();

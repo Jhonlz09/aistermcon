@@ -154,7 +154,7 @@ class ModeloTrabajoRealizado
     {
         try {
             $l = Conexion::ConexionDB()->prepare("SELECT unnest(pdf_arr || img_arr) AS 
-            nombre_file FROM tblpre_trabajo WHERE id =:id");
+            nombre_file FROM tbltrabajo_realizado WHERE id =:id");
 
             $l->bindParam(":id", $id, PDO::PARAM_INT);
             $l->execute();

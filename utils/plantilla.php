@@ -196,7 +196,12 @@
             <!-- Content Wrapper.-->
             <div class='content-wrapper'>
                 <?php
-                include_once 'views/inicio.php' ?>
+                if (isset($_SESSION["vista_inicio"]) && !empty($_SESSION["vista_inicio"])) {
+                    include_once 'views/' . $_SESSION["vista_inicio"] . '.php';
+                } else {
+                    include_once 'views/inicio.php';
+                }
+                ?>
             </div>
 
             <?php
@@ -954,150 +959,12 @@
                 });
 
                 tblOut = $('#tblOut').DataTable({
-                    "dom": '<"row"<"col-sm-6"B><"col-sm-6 d-flex justify-content-end align-items-center" <"#contenedor-autocomplete-out"> >>t',
+                    "dom": '<"row"<"col-sm-6"B>>t',
                     "responsive": true,
                     "lengthChange": false,
                     "ordering": false,
                     "autoWidth": false,
                     "paging": false,
-                    "initComplete": function (settings, json) {
-                        const htmlAuto = `<div class="d-flex align-items-center position-relative w-100" style="max-width: 300px;">
-                            <i class="fa-solid fa-clipboard-list position-absolute" style="left: 10px; color: #6c757d; z-index: 4;"></i>
-                            <input type="text" id="autoSolicitudOut" class="form-control form-control-sm" placeholder="Seleccionar solicitud..." style="padding-left:30px;width:100%;">
-                            <button class="clear-btn-inp" type="button" id="clearBtnAutoSol" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:4;border:none;background:transparent;font-size:1.2rem;line-height:1;padding:0;color:#6c757d;">&times;</button>
-                        </div>`;
-                        $('#contenedor-autocomplete-out').append(htmlAuto);
-
-                        // Lógica del botón clear
-                        $('#clearBtnAutoSol').on('click', function () {
-                            let inp = $('#autoSolicitudOut');
-                            inp.val('');
-                            inp.prop('readonly', false);
-                            $(this).hide();
-
-                            // Habilitar tabla y buscador de productos
-                            $('#div_productos input').prop('readonly', false);
-                            $('#tblOut tbody input.cantidad').prop('readonly', false);
-
-                            // Mostrar columna de acciones
-                            tblOut.column(5).visible(true);
-
-                            // Limpiar tabla 
-                            tblOut.clear().draw();
-
-                            // Limpiar input de orden si fue asignado automáticamente 
-                            let clearButton = document.getElementById('clearButton');
-                            clearButton.click();
-                        });
-
-                        // Extraer lógica de carga a una función global para poder actualizarla
-                        window.actualizarAutocompleteOut = function() {
-                            $.ajax({
-                                url: "controllers/solicitud_mh.controlador.php",
-                                method: "POST",
-                                data: { accion: 16 },
-                                dataType: "json",
-                                success: function (respuesta) {
-                                    // Destruir instancia anterior si existe
-                                    if ($("#autoSolicitudOut").data("ui-autocomplete")) {
-                                        $("#autoSolicitudOut").autocomplete("destroy");
-                                    }
-                                    
-                                    $("#autoSolicitudOut").autocomplete({
-                                        source: respuesta,
-                                        minLength: 0,
-                                        appendTo: "#contenedor-autocomplete-out",
-                                        select: function (event, ui) {
-                                        $(this).val(ui.item.label);
-                                        let id_solicitud = ui.item.id;
-                                        let tipo = ui.item.texto;
-
-                                        // Setear la Orden asociada usando Autocomplete trigger
-                                        let nro_orden = $('#nro_orden');
-                                        if (ui.item.id_orden && nro_orden.data("ui-autocomplete")) {
-                                            let selectedItem = items_orden.find(item => item.cod == ui.item.id_orden);
-                                            if (selectedItem) {
-                                                nro_orden.autocomplete("instance")._trigger("select", null, { item: selectedItem });
-                                            }
-                                        }
-                                        
-                                        $.ajax({
-                                            url: "controllers/solicitud_mh.controlador.php",
-                                            method: "POST",
-                                            data: { accion: 17, id: id_solicitud, tipo: tipo },
-                                            dataType: "json",
-                                            success: function (respuesta) {
-                                                if (respuesta && respuesta.length > 0) {
-                                                    respuesta.forEach((item) => {
-                                                        // Validar si el producto ya existe en tblOut
-                                                        let existingRowOut = tblOut.row("#producto_" + item.codigo);
-                                                        if (existingRowOut.any()) {
-                                                            var cantidadInput = existingRowOut.node().querySelector('.cantidad');
-                                                            cantidadInput.value = parseFloat(cantidadInput.value) + parseFloat(item.cant_apro);
-                                                        } else {
-                                                            let nuevaFila = [
-                                                                '',
-                                                                item.id,
-                                                                `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
-                                                                class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
-                                                                onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                                                                oninput="validarNumber(this,/[^0-9.]/g)" value="${parseFloat(item.cant_apro)}" readonly>`,
-                                                                item.unidad,
-                                                                item.descripcion,
-                                                                `<center>
-                                                                <span class='btnEliminaRow text-danger' style='cursor:pointer' data-bs-toggle='tooltip' 
-                                                                    data-bs-placement='top' title='Eliminar producto'> 
-                                                                    <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'></i>
-                                                                </span>
-                                                                    </center>`
-                                                            ];
-
-                                                            tblOut.row.add(nuevaFila).node().id = "producto_" + item.codigo;
-                                                        }
-                                                    });
-                                                    try {
-                                                        audio.play();
-                                                    } catch (e) { }
-                                                    tblOut.draw(false);
-
-                                                    // Bloquear tabla, buscador e input actual, mostrar botón X
-                                                    $('#autoSolicitudOut').prop('readonly', true);
-                                                    $('#clearBtnAutoSol').show();
-                                                    $('#div_productos input').prop('readonly', true);
-                                                    $('#tblOut tbody input.cantidad').prop('readonly', true);
-                                                    
-                                                    // Ocultar columna de acciones
-                                                    tblOut.column(5).visible(false);
-
-                                                    mostrarToast("success", "Completado", "fa-check", "Productos agregados a la tabla.");
-                                                } else {
-                                                    mostrarToast("warning", "Aviso", "fa-exclamation", "La solicitud no contiene productos de este tipo.");
-                                                    $('#autoSolicitudOut').val('');
-                                                }
-                                            }
-                                        });
-                                        return false;
-                                    }
-                                }).on('focus', function () {
-                                    if ($(this).val().length >= 1 && !$(this).prop('readonly')) {
-                                        $(this).autocomplete('search', $(this).val());
-                                    }
-                                }).data("ui-autocomplete")._renderItem = function (ul, item) {
-                                    let badgeColor = item.texto === 'MATERIAL' ? 'alert-default-danger' : 'alert-default-warning';
-                                    let content = `<div class="d-flex align-items-center justify-content-between">
-                                        <strong>${item.num_sol}</strong>
-                                        <span class="alert mb-0 ${badgeColor}">${item.texto}</span>
-                                    </div>`;
-                                    
-                                        return $("<li>").append(content).appendTo(ul);
-                                    };
-                                }
-                            });
-                        };
-
-                        // Llamar la primera vez
-                        window.actualizarAutocompleteOut();
-                    },
                     columnDefs: [{
                         targets: 0,
                         data: null,
@@ -1133,9 +1000,145 @@
                         action: function (e, dt, node, config) {
                             dt.clear().draw(); // Esta línea vacía los datos de la tabla
                         }
-                    },
-                    ]
+                    }]
                 });
+
+                // Lógica del botón clear para autocomplete
+                $('#clearBtnAutoSol').on('click', function () {
+                    let inp = $('#autoSolicitudOut');
+                    inp.val('');
+                    inp.prop('readonly', false);
+                    $(this).hide();
+
+                    if (selectedTab === '2') {
+                        // Habilitar tabla y buscador de productos
+                        $('#div_productos input').prop('readonly', false);
+                        $('#tblOut tbody input.cantidad').prop('readonly', false);
+
+                        // Mostrar columna de acciones
+                        tblOut.column(5).visible(true);
+
+                        // Limpiar tabla 
+                        tblOut.clear().draw();
+
+                        // Limpiar input de orden si fue asignado automáticamente 
+                        let clearButton = document.getElementById('clearButton');
+                        if(clearButton) clearButton.click();
+                    }
+                    
+                    // Limpiar metadata de solicitud local
+                    inp.removeData('id_solicitud');
+                    inp.removeData('is_material');
+                });
+
+                // Extraer lógica de carga a una función global para poder actualizarla
+                window.actualizarAutocompleteOut = function() {
+                    cargarAutocompletado(function(items) {
+                        window.items_solicitud = items;
+                        
+                        if ($("#autoSolicitudOut").data("ui-autocomplete")) {
+                            $("#autoSolicitudOut").autocomplete("destroy");
+                        }
+                        
+                        $("#autoSolicitudOut").autocomplete({
+                            source: items,
+                            minLength: 0,
+                            select: function (event, ui) {
+                                $(this).val(ui.item.label);
+                                let id_solicitud = ui.item.id;
+                                let tipo = ui.item.raw.texto;
+                                
+                                // Guardar atributos localmente para pasarlos a PHP al guardar (tblboleta)
+                                $(this).data("id_solicitud", id_solicitud);
+                                $(this).data("is_material", tipo === 'MATERIAL');
+
+                                // Setear la Orden asociada usando Autocomplete trigger
+                                let nro_orden = $('#nro_orden');
+                                if (ui.item.raw.id_orden && nro_orden.data("ui-autocomplete")) {
+                                    let selectedItem = items_orden.find(item => item.cod == ui.item.raw.id_orden);
+                                    if (selectedItem) {
+                                        nro_orden.autocomplete("instance")._trigger("select", null, { item: selectedItem });
+                                    }
+                                }
+                                
+                                if (ui.item.silentLoad) {
+                                    return false; // Skip loading items into the datatable
+                                }
+                                
+                                $.ajax({
+                                    url: "controllers/solicitud_mh.controlador.php",
+                                    method: "POST",
+                                    data: { accion: 17, id: id_solicitud, tipo: tipo },
+                                    dataType: "json",
+                                    success: function (respuesta) {
+                                        if (respuesta && respuesta.length > 0) {
+                                            respuesta.forEach((item) => {
+                                                // Validar si el producto ya existe en tblOut
+                                                let existingRowOut = tblOut.row("#producto_" + item.codigo);
+                                                if (existingRowOut.any()) {
+                                                    var cantidadInput = existingRowOut.node().querySelector('.cantidad');
+                                                    cantidadInput.value = parseFloat(cantidadInput.value) + parseFloat(item.cant_apro);
+                                                } else {
+                                                    let nuevaFila = [
+                                                        '',
+                                                        item.id,
+                                                        `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
+                                                        class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
+                                                        onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
+                                                        oninput="validarNumber(this,/[^0-9.]/g)" value="${parseFloat(item.cant_apro)}" readonly>`,
+                                                        item.unidad,
+                                                        item.descripcion,
+                                                        `<center>
+                                                        <span class='btnEliminaRow text-danger' style='cursor:pointer' data-bs-toggle='tooltip' 
+                                                            data-bs-placement='top' title='Eliminar producto'> 
+                                                                <i style='font-size:1.8rem;padding-top:.3rem' class='fa-regular fa-circle-xmark'></i>
+                                                        </span>
+                                                            </center>`
+                                                    ];
+
+                                                    tblOut.row.add(nuevaFila).node().id = "producto_" + item.codigo;
+                                                }
+                                            });
+                                            try {
+                                                audio.play();
+                                            } catch (e) { }
+                                            tblOut.draw(false);
+
+                                            // Bloquear tabla, buscador e input actual, mostrar botón X
+                                            $('#autoSolicitudOut').prop('readonly', true);
+                                            $('#clearBtnAutoSol').show();
+                                            $('#div_productos input').prop('readonly', true);
+                                            $('#tblOut tbody input.cantidad').prop('readonly', true);
+                                            
+                                            // Ocultar columna de acciones
+                                            tblOut.column(5).visible(false);
+
+                                            mostrarToast("success", "Completado", "fa-check", "Productos agregados a la tabla.");
+                                        } else {
+                                            mostrarToast("warning", "Aviso", "fa-exclamation", "La solicitud no contiene productos de este tipo.");
+                                            $('#autoSolicitudOut').val('');
+                                        }
+                                    }
+                                });
+                                return false;
+                            }
+                        }).on('focus', function () {
+                            if ($(this).val().length >= 1 && !$(this).prop('readonly')) {
+                                $(this).autocomplete('search', $(this).val());
+                            }
+                        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                            let badgeColor = item.raw.texto === 'MATERIAL' ? 'alert-default-danger' : 'alert-default-warning';
+                            let content = `<div class="d-flex align-items-center justify-content-between">
+                                <strong>${item.raw.num_sol}</strong>
+                                <span class="alert mb-0 ${badgeColor}">${item.raw.texto}</span>
+                            </div>`;
+                            return $("<li>").append(content).appendTo(ul);
+                        };
+                    }, "autoSolicitudOut", "solicitud_mh", 16);
+                };
+
+                // Llamar la primera vez
+                window.actualizarAutocompleteOut();
 
                 tblIn = $('#tblIn').DataTable({
                     "dom": '<"row"<"col-sm-8"B><"col-sm-4"p>>t',
@@ -2018,6 +2021,13 @@
                         formData.append('autorizado', cboAutorizado.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
                         formData.append('fecha', fecha.value);
+                        
+                        let autoSolOut = $('#autoSolicitudOut');
+                        if(autoSolOut.data('id_solicitud')) {
+                            formData.append('id_solicitud_despacho', autoSolOut.data('id_solicitud'));
+                            formData.append('is_material', autoSolOut.data('is_material') ? 1 : 0);
+                        }
+                        
                         formData.append('accion', 2);
                         dropzone.getAcceptedFiles().forEach((file, index) => {
                             if (!file.isExisting) {
@@ -2095,6 +2105,13 @@
                         formData.append('autorizado', cboAutorizado.value);
                         formData.append('fecha', fecha.value);
                         formData.append('motivo', motivo.value.trim().toUpperCase());
+                        
+                        let autoSolOut = $('#autoSolicitudOut');
+                        if(autoSolOut.data('id_solicitud')) {
+                            formData.append('id_solicitud_despacho', autoSolOut.data('id_solicitud'));
+                            formData.append('is_material', autoSolOut.data('is_material') ? 1 : 0);
+                        }
+
                         formData.append('accion', 4);
                         dropzone.getAcceptedFiles().forEach((file, index) => {
                             if (!file.isExisting) {

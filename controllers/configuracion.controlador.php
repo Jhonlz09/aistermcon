@@ -7,7 +7,7 @@ class ControladorConfiguracion
 
     public function editarConfigDatos()
     {
-        $data = ModeloConfiguracion::mdlEditarConfigDatos($this->nombre);
+        $data = ModeloConfiguracion::mdlEditarConfigDatos($this->nombre, $this->logo);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
     public function editarConfigMov()
@@ -56,6 +56,7 @@ if (isset($_POST["accion"])) {
     $data = new ControladorConfiguracion();
     if ($_POST["accion"] == 1) {
         $data->nombre = $_POST["empresa"];
+        $data->logo = isset($_FILES["logo"]) ? $_FILES["logo"] : null;
         $data->editarConfigDatos();
     } else if ($_POST["accion"] == 2) {
         $data->isentrada = $_POST["isentrada"];

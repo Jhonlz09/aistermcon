@@ -92,7 +92,7 @@ class ModeloRoles
     public static function mdlgetPermisos($id)
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT pm.id_modulo, pm.crear, pm.editar, pm.eliminar, pm.aprobar
+            $l = Conexion::ConexionDB()->prepare("SELECT pm.id_modulo, pm.vista_inicio, pm.crear, pm.editar, pm.eliminar, pm.aprobar
             FROM tblperfil_modulo pm
             JOIN tblmodulo m on m.id = pm.id_modulo
             WHERE id_perfil=:id ORDER BY id_modulo");
@@ -104,7 +104,7 @@ class ModeloRoles
         }
     }
 
-    public static function mdlSavePermisos($id, $permisos)
+    public static function mdlSavePermisos($id, $permisos, $vistaInicioId = null)
     {
         $conexion = Conexion::ConexionDB();
 
@@ -117,12 +117,13 @@ class ModeloRoles
             $stmtDelete->bindParam(":id", $id, PDO::PARAM_INT);
             $stmtDelete->execute();
             // 3. INSERTAR los nuevos permisos
-            $query = "INSERT INTO tblperfil_modulo (id_perfil, id_modulo, crear, editar, eliminar,aprobar) 
-                    VALUES (:id, :modulo, :crear, :editar, :eliminar, :aprobar)";
+            $query = "INSERT INTO tblperfil_modulo (id_perfil, id_modulo, vista_inicio, crear, editar, eliminar, aprobar) 
+                    VALUES (:id, :modulo, :vista_inicio, :crear, :editar, :eliminar, :aprobar)";
 
             $stmtInsert = $conexion->prepare($query);
 
             foreach ($permisos as $permiso) {
+                $vista_inicio = ($vistaInicioId !== null && $vistaInicioId == $permiso['id_modulo']) ? 1 : 0;
                 // Casteo explícito de booleanos a enteros para PostgreSQL (true=1, false=0)
                 // PostgreSQL a veces es estricto con booleanos en binding
                 $crear = $permiso['crear'] === 'true' || $permiso['crear'] === true ? 'true' : 'false';
@@ -131,6 +132,7 @@ class ModeloRoles
                 $aprobar = $permiso['aprobar'] === 'true' || $permiso['aprobar'] === true ? 'true' : 'false';
                 $stmtInsert->bindParam(":id", $id, PDO::PARAM_INT);
                 $stmtInsert->bindParam(":modulo", $permiso['id_modulo'], PDO::PARAM_INT);
+                $stmtInsert->bindParam(":vista_inicio", $vista_inicio, PDO::PARAM_INT);
                 $stmtInsert->bindParam(":crear", $crear, PDO::PARAM_BOOL);
                 $stmtInsert->bindParam(":editar", $editar, PDO::PARAM_BOOL);
                 $stmtInsert->bindParam(":eliminar", $eliminar, PDO::PARAM_BOOL);

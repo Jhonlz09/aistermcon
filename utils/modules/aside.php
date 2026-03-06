@@ -314,6 +314,22 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                
+                                                <div id="container_autoSolicitudOut" class="mb-3" style="display:none; transition: all 0.3s ease;">
+                                                    <div class="card bg-light shadow-sm border-0 mb-0">
+                                                        <div class="card-body p-3">
+                                                            <div class="d-flex align-items-center mb-1">
+                                                                <label class="mb-0 font-weight-bold text-secondary" style="font-size: 1.05rem;">
+                                                                    <i class="fas fa-clipboard-list mr-1 text-primary"></i> Asignar Solicitud de Despacho
+                                                                </label>
+                                                            </div>
+                                                            <div class="ui-front d-flex align-items-center position-relative w-100">
+                                                                <input type="text" id="autoSolicitudOut" class="form-control form-control-sm" placeholder="Buscar y cargar solicitud de materiales o herramientas" style="font-size:1.2rem; border-bottom:2px solid var(--select-border-bottom); padding-right:30px; width:100%;">
+                                                                <button class="clear-btn-inp" type="button" id="clearBtnAutoSol" style="display:none; position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:4; border:none; background:transparent; font-size:1.5rem; line-height:1; padding:0; color:#dc3545; cursor:pointer;" title="Limpiar selección">&times;</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <?php if ((isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true) && !$_SESSION["crear4"]): ?>
                                                     <div id="form-1" style="display: block"
                                                         class="card-body form-container">
@@ -696,4 +712,43 @@
             xhr.abort(); // Cancelar el envío de imágenes precargadas
         }
     });
+
+    // --- LÓGICA DE VISIBILIDAD DE AUTOCOMPLETE: autoSolicitudOut ---
+    // Escuchar cambios en los tabs para mostrar u ocultar el contenedor global de autoSolicitudOut
+    document.addEventListener("DOMContentLoaded", function() {
+        const autoSolContainer = document.getElementById('container_autoSolicitudOut');
+        if(!autoSolContainer) return;
+        
+        const radioTabs = document.querySelectorAll('input[name="tabs"]');
+        
+        function updateAutoSolVisibility() {
+            const activeRadio = document.querySelector('input[name="tabs"]:checked');
+            if(activeRadio) {
+                // '2' es para Salida nueva (tblOut), '4' no existe explícitamente como tab pero puede ser forzado
+                if(activeRadio.value === '2' || activeRadio.value === '4') {
+                    autoSolContainer.style.display = 'block';
+                } else {
+                    autoSolContainer.style.display = 'none';
+                }
+            }
+        }
+        
+        radioTabs.forEach(radio => {
+            radio.addEventListener('change', updateAutoSolVisibility);
+        });
+
+        // Mutación para detectar si un script cambia la clase/estado de los tabs programáticamente (ej: modal editS)
+        const observer = new MutationObserver(function() {
+             updateAutoSolVisibility();
+        });
+        
+        radioTabs.forEach(radio => {
+             observer.observe(radio, { attributes: true, attributeFilter: ['checked'] });
+        });
+
+        // Ejecutar estado inicial (y pequeño delay por si hay renderizaciones diferidas en Document Ready de dataTable)
+        updateAutoSolVisibility();
+        setTimeout(updateAutoSolVisibility, 500);
+    });
+
 </script>

@@ -6,9 +6,28 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 class ModeloConfiguracion
 {
-    static public function mdlEditarConfigDatos($empresa)
+    static public function mdlEditarConfigDatos($empresa, $logo = null)
     {
         try {
+            if ($logo != null && isset($logo["tmp_name"]) && !empty($logo["tmp_name"])) {
+                $directorio = "../assets/img/";
+                if (!file_exists($directorio)) {
+                    mkdir($directorio, 0755, true);
+                }
+                
+                // Borrar cualquier logo_menu existente
+                $patron = $directorio . "logo_menu.*";
+                foreach (glob($patron) as $archivo) {
+                    unlink($archivo);
+                }
+
+                // Obtener la extensión del nuevo archivo
+                $extension = strtolower(pathinfo($logo["name"], PATHINFO_EXTENSION));
+                $rutaDestino = $directorio . "logo_menu." . $extension;
+
+                // Mover el archivo subido sin conversiones ni GD
+                move_uploaded_file($logo["tmp_name"], $rutaDestino);
+            }
 
             $conexion = Conexion::ConexionDB();
             $a = $conexion->prepare("UPDATE tblconfiguracion SET empresa=:nombre WHERE id=1");
