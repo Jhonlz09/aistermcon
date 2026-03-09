@@ -323,7 +323,7 @@
                                                                     <i class="fas fa-clipboard-list mr-1 text-primary"></i> Asignar Solicitud de Despacho
                                                                 </label>
                                                             </div>
-                                                            <div class="ui-front d-flex align-items-center position-relative w-100">
+                                                            <div class="ui-front d-flex align-items-center position-relative w-100" style="z-index:1;">
                                                                 <input type="text" id="autoSolicitudOut" class="form-control form-control-sm" placeholder="Buscar y cargar solicitud de materiales o herramientas" style="font-size:1.2rem; border-bottom:2px solid var(--select-border-bottom); padding-right:30px; width:100%;">
                                                                 <button class="clear-btn-inp" type="button" id="clearBtnAutoSol" style="display:none; position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:4; border:none; background:transparent; font-size:1.5rem; line-height:1; padding:0; color:#dc3545; cursor:pointer;" title="Limpiar selección">&times;</button>
                                                             </div>
