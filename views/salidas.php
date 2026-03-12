@@ -583,6 +583,13 @@
             const cboAutorizado = document.getElementById('cboAutorizado');
             cboAutorizado.value = autorizado;
             let selectedItem = items_orden.find(item => item.cod === id_orden);
+
+            // Setear selectedTab ANTES de manipular autoSolicitudOut para que los
+            // guards de clearBtnAutoSol (selectedTab !== '2') funcionen correctamente
+            radio.value = isfabValue;
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change'));
+
             if (fab) {
                 if (selectedItem) {
                     $(nro_ordenFab).val(selectedItem.label);
@@ -663,12 +670,8 @@
             setChange(cboResponsable, entrega)
             fecha.value = fecha_id;
             motivo.value = motivo_text;
-            radio.value = isfabValue;
-            radio.checked = true;
-            radio.dispatchEvent(new Event('change'));
             cancelar.style.display = 'block'
             first_control.click();
-
             let src = new FormData();
             cargarImagenesDropzone(id_boleta);
             dropzone.enable();
@@ -706,6 +709,12 @@
             const radio = document.getElementById('radio-' + isfab);
             const motivo_text = row[18] === '' ? 'TRANSLADO DE HERRAMIENTAS' : row[18];
             let selectedItem = items_orden.find(item => item.cod === id_orden);
+
+            // Setear selectedTab ANTES de manipular autoSolicitudOut
+            radio.value = isfabValue;
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change'));
+
             if (fab) {
                 if (selectedItem) {
                     $(nro_ordenFab).val(selectedItem.label);
@@ -791,9 +800,6 @@
             setChange(cboResponsable, entrega)
             fecha.value = fecha_id
             motivo.value = motivo_text;
-            radio.value = isfabValue;
-            radio.checked = true;
-            radio.dispatchEvent(new Event('change'));
             first_control.click();
         });
 

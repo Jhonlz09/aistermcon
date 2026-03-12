@@ -393,6 +393,115 @@ class ModeloSolicitudDespacho
     }
 
     /**
+     * Guardar y Aprobar de una sola vez una Nueva Solicitud (Cabecera y Detalles)
+     */
+    static public function mdlGuardaryAprobarNuevaSolicitud($datos)
+    {
+        try {
+            $conexion = Conexion::ConexionDB();
+            $conexion->beginTransaction();
+
+            // 1. Insertar Cabecera ya aprobada
+            $consulta = "INSERT INTO tblsolicitud_despacho 
+                (num_sol, id_orden, fecha, id_responsable, notas, estado, id_usuario_autorizado)
+                VALUES (generar_num_despacho(), :id_orden, :fecha, :id_responsable, :notas, true, :id_usuario_autorizado)
+                RETURNING id";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(":id_orden", $datos['id_orden'], PDO::PARAM_INT);
+            $stmt->bindParam(":fecha", $datos['fecha']);
+            $stmt->bindParam(":id_responsable", $datos['id_responsable'], PDO::PARAM_INT);
+            $stmt->bindParam(":notas", $datos['notas']);
+            $stmt->bindParam(":id_usuario_autorizado", $datos['id_usuario_autorizado'], PDO::PARAM_INT);
+
+            if (!$stmt->execute()) {
+                throw new Exception("Error al guardar la cabecera de la solicitud.");
+            }
+
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            $id_solicitud = $resultado['id'];
+
+            // 2. Insertar Detalles con cant_apro = cant_sol
+            if (!empty($datos['filas'])) {
+                $filas = json_decode($datos['filas'], true);
+
+                $consultaDetalle = "INSERT INTO tbldetalle_despacho 
+                    (id_producto, id_solic_despacho, cant_sol, cant_apro, anulado)
+                    VALUES (:id_producto, :id_solic_despacho, :cant_sol, :cant_apro, false)";
+
+                $stmtDetalle = $conexion->prepare($consultaDetalle);
+
+                foreach ($filas as $fila) {
+                    $cant_apro = (isset($fila['cant_apro']) && $fila['cant_apro'] > 0) ? $fila['cant_apro'] : $fila['cant_sol'];
+                    
+                    $stmtDetalle->bindParam(":id_producto", $fila['id_producto'], PDO::PARAM_INT);
+                    $stmtDetalle->bindParam(":id_solic_despacho", $id_solicitud, PDO::PARAM_INT);
+                    $stmtDetalle->bindParam(":cant_sol", $fila['cant_sol'], PDO::PARAM_STR);
+                    $stmtDetalle->bindParam(":cant_apro", $cant_apro, PDO::PARAM_STR);
+
+                    if (!$stmtDetalle->execute()) {
+                        throw new Exception("Error al guardar el detalle del producto ID: " . $fila['id_producto']);
+                    }
+                }
+            }
+
+            // 3. Obtener secuencia actual 
+            $stmtSeq = $conexion->prepare("SELECT last_value + increment_by AS sc_desp FROM pg_sequences WHERE schemaname = 'public' AND sequencename = 'secuencia_despacho'");
+            $stmtSeq->execute();
+            $seqResult = $stmtSeq->fetch(PDO::FETCH_ASSOC);
+            $next_seq = null;
+            if ($seqResult) {
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $_SESSION["sc_desp"] = $seqResult['sc_desp'];
+                $next_seq = $seqResult['sc_desp'] + 1;
+            }
+
+            $conexion->commit();
+
+            // 4. Llamar al envio de correo en segundo plano
+            $stmtClienteOrden = $conexion->prepare("SELECT p.num_orden, c.nombre as cliente 
+                                                    FROM tblorden o
+                                                    JOIN tblpresupuesto p ON p.id = o.id
+                                                    JOIN tblclientes c ON c.id = p.id_cliente
+                                                    WHERE p.id = :id_orden");
+            $stmtClienteOrden->bindParam(":id_orden", $datos['id_orden'], PDO::PARAM_INT);
+            $stmtClienteOrden->execute();
+            $datosOrden = $stmtClienteOrden->fetch(PDO::FETCH_ASSOC);
+
+            if ($datosOrden) {
+                $cliente = $datosOrden['cliente'];
+                $num_orden = $datosOrden['num_orden'];
+                $notas = $datos['notas'] ? $datos['notas'] : 'Sin observaciones';
+                $fecha_orden = date('Y-m-d'); 
+                
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $usuario = isset($_SESSION['s_usuario']->nombres) ? $_SESSION['s_usuario']->nombres : 'Desconocido';
+                $origen = isset($datos['origen']) ? $datos['origen'] : 'bodega';
+                
+                self::enviarCorreoSolSegundoPlano($notas, $num_orden, $fecha_orden, $cliente, $usuario, $origen);
+            }
+
+            return array(
+                'status' => 'success',
+                'm' => 'Solicitud guardada y aprobada correctamente',
+                'id' => $id_solicitud,
+                'nc' => $next_seq
+            );
+
+        } catch (Exception $e) {
+            $conexion->rollBack();
+            return array(
+                'status' => 'error',
+                'm' => "Error al guardar y aprobar la solicitud: " . $e->getMessage()
+            );
+        }
+    }
+
+    /**
      * Actualizar solicitud completa (Cabecera y Detalles)
      */
     static public function mdlActualizarSolicitudCompleta($params)
@@ -535,6 +644,31 @@ class ModeloSolicitudDespacho
             }
 
             $conexion->commit();
+
+            // Llamar al envío de correo en segundo plano
+            $stmtClienteOrden = $conexion->prepare("SELECT p.num_orden, c.nombre as cliente 
+                                                    FROM tblorden o
+                                                    JOIN tblpresupuesto p ON p.id = o.id
+                                                    JOIN tblclientes c ON c.id = p.id_cliente
+                                                    WHERE p.id = :id_orden");
+            $stmtClienteOrden->bindParam(":id_orden", $params['id_orden'], PDO::PARAM_INT);
+            $stmtClienteOrden->execute();
+            $datosOrden = $stmtClienteOrden->fetch(PDO::FETCH_ASSOC);
+
+            if ($datosOrden) {
+                $cliente = $datosOrden['cliente'];
+                $num_orden = $datosOrden['num_orden'];
+                $notas = $params['notas'] ? $params['notas'] : 'Sin observaciones';
+                $fecha_orden = date('Y-m-d'); 
+                
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $usuario = isset($_SESSION['s_usuario']->nombres) ? $_SESSION['s_usuario']->nombres : 'Desconocido';
+                $origen = isset($params['origen']) ? $params['origen'] : 'bodega';
+                
+                self::enviarCorreoSolSegundoPlano($notas, $num_orden, $fecha_orden, $cliente, $usuario, $origen);
+            }
 
             return array(
                 'status' => 'success',
@@ -706,6 +840,30 @@ class ModeloSolicitudDespacho
         } catch (PDOException $e) {
             return array("error" => $e->getMessage());
         }
+    }
+
+    /**
+     * Función para enviar correo de solicitud en segundo plano
+     */
+    static private function enviarCorreoSolSegundoPlano($descrip, $orden, $fecha, $cliente, $usuario, $origen = 'bodega')
+    {
+        $scriptPath = escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'send_email_sol.php');
+        $descrip = escapeshellarg($descrip);
+        $orden = escapeshellarg($orden);
+        $cliente = escapeshellarg($cliente);
+        $fecha = escapeshellarg($fecha);
+        $usuario = escapeshellarg($usuario);
+        $origen_arg = escapeshellarg($origen);
+
+        // Comando para ejecutar en segundo plano en Windows
+        $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario $origen_arg > NUL 2>&1 &";
+        // Si usas PowerShell y no cmd, podría ser distinto, pero exec usa cmd.exe en Windows
+        // En Windows el comando anterior lanza y espera si no usamos 'start /b'
+        // Si encontramos problemas con Windows pausas, ajustamos:
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $command = "start /B php $scriptPath $descrip $orden $fecha $cliente $usuario $origen_arg > NUL 2>&1";
+        }
+        exec($command);
     }
 }
 ?>

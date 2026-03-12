@@ -289,6 +289,10 @@
                                     style="margin-bottom:.75rem;background:#3f6791 linear-gradient(180deg, #3f6791, #0b4395) repeat-x; color:#fff"
                                     class="btn w-100"><i class="fas fa-floppy-disk"></i><span class="button-text">
                                     </span>Guardar</button>
+                                <button type="button" id="btnGuardaryAprobarDespacho"
+                                    style="margin-bottom:.75rem; display:none;"
+                                    class="btn bg-gradient-success w-100"><i class="fas fa-clipboard-check"></i><span class="button-text">
+                                    </span>Guardar y Aprobar</button>
                                 <button type="button" id="btnAprobarDespacho"
                                     style="margin-bottom:.75rem;"
                                     class="btn bg-gradient-success w-100"><i class="fas fa-clipboard-check"></i><span class="button-text">
@@ -434,8 +438,9 @@
             inpNotas = document.getElementById('inpNotas'),
             nro_orden_sol = document.getElementById('nro_orden_sol'),
             cboResponsableSol = document.getElementById('cboResponsableSol'),
-            cboAnioSol = document.getElementById('cboAnioSol')
+            cboAnioSol = document.getElementById('cboAnioSol'),
             btnGuardarDespacho = document.getElementById('btnGuardarDespacho'),
+            btnGuardaryAprobarDespacho = document.getElementById('btnGuardaryAprobarDespacho'),
             div_productos = document.getElementById('div-productos'),
             div_header = document.getElementById('div_header');
 
@@ -653,6 +658,9 @@
                 $(cboResponsableSol).prop('disabled', false);
                   inpNotas.readOnly = false;
                 btnGuardarDespacho.style.display = '';
+                btnGuardaryAprobarDespacho.style.display = '';
+                $('#btnAprobarDespacho').hide();
+                $('#btnRevertirDespacho').hide();
                 div_productos.style.display = '';
 
                 tablaMateriales.clear();
@@ -1067,6 +1075,7 @@
                 datos.append('id_responsable', responsable);
                 datos.append('notas', inpNotas.value);
                 datos.append('filas', JSON.stringify(filas));
+                datos.append('origen', 'supervisor');
 
                 confirmarEliminar('la', 'solicitud', function (r) {
                     if (r) {
@@ -1161,6 +1170,7 @@
                 datos.append('id_responsable', responsable);
                 datos.append('notas', inpNotas.value);
                 datos.append('filas', JSON.stringify(filas));
+                datos.append('origen', 'supervisor');
 
                 confirmarEliminar('esta', 'solicitud para su aprobación', function (r) {
                     if (r) {
@@ -1179,6 +1189,82 @@
                         });
                     }
                 }, 'aprobar de forma definitiva', 'Se guardarán las cantidades ingresadas y completaremos la solicitud.', 'Sí, aprobar');
+            });
+        }
+
+        // Guardar y Aprobar una Nueva Solicitud
+        if (btnGuardaryAprobarDespacho) {
+            btnGuardaryAprobarDespacho.addEventListener('click', function (e) {
+                e.preventDefault();
+                const fecha = document.getElementById('fecha_des').value;
+                const responsable = $(cboResponsableSol).val();
+
+                if (!fecha || !responsable || !id_orden_sol) {
+                    mostrarToast('warning', 'Advertencia', 'fa-exclamation-triangle', 'Por favor complete todos los campos obligatorios (Fecha, Orden, Responsable).');
+                    return;
+                }
+
+                let filas = [];
+
+                function procesarTablaGuardaAprob(tablaInstancia) {
+                    tablaInstancia.rows().every(function () {
+                        let rowNode = this.node();
+                        let cant_sol = $(rowNode).find('.cantidad').val() || 0;
+                        let cant_apro = $(rowNode).find('.aprobada').val() || 0;
+
+                        if (cant_sol > 0 || cant_apro > 0) {
+                            filas.push({
+                                id_producto: $(rowNode).attr('data-id'),
+                                cant_sol: cant_sol,
+                                cant_apro: cant_apro > 0 ? cant_apro : cant_sol
+                            });
+                        }
+                    });
+                }
+
+                procesarTablaGuardaAprob(tablaMateriales);
+                procesarTablaGuardaAprob(tablaHerramientas);
+
+                if (filas.length === 0) {
+                    mostrarToast('warning', 'Advertencia', 'fa-exclamation-triangle', 'Debe agregar al menos un producto con cantidad.');
+                    return;
+                }
+
+                let datos = new FormData();
+                datos.append('accion', 19);
+                datos.append('id_orden', id_orden_sol);
+                datos.append('fecha', fecha);
+                datos.append('id_responsable', responsable);
+                datos.append('notas', inpNotas.value);
+                datos.append('filas', JSON.stringify(filas));
+                datos.append('origen', 'supervisor');
+
+                confirmarEliminar('la', 'nueva solicitud', function (r) {
+                    if (r) {
+                        let originalText = btnGuardaryAprobarDespacho.innerHTML;
+                        btnGuardaryAprobarDespacho.disabled = true;
+                        btnGuardaryAprobarDespacho.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando y Aprobando...';
+
+                        confirmarAccion(datos, 'solicitud_mh', tabla, '', function (r) {
+                            btnGuardaryAprobarDespacho.disabled = false;
+                            btnGuardaryAprobarDespacho.innerHTML = originalText;
+                            if (r && r.status === 'success') {
+                                if (r.nc) {
+                                    nc = r.nc;
+                                }
+                                ocultarFormulario();
+                                setChange(cboResponsableSol, 0)
+                                inpNotas.value = '';
+                                fecha_des.value = '';
+                                clearButtonSol.click()
+                                id_orden_sol = null;
+                                tablaMateriales.clear().draw();
+                                tablaHerramientas.clear().draw();
+                                actualizarConteos();
+                            }
+                        });
+                    }
+                }, 'guardar y aprobar de forma definitiva', 'Se guardará la solicitud y quedará inmediatamente APROBADA.', 'Sí, guardar y aprobar');
             });
         }
 
@@ -1224,6 +1310,7 @@
                 $('#btnAprobarDespacho').show();
                 $('#btnRevertirDespacho').hide();
             }
+            $('#btnGuardaryAprobarDespacho').hide();
 
             // 1. Obtener datos de la solicitud (Header)
             let datos = new FormData();

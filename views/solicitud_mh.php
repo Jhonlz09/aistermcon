@@ -1046,6 +1046,7 @@
                 datos.append('id_responsable', responsable);
                 datos.append('notas', inpNotas.value);
                 datos.append('filas', JSON.stringify(filas));
+                datos.append('origen', 'bodega');
 
                 confirmarEliminar('la', 'solicitud', function (r) {
                     if (r) {

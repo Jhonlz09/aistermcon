@@ -108,7 +108,7 @@
                                                         ajustes de entradas</label>
                                                     <label class="switch-2 ml-3" for="isEntradaEdit">
                                                         <input class="switch__input" type="checkbox" id="isEntradaEdit"
-                                                            onkeydown="toggleWithEnter(event, this)" <?php echo (isset($_SESSION["entrada_mul"]) && $_SESSION["entrada_mul"] == 1) ? 'checked' : ''; ?>>
+                                                            onkeydown="toggleWithEnter(event, this)" <?php echo(isset($_SESSION["entrada_mul"]) && $_SESSION["entrada_mul"] == 1) ? 'checked' : ''; ?>>
                                                         <svg class="switch__check" viewBox="0 0 16 16" width="16px"
                                                             height="16px">
                                                             <polyline class="switch__check-line" fill="none"
@@ -203,15 +203,47 @@
                                                 </div>
                                                 <!-- Botones para agregar o eliminar correos -->
                                                 <div class="form-group">
-                                                    <button type="button" id="addEmailButton" class="btn btn-success">
+                                                    <button type="button" id="addEmailButton" class="btn btn-success mb-3">
                                                         <i class="fas fa-plus-circle"></i> Agregar correo
                                                     </button>
                                                 </div>
-                                                <br>
-                                                <h5 style="font-weight:bold;"> <i class="fas fa-tickets nav-icon"></i>
+                                                
+                                                <h5 style="font-weight:bold;margin-top:1rem;"><i class="fas fa-clipboard-list nav-icon"></i>
                                                 Solicitud de despacho</h5>
                                             <hr>
-                                            
+                                                <div class="row" style="align-items:flex-start">
+                                                    <div class="col-md-6">
+                                                        <h6 style="font-weight:bold;">Desde Supervisor</h6>
+                                                        <div id="emailContainerSupervisor">
+                                                            <div class="mb-3">
+                                                                <input spellcheck="false" autocomplete="off" type="email"
+                                                                    id="email-sup-1" name="email_supervisor[]" class="border-2 form-control"
+                                                                    placeholder="example@aistermcon.com" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <button type="button" id="addEmailButtonSup" class="btn btn-success btn-sm mb-3">
+                                                                <i class="fas fa-plus-circle"></i> Agregar correo
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h6 style="font-weight:bold;">Desde Bodega</h6>
+                                                        <div id="emailContainerBodega">
+                                                            <div class="mb-3">
+                                                                <input spellcheck="false" autocomplete="off" type="email"
+                                                                    id="email-bod-1" name="email_bodega[]" class="border-2 form-control"
+                                                                    placeholder="example@aistermcon.com" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <button type="button" id="addEmailButtonBod" class="btn btn-success btn-sm mb-3">
+                                                                <i class="fas fa-plus-circle"></i> Agregar correo
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <br>
                                                 <div class="col-sm-12 p-0">
                                                     <button class="btn btn-primary btn-small w-100 text-center"
                                                         id="btnGuardarOpe">
@@ -432,82 +464,105 @@
     $(document).ready(function () {
         fetch('controllers/configuracion.controlador.php')
             .then(response => response.json())
-            .then(correos => {
-                console.log(correos); // Verifica qué datos recibes
+            .then(data => {
+                const correosOpe = data.correos_ope;
+                const correosSup = data.correos_sup;
+                const correosBod = data.correos_bod;
 
-                // Verificar que 'correos' es un array antes de usar .forEach
-                if (Array.isArray(correos)) {
-                    const emailContainer = document.getElementById('emailContainer');
-                    let emailCounter = 1;
+                renderEmails(correosOpe, 'emailContainer', 'email', 'email');
+                renderEmails(correosSup, 'emailContainerSupervisor', 'email_supervisor', 'email-sup');
+                renderEmails(correosBod, 'emailContainerBodega', 'email_bodega', 'email-bod');
+            })
+            .catch(error => {
+                console.error('Error al cargar los correos:', error);
+            });
 
-                    // Iteramos sobre los correos y los agregamos al formulario
-                    correos.forEach((correo, index) => {
-                        if (index === 0) {
-                            // Si es el primer correo, lo agregamos al primer input
-                            const emailInput = emailContainer.querySelector('input[name="email[]"]');
-                            emailInput.value = correo; // Asignamos el correo recuperado
-                        } else {
-                            // Si es un correo adicional, agregamos un nuevo campo dinámico
-                            emailCounter++;
-                            const emailRow = document.createElement('div');
-                            emailRow.className = 'row mb-3';
-                            emailRow.id = `email-row-${emailCounter}`;
-                            emailRow.innerHTML = `
+        function renderEmails(correos, containerId, inputName, idPrefix) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            if (Array.isArray(correos) && correos.length > 0) {
+                container.innerHTML = '';
+                correos.forEach((correo, index) => {
+                    const c = index + 1;
+                    const row = document.createElement('div');
+                    row.className = index === 0 ? 'mb-3' : 'row mb-3';
+                    row.id = `${idPrefix}-row-${c}`;
+                    
+                    if (index === 0 && containerId === 'emailContainer') {
+                        row.innerHTML = `
+                            <label for="${idPrefix}-${c}" style="font-weight:bold;text-wrap:wrap"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                            <input spellcheck="false" autocomplete="off" type="email" id="${idPrefix}-${c}" name="${inputName}[]" class="border-2 form-control" placeholder="example@aistermcon.com" required value="${correo}">
+                        `;
+                    } else if (index === 0) {
+                        row.innerHTML = `
+                            <input spellcheck="false" autocomplete="off" type="email" id="${idPrefix}-${c}" name="${inputName}[]" class="border-2 form-control" placeholder="example@aistermcon.com" required value="${correo}">
+                        `;
+                    } else {
+                        row.innerHTML = `
                         <div class="col">
-                            <input spellcheck="false" autocomplete="off" type="email" id="email-${emailCounter}" name="email[]" class="form-control border-2" placeholder="example@aistermcon.com" required value="${correo}">
+                            <input spellcheck="false" autocomplete="off" type="email" id="${idPrefix}-${c}" name="${inputName}[]" class="form-control border-2" placeholder="example@aistermcon.com" required value="${correo}">
                         </div>
                         <div class="col-auto text-right">
                             <button type="button" class="btn bg-gradient-danger removeEmailButton">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
+                        `;
+                        row.querySelector('.removeEmailButton').addEventListener('click', function () {
+                            row.remove();
+                        });
+                    }
+                    container.appendChild(row);
+                });
+            } else {
+                container.innerHTML = '';
+                const row = document.createElement('div');
+                row.className = 'mb-3';
+                row.id = `${idPrefix}-row-1`;
+                if (containerId === 'emailContainer') {
+                    row.innerHTML = `
+                        <label for="${idPrefix}-1" style="font-weight:bold;text-wrap:wrap"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                        <input spellcheck="false" autocomplete="off" type="email" id="${idPrefix}-1" name="${inputName}[]" class="border-2 form-control" placeholder="example@aistermcon.com" required>
                     `;
-                            emailContainer.appendChild(emailRow);
-
-                            // Agregar evento para eliminar este campo dinámico
-                            emailRow.querySelector('.removeEmailButton').addEventListener('click', function () {
-                                emailRow.remove();
-                                emailCounter--; // Decrementa el contador
-                            });
-                        }
-                    });
                 } else {
-                    console.error('Los correos no son un array:', correos);
+                    row.innerHTML = `
+                        <input spellcheck="false" autocomplete="off" type="email" id="${idPrefix}-1" name="${inputName}[]" class="border-2 form-control" placeholder="example@aistermcon.com" required>
+                    `;
                 }
-            })
-            .catch(error => {
-                console.error('Error al cargar los correos:', error);
+                container.appendChild(row);
+            }
+        }
+
+        let emailCounter = 100; // Contador general
+
+        function setupAddButton(buttonId, containerId, inputName, idPrefix) {
+            document.getElementById(buttonId).addEventListener('click', function () {
+                emailCounter++;
+                const container = document.getElementById(containerId);
+                const row = document.createElement('div');
+                row.className = 'row mb-3';
+                row.id = `${idPrefix}-row-${emailCounter}`;
+                row.innerHTML = `
+                <div class="col">
+                    <input spellcheck="false" autocomplete="off" type="email" id="${idPrefix}-${emailCounter}" name="${inputName}[]" class="form-control border-2" placeholder="example@aistermcon.com" required>
+                </div>
+                <div class="col-auto text-right">
+                    <button type="button" class="btn bg-gradient-danger removeEmailButton">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                `;
+                container.appendChild(row);
+                row.querySelector('.removeEmailButton').addEventListener('click', function () {
+                    row.remove();
+                });
             });
+        }
 
-        let emailCounter = 1; // Contador para generar IDs únicos
-
-        document.getElementById('addEmailButton').addEventListener('click', function () {
-            emailCounter++; // Incrementa el contador
-
-            // Crea un nuevo campo dinámico usando filas y columnas de Bootstrap
-            const emailRow = document.createElement('div');
-            emailRow.className = 'row mb-3';
-            emailRow.id = `email-row-${emailCounter}`;
-            emailRow.innerHTML = `
-            <div class="col">
-                <input spellcheck="false" autocomplete="off" type="email" id="email-${emailCounter}" name="email[]" class="form-control border-2" placeholder="example@aistermcon.com" required>
-            </div>
-            <div class="col-auto text-right">
-                <button type="button" class="btn bg-gradient-danger removeEmailButton">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-
-            // Agregar el nuevo grupo al contenedor
-            document.getElementById('emailContainer').appendChild(emailRow);
-
-            // Agregar evento para eliminar este campo dinámico
-            emailRow.querySelector('.removeEmailButton').addEventListener('click', function () {
-                emailRow.remove();
-                emailCounter--; // Decrementa el contador
-            });
-        });
+        setupAddButton('addEmailButton', 'emailContainer', 'email', 'email');
+        setupAddButton('addEmailButtonSup', 'emailContainerSupervisor', 'email_supervisor', 'email-sup');
+        setupAddButton('addEmailButtonBod', 'emailContainerBodega', 'email_bodega', 'email-bod');
 
 
 
@@ -710,18 +765,21 @@
             e.preventDefault();
             // Obtén los inputs de email una sola vez
             const emailInputs = formConfigOpe.querySelectorAll('input[name="email[]"]');
+            const emailSupInputs = formConfigOpe.querySelectorAll('input[name="email_supervisor[]"]');
+            const emailBodInputs = formConfigOpe.querySelectorAll('input[name="email_bodega[]"]');
 
             // Valida los correos
-            const {
-                correos,
-                correosInvalidos
-            } = validarCorreos(emailInputs, regexCorreo);
+            const valOpe = validarCorreos(emailInputs, regexCorreo);
+            const valSup = validarCorreos(emailSupInputs, regexCorreo);
+            const valBod = validarCorreos(emailBodInputs, regexCorreo);
 
-            if (correosInvalidos.length > 0) {
+            const allInvalidos = [...valOpe.correosInvalidos, ...valSup.correosInvalidos, ...valBod.correosInvalidos];
+
+            if (allInvalidos.length > 0) {
                 // Si hay correos inválidos, muestra el mensaje de error
-                const mensaje = correosInvalidos.length === 1 ?
-                    `El correo '${correosInvalidos[0]}' no es válido.` :
-                    `Los correos '${correosInvalidos.join(', ')}' no son válidos.`;
+                const mensaje = allInvalidos.length === 1 ?
+                    `El correo '${allInvalidos[0]}' no es válido.` :
+                    `Los correos '${allInvalidos.join(', ')}' no son válidos.`;
 
                 mostrarToast('danger', 'Error', 'fa-xmark', mensaje, 8000);
                 return;
@@ -730,7 +788,9 @@
             // Si los correos son válidos, crear el FormData y agregar los correos
             let datos = new FormData(formConfigOpe); // Agrega todos los datos del formulario
             datos.append('accion', 6); // Usa índices para diferenciarlos
-            datos.append('correos', JSON.stringify(correos));
+            datos.append('correos', JSON.stringify(valOpe.correos));
+            datos.append('correos_supervisor', JSON.stringify(valSup.correos));
+            datos.append('correos_bodega', JSON.stringify(valBod.correos));
 
             // Llamar a la función confirmarAccion para enviar los datos al backend
             confirmarAccion(datos, 'configuracion', null, '', function (r) {

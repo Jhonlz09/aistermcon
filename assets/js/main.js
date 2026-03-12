@@ -39,10 +39,13 @@ function confirmarEliminar(
 }
 
 function limpiar(btn = false) {
+
   if (selectedTab === "1") {
     setChange(cboProveedores, 0);
     nro_factura.value = "";
   } else if (selectedTab === "2") {
+    let clearBtnAutoSol = document.getElementById("clearBtnAutoSol")
+    let autoSolicitudOut = document.getElementById("autoSolicitudOut")
     setChange(cboConductor, conductorPorDefecto);
     setChange(cboDespachado, bodegueroPorDefecto);
     setChange(cboResponsable, 0);
@@ -52,6 +55,10 @@ function limpiar(btn = false) {
     nro_orden.value = "";
     clearButton.style.display = "none";
     motivo.value = "";
+     clearBtnAutoSol.style.display= "none"
+    autoSolicitudOut.readOnly = false
+    autoSolicitudOut.value= ""
+
   } else if (selectedTab === "3") {
     setChange(cboConductorEntrada, conductorPorDefecto);
     setChange(cboDespachado, bodegueroPorDefecto);
@@ -76,6 +83,9 @@ function limpiar(btn = false) {
     salida_radio.value = "2";
     salida_radio.dispatchEvent(new Event("change"));
     btn ? (btn.style.display = "none") : null;
+    clearBtnAutoSol.style.display= "none"
+    autoSolicitudOut.readOnly = false
+    autoSolicitudOut.value= ""
   } else if (selectedTab === "6") {
     const retorno = document.getElementById("radio-3");
     setChange(cboConductor, conductorPorDefecto);
@@ -115,6 +125,8 @@ function limpiar(btn = false) {
     setChange(cboDespachado, bodegueroPorDefecto);
     setChange(cboResponsable, 0);
     fecha.value = `${year}-${mes}-${dia}`;
+   
+
     nro_ordenFab.value = "";
     nro_ordenFab.readOnly = false;
     clearButtonFab.style.display = "none";

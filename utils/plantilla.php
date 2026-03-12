@@ -1065,6 +1065,13 @@
                                     return false; // Skip loading items into the datatable
                                 }
                                 
+                                // En modo edición ('4'=editS, '6'=editR) solo se actualiza la metadata
+                                // de la solicitud vinculada, pero NO se cargan productos en tblOut.
+                                if (selectedTab === '4' || selectedTab === '6') {
+                                    $('#clearBtnAutoSol').show();
+                                    return false;
+                                }
+                                
                                 $.ajax({
                                     url: "controllers/solicitud_mh.controlador.php",
                                     method: "POST",

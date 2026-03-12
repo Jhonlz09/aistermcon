@@ -19,6 +19,7 @@ if (isset($argv)) {
     $fecha = $partes[2] . '/' . $partes[1] . '/' . $partes[0];
     $cliente = $argv[4];
     $usuario = $argv[5];
+    $origen = isset($argv[6]) ? $argv[6] : 'bodega';
 
     // Configurar y enviar el correo
     $mail = new PHPMailer(true);
@@ -26,14 +27,13 @@ if (isset($argv)) {
     try {
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../../../../');
         $dotenv->load();
-        // Configuración del servidor SMTP
         $mail->isSMTP();
-        $mail->Host = $_ENV['EMAIL_HOST']; // Servidor SMTP
+        $mail->Host = 'smtp.gmail.com'; // Servidor SMTP
         $mail->SMTPAuth = true;
         $mail->Username = $_ENV['EMAIL']; // Tu correo Gmail
-        $mail->Password = $_ENV['EMAIL_PASS'];
+        $mail->Password = $_ENV['EMAIL_PASS']; // Contraseña de Gmail (o contraseña de aplicación)
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = $_ENV['EMAIL_PORT'];
+        $mail->Port = 587;
 
         $correos = ModeloConfiguracion::mdlObtenerCorreos(); // Llama al modelo que obtiene los correos
         // Configuración de importancia
@@ -41,23 +41,35 @@ if (isset($argv)) {
         $mail->addCustomHeader('X-Priority', '1'); // Alta prioridad en algunos clientes
         $mail->addCustomHeader('Importance', 'high'); // 
         $mail->setFrom($_ENV['EMAIL']);
-        $destinatarios = isset($correos['correos_ope']) && is_array($correos['correos_ope']) ? array_unique($correos['correos_ope']) : [];
-
      
-        foreach ($destinatarios as $destinatario) {
-            $mail->addAddress($destinatario); // Agrega cada correo como destinatario
+        // Combinamos los correos de supervisor y bodega para enviarles la notificación
+        $destinatarios_sup = isset($correos['correos_sup']) && is_array($correos['correos_sup']) ? $correos['correos_sup'] : [];
+        $destinatarios_bod = isset($correos['correos_bod']) && is_array($correos['correos_bod']) ? $correos['correos_bod'] : [];
+        
+        if ($origen === 'supervisor') {
+            $destinatarios = $destinatarios_sup;
+        } else {
+            $destinatarios = $destinatarios_bod;
         }
+        
+        $destinatarios = array_unique($destinatarios);
+
+        foreach ($destinatarios as $correo) {
+            if (!empty(trim($correo))) {
+                $mail->addAddress(trim($correo));
+            }
+        }
+        
         // Contenido del correo
         $mail->isHTML(true);
-        $mail->Subject = 'Nueva orden de trabajo abierta';
+        $mail->Subject = 'Nueva solicitud de despacho';
         $mail->Body = "
-        <h2>Detalles de la nueva orden:</h2>
+        <h2>Detalles de la nueva solicitud:</h2>
         <p><strong>Orden:</strong> {$orden}</p>
         <p><strong>Cliente:</strong> {$cliente}</p>
-        <p><strong>Descripcion:</strong> {$descrip}</p>
         <p><strong>Fecha:</strong> {$fecha}</p>
         <br>
-        <p><strong>Usuario:</strong> {$usuario}</p>";
+        <p><strong>Responsable:</strong> {$usuario}</p>";
         
         // Enviar el correo
         $mail->send();

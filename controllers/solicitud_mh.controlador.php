@@ -183,7 +183,8 @@ if ($_POST["accion"] == 1) {
             'fecha' => $_POST["fecha"] ?? null,
             'id_responsable' => $_POST["id_responsable"] ?? null,
             'notas' => $_POST["notas"] ?? null,
-            'filas' => $_POST["filas"] ?? '[]'
+            'filas' => $_POST["filas"] ?? '[]',
+            'origen' => $_POST["origen"] ?? 'bodega'
         ];
         $data->params = $params;
         $data->guardarSolicitudCompleta();
@@ -214,9 +215,22 @@ if ($_POST["accion"] == 1) {
             'id_responsable' => $_POST["id_responsable"] ?? null,
             'notas' => $_POST["notas"] ?? null,
             'id_usuario_autorizado' => $_SESSION["id_personal"] ?? null,
-            'filas' => $_POST["filas"] ?? '[]'
+            'filas' => $_POST["filas"] ?? '[]',
+            'origen' => $_POST["origen"] ?? 'supervisor'
         ];
         echo json_encode(ModeloSolicitudDespacho::mdlAprobarSolicitudCompleta($params));
+    } else if ($_POST["accion"] == 19) {
+        // Guardar y Aprobar de una sola vez una Nueva Solicitud
+        $params = [
+            'id_orden' => $_POST["id_orden"] ?? null,
+            'fecha' => $_POST["fecha"] ?? null,
+            'id_responsable' => $_POST["id_responsable"] ?? null,
+            'notas' => $_POST["notas"] ?? null,
+            'id_usuario_autorizado' => $_SESSION["id_personal"] ?? null,
+            'filas' => $_POST["filas"] ?? '[]',
+            'origen' => $_POST["origen"] ?? 'supervisor'
+        ];
+        echo json_encode(ModeloSolicitudDespacho::mdlGuardaryAprobarNuevaSolicitud($params));
     }
 }
 ?>

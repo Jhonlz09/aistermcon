@@ -713,6 +713,7 @@
         }
     });
 
+    let clearBtnAutoSol = document.getElementById('clearBtnAutoSol');
     // --- LÓGICA DE VISIBILIDAD DE AUTOCOMPLETE: autoSolicitudOut ---
     // Escuchar cambios en los tabs para mostrar u ocultar el contenedor global de autoSolicitudOut
     document.addEventListener("DOMContentLoaded", function() {

@@ -6,13 +6,10 @@ if (!isset($_SESSION["crear4"])) {
 }
 
 // Verificar si $_SESSION["crear7"] está definido, si no, establecerlo en false
-if (!isset($_SESSION["crear7"])) {
-    $_SESSION["crear7"] = false;
+if (!isset($_SESSION["crear9"])) {
+    $_SESSION["crear9"] = false;
 }
 
-if (!isset($_SESSION["crear12"])) {
-    $_SESSION["crear12"] = false;
-}
 ?>
 
 <!-- Navbar -->
@@ -24,7 +21,7 @@ if (!isset($_SESSION["crear12"])) {
         </li>
     </ul>
     <ul class="navbar-nav">
-        <?php if ($_SESSION["crear4"] || $_SESSION["crear7"]) : ?>
+        <?php if ($_SESSION["crear4"] || $_SESSION["crear9"]) : ?>
             <li class="nav-item">
                 <a class="nav-link ctrl-side" id="first_control" data-widget="control-sidebar" data-target=".first-sidebar" data-controlsidebar-slide="true" href="#" role="button">
                     <i class="fas fa-clipboard fa-lg"><span style="font-size:1rem"> GUI</span></i>

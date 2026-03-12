@@ -212,26 +212,41 @@ class ModeloConfiguracion
         }
     }
 
-    public static function mdlEditarConfigOpe($correosJson)
+    public static function mdlEditarConfigOpe($correosJson, $correosSupJson, $correosBodJson)
     {
         try {
             $conexion = Conexion::ConexionDB();
 
             $correos = json_decode($correosJson);
+            $correosSup = json_decode($correosSupJson);
+            $correosBod = json_decode($correosBodJson);
 
-            if (!is_array($correos)) {
+            if (!is_array($correos) || !is_array($correosSup) || !is_array($correosBod)) {
                 throw new Exception('Los correos deben ser un array');
             }
+            
             $correosEscapados = array_map(function ($correo) {
                 return "'" . addslashes($correo) . "'"; // Escapa las comillas en los correos
             }, $correos);
+            
+            $correosSupEscapados = array_map(function ($correo) {
+                return "'" . addslashes($correo) . "'";
+            }, $correosSup);
+            
+            $correosBodEscapados = array_map(function ($correo) {
+                return "'" . addslashes($correo) . "'";
+            }, $correosBod);
 
             // Crear el formato adecuado para PostgreSQL (un array de texto)
-            $correos = '{' . implode(',', $correosEscapados) . '}';
+            $correosStr = '{' . implode(',', $correosEscapados) . '}';
+            $correosSupStr = '{' . implode(',', $correosSupEscapados) . '}';
+            $correosBodStr = '{' . implode(',', $correosBodEscapados) . '}';
 
-            $sql = "UPDATE tblconfiguracion SET correo_destinatario = :correo";
+            $sql = "UPDATE tblconfiguracion SET correo_destinatario = :correo, correo_destinatario_supervisor = :correo_sup, correo_destinatario_bodega = :correo_bod";
             $e = $conexion->prepare($sql);
-            $e->bindParam(':correo', $correos);
+            $e->bindParam(':correo', $correosStr);
+            $e->bindParam(':correo_sup', $correosSupStr);
+            $e->bindParam(':correo_bod', $correosBodStr);
             $e->execute();
 
             return array(
@@ -252,26 +267,31 @@ class ModeloConfiguracion
     {
         try {
             $conexion = Conexion::ConexionDB();
-            $sql = "SELECT correo_destinatario FROM tblconfiguracion LIMIT 1"; // Ajusta según tu consulta
+            $sql = "SELECT correo_destinatario, correo_destinatario_supervisor, correo_destinatario_bodega FROM tblconfiguracion LIMIT 1"; // Ajusta según tu consulta
             $stmt = $conexion->prepare($sql);
             $stmt->execute();
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($result) {
-                // Extrae el valor de la cadena y elimina las llaves
-                $correos = $result['correo_destinatario'];
-                $correos = trim($correos, '{}'); // Elimina las llaves al principio y al final
-                $correos = explode(',', $correos); // Convierte la cadena a un array usando la coma como delimitador
+                $parsePgArray = function ($pgArr) {
+                    if (!$pgArr) return [];
+                    $str = trim($pgArr, '{}');
+                    if (empty($str)) return [];
+                    $arr = explode(',', $str);
+                    $arr = array_map(function ($val) {
+                        return trim($val, " '\"");
+                    }, $arr);
+                    return $arr;
+                };
 
-                // Limpia los espacios y las comillas alrededor de cada correo
-                $correos = array_map(function ($correo) {
-                    return trim($correo, " '");
-                }, $correos);
-
-                return $correos; // Devuelve el array de correos
+                return [
+                    'correos_ope' => $parsePgArray($result['correo_destinatario']),
+                    'correos_sup' => $parsePgArray($result['correo_destinatario_supervisor']),
+                    'correos_bod' => $parsePgArray($result['correo_destinatario_bodega'])
+                ];
             }
 
-            return [];
+            return ['correos_ope' => [], 'correos_sup' => [], 'correos_bod' => []];
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
