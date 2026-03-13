@@ -242,7 +242,7 @@ function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $ob
             iconv('UTF-8', 'windows-1252', $fill["unidad"]),
             iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
             iconv('UTF-8', 'windows-1252', rtrim(rtrim((string)$fill["cant_apro"], '0'), '.')), // Salida 
-            '', // Ingreso 
+            iconv('UTF-8', 'windows-1252', isset($fill["retorno_formateado"]) ? $fill["retorno_formateado"] : ''), // Ingreso a Bodega
         ), array(7, 7, 7, 7, 7, 7, 7), '', 5.5, [true, true, true, true, true, true, true]);
         $count++;
         $total_items++;
@@ -326,14 +326,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     $archivo = 'SOLICITUD-DESPACHO-' . $nro;
     $pdf->SetTitle($archivo);
 
-    // Separar items por categoria
+    // Separar items por categoria y consultar sus retornos
     $data_detalle = ModeloSolicitudDespacho::mdlConsultarDetalleSolicitud($id);
     
     $materiales = [];
     $herramientas = [];
 
     if (is_array($data_detalle)) {
-        foreach ($data_detalle as $fill) {
+        foreach ($data_detalle as &$fill) {
+            // Consultar Retorno por Producto
+            $retorno = ModeloSolicitudDespacho::mdlConsultarRetornoPorProductoYSolicitud($id, $fill['id_producto']);
+            
+            // Si el retorno es mayor a 0, formatearlo, si no, dejar vacío
+            $fill['retorno_formateado'] = ($retorno > 0) ? rtrim(rtrim((string)$retorno, '0'), '.') : '';
+
             if ($fill['id_categoria'] == 1) { // 1 = Materiales
                 $materiales[] = $fill;
             } else {

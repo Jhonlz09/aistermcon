@@ -39,13 +39,16 @@ function confirmarEliminar(
 }
 
 function limpiar(btn = false) {
-
+    let clearBtnAutoSol = document.getElementById("clearBtnAutoSol")
+    let autoSolicitudOut = document.getElementById("autoSolicitudOut")
+  clearBtnAutoSol.style.display = "none"
+  autoSolicitudOut.readOnly = false
+  autoSolicitudOut.value = ""
   if (selectedTab === "1") {
     setChange(cboProveedores, 0);
     nro_factura.value = "";
   } else if (selectedTab === "2") {
-    let clearBtnAutoSol = document.getElementById("clearBtnAutoSol")
-    let autoSolicitudOut = document.getElementById("autoSolicitudOut")
+  
     setChange(cboConductor, conductorPorDefecto);
     setChange(cboDespachado, bodegueroPorDefecto);
     setChange(cboResponsable, 0);
@@ -55,9 +58,7 @@ function limpiar(btn = false) {
     nro_orden.value = "";
     clearButton.style.display = "none";
     motivo.value = "";
-     clearBtnAutoSol.style.display= "none"
-    autoSolicitudOut.readOnly = false
-    autoSolicitudOut.value= ""
+
 
   } else if (selectedTab === "3") {
     setChange(cboConductorEntrada, conductorPorDefecto);
@@ -83,9 +84,9 @@ function limpiar(btn = false) {
     salida_radio.value = "2";
     salida_radio.dispatchEvent(new Event("change"));
     btn ? (btn.style.display = "none") : null;
-    clearBtnAutoSol.style.display= "none"
+    clearBtnAutoSol.style.display = "none"
     autoSolicitudOut.readOnly = false
-    autoSolicitudOut.value= ""
+    autoSolicitudOut.value = ""
   } else if (selectedTab === "6") {
     const retorno = document.getElementById("radio-3");
     setChange(cboConductor, conductorPorDefecto);
@@ -125,7 +126,7 @@ function limpiar(btn = false) {
     setChange(cboDespachado, bodegueroPorDefecto);
     setChange(cboResponsable, 0);
     fecha.value = `${year}-${mes}-${dia}`;
-   
+
 
     nro_ordenFab.value = "";
     nro_ordenFab.readOnly = false;
@@ -142,9 +143,9 @@ function limpiar(btn = false) {
 
 function cargarOpcionesSelect(selectElement, value, size = "110%") {
   selectElement.select2({
-    data:datos_uni,
-    minimumResultsForSearch:-1,
-    width:size,
+    data: datos_uni,
+    minimumResultsForSearch: -1,
+    width: size,
   });
   if (value) {
     selectElement.val(value).trigger("change");
@@ -369,10 +370,10 @@ function confirmarAccion(
       } else if (isSuccess) {
         $(modal).modal("hide");
       }
-      
+
       // Hook para refrescar autocomplete de la vista de almacén
       if (isSuccess && ruta === 'solicitud_mh' && typeof window.actualizarAutocompleteOut === 'function') {
-          window.actualizarAutocompleteOut();
+        window.actualizarAutocompleteOut();
       }
 
       if (showToast) {

@@ -873,7 +873,7 @@ class ModeloRegistro
         }
     }
 
-    static public function mdlRegistrarRetorno($arr, $boleta, $fecha_retorno, $nro_guia)
+    static public function mdlRegistrarRetorno($arr, $boleta, $fecha_retorno, $nro_guia, $autorizado)
     {
         try {
             $db = Conexion::ConexionDB();
@@ -914,8 +914,9 @@ class ModeloRegistro
                 }
             }
 
-            $stmtB = $db->prepare("UPDATE tblboleta SET retorno = true, fecha_retorno = :fecha_retorno WHERE id = :boleta");
+            $stmtB = $db->prepare("UPDATE tblboleta SET retorno = true, fecha_retorno = :fecha_retorno, autorizado=:autorizado WHERE id = :boleta");
             $stmtB->bindParam(':fecha_retorno', $fecha_retorno, PDO::PARAM_STR);
+            $stmtB->bindParam(':autorizado', $autorizado, PDO::PARAM_INT);
             $stmtB->bindParam(':boleta', $boleta, PDO::PARAM_STR);
             $stmtB->execute();
 

@@ -352,10 +352,10 @@
                             ...configuracionTable
                         })
                         tabla.on('draw.dt', function () {
-                            const b = document.body;
-                            const s = b.scrollHeight;
-                            const w = window.innerHeight;
-                            handleScroll(b, s, w)
+                            // const b = document.body;
+                            // const s = b.scrollHeight;
+                            // const w = window.innerHeight;
+                            // handleScroll(b, s, w)
 
                             let Data = tabla.rows().data().toArray();
                             localStorage.setItem(ruta, JSON.stringify(Data));
@@ -2193,6 +2193,7 @@
                         formData.append('fecha_retorno', fecha_retorno.value);
                         formData.append('nro_guia', nro_guia.value)
                         formData.append('accion', 3);
+                        formData.append('autorizado', cboAutorizado.value);
                         realizarRegistro(tblReturn, formData, clases, 0, 'productos', function (response) {
                             if (response) {
                                 btnCancelarTrans.click();

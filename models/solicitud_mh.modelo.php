@@ -362,17 +362,11 @@ class ModeloSolicitudDespacho
             }
 
             // Obtener el siguiente valor de la secuencia para mantener el contador actualizado
-            $stmtSeq = $conexion->prepare("SELECT last_value + increment_by AS sc_desp FROM pg_sequences WHERE schemaname = 'public' AND sequencename = 'secuencia_despacho'");
-            $stmtSeq->execute();
-            $seqResult = $stmtSeq->fetch(PDO::FETCH_ASSOC);
-            $next_seq = null;
-            if ($seqResult) {
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
-                }
-                $_SESSION["sc_desp"] = $seqResult['sc_desp'];
-                $next_seq = $seqResult['sc_desp'] + 1;
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
             }
+            $next_seq = $conexion->lastInsertId('secuencia_despacho') + 1;
+            $_SESSION["sc_desp"] = $next_seq;
 
             $conexion->commit();
 
@@ -446,17 +440,11 @@ class ModeloSolicitudDespacho
             }
 
             // 3. Obtener secuencia actual 
-            $stmtSeq = $conexion->prepare("SELECT last_value + increment_by AS sc_desp FROM pg_sequences WHERE schemaname = 'public' AND sequencename = 'secuencia_despacho'");
-            $stmtSeq->execute();
-            $seqResult = $stmtSeq->fetch(PDO::FETCH_ASSOC);
-            $next_seq = null;
-            if ($seqResult) {
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
-                }
-                $_SESSION["sc_desp"] = $seqResult['sc_desp'];
-                $next_seq = $seqResult['sc_desp'] + 1;
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
             }
+            $next_seq = $conexion->lastInsertId('secuencia_despacho') + 1;
+            $_SESSION["sc_desp"] = $next_seq;
 
             $conexion->commit();
 
@@ -806,6 +794,33 @@ class ModeloSolicitudDespacho
             return $respuesta;
         } catch (PDOException $e) {
             return [];
+        }
+    }
+
+    /**
+     * Consultar cantidad retornada (Ingreso a bodega) de un producto específico asociado a una solicitud
+     */
+    static public function mdlConsultarRetornoPorProductoYSolicitud($id_solicitud, $id_producto)
+    {
+        try {
+            // En tblsalidas solo hay un id_producto para un id_boleta, por ende extraemos directo el retorno
+            $consulta = "SELECT s.retorno 
+                         FROM tblsalidas s
+                         INNER JOIN tblboleta b ON s.id_boleta = b.id
+                         WHERE b.id_solicitud_despacho = :id_solicitud 
+                           AND s.id_producto = :id_producto";
+
+            $stmt = Conexion::ConexionDB()->prepare($consulta);
+            $stmt->bindParam(":id_solicitud", $id_solicitud, PDO::PARAM_INT);
+            $stmt->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $resultado ? $resultado['retorno'] : null;
+            
+        } catch (PDOException $e) {
+            return null; // En caso de error, devolvemos null
         }
     }
 
