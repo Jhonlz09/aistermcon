@@ -53,7 +53,7 @@ class SesionModelo
             $_SESSION["crear{$p->id}"] = (bool) $p->crear;
             $_SESSION["editar{$p->id}"] = (bool) $p->editar;
             $_SESSION["eliminar{$p->id}"] = (bool) $p->eliminar;
-            $_SESSION["aprobar{$p->id}"] = (bool) $p->eliminar;
+            $_SESSION["aprobar{$p->id}"] = (bool) $p->aprobar;
         }
 
         // 7. Configuración general

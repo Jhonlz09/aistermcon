@@ -24,23 +24,23 @@ if (isset($argv)) {
     $mail = new PHPMailer(true);
 
     try {
-        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../../../');
-        $dotenv->load();
+        // $dotenv = Dotenv::createImmutable(__DIR__ . '/../../../../');
+        // $dotenv->load();
         // Configuración del servidor SMTP
         $mail->isSMTP();
-        $mail->Host = $_ENV['EMAIL_HOST']; // Servidor SMTP
+        $mail->Host = "smtp.gmail.com"; // Servidor SMTP
         $mail->SMTPAuth = true;
-        $mail->Username = $_ENV['EMAIL']; // Tu correo Gmail
-        $mail->Password = $_ENV['EMAIL_PASS'];
+        $mail->Username = "bodegaaistermcon@gmail.com"; // Tu correo Gmail
+        $mail->Password = "bofy ibxv tkny jxig";
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = $_ENV['EMAIL_PORT'];
+        $mail->Port = 587;
 
         $correos = ModeloConfiguracion::mdlObtenerCorreos(); // Llama al modelo que obtiene los correos
         // Configuración de importancia
         $mail->Priority = 1; // Alta prioridad (1 = Alta, 3 = Normal, 5 = Baja)
         $mail->addCustomHeader('X-Priority', '1'); // Alta prioridad en algunos clientes
         $mail->addCustomHeader('Importance', 'high'); // 
-        $mail->setFrom($_ENV['EMAIL']);
+        $mail->setFrom("bodegaaistermcon@gmail.com");
         $destinatarios = isset($correos['correos_ope']) && is_array($correos['correos_ope']) ? array_unique($correos['correos_ope']) : [];
 
      
