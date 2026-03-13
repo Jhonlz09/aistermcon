@@ -873,12 +873,7 @@ class ModeloSolicitudDespacho
 
         // Comando para ejecutar en segundo plano en Windows
         $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario $origen_arg $title > /dev/null 2>&1 &";
-        // Si usas PowerShell y no cmd, podría ser distinto, pero exec usa cmd.exe en Windows
-        // En Windows el comando anterior lanza y espera si no usamos 'start /b'
-        // Si encontramos problemas con Windows pausas, ajustamos:
-        // if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-        //     $command = "start /B php $scriptPath $descrip $orden $fecha $cliente $usuario $origen_arg > NUL 2>&1";
-        // }
+     
         exec($command);
     }
 }

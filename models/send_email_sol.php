@@ -5,7 +5,7 @@ require_once 'configuracion.modelo.php';
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-use Dotenv\Dotenv;
+// use Dotenv\Dotenv;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -13,6 +13,13 @@ use PHPMailer\PHPMailer\Exception;
 if (isset($argv)) {
     // Recuperar los argumentos pasados desde la función principal
     // $id_cliente = $argv[1];
+    $logFile = __DIR__ . '/correo_debug.log';
+
+    // 1. Registrar que el script inició y qué datos recibió
+    $fecha_log = date('Y-m-d H:i:s');
+    file_put_contents($logFile, "[$fecha_log] --- INICIANDO ENVÍO EN SEGUNDO PLANO ---\n", FILE_APPEND);
+    file_put_contents($logFile, "Argumentos: " . print_r($argv, true) . "\n", FILE_APPEND);
+
     $descrip = $argv[1];
     $orden = $argv[2];
     $partes = explode('-', $argv[3]);
@@ -38,11 +45,13 @@ if (isset($argv)) {
 
         $correos = ModeloConfiguracion::mdlObtenerCorreos(); // Llama al modelo que obtiene los correos
         // Configuración de importancia
+
         $mail->Priority = 1; // Alta prioridad (1 = Alta, 3 = Normal, 5 = Baja)
         $mail->addCustomHeader('X-Priority', '1'); // Alta prioridad en algunos clientes
         $mail->addCustomHeader('Importance', 'high'); // 
         $mail->setFrom("bodegaaistermcon@gmail.com");
-     
+
+     file_put_contents($logFile, "Correos obtenidos de BD: " . json_encode($correos) . "\n", FILE_APPEND);
         // Combinamos los correos de supervisor y bodega para enviarles la notificación
         $destinatarios_sup = isset($correos['correos_sup']) && is_array($correos['correos_sup']) ? $correos['correos_sup'] : [];
         $destinatarios_bod = isset($correos['correos_bod']) && is_array($correos['correos_bod']) ? $correos['correos_bod'] : [];
@@ -56,9 +65,7 @@ if (isset($argv)) {
         $destinatarios = array_unique($destinatarios);
 
         foreach ($destinatarios as $correo) {
-            if (!empty(trim($correo))) {
                 $mail->addAddress(trim($correo));
-            }
         }
         
         // Contenido del correo
@@ -74,7 +81,13 @@ if (isset($argv)) {
         
         // Enviar el correo
         $mail->send();
+
+        file_put_contents($logFile, "[$fecha_log] ÉXITO: Correo enviado correctamente a la orden $orden.\n\n", FILE_APPEND);
     } catch (Exception $e) {
-        error_log("Error al enviar el correo: {$mail->ErrorInfo}");
+        // 4. Registrar el error exacto de PHPMailer
+        file_put_contents($logFile, "[$fecha_log] ERROR CRÍTICO PHPMailer: {$mail->ErrorInfo}\n", FILE_APPEND);
+    } catch (\Throwable $th) {
+        // 5. Capturar cualquier otro error (ej. clase no encontrada, error de sintaxis)
+        file_put_contents($logFile, "[$fecha_log] ERROR FATAL PHP: {$th->getMessage()} en la línea {$th->getLine()}\n", FILE_APPEND);
     }
 }

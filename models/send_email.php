@@ -5,7 +5,7 @@ require_once 'configuracion.modelo.php';
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-use Dotenv\Dotenv;
+// use Dotenv\Dotenv;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
