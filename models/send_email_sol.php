@@ -77,6 +77,7 @@ if (isset($argv)) {
         <p><strong>Cliente:</strong> {$cliente}</p>
         <p><strong>Fecha:</strong> {$fecha}</p>
         <br>
+        <p><strong>Notas:</strong> {$descrip}</p>
         <p><strong>Responsable:</strong> {$usuario}</p>";
         
         // Enviar el correo

@@ -370,6 +370,31 @@ class ModeloSolicitudDespacho
 
             $conexion->commit();
 
+            // Llamar al envio de correo en segundo plano
+            $stmtClienteOrden = $conexion->prepare("SELECT p.num_orden, c.nombre as cliente 
+                                                    FROM tblorden o
+                                                    JOIN tblpresupuesto p ON p.id = o.id
+                                                    JOIN tblclientes c ON c.id = p.id_cliente
+                                                    WHERE p.id = :id_orden");
+            $stmtClienteOrden->bindParam(":id_orden", $datos['id_orden'], PDO::PARAM_INT);
+            $stmtClienteOrden->execute();
+            $datosOrden = $stmtClienteOrden->fetch(PDO::FETCH_ASSOC);
+
+            if ($datosOrden) {
+                $cliente = $datosOrden['cliente'];
+                $num_orden = $datosOrden['num_orden'];
+                $notas = $datos['notas'] ? $datos['notas'] : 'Sin observaciones';
+                $fecha_orden = date('Y-m-d'); 
+                
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $usuario = isset($_SESSION['s_usuario']->nombres) ? $_SESSION['s_usuario']->nombres : 'Desconocido';
+                $origen = isset($datos['origen']) ? $datos['origen'] : 'bodega';
+                
+                self::enviarCorreoSolSegundoPlano($notas, $num_orden, $fecha_orden, $cliente, $usuario, $origen);
+            }
+
             return array(
                 'status' => 'success',
                 'm' => 'Solicitud guardada correctamente',
@@ -707,6 +732,40 @@ class ModeloSolicitudDespacho
                 $stmtDetalle->execute();
             }
             $conexion->commit();
+
+            if ($estado_bool) {
+                // Fetch details for email
+                $stmtDetalleSolicitud = $conexion->prepare("SELECT id_orden, notas FROM tblsolicitud_despacho WHERE id = :id");
+                $stmtDetalleSolicitud->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
+                $stmtDetalleSolicitud->execute();
+                $datosSolicitud = $stmtDetalleSolicitud->fetch(PDO::FETCH_ASSOC);
+
+                if ($datosSolicitud) {
+                    $stmtClienteOrden = $conexion->prepare("SELECT p.num_orden, c.nombre as cliente 
+                                                            FROM tblorden o
+                                                            JOIN tblpresupuesto p ON p.id = o.id
+                                                            JOIN tblclientes c ON c.id = p.id_cliente
+                                                            WHERE p.id = :id_orden");
+                    $stmtClienteOrden->bindParam(":id_orden", $datosSolicitud['id_orden'], PDO::PARAM_INT);
+                    $stmtClienteOrden->execute();
+                    $datosOrden = $stmtClienteOrden->fetch(PDO::FETCH_ASSOC);
+
+                    if ($datosOrden) {
+                        $cliente = $datosOrden['cliente'];
+                        $num_orden = $datosOrden['num_orden'];
+                        $notas = $datosSolicitud['notas'] ? $datosSolicitud['notas'] : 'Sin observaciones';
+                        $fecha_orden = date('Y-m-d'); 
+                        
+                        if (session_status() == PHP_SESSION_NONE) {
+                            session_start();
+                        }
+                        $usuario = isset($_SESSION['s_usuario']->nombres) ? $_SESSION['s_usuario']->nombres : 'Desconocido';
+                        $origen = isset($_POST['origen']) ? $_POST['origen'] : 'supervisor'; 
+                        
+                        self::enviarCorreoSolSegundoPlano($notas, $num_orden, $fecha_orden, $cliente, $usuario, $origen, 'Se aprobo la solicitud de despacho Nro. '. $num_orden);
+                    }
+                }
+            }
 
             return array(
                 'status' => 'success',

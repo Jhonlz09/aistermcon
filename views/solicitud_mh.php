@@ -1245,6 +1245,7 @@
             src.append('accion', 10);
             src.append('id', id_);
             src.append('estado', nuevoEstado);
+            src.append('origen', 'bodega');
 
             let accionTexto = nuevoEstado ? 'aprobar' : 'revertir la aprobación de';
             let confirmacionTexto = nuevoEstado ?
