@@ -20,18 +20,19 @@ if (isset($argv)) {
     $cliente = $argv[4];
     $usuario = $argv[5];
     $origen = isset($argv[6]) ? $argv[6] : 'bodega';
+    $title = isset($argv[7]) ? $argv[7] : 'Nueva solicitud de despacho';
 
     // Configurar y enviar el correo
     $mail = new PHPMailer(true);
 
     try {
-        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../../../');
-        $dotenv->load();
+        // $dotenv = Dotenv::createImmutable(__DIR__ . '/../../../../');
+        // $dotenv->load();
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com'; // Servidor SMTP
         $mail->SMTPAuth = true;
-        $mail->Username = $_ENV['EMAIL']; // Tu correo Gmail
-        $mail->Password = $_ENV['EMAIL_PASS']; // Contraseña de Gmail (o contraseña de aplicación)
+        $mail->Username = "bodegaaistermcon@gmail.com"; // Tu correo Gmail
+        $mail->Password = "bofy ibxv tkny jxig"; // Contraseña de Gmail (o contraseña de aplicación)
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
@@ -40,7 +41,7 @@ if (isset($argv)) {
         $mail->Priority = 1; // Alta prioridad (1 = Alta, 3 = Normal, 5 = Baja)
         $mail->addCustomHeader('X-Priority', '1'); // Alta prioridad en algunos clientes
         $mail->addCustomHeader('Importance', 'high'); // 
-        $mail->setFrom($_ENV['EMAIL']);
+        $mail->setFrom("bodegaaistermcon@gmail.com");
      
         // Combinamos los correos de supervisor y bodega para enviarles la notificación
         $destinatarios_sup = isset($correos['correos_sup']) && is_array($correos['correos_sup']) ? $correos['correos_sup'] : [];
@@ -62,9 +63,9 @@ if (isset($argv)) {
         
         // Contenido del correo
         $mail->isHTML(true);
-        $mail->Subject = 'Nueva solicitud de despacho';
+        $mail->Subject = $title;
         $mail->Body = "
-        <h2>Detalles de la nueva solicitud:</h2>
+        <h2>{$title}:</h2>
         <p><strong>Orden:</strong> {$orden}</p>
         <p><strong>Cliente:</strong> {$cliente}</p>
         <p><strong>Fecha:</strong> {$fecha}</p>

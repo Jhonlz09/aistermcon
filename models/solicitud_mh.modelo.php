@@ -655,7 +655,7 @@ class ModeloSolicitudDespacho
                 $usuario = isset($_SESSION['s_usuario']->nombres) ? $_SESSION['s_usuario']->nombres : 'Desconocido';
                 $origen = isset($params['origen']) ? $params['origen'] : 'bodega';
                 
-                self::enviarCorreoSolSegundoPlano($notas, $num_orden, $fecha_orden, $cliente, $usuario, $origen);
+                self::enviarCorreoSolSegundoPlano($notas, $num_orden, $fecha_orden, $cliente, $usuario, $origen, 'Se aprobo la solicitud de despacho Nro. '. $num_orden);
             }
 
             return array(
