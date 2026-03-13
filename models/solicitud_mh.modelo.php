@@ -860,7 +860,7 @@ class ModeloSolicitudDespacho
     /**
      * Función para enviar correo de solicitud en segundo plano
      */
-    static private function enviarCorreoSolSegundoPlano($descrip, $orden, $fecha, $cliente, $usuario, $origen = 'bodega')
+    static private function enviarCorreoSolSegundoPlano($descrip, $orden, $fecha, $cliente, $usuario, $origen = 'bodega', $title = 'Nueva solicitud de despacho')
     {
         $scriptPath = escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'send_email_sol.php');
         $descrip = escapeshellarg($descrip);
@@ -869,9 +869,10 @@ class ModeloSolicitudDespacho
         $fecha = escapeshellarg($fecha);
         $usuario = escapeshellarg($usuario);
         $origen_arg = escapeshellarg($origen);
+        $title = escapeshellarg($title);
 
         // Comando para ejecutar en segundo plano en Windows
-        $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario $origen_arg > /dev/null 2>&1 &";
+        $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario $origen_arg $title > /dev/null 2>&1 &";
         // Si usas PowerShell y no cmd, podría ser distinto, pero exec usa cmd.exe en Windows
         // En Windows el comando anterior lanza y espera si no usamos 'start /b'
         // Si encontramos problemas con Windows pausas, ajustamos:
