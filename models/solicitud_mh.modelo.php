@@ -1,4 +1,7 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 require_once "../utils/database/conexion.php";
 
@@ -360,11 +363,6 @@ class ModeloSolicitudDespacho
                     }
                 }
             }
-
-            // Obtener el siguiente valor de la secuencia para mantener el contador actualizado
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
             $next_seq = $conexion->lastInsertId('secuencia_despacho') + 1;
             $_SESSION["sc_desp"] = $next_seq;
 
@@ -386,9 +384,6 @@ class ModeloSolicitudDespacho
                 $notas = $datos['notas'] ? $datos['notas'] : 'Sin observaciones';
                 $fecha_orden = date('Y-m-d'); 
                 
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
-                }
                 $usuario = isset($_SESSION['s_usuario']->nombres) ? $_SESSION['s_usuario']->nombres : 'Desconocido';
                 $origen = isset($datos['origen']) ? $datos['origen'] : 'bodega';
                 
@@ -465,9 +460,7 @@ class ModeloSolicitudDespacho
             }
 
             // 3. Obtener secuencia actual 
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
+           
             $next_seq = $conexion->lastInsertId('secuencia_despacho') + 1;
             $_SESSION["sc_desp"] = $next_seq;
 
@@ -488,10 +481,7 @@ class ModeloSolicitudDespacho
                 $num_orden = $datosOrden['num_orden'];
                 $notas = $datos['notas'] ? $datos['notas'] : 'Sin observaciones';
                 $fecha_orden = date('Y-m-d'); 
-                
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
-                }
+        
                 $usuario = isset($_SESSION['s_usuario']->nombres) ? $_SESSION['s_usuario']->nombres : 'Desconocido';
                 $origen = isset($datos['origen']) ? $datos['origen'] : 'bodega';
                 
@@ -674,9 +664,6 @@ class ModeloSolicitudDespacho
                 $notas = $params['notas'] ? $params['notas'] : 'Sin observaciones';
                 $fecha_orden = date('Y-m-d'); 
                 
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
-                }
                 $usuario = isset($_SESSION['s_usuario']->nombres) ? $_SESSION['s_usuario']->nombres : 'Desconocido';
                 $origen = isset($params['origen']) ? $params['origen'] : 'bodega';
                 
@@ -755,10 +742,7 @@ class ModeloSolicitudDespacho
                         $num_orden = $datosOrden['num_orden'];
                         $notas = $datosSolicitud['notas'] ? $datosSolicitud['notas'] : 'Sin observaciones';
                         $fecha_orden = date('Y-m-d'); 
-                        
-                        if (session_status() == PHP_SESSION_NONE) {
-                            session_start();
-                        }
+                    
                         $usuario = isset($_SESSION['s_usuario']->nombres) ? $_SESSION['s_usuario']->nombres : 'Desconocido';
                         $origen = isset($_POST['origen']) ? $_POST['origen'] : 'supervisor'; 
                         
