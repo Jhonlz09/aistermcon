@@ -120,7 +120,8 @@ class ModeloInforme
             $u = Conexion::ConexionDB()->prepare("SELECT i.id as id_producto, i.codigo, 
             s.cantidad_salida, u.nombre AS unidad, i.descripcion, i.fabricado,
             COALESCE(s.retorno::text, '-') AS retorno,
-            COALESCE(s.diferencia::text, '-') as utilizado
+            COALESCE(s.diferencia::text, '-') as utilizado,
+            (s.cantidad_salida * i.precio_total_iva) AS capital
         FROM 
             tblsalidas s
             JOIN tblinventario i ON s.id_producto = i.id
@@ -145,7 +146,8 @@ class ModeloInforme
             $u = Conexion::ConexionDB()->prepare("SELECT i.id as id_producto, i.codigo, 
             s.cantidad_salida, u.nombre AS unidad, i.descripcion, i.fabricado,
             COALESCE(s.retorno::text, '-') AS retorno,
-            COALESCE(s.diferencia::text, '-') as utilizado
+            COALESCE(s.diferencia::text, '-') as utilizado,
+            (s.cantidad_salida * i.precio_total_iva) AS capital
         FROM 
             tblsalidas s
             JOIN tblinventario i ON s.id_producto = i.id
@@ -168,7 +170,8 @@ class ModeloInforme
     {
         try {
             $u = Conexion::ConexionDB()->prepare("SELECT s.id, s.cantidad_salida,  u.nombre as unidad,
-            i.descripcion, i.codigo, COALESCE(s.retorno::text, '-') AS retorno
+            i.descripcion, i.codigo, COALESCE(s.retorno::text, '-') AS retorno,
+            (s.cantidad_salida * i.precio_total_iva) AS capital
             FROM tblsalidas s
             JOIN tblinventario i ON i.id = s.id_producto
             JOIN tblunidad u ON u.id = i.id_unidad
@@ -190,7 +193,8 @@ class ModeloInforme
                 u.nombre AS unidad, 
                 SUM(s.cantidad_salida) AS cantidad_salida,
                 SUM(s.retorno) AS retorno,
-                SUM(s.cantidad_salida) - SUM(s.retorno) AS utilizado
+                SUM(s.cantidad_salida) - SUM(s.retorno) AS utilizado,
+                SUM(s.cantidad_salida * i.precio_total_iva) AS capital
                 FROM 
                     tblsalidas s
                     JOIN tblinventario i ON s.id_producto = i.id
@@ -230,7 +234,7 @@ class ModeloInforme
         try {
             $u = Conexion::ConexionDB()->prepare("SELECT SUM(s.cantidad_salida) AS cantidad_salida, SUM(s.retorno) AS retorno, u.nombre as unidad,
             i.descripcion, SUM(s.cantidad_salida) - SUM(s.retorno) AS utilizado,
-            i.codigo
+            i.codigo, SUM(s.cantidad_salida * i.precio_total_iva) AS capital
             FROM tblsalidas s
             JOIN tblinventario i ON i.id = s.id_producto
             JOIN tblunidad u ON u.id = i.id_unidad

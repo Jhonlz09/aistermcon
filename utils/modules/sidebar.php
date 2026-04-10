@@ -50,12 +50,25 @@
                             $id = $item->modulo;
                             $vista = $item->vista ?? '';
 
-                            // Si tiene vista y NO tiene hijos, añadimos data-attributes en lugar de onclick
+                            // Si tiene vista y NO tiene hijos, añadimos data-attributes
                             $dataAttrs = '';
                             if (!$hasChildren && !empty($vista)) {
                                 $vistaSafe = htmlspecialchars($vista, ENT_QUOTES);
                                 $moduloSafe = htmlspecialchars($item->modulo ?? '', ENT_QUOTES);
                                 $dataAttrs = ' data-vista="' . $vistaSafe . '" data-modulo="' . $moduloSafe . '"';
+                                
+                                // Extraer acciones de este id desde la sesión y enviarlas
+                                $accionesM = [];
+                                if(isset($item->id)){
+                                    foreach($_SESSION as $key => $val){
+                                        if($val === true && preg_match('/^([a-zA-Z_]+)'.$item->id.'$/', $key, $m)){
+                                            $accionesM[] = $m[1];
+                                        }
+                                    }
+                                }
+                                if(!empty($accionesM)){
+                                    $dataAttrs .= " data-acciones='" . json_encode($accionesM) . "'";
+                                }
                             }
 
                             echo '<a id="' . $id . '" href="#" class="nav-link"' . $dataAttrs . '>';
@@ -119,7 +132,16 @@
                 const $link = $(this);
                 const vista = $link.data('vista');
                 const modulo = $link.data('modulo');
+                const acciones = $link.data('acciones'); // Extract JSON actions
                 const $ctrlSide = $('#first_control');
+                
+                // Guardar globalmente las acciones disponibles para evitar enrutamiento estricto
+                if (acciones) {
+                    window.currentModuleActions = acciones;
+                } else {
+                    window.currentModuleActions = [];
+                }
+
                 // Si ya está activo, no hacemos nada
                 if ($link.hasClass('active')) {
                     e.preventDefault();

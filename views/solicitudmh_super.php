@@ -319,7 +319,8 @@
     var mostrarCol = '<?php echo $_SESSION["editar5"] || $_SESSION["eliminar5"] ?>';
     var editar = '<?php echo $_SESSION["editar5"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar5"] ?>';
-    var aprobar = '<?php echo $_SESSION["aprobar5"] ?>';
+    var aprobar = '<?php echo isset($_SESSION["aprobar5"]) ? $_SESSION["aprobar5"] : 0; ?>';
+
     var nc = '<?php echo $_SESSION["sc_desp"] ?? 1; ?>';
 
     // console.log('secuencia', nc);
@@ -433,6 +434,7 @@
             fecha_des = document.getElementById('fecha_des'),
             formDespacho = document.getElementById('formDespacho'),
             div_sol = document.getElementById('div_sol'),
+            btnNuevo = document.getElementById('btnNuevo'),
             div_content = document.getElementById('div_content'),
             inputProductoSol = document.getElementById('inputProductoSol'),
             inpNotas = document.getElementById('inpNotas'),

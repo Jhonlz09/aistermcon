@@ -10,9 +10,10 @@ class SesionModelo
     public static function mdlIniciarSesion($usuario, $password)
     {
         // 1. Obtener SOLO los datos del usuario (NO módulos aquí)
-        $stmt = Conexion::ConexionDB()->prepare("SELECT u.id, u.nombres, u.nombre_usuario, u.clave_usuario,p.nombre AS perfil, u.id_perfil
+        $stmt = Conexion::ConexionDB()->prepare("SELECT u.id, u.nombres, u.nombre_usuario, u.clave_usuario, p.nombre AS perfil, u.id_perfil, p.vista_inicio, m.vista AS ruta_inicio
         FROM tblusuario u
         JOIN tblperfil p ON p.id = u.id_perfil
+        LEFT JOIN tblmodulo m ON p.vista_inicio = m.id
         WHERE u.nombre_usuario = :usuario
             AND u.estado = true
         LIMIT 1");
@@ -33,27 +34,29 @@ class SesionModelo
         $_SESSION["s_usuario"] = $user;
         $_SESSION['last_activity'] = time();
 
-        // 4. Cargar permisos completos (módulos + CRUD)
+        // 4. Cargar permisos completos (módulos)
         $permisosUsuario = self::mdlObtenerPermisos($user->id);
 
         $vistaInicio = 'inicio';
-        foreach ($permisosUsuario as $p) {
-            if ($p->vista_inicio == 1 && !empty($p->vista)) {
-                $vistaInicio = rtrim(str_replace('.php', '', $p->vista), '/');
-                break;
-            }
+        if ($user->ruta_inicio) {
+            $vistaInicio = rtrim(str_replace('.php', '', $user->ruta_inicio), '/');
         }
         $_SESSION["vista_inicio"] = $vistaInicio;
 
         // 5. Construir árbol del menú (recursivo)
         $_SESSION["menuTree"] = self::buildTree($permisosUsuario);
 
-        // 6. Guardar los permisos CRUD individuales como antes:
-        foreach ($permisosUsuario as $p) {
-            $_SESSION["crear{$p->id}"] = (bool) $p->crear;
-            $_SESSION["editar{$p->id}"] = (bool) $p->editar;
-            $_SESSION["eliminar{$p->id}"] = (bool) $p->eliminar;
-            $_SESSION["aprobar{$p->id}"] = (bool) $p->aprobar;
+        // 6. Guardar los permisos de matriz dinamica
+        $stmtAcciones = Conexion::ConexionDB()->prepare("SELECT pp.id_modulo, a.nombre as accion
+            FROM tblperfil_permiso pp
+            JOIN tblaccion a ON a.id = pp.id_accion
+            WHERE pp.id_perfil = :id_perfil");
+        $stmtAcciones->bindParam(":id_perfil", $user->id_perfil);
+        $stmtAcciones->execute();
+        $accionesRow = $stmtAcciones->fetchAll(PDO::FETCH_OBJ);
+
+        foreach ($accionesRow as $p) {
+            $_SESSION[$p->accion . $p->id_modulo] = true;
         }
 
         // 7. Configuración general
@@ -100,11 +103,6 @@ class SesionModelo
                     $element->children = $children;
                 }
 
-                // Normalización de booleanos para el frontend (si es necesario)
-                $element->crear = filter_var($element->crear, FILTER_VALIDATE_BOOLEAN);
-                $element->editar = filter_var($element->editar, FILTER_VALIDATE_BOOLEAN);
-                $element->eliminar = filter_var($element->eliminar, FILTER_VALIDATE_BOOLEAN);
-
                 $branch[] = $element;
             }
         }
@@ -121,16 +119,12 @@ class SesionModelo
                 m.modulo, 
                 m.icon, 
                 m.vista, 
-                m.id_padre,
-                pm.vista_inicio,
-                pm.crear,
-                pm.editar,
-                pm.eliminar,
-                pm.aprobar
+                m.id_padre
             FROM tblusuario u
-            JOIN tblperfil_modulo pm ON pm.id_perfil = u.id_perfil
+            JOIN tblperfil_permiso pm ON pm.id_perfil = u.id_perfil
+            JOIN tblaccion a ON a.id = pm.id_accion
             JOIN tblmodulo m ON m.id = pm.id_modulo
-            WHERE u.id = :id
+            WHERE u.id = :id AND LOWER(a.nombre) = 'ver'
 
             UNION
 
@@ -139,12 +133,7 @@ class SesionModelo
                 padre.modulo, 
                 padre.icon, 
                 padre.vista, 
-                padre.id_padre,
-                CAST(0 AS smallint) AS vista_inicio,
-                false AS crear,    -- Los padres autogenerados no tienen CRUD activo
-                false AS editar,
-                false AS eliminar,
-                false AS aprobar
+                padre.id_padre
             FROM tblmodulo padre
             INNER JOIN arbol_modulos hijo ON hijo.id_padre = padre.id
         )
@@ -157,7 +146,7 @@ class SesionModelo
         $stmt->bindParam(":id", $id);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_CLASS);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
     static public function mdlObtenerConfiguracion()

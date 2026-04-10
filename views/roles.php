@@ -11,21 +11,12 @@
         }
 
         /* Fila Base (Item) */
-        .permiso-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 15px;
-            border-bottom: 1px solid #eaecf4;
-            transition: background-color 0.2s;
-        }
-
         .permiso-item:last-child {
             border-bottom: none;
         }
 
         .permiso-item:hover {
-            background-color: #f8f9fc;
+            background-color: #f6f8fc;
         }
 
         /* --- NIVELES DE JERARQUÍA --- */
@@ -85,23 +76,60 @@
             border-left: 5px solid #f8f9fc;
         }
 
-        /* --- COLUMNAS FLEXBOX --- */
+        /* --- FLEXBOX UI LIMPIO --- */
+        .permiso-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid #eaecf4;
+            transition: background-color 0.2s;
+        }
+        
         .col-nombre {
-            width: 40%;
+            width: 100%;
             display: flex;
             align-items: center;
+            margin-bottom: 10px;
         }
 
         .col-controles {
-            width: 60%;
+            width: 100%;
             display: flex;
-            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding-left: 32px; /* Alineado con el nombre luego del icono */
         }
 
         .control-box {
-            width: 25%;
             display: flex;
+            align-items: center;
             justify-content: center;
+            background: #ffffff;
+            border: 1px solid #d1d3e2;
+            border-radius: 20px;
+            padding: 4px 14px 4px 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .control-box:hover {
+            border-color: #b7b9cc;
+            background: #f8f9fc;
+        }
+
+        .control-box span.action-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #5a5c69;
+            text-transform: capitalize;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .switch-2 {
+            margin-right: 6px !important;
         }
 
         /* Switches (Reutilizando tu SVG pero alineado) */
@@ -234,15 +262,8 @@
                 <form id="formPermisos" autocomplete="off">
                     <input type="hidden" id="id_rol_permiso" value="">
 
-                    <div style="background-color:#001f3fcf;" class="d-flex justify-content-between align-items-center text-white p-3 rounded-top">
-                        <div style="width: 40%;">MÓDULO</div>
-                        <div class="d-flex justify-content-around" style="width: 60%;">
-                            <div class="text-center" style="width: 25%"><i class="fas fa-eye"></i> Ver</div>
-                            <div class="text-center" style="width: 25%"><i class="fas fa-plus"></i> Crear</div>
-                            <div class="text-center" style="width: 25%"><i class="fas fa-pen"></i> Editar</div>
-                            <div class="text-center" style="width: 25%"><i class="fas fa-trash"></i> Borrar</div>
-                            <div class="text-center" style="width: 25%"><i class="fas fa-clipboard-check"></i> Aprobar Solic M/H</div>
-                        </div>
+                    <div style="background-color:#001f3fcf;" class="d-flex align-items-center text-white p-3 rounded-top">
+                        <div style="width: 100%; font-weight: 500; letter-spacing: 0.5px;">MÓDULOS Y PERMISOS </div>
                     </div>
 
                     <div id="permisosContainer" class="permisos-wrapper bg-light">
@@ -366,20 +387,24 @@
             $('.check-crear, .check-editar, .check-eliminar').prop('disabled', true);
             $('.check-ver').prop('disabled', false);
 
+            // Resetear UI
+            $('.switch__input').prop('checked', false);
+            $('.switch__input:not(.check-ver)').prop('disabled', true);
+            $('.check-ver').prop('disabled', false);
+
             // Traer datos
             $.ajax({
                 url: "controllers/roles.controlador.php",
                 method: "POST",
                 data: { 'id_perfil': idPerfil, 'accion': 4 },
                 dataType: "json",
-                success: function(permisos) {
-                    marcarPermisosEnTabla(permisos);
+                success: function(resp) {
+                    marcarPermisosEnTabla(resp);
                 }
             });
         });
 
         // 2. EVENTO DELEGADO PARA TOGGLES (NUEVA LÓGICA DE PROPAGACIÓN)
-        // Esto reemplaza al 'onchange' inline y maneja todos los casos
         $('#permisosContainer').on('change', '.switch__input', function() {
             handlePermissionChange($(this));
             if ($(this).hasClass('check-ver')) {
@@ -387,7 +412,7 @@
             }
         });
 
-        // 3. Guardar Permisos (AJUSTADO PARA DIVS)
+        // 3. Guardar Permisos Dinámicos
         $('#btnGuardarRol').on('click', function() {
             let datosPermisos = [];
             let idPerfil = id_rol_permiso.val();
@@ -398,22 +423,13 @@
                 let item = $(this);
                 let idModulo = item.data('idmodulo');
 
-                let ver = item.find('.check-ver').is(':checked');
-                let crear = item.find('.check-crear').is(':checked');
-                let editar = item.find('.check-editar').is(':checked');
-                let eliminar = item.find('.check-eliminar').is(':checked');
-                let aprobar = item.find('.check-aprobar').is(':checked');
-
-                if (ver) {
+                item.find('.switch__input:checked').each(function() {
+                    let idAccion = $(this).data('idaccion');
                     datosPermisos.push({
                         id_modulo: idModulo,
-                        ver: ver,
-                        crear: crear,
-                        editar: editar,
-                        eliminar: eliminar,
-                        aprobar: aprobar
+                        id_accion: idAccion
                     });
-                }
+                });
             });
 
             $.ajax({
@@ -449,6 +465,8 @@
     });
 
     // --- FUNCIONES AUXILIARES ---
+
+    var globalAcciones = [];
 
     function cargarModulosDelSistema() {
         $.ajax({
@@ -486,12 +504,29 @@
         return listaFinal;
     }
 
-    // RENDERIZADO (Sin onchange inline)
     function renderizarTablaPermisos(modulos) {
         let html = '';
         modulos.forEach(modulo => {
             let nivel = modulo.nivel;
             let iconClass = nivel === 0 ? 'fa-lg text-navy mr-2' : (nivel === 1 ? 'fa-sm text-dark-blue mr-2' : 'fa-xs text-muted mr-2');
+
+            let checksObj = '';
+            
+            if (modulo.acciones_permitidas && modulo.acciones_permitidas.length > 0) {
+                modulo.acciones_permitidas.forEach(a => {
+                    let disabled = a.nombre !== 'ver' ? 'disabled' : '';
+                    checksObj += `
+                        <label class="control-box shadow-sm" style="cursor: pointer; margin: 0;">
+                            <div class="switch-2">
+                                <input class="switch__input check-${a.nombre}" data-idaccion="${a.id}" data-nombre="${a.nombre}" type="checkbox" ${disabled}>
+                                <svg class="switch__check" viewBox="0 0 16 16" width="18px" height="18px"><polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>
+                            </div>
+                            <span class="action-name">${a.descripcion}</span>
+                        </label>`;
+                });
+            } else {
+                checksObj = `<span style="font-size: 0.85rem; color: #858796; font-style: italic;">Sin acciones disponibles</span>`;
+            }
 
             html += `
             <div class="permiso-item item-nivel-${nivel}" data-idmodulo="${modulo.id}" data-padre="${modulo.id_padre}" data-nivel="${nivel}" data-vista="${modulo.vista}">
@@ -500,36 +535,7 @@
                     <span class="module-name">${modulo.modulo}</span>
                 </div>
                 <div class="col-controles">
-                    <div class="control-box">
-                        <label class="switch-2">
-                            <input class="switch__input check-ver" type="checkbox">
-                            <svg class="switch__check" viewBox="0 0 16 16" width="22px" height="22px"><polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>
-                        </label>
-                    </div>
-                    <div class="control-box">
-                        <label class="switch-2">
-                            <input class="switch__input check-crear" type="checkbox" disabled>
-                            <svg class="switch__check" viewBox="0 0 16 16" width="22px" height="22px"><polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>
-                        </label>
-                    </div>
-                    <div class="control-box">
-                        <label class="switch-2">
-                            <input class="switch__input check-editar" type="checkbox" disabled>
-                            <svg class="switch__check" viewBox="0 0 16 16" width="22px" height="22px"><polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>
-                        </label>
-                    </div>
-                    <div class="control-box">
-                        <label class="switch-2">
-                            <input class="switch__input check-eliminar" type="checkbox" disabled>
-                            <svg class="switch__check" viewBox="0 0 16 16" width="22px" height="22px"><polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>
-                        </label>
-                    </div>
-                    <div class="control-box">
-                        <label class="switch-2">
-                            <input class="switch__input check-aprobar" type="checkbox" disabled>
-                            <svg class="switch__check" viewBox="0 0 16 16" width="22px" height="22px"><polyline class="switch__check-line" fill="none" stroke-dasharray="9 9" stroke-dashoffset="3.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="5,8 11,8 11,11" /></svg>
-                        </label>
-                    </div>
+                    ${checksObj}
                 </div>
             </div>`;
         });
@@ -537,28 +543,26 @@
     }
 
     // MARCAR PERMISOS DESDE BD
-    function marcarPermisosEnTabla(permisosUsuario) {
+    function marcarPermisosEnTabla(data) {
+        let permisosUsuario = data.permisos;
+        let vistaInicioId = data.vista_inicio;
+
         permisosUsuario.forEach(p => {
             let row = $(`#permisosContainer .permiso-item[data-idmodulo="${p.id_modulo}"]`);
             if (row.length > 0) {
-                let chkVer = row.find('.check-ver');
-                chkVer.prop('checked', true);
+                let chk = row.find(`.check-${p.accion}`);
+                chk.prop('checked', true);
                 
-                // Activamos inputs de la fila
-                handlePermissionChange(chkVer, false); // false = No propagar en carga inicial para optimizar
-
-                if (p.crear == 1 || p.crear === true) row.find('.check-crear').prop('checked', true);
-                if (p.editar == 1 || p.editar === true) row.find('.check-editar').prop('checked', true);
-                if (p.eliminar == 1 || p.eliminar === true) row.find('.check-eliminar').prop('checked', true);
-                if (p.aprobar == 1 || p.aprobar === true) row.find('.check-aprobar').prop('checked', true);
+                if(p.accion === 'ver'){
+                    handlePermissionChange(chk, false);
+                }
             }
         });
 
         actualizarSelectVistaInicio();
         
-        let pInicio = permisosUsuario.find(p => p.vista_inicio == 1 || p.vista_inicio === '1' || p.vista_inicio === true);
-        if (pInicio) {
-            $('#cboVistaInicio').val(pInicio.id_modulo).trigger('change');
+        if (vistaInicioId) {
+            $('#cboVistaInicio').val(vistaInicioId).trigger('change');
         } else {
             $('#cboVistaInicio').val('').trigger('change');
         }
@@ -595,16 +599,9 @@
         let isChecked = checkbox.is(':checked');
         let currentNivel = parseInt(row.data('nivel'));
         
-        // Determinar qué tipo de check se tocó
-        let typeClass = '';
-        if (checkbox.hasClass('check-ver')) typeClass = '.check-ver';
-        else if (checkbox.hasClass('check-crear')) typeClass = '.check-crear';
-        else if (checkbox.hasClass('check-editar')) typeClass = '.check-editar';
-        else if (checkbox.hasClass('check-eliminar')) typeClass = '.check-eliminar';
-        else if (checkbox.hasClass('check-borrar')) typeClass = '.check-borrar';
+        let typeClass = '.' + checkbox.attr('class').split(' ').find(c => c.startsWith('check-'));
 
         // 1. Gestión de la PROPIA fila
-        // Si tocamos "Ver", habilitamos/deshabilitamos los inputs vecinos
         if (typeClass === '.check-ver') {
             let siblingInputs = row.find('input:not(.check-ver)');
             if (isChecked) {
@@ -614,22 +611,15 @@
             }
         }
 
-        // Si no queremos propagar (ej: carga inicial), salimos
         if (!propagate) return;
 
-        // 2. Gestión de DESCENDIENTES (Cascada)
+        // 2. Cascadas
         let nextRows = row.nextAll('.permiso-item');
-
         nextRows.each(function() {
             let nextRow = $(this);
             let nextNivel = parseInt(nextRow.data('nivel'));
-
-            // Si el nivel es menor o igual, ya no es hijo. Paramos.
             if (nextNivel <= currentNivel) return false;
 
-            // --- APLICAR LÓGICA AL HIJO ---
-            
-            // Caso A: El padre cambió "Ver"
             if (typeClass === '.check-ver') {
                 let childVer = nextRow.find('.check-ver');
                 childVer.prop('checked', isChecked);
@@ -641,9 +631,7 @@
                     childInputs.prop('checked', false).prop('disabled', true);
                 }
             } 
-            // Caso B: El padre cambió Crear/Editar/Eliminar
             else {
-                // Solo propagamos si el hijo está habilitado (tiene Ver activo)
                 if (nextRow.find('.check-ver').is(':checked')) {
                     nextRow.find(typeClass).prop('checked', isChecked);
                 }

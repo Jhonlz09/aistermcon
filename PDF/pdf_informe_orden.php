@@ -286,8 +286,8 @@ if ($datos_guias == null) {
     // $pdf->SetY(30);
     $pdf->SetFont('Arial', 'B', 18);
     $pdf->SetMargins(12, 20, 12);
-    $pdf->SetWidths(array(27, 80, 18, 21, 21, 21));
-    $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C'));
+    $pdf->SetWidths(array(24, 65, 14, 18, 18, 18, 31));
+    $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C', 'C'));
     $pdf->SetX(12);
     foreach ($datos_guias as $row) {
         if ($row["responsable"] == '') {
@@ -313,9 +313,10 @@ if ($datos_guias == null) {
         );
         $pdf->Ln(10);
         $id_guia = $row["id_guia"];
+        $total_capital_guia = 0;
         $pdf->SetFont('Arial', 'B', 11);
-        $header = array('Codigo', 'Descripcion', 'Unidad', 'Salida', 'Entrada', 'Tot. Util.');
-        $pdf->Row($header, array(12, 12, 12, 12, 12, 12), 'B');
+        $header = array('Codigo', 'Descripcion', 'Unidad', 'Salida', 'Entrada', 'Tot. Util.', 'Costo');
+        $pdf->Row($header, array(12, 12, 12, 12, 12, 12, 12), 'B');
         $data = ModeloInforme::mdlInformeOrden($id_orden, $id_guia);
         foreach ($data as $fill) {
             $pdf->SetStartY(20);
@@ -325,14 +326,17 @@ if ($datos_guias == null) {
             $util = $fill["utilizado"];
             $fab_pro = $fill['fabricado'];
             $id_producto = $fill['id_producto'];
+            $capital = $fill["capital"];
+            $total_capital_guia += $capital;
             $pdf->Row(array(
                 iconv('UTF-8', 'windows-1252', $fill["codigo"]),
                 iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
                 iconv('UTF-8', 'windows-1252', $fill["unidad"]),
                 iconv('UTF-8', 'windows-1252', $salida),
                 iconv('UTF-8', 'windows-1252', $entrada),
-                iconv('UTF-8', 'windows-1252', $util)
-            ), array(10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true]);
+                iconv('UTF-8', 'windows-1252', $util),
+                iconv('UTF-8', 'windows-1252', '$ ' . number_format($capital, 2))
+            ), array(10, 10, 10, 10, 10, 10, 10), '', 7, [true, true, true, true, true, true, true]);
             // }
             // if ($fab_pro == true) {
             //     $data_fab = ModeloInventario::mdlListarProductoFab($id_producto);
@@ -348,14 +352,22 @@ if ($datos_guias == null) {
             //     }
             // }
         }
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->SetWidths(array(157, 31));
+        $pdf->SetAligns(array('R', 'C'));
+        $pdf->Row(array('TOTAL COSTO DE GUIA:', '$ ' . number_format($total_capital_guia, 2)), array(11, 11), 'B', 7);
+        $pdf->SetWidths(array(24, 65, 14, 18, 18, 18, 31));
+        $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C', 'C'));
         $pdf->Ln();
     }
     $pdf->SetFont('Arial', 'B', 12);
     $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'RESUMEN: '), 0, 1, 'L');
     $pdf->Ln(3);
-    $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.');
-    $pdf->SetWidths(array(24, 70, 18, 24, 28, 24));
-    $pdf->Row($header_resumen, array(12, 12, 12, 12, 12, 12), 'B');
+    $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.', 'Costo');
+    $pdf->SetWidths(array(22, 60, 16, 20, 20, 20, 30));
+    $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C', 'C'));
+    $total_capital_general = 0;
+    $pdf->Row($header_resumen, array(12, 12, 12, 12, 12, 12, 12), 'B');
     $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden, false);
     foreach ($data_resumen as $fill) {
         $pdf->SetStartY(20);
@@ -366,15 +378,22 @@ if ($datos_guias == null) {
         $util = $fill["utilizado"];
         $fab_pro = $fill['fabricado'];
         $id_producto = $fill['id_producto'];
+        $capital = $fill["capital"];
+        $total_capital_general += $capital;
         $pdf->Row(array(
             iconv('UTF-8', 'windows-1252', $fill["codigo"]),
             iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
             iconv('UTF-8', 'windows-1252', $fill["unidad"]),
             iconv('UTF-8', 'windows-1252', $salida),
             iconv('UTF-8', 'windows-1252', $entrada),
-            iconv('UTF-8', 'windows-1252', $util)
-        ), array(10, 10, 10, 10, 10, 10), '', 6, [true, true, true, true, true, true]);
+            iconv('UTF-8', 'windows-1252', $util),
+            iconv('UTF-8', 'windows-1252', '$ ' . number_format($capital, 2))
+        ), array(10, 10, 10, 10, 10, 10, 10), '', 6, [true, true, true, true, true, true, true]);
     }
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->SetWidths(array(158, 30));
+    $pdf->SetAligns(array('R', 'C'));
+    $pdf->Row(array('TOTAL GENERAL:', '$ ' . number_format($total_capital_general, 2)), array(11, 11), 'B', 7);
 }
 // Configurar cabeceras para indicar el tipo de contenido y el nombre de descarga
 

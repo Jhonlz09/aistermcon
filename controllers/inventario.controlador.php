@@ -246,6 +246,32 @@ class ControladorInventario
         $data = ModeloInventario::mdlEliminarVersionStockInicial($id_version);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    public function obtenerIvaConfiguracion()
+    {
+        $data = ModeloInventario::mdlObtenerIvaConfiguracion();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function listarHistorialPrecios()
+    {
+        $data = ModeloInventario::mdlListarHistorialPrecios($this->id);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actualizarPrecio()
+    {
+        $motivo = isset($_POST['motivo']) ? $_POST['motivo'] : 'AJUSTE MANUAL';
+        $precio_uni = isset($_POST['precio_uni']) ? $_POST['precio_uni'] : 0;
+        $data = ModeloInventario::mdlActualizarPrecio($this->id, $precio_uni, $motivo);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function calcularValorTotal()
+    {
+        $data = ModeloInventario::mdlCalcularValorTotal();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 $data = new ControladorInventario();
 if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
@@ -340,6 +366,16 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->actualizarMotivoCambio();
     } else if ($_POST["accion"] == 34) { // Eliminar versión de stock inicial
         $data->eliminarVersionStockInicial();
+    } else if ($_POST["accion"] == 41) { // Obtener Iva Config
+        $data->obtenerIvaConfiguracion();
+    } else if ($_POST["accion"] == 42) { // Listar historial precios
+        $data->id = $_POST["id_producto"];
+        $data->listarHistorialPrecios();
+    } else if ($_POST["accion"] == 43) { // Actualizar Precio
+        $data->id = $_POST["id_producto"];
+        $data->actualizarPrecio();
+    } else if ($_POST["accion"] == 44) { // Calcular Valor Total
+        $data->calcularValorTotal();
     } else if ($_POST["accion"] == 100) { // INSTALAR TRIGGERS
         echo json_encode(ModeloInventario::mdlInstalarTriggerHistorico());
     }

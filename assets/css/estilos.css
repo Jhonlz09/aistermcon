@@ -1350,7 +1350,8 @@ svg {
 }
 
 #medidas-tab.nav-link.active,
-#detalles-tab.nav-link.active {
+#detalles-tab.nav-link.active,
+#precios-tab.nav-link.active {
     color: var(--label-new);
     background-color: #8f8f8f33;
     border-bottom: 2px solid var(--label-new);

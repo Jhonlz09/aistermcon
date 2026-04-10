@@ -723,8 +723,15 @@ async function updateAll(element) {
     6
   );
   try {
-    tabla.ajax.reload(null, false);
+    if (typeof tabla !== 'undefined' && tabla && tabla.ajax) {
+      tabla.ajax.reload(null, false);
+    }
     await cargarDatos();
+    
+    // Refrescar el autocomplete de Solicitud (MH)
+    if (typeof window.actualizarAutocompleteOut === 'function') {
+      window.actualizarAutocompleteOut();
+    }
   } catch (error) {
     console.error("Error en la ejecución de alguna de las promesas:", error);
   } finally {

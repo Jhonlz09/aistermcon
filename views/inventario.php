@@ -9,12 +9,16 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             max-height: 310px;
             overflow-y: auto;
             padding: 10px;
-        }.timeline-item {
+        }
+
+        .timeline-item {
             border-left: 2px solid #28a745;
             padding-left: 20px;
             margin-bottom: 20px;
             position: relative;
-        }.timeline-item::before {
+        }
+
+        .timeline-item::before {
             content: '';
             position: absolute;
             left: -6px;
@@ -23,9 +27,13 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             height: 10px;
             border-radius: 50%;
             background: #28a745;
-        }.card-outline.card-success {
+        }
+
+        .card-outline.card-success {
             border-top: 3px solid #28a745;
-        }.card-outline.card-secondary {
+        }
+
+        .card-outline.card-secondary {
             border-top: 3px solid #6c757d;
         }
     </style>
@@ -37,7 +45,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             <div class="col-auto">
                 <h1 class="col-p">Inventario</h1>
             </div>
-            <?php if (isset($_SESSION["crear3"]) && $_SESSION["crear3"] === true) : ?>
+            <?php if (isset($_SESSION["crear3"]) && $_SESSION["crear3"] === true): ?>
                 <div class="col">
                     <button id="btnNuevo" class="btn bg-gradient-green" data-toggle="modal" data-target="#modalI">
                         <i class="fa fa-plus"></i> Nuevo</button>
@@ -57,12 +65,20 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                         <div class="col-12">
                             <div class="row">
                                 <div class="col col-p">
-                                    <h3 class="card-title" style="white-space:nowrap;display: flex;align-items: center;">Listado de productos
+                                    <h3 class="card-title"
+                                        style="white-space:nowrap;display: flex;align-items: center;">Listado de
+                                        productos
                                         <div class="icon-container ml-1">
-                                            <input autocomplete="off" style="border:none" type="checkbox" id="check_stock">
+                                            <input autocomplete="off" style="border:none" type="checkbox"
+                                                id="check_stock">
                                             <label class="m-0" for="check_stock">
-                                                <i style="font-size:1.5rem;" id="stock_icon" class="fas fa-arrow-down-big-small"></i>
+                                                <i style="font-size:1.5rem;" id="stock_icon"
+                                                    class="fas fa-arrow-down-big-small"></i>
                                             </label>
+                                            <?php if (isset($_SESSION["precios3"]) && $_SESSION["precios3"] === true): ?>
+                                                <button id="btnValorTotal" class="btn btn-sm bg-gradient-info ml-1">
+                                                    <i class="fa fa-calculator"></i> Calcular Valor Total</button>
+                                            <?php endif; ?>
                                         </div>
                                     </h3>
                                 </div>
@@ -70,7 +86,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     <div class="card-tools">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-search icon"></i></span>
-                                            <input autocomplete="off" style="border:none" type="search" id="_search" onpaste="return trimPaste(event, this)" oninput="Buscar(tabla,this)" class="form-control float-right" placeholder="Buscar">
+                                            <input autocomplete="off" style="border:none" type="search" id="_search"
+                                                onpaste="return trimPaste(event, this)" oninput="Buscar(tabla,this)"
+                                                class="form-control float-right" placeholder="Buscar">
                                         </div>
                                     </div>
                                 </div>
@@ -91,6 +109,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     <th>DAÑADO</th>
                                     <th class="text-center">CANTIDAD</th>
                                     <th class="text-center">CANT. DISP.</th>
+                                    <th class="text-center">PRECIO</th>
                                     <th class="text-center">IMAGEN</th>
                                     <th class="text-center">ACCIONES</th>
                                 </tr>
@@ -125,11 +144,19 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 <div class="modal-body scroll-modal" style="padding-block:.5rem .25rem;">
                     <ul class="nav nav-tabs" id="tabInventario" role="tablist" style="margin-bottom:.5rem;">
                         <li class="nav-item">
-                            <a class="nav-link active" id="detalles-tab" data-toggle="pill" href="#detalles" role="tab" aria-selected="true">DETALLES</a>
+                            <a class="nav-link active" id="detalles-tab" data-toggle="pill" href="#detalles" role="tab"
+                                aria-selected="true">DETALLES</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="medidas-tab" data-toggle="pill" href="#medidas" role="tab" aria-selected="false">MEDIDAS</a>
+                            <a class="nav-link" id="medidas-tab" data-toggle="pill" href="#medidas" role="tab"
+                                aria-selected="false">MEDIDAS</a>
                         </li>
+                        <?php if (isset($_SESSION["precios3"]) && $_SESSION["precios3"] === true): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" id="precios-tab" data-toggle="pill" href="#precios" role="tab"
+                                    aria-selected="false">PRECIOS</a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                     <div class="tab-content" id="tabInventarioContent">
                         <div class="tab-pane fade show active" id="detalles" role="tabpanel">
@@ -139,15 +166,18 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     <div class="row">
                                         <div class="col-sm-3">
                                             <div class="input-data">
-                                                <input autocomplete="off" id="codigo" name="codigo" class="input-nuevo" type="text" required>
+                                                <input autocomplete="off" id="codigo" name="codigo" class="input-nuevo"
+                                                    type="text" required>
                                                 <label class="label"><i class="fa-solid fa-barcode"></i> Código</label>
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
                                         </div>
                                         <div class="col-sm-9">
                                             <div class="input-data">
-                                                <input autocomplete="off" id="nombre" class="input-nuevo" type="text" required>
-                                                <label class="label"><i class="fa-solid fa-input-text"></i> Descripción</label>
+                                                <input autocomplete="off" id="nombre" class="input-nuevo" type="text"
+                                                    required>
+                                                <label class="label"><i class="fa-solid fa-input-text"></i>
+                                                    Descripción</label>
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
                                         </div>
@@ -158,13 +188,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                         <div class="col-sm-6" id="divStockIni">
                                             <div class="input-data">
                                                 <?php echo $id_user ? '' : '<span class="input-group-text" style="position:absolute;top:56%;right:12px"><i class="fas fa-lock"></i></span>'; ?>
-                                                <input autocomplete="off"
-                                                    id="stock_ini"
-                                                    name="stock_ini"
-                                                    class="input-nuevo"
-                                                    type="text"
-                                                    class="input-nuevo"
-                                                    type="text"
+                                                <input autocomplete="off" id="stock_ini" name="stock_ini"
+                                                    class="input-nuevo" type="text" class="input-nuevo" type="text"
                                                     readonly> <label class="label">
                                                     <i class="fas fa-boxes-stacked"></i> Cantidad Inicial
 
@@ -181,7 +206,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                         </div>
                                         <div class="col col-6">
                                             <div class="input-data">
-                                                <input type="text" id="stock" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g)" required>
+                                                <input type="text" id="stock" maxlength="10" inputmode="numeric"
+                                                    autocomplete="off" class="input-nuevo"
+                                                    onpaste="validarPegado(this, event)"
+                                                    onkeydown="validarTecla(event,this)"
+                                                    oninput="validarNumber(this,/[^0-9.]/g)" required>
                                                 <label class="label"><i class="fas fa-cubes"></i> Cantidad</label>
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
@@ -190,14 +219,23 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <div class=" input-data" style="margin-bottom:26px">
-                                                <input type="text" id="stock_min" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)" required>
-                                                <label style="font-size:21px" id="min" class="label"><i class="fas fa-box"></i> Cantidad Min.</label>
+                                                <input type="text" id="stock_min" maxlength="10" inputmode="numeric"
+                                                    autocomplete="off" class="input-nuevo"
+                                                    onpaste="validarPegado(this, event)"
+                                                    onkeydown="validarTecla(event,this)"
+                                                    oninput="validarNumber(this,/[^0-9]/g)" required>
+                                                <label style="font-size:21px" id="min" class="label"><i
+                                                        class="fas fa-box"></i> Cantidad Min.</label>
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="input-data" style="margin-bottom:26px">
-                                                <input type="text" id="stock_mal" maxlength="10" inputmode="numeric" autocomplete="off" class="input-nuevo" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9]/g)">
+                                                <input type="text" id="stock_mal" maxlength="10" inputmode="numeric"
+                                                    autocomplete="off" class="input-nuevo"
+                                                    onpaste="validarPegado(this, event)"
+                                                    onkeydown="validarTecla(event,this)"
+                                                    oninput="validarNumber(this,/[^0-9]/g)">
                                                 <label class="label"><i class="fas fa-hammer-crash"></i> Dañado</label>
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
@@ -206,20 +244,30 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label id="lblC" class="mb-0 combo"><i class="fa-solid fa-tags"></i> Categoría</label>
+                                        <label id="lblC" class="mb-0 combo"><i class="fa-solid fa-tags"></i>
+                                            Categoría</label>
                                         <div class="row">
                                             <div class="col">
-                                                <select id="cboCategoria" class="cbo modalB form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                <select id="cboCategoria"
+                                                    class="cbo modalB form-control select2 select2-success"
+                                                    data-dropdown-css-class="select2-dark" required>
                                                 </select>
                                                 <div id="Categoria" class="invalid-feedback">*Campo obligatorio</div>
                                             </div>
                                             <div class="span-btn cat" style="padding-right:.5rem;">
-                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-tags" data-value="Categoria" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                                <?php if ($_SESSION["editar3"]) : ?>
-                                                    <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-tags" data-value="Categoria" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
+                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-tags"
+                                                    data-value="Categoria" data-target='#modalS' data-toggle='modal'
+                                                    title='Nuevo'><i class="fa-solid fa-plus"></i></span>
+                                                <?php if ($_SESSION["editar3"]): ?>
+                                                    <span style="display:none" class="dis e-span badge bg-gradient-dark"
+                                                        data-icon="fa-tags" data-value="Categoria" data-target='#modalS'
+                                                        data-toggle='modal' title='Editar'><i
+                                                            class="fa-solid fa-pencil"></i></span>
                                                 <?php endif; ?>
-                                                <?php if ($_SESSION["eliminar3"]) : ?>
-                                                    <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Categoria" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
+                                                <?php if ($_SESSION["eliminar3"]): ?>
+                                                    <span style="display:none" class="dis d-span badge bg-gradient-dark"
+                                                        data-value="Categoria" title='Eliminar'><i
+                                                            class="fa-solid fa-trash"></i></span>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
@@ -228,17 +276,26 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                         <label id="lblU" class="mb-0 combo"><i class="fas fa-ruler"></i> Unidad</label>
                                         <div class="row">
                                             <div class="col">
-                                                <select name="cboUnidad" id="cboUnidad" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                <select name="cboUnidad" id="cboUnidad"
+                                                    class="cbo form-control select2 select2-success"
+                                                    data-dropdown-css-class="select2-dark" required>
                                                 </select>
                                                 <div id="Unidad" class="invalid-feedback">*Campo obligatorio</div>
                                             </div>
                                             <div class="span-btn u" style="padding-right:.5rem">
-                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-ruler" data-value="Unidad" data-target='#modalS' data-toggle='modal' title='Nuevo'><i class="fa-solid fa-plus"></i></span>
-                                                <?php if ($_SESSION["editar3"]) : ?>
-                                                    <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-ruler" data-value="Unidad" data-target='#modalS' data-toggle='modal' title='Editar'><i class="fa-solid fa-pencil"></i></span>
+                                                <span class="new-span badge bg-gradient-dark" data-icon="fa-ruler"
+                                                    data-value="Unidad" data-target='#modalS' data-toggle='modal'
+                                                    title='Nuevo'><i class="fa-solid fa-plus"></i></span>
+                                                <?php if ($_SESSION["editar3"]): ?>
+                                                    <span style="display:none" class="dis e-span badge bg-gradient-dark"
+                                                        data-icon="fa-ruler" data-value="Unidad" data-target='#modalS'
+                                                        data-toggle='modal' title='Editar'><i
+                                                            class="fa-solid fa-pencil"></i></span>
                                                 <?php endif; ?>
-                                                <?php if ($_SESSION["eliminar3"]) : ?>
-                                                    <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Unidad" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
+                                                <?php if ($_SESSION["eliminar3"]): ?>
+                                                    <span style="display:none" class="dis d-span badge bg-gradient-dark"
+                                                        data-value="Unidad" title='Eliminar'><i
+                                                            class="fa-solid fa-trash"></i></span>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
@@ -251,25 +308,41 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                 <div class="col-md-12">
                                     <div class="row flex-column-reverse flex-md-row">
                                         <div class="col-md-6 form-group">
-                                            <label class="combo" style="font-size: 1.15rem;"><i class="fas fa-image"></i> Imagen</label>
-                                            <input type="file" name="fileImg" id="fileImg" class="form-control" accept=".png, .jpg, .jpeg, .webp">
+                                            <label class="combo" style="font-size: 1.15rem;"><i
+                                                    class="fas fa-image"></i> Imagen</label>
+                                            <input type="file" name="fileImg" id="fileImg" class="form-control"
+                                                accept=".png, .jpg, .jpeg, .webp">
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group mb-4">
-                                                <label id="lblP" class="mb-0 combo"><i class="fa-solid fa-route"></i> Ubicación</label>
+                                                <label id="lblP" class="mb-0 combo"><i class="fa-solid fa-route"></i>
+                                                    Ubicación</label>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <select name="cboUbicacion" id="cboUbicacion" class="cbo form-control select2 select2-success" data-dropdown-css-class="select2-dark" required>
+                                                        <select name="cboUbicacion" id="cboUbicacion"
+                                                            class="cbo form-control select2 select2-success"
+                                                            data-dropdown-css-class="select2-dark" required>
                                                         </select>
-                                                        <div id="Ubicacion" class="invalid-feedback">*Campo obligatorio</div>
+                                                        <div id="Ubicacion" class="invalid-feedback">*Campo obligatorio
+                                                        </div>
                                                     </div>
                                                     <div class="span-btn p" style="padding-right:.5rem;">
-                                                        <span class="new-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal'><i class="fa-solid fa-plus"></i></span>
-                                                        <?php if ($_SESSION["editar3"]) : ?>
-                                                            <span style="display:none" class="dis e-span badge bg-gradient-dark" data-icon="fa-route" data-value="Ubicacion" data-target='#modalS' data-toggle='modal' title="Editar"><i class="fa-solid fa-pencil"></i></span>
+                                                        <span class="new-span badge bg-gradient-dark"
+                                                            data-icon="fa-route" data-value="Ubicacion"
+                                                            data-target='#modalS' data-toggle='modal'><i
+                                                                class="fa-solid fa-plus"></i></span>
+                                                        <?php if ($_SESSION["editar3"]): ?>
+                                                            <span style="display:none"
+                                                                class="dis e-span badge bg-gradient-dark"
+                                                                data-icon="fa-route" data-value="Ubicacion"
+                                                                data-target='#modalS' data-toggle='modal' title="Editar"><i
+                                                                    class="fa-solid fa-pencil"></i></span>
                                                         <?php endif; ?>
-                                                        <?php if ($_SESSION["eliminar3"]) : ?>
-                                                            <span style="display:none" class="dis d-span badge bg-gradient-dark" data-value="Ubicacion" title='Eliminar'><i class="fa-solid fa-trash"></i></span>
+                                                        <?php if ($_SESSION["eliminar3"]): ?>
+                                                            <span style="display:none"
+                                                                class="dis d-span badge bg-gradient-dark"
+                                                                data-value="Ubicacion" title='Eliminar'><i
+                                                                    class="fa-solid fa-trash"></i></span>
                                                         <?php endif; ?>
                                                     </div>
                                                 </div>
@@ -286,35 +359,92 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Cantidad</label>
-                                        <input type="number" min="1" id="medidaCantidad" class="form-control" value="1" placeholder="Cantidad">
+                                        <input type="number" min="1" id="medidaCantidad" class="form-control" value="1"
+                                            placeholder="Cantidad">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Alto (m)</label>
-                                        <input type="number" step="0.01" min="0" id="medidaAlto" class="form-control" placeholder="Alto">
+                                        <input type="number" step="0.01" min="0" id="medidaAlto" class="form-control"
+                                            placeholder="Alto">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Ancho (m)</label>
-                                        <input type="number" step="0.01" min="0" id="medidaAncho" class="form-control" placeholder="Ancho">
+                                        <input type="number" step="0.01" min="0" id="medidaAncho" class="form-control"
+                                            placeholder="Ancho">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <button type="button" id="btnAgregarMedida" class="btn bg-gradient-green"><i class="fas fa fa-plus"></i><span class="button-text"> </span>Agregar Medida</button>
+                                        <button type="button" id="btnAgregarMedida" class="btn bg-gradient-green"><i
+                                                class="fas fa fa-plus"></i><span class="button-text"> </span>Agregar
+                                            Medida</button>
 
                                     </div>
                                 </div>
                             </div>
                             <ul id="listaMedidasProducto" class="list-group mb-2"></ul>
                         </div>
+                        <?php if (isset($_SESSION["precios3"]) && $_SESSION["precios3"] === true): ?>
+
+                        <div class="tab-pane fade" id="precios" role="tabpanel">
+                            <div class="row mt-3">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Precio Unitario ($)</label>
+                                        <input type="number" step="0.01" min="0" id="precio_uni" name="precio_uni"
+                                            class="form-control" placeholder="0.00">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>IVA (%)</label>
+                                        <input type="number" id="iva_porcentaje" class="form-control" placeholder="0"
+                                            readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Precio total IVA ($)</label>
+                                        <input type="number" id="precio_total_iva" class="form-control" readonly
+                                            placeholder="0.00">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group" style="padding-top: 32px">
+                                        <button type="button" id="btnActualizarPrecio" class="btn bg-gradient-green"><i
+                                                class="fas fa-save"></i> Guardar Precio</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <label><i class="fas fa-history"></i> Historial de Precios</label>
+                            <table class="table table-sm table-bordered mt-2" id="tblHistorialPrecios"
+                                style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Motivo</th>
+                                        <th>Precio Uni</th>
+                                        <th>IVA Uni</th>
+                                        <th>Precio Final</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <?php endif; ?>
+
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-right-from-bracket"></i> Cerrar</button>
+                    <button type="submit" id="btnGuardar" class="btn bg-gradient-green"><i
+                            class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i
+                            class="fas fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
         </div>
@@ -329,10 +459,12 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             <div class="modal-header bg-gradient-light" style="align-items: center;">
                 <div class="row">
                     <div class="col-auto" style="padding-block:.2rem">
-                        <h4 class="modal-title text-wrap"><i class="fas fa-clock-rotate-left"></i> Historial de producto</h4>
+                        <h4 class="modal-title text-wrap"><i class="fas fa-clock-rotate-left"></i> Historial de producto
+                        </h4>
                     </div>
                     <div class="col">
-                        <select id="cboAnio" class="form-control select2 select2-dark historial" data-dropdown-css-class="select2-dark">
+                        <select id="cboAnio" class="form-control select2 select2-dark historial"
+                            data-dropdown-css-class="select2-dark">
                         </select>
                     </div>
                 </div>
@@ -376,7 +508,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
     <!-- /.modal-dialog -->
 </div>
 <!-- Modal SELECTS -->
-<div class="modal fade" id="modalS" style="background-color:#424a51b0;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);">
+<div class="modal fade" id="modalS"
+    style="background-color:#424a51b0;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);">
     <div class="modal-dialog modal-sm" style="top:20%">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green">
@@ -399,8 +532,10 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" id="btnGuardarS" class="btn bg-gradient-green"><i class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
+                    <button type="submit" id="btnGuardarS" class="btn bg-gradient-green"><i
+                            class="fa-solid fa-floppy-disk"></i><span class="button-text"> </span>Guardar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i
+                            class="fa-solid fa-right-from-bracket"></i> Cerrar</button>
                 </div>
             </form>
         </div>
@@ -414,7 +549,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-body p-0" style="display:contents;">
-                <img id="modalImage" src="" alt="Imagen completa" class="img-fluid" style="max-width:100%;height:auto;max-height:85vh;object-fit:contain;">
+                <img id="modalImage" src="" alt="Imagen completa" class="img-fluid"
+                    style="max-width:100%;height:auto;max-height:85vh;object-fit:contain;">
             </div>
         </div>
     </div>
@@ -436,7 +572,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-cubes"></i></span>
                             </div>
-                            <input style="border-bottom-width:1px;" type="number" min="1" id="modalMedidaCantidad" class="form-control" placeholder="Cantidad">
+                            <input style="border-bottom-width:1px;" type="number" min="1" id="modalMedidaCantidad"
+                                class="form-control" placeholder="Cantidad">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -444,7 +581,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-arrows-up-down"></i></span>
                             </div>
-                            <input style="border-bottom-width:1px;" type="number" step="0.01" min="0" id="modalMedidaAlto" class="form-control" placeholder="Alto (m)">
+                            <input style="border-bottom-width:1px;" type="number" step="0.01" min="0"
+                                id="modalMedidaAlto" class="form-control" placeholder="Alto (m)">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -452,7 +590,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-arrows-left-right"></i></span>
                             </div>
-                            <input style="border-bottom-width:1px;" type="number" step="0.01" min="0" id="modalMedidaAncho" class="form-control" placeholder="Ancho (m)">
+                            <input style="border-bottom-width:1px;" type="number" step="0.01" min="0"
+                                id="modalMedidaAncho" class="form-control" placeholder="Ancho (m)">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -476,7 +615,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 <!-- Fin Modal Medidas -->
 
 <!-- Modal Stock Inicial - Versiones -->
-<div class="modal fade" id="modalVersionesStock" tabindex="-1" aria-labelledby="modalVersionesStockLabel" aria-hidden="true" style="background-color: rgba(66, 74, 81, 0.69); backdrop-filter:blur(16px);">
+<div class="modal fade" id="modalVersionesStock" tabindex="-1" aria-labelledby="modalVersionesStockLabel"
+    aria-hidden="true" style="background-color: rgba(66, 74, 81, 0.69); backdrop-filter:blur(16px);">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-gradient-green align-items-center">
@@ -484,7 +624,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     <i class="fas fa-code-branch"></i> Versiones de Stock Inicial
                 </h5>
                 <div class="ml-3">
-                    <select id="cboAnioVersion" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark" style="width: 100px;"></select>
+                    <select id="cboAnioVersion" class="form-control select2 select2-dark"
+                        data-dropdown-css-class="select2-dark" style="width: 100px;"></select>
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                     <span aria-hidden="true">&times;</span>
@@ -494,7 +635,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 <div class="row mb-0" style="align-items: center;">
                     <div class="col-md-3">
                         <div class="input-data m-0">
-                            <input autocomplete="off" id="inputNuevoStockIni" class="input-nuevo" type="text" min="0" required="">
+                            <input autocomplete="off" id="inputNuevoStockIni" class="input-nuevo" type="text" min="0"
+                                required="">
                             <label class="label"><i class="fas fa-boxes-stacked"></i> Stock inicial</label>
                         </div>
                     </div>
@@ -505,11 +647,12 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                             <label class="label"><i class="fas fa-comment-alt"></i> Motivo del cambio</label>
                         </div>
                     </div>
-                <div class="col-auto pt-4">
-                    <button class="btn bg-gradient-green" type="button" id="btnCrearVersionStock">
+                    <div class="col-auto pt-4">
+                        <button class="btn bg-gradient-green" type="button" id="btnCrearVersionStock">
                             <i class="fas fa-plus"></i> Nueva Versión
                         </button>
-                </div></div>
+                    </div>
+                </div>
                 <hr>
                 <h6 class="mb-2"><i class="fas fa-history"></i> Historial de Versiones</h6>
                 <div id="containerVersionesStock" class="timeline-container">
@@ -537,194 +680,216 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
     var mostrarCol = '<?php echo $_SESSION["editar3"] || $_SESSION["eliminar3"] ?>';
     var editar = '<?php echo $_SESSION["editar3"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar3"] ?>';
+    var ver_precios = '<?php echo isset($_SESSION["precios3"]) ? $_SESSION["precios3"] : false; ?>';
+
 
     configuracionTable = {
         "dom": '<"row"<"col-md-6"B><"col-md-6"p>>t',
         "responsive": true,
-        "pageLength": 20, 
+        "pageLength": 20,
         "lengthChange": false,
         "ordering": false,
         "autoWidth": false,
         "deferRender": true,
         columnDefs: [{
-                targets: 0,
-                data: "acciones",
-                className: "text-center",
-                render: function(data, type, row, meta) {
-                    if (type === 'display') {
-                        return meta.row + 1; 
-                    }
-                    return meta.row;
+            targets: 0,
+            data: "acciones",
+            className: "text-center",
+            render: function (data, type, row, meta) {
+                if (type === 'display') {
+                    return meta.row + 1;
                 }
-            },
-            {
-                targets: 2,
-                responsivePriority: 1,
-                render: function(data, type, row) {
-                    let cantidad = row.cantidad_medidas;
-                    let span = '';
-                    if (cantidad && cantidad > 0) {
-                        span = `<span class="badge badge-info right" style="vertical-align:super;font-size:0.65em;cursor:pointer;" data-id="${row.id}" data-nombre="${row.descripcion}">${cantidad}</span>`;
-                    }
-                    return `<div>${data} ${span}</div>`;
+                return meta.row;
+            }
+        },
+        {
+            targets: 2,
+            responsivePriority: 1,
+            render: function (data, type, row) {
+                let cantidad = row.cantidad_medidas;
+                let span = '';
+                if (cantidad && cantidad > 0) {
+                    span = `<span class="badge badge-info right" style="vertical-align:super;font-size:0.65em;cursor:pointer;" data-id="${row.id}" data-nombre="${row.descripcion}">${cantidad}</span>`;
                 }
-            },
-            {
-                targets: 6,
-                className: 'text-center',
-                visible: false
-            },
-            {
-                targets: 7,
-                className: 'text-center',
-                visible: false
-            },
-            {
-                targets: 8,
-                className: 'text-center',
-                responsivePriority: 3,
-                render: function(data, type, row) {
-                    let resultado = row.stock - row.stock_mal;
-                    let stockMin = row.stock_min;
-                    let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
-                    let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                    return `<span style='font-size:1.3rem;text-wrap:nowrap' class="${comparacion} font-weight-bold">${formatR} </span>`;
-                }
-            },
-            {
-                targets: 9,
-                data: "img",
-                responsivePriority: 4,
-                className: "text-center",
-                render: function(data, type, row) {
+                return `<div>${data} ${span}</div>`;
+            }
+        },
+        {
+            targets: 6,
+            className: 'text-center',
+            visible: false
+        },
+        {
+            targets: 7,
+            className: 'text-center',
+            visible: false
+        },
+        {
+            targets: 8,
+            className: 'text-center',
+            responsivePriority: 3,
+            render: function (data, type, row) {
+                let resultado = row.stock - row.stock_mal;
+                let stockMin = row.stock_min;
+                let comparacion = resultado < stockMin ? 'text-danger' : resultado > stockMin ? 'text-success' : 'text-info';
+                let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                return `<span style='font-size:1.3rem;text-wrap:nowrap' class="${comparacion} font-weight-bold">${formatR} </span>`;
+            }
+        },
+        {
+            targets: 9,
+            className: "text-center",
+            responsivePriority: 3,
+            visible: ver_precios ? true : false,
+            render: function (data, type, row) {
+                let p_uni = row.precio_uni ? parseFloat(row.precio_uni).toFixed(2) : '0.00';
+                let p_iva = row.precio_iva ? parseFloat(row.precio_iva).toFixed(2) : '0.00';
+                let p_tot = row.precio_total_iva ? parseFloat(row.precio_total_iva).toFixed(2) : '0.00';
+                let isZero = (p_tot === '0.00' || p_tot == 0);
+                let v_bodega = row.valor_total_bodega ? parseFloat(row.valor_total_bodega) : 0;
+                let v_bodega_str = isNaN(v_bodega) ? '0.00' : v_bodega.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                return `<div style="font-size: 0.85rem;text-align:left;display:inline-block;min-width:100px;">
+                        <div><b style="display:inline-block;width:35px;">Uni:</b> <span class="text-secondary">$${p_uni}</span></div>
+                        <div><b style="display:inline-block;width:35px;">IVA:</b> <span class="text-secondary">$${p_iva}</span></div>
+                        <div style="border-top:1px solid #ccc;margin-top:2px;padding-top:2px;"><b style="display:inline-block;width:35px;">Tot:</b> <span class="${isZero ? 'text-danger' : 'text-success'} font-weight-bold">$${p_tot}</span></div>
+                        <div style="margin-top:2px;"><b style="display:inline-block;width:35px;">Cap:</b> <span class="${v_bodega > 0 ? 'text-info' : 'text-secondary'} font-weight-bold">$${v_bodega_str}</span></div>
+                    </div>`;
+            }
+        },
+        {
+            targets: 10,
+            data: "img",
+            responsivePriority: 4,
+            className: "text-center",
+            render: function (data, type, row) {
 
-                    let imgSrc = `/aistermcon/utils/download.php?&file=${encodeURIComponent(data)}&route=products`;
-                    if (data) {
-                        return `<img
+                let imgSrc = `/aistermcon/utils/download.php?&file=${encodeURIComponent(data)}&route=products`;
+                if (data) {
+                    return `<img
                         onclick="openModalImage(this)"
                         data-toggle="modal" 
                         data-target="#imageModal"
                         src="${imgSrc}" 
                         class="img-thumbnail" 
                         loading="lazy" style="cursor:pointer;width: 50px; height: 50px;">`;
-                    } else {
-                        return `<span style="height:50px;width:50px" class="d-inline-flex justify-content-center align-items-center img-thumbnail"><i style="color:#555" class="fas fa-xl fa-image-slash"></i></span>`;
-                    }
+                } else {
+                    return `<span style="height:50px;width:50px" class="d-inline-flex justify-content-center align-items-center img-thumbnail"><i style="color:#555" class="fas fa-xl fa-image-slash"></i></span>`;
                 }
+            }
+        },
+        {
+            targets: 11,
+            data: "acciones",
+            visible: mostrarCol ? true : false,
+            responsivePriority: 2,
+            render: function (data, type, row, full, meta) {
+                return (
+                    "<center style='white-space: nowrap;'>" +
+                    (editar ?
+                        " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modalI' data-toggle='modal'  title='Editar'>" +
+                        " <i class='fa-solid fa-pencil'></i>" +
+                        "</button>" : "") +
+                    " <button type='button' class='btn bg-gradient-light btnHistorial' data-target='#modalH' data-toggle='modal'  title='Consultar historial'>" +
+                    " <i class='fas fa-clock-rotate-left'></i>" +
+                    "</button>" +
+                    (eliminar ?
+                        " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
+                        " <i class='fa fa-trash'></i>" +
+                        "</button>" : "") +
+                    " </center>"
+                );
             },
-            {
-                targets: 10,
-                data: "acciones",
-                visible: mostrarCol ? true : false,
-                responsivePriority: 2,
-                render: function(data, type, row, full, meta) {
-                    return (
-                        "<center style='white-space: nowrap;'>" +
-                        (editar ?
-                            " <button type='button' class='btn bg-gradient-warning btnEditar' data-target='#modalI' data-toggle='modal'  title='Editar'>" +
-                            " <i class='fa-solid fa-pencil'></i>" +
-                            "</button>" : "") +
-                        " <button type='button' class='btn bg-gradient-light btnHistorial' data-target='#modalH' data-toggle='modal'  title='Consultar historial'>" +
-                        " <i class='fas fa-clock-rotate-left'></i>" +
-                        "</button>" +
-                        (eliminar ?
-                            " <button type='button' class='btn bg-gradient-danger btnEliminar'  title='Eliminar'>" +
-                            " <i class='fa fa-trash'></i>" +
-                            "</button>" : "") +
-                        " </center>"
-                    );
-                },
-            },
+        },
         ],
         buttons: [{
-                extend: "excelHtml5",
-                exportOptions: {
-                    columns: ":visible:not(:last-child)",
-                    search: "applied",
-                    order: "applied",
-                },
-                text: "<i class='fa-regular fa-file-xls fa-xl'style='color: #0a8f00'></i>",
-                titleAttr: "Exportar a Excel",
-                title: "LISTADO DE PRODUCTOS",
-                className: "btn btn-light",
+            extend: "excelHtml5",
+            exportOptions: {
+                columns: ":visible:not(:last-child)",
+                search: "applied",
+                order: "applied",
             },
-            {
-                extend: "pdfHtml5",
-                exportOptions: {
-                    columns: ":visible:not(:last-child)",
-                    search: "applied",
-                    order: "applied",
-                },
-                text: "<i class='fa-regular fa-file-pdf fa-xl' style='color: #bd0000'></i>",
-                titleAttr: "Exportar a PDF",
-                className: "btn btn-light",
-                title: "LISTADO DE PRODUCTOS",
-                customize: function(doc) {
-                    var now = new Date();
-                    var jsDate = now.getDate() + "/" + (now.getMonth() + 1) + "/" + now.getFullYear();
-                    doc.content.splice(0, 1);
-                    doc.pageMargins = [40, 90, 40, 50];
-                    doc["header"] = function() {
-                        return {
-                            columns: [{
-                                    alignment: "left",
-                                    text: "LISTADO DE PRODUCTOS",
-                                    fontSize: 14,
-                                    margin: [20, 25],
-                                },
+            text: "<i class='fa-regular fa-file-xls fa-xl'style='color: #0a8f00'></i>",
+            titleAttr: "Exportar a Excel",
+            title: "LISTADO DE PRODUCTOS",
+            className: "btn btn-light",
+        },
+        {
+            extend: "pdfHtml5",
+            exportOptions: {
+                columns: ":visible:not(:last-child)",
+                search: "applied",
+                order: "applied",
+            },
+            text: "<i class='fa-regular fa-file-pdf fa-xl' style='color: #bd0000'></i>",
+            titleAttr: "Exportar a PDF",
+            className: "btn btn-light",
+            title: "LISTADO DE PRODUCTOS",
+            customize: function (doc) {
+                var now = new Date();
+                var jsDate = now.getDate() + "/" + (now.getMonth() + 1) + "/" + now.getFullYear();
+                doc.content.splice(0, 1);
+                doc.pageMargins = [40, 90, 40, 50];
+                doc["header"] = function () {
+                    return {
+                        columns: [{
+                            alignment: "left",
+                            text: "LISTADO DE PRODUCTOS",
+                            fontSize: 14,
+                            margin: [20, 25],
+                        },
+                        {
+                            alignment: "right",
+                            margin: [20, 0],
+                            text: ["Creado el: ", {
+                                text: jsDate.toString()
+                            }],
+                        },
+
+                        ],
+                        margin: 20,
+                    };
+                };
+
+                var objLayout = {};
+                objLayout["hLineWidth"] = function (i) {
+                    return 1;
+                };
+                objLayout["vLineWidth"] = function (i) {
+                    return 0.5;
+                };
+                objLayout["hLineColor"] = function (i) {
+                    return "#aaa";
+                };
+                objLayout["vLineColor"] = function (i) {
+                    return "#aaa";
+                };
+                doc.content[0].layout = objLayout;
+
+                doc["footer"] = function (page, pages) {
+                    return {
+                        columns: [{
+                            alignment: "right",
+                            text: [
+                                "pag ",
                                 {
-                                    alignment: "right",
-                                    margin: [20, 0],
-                                    text: ["Creado el: ", {
-                                        text: jsDate.toString()
-                                    }],
+                                    text: page.toString()
                                 },
-
+                                " de ",
+                                {
+                                    text: pages.toString()
+                                },
                             ],
-                            margin: 20,
-                        };
+                        },],
+                        margin: [20, 10, 40, 10],
                     };
-
-                    var objLayout = {};
-                    objLayout["hLineWidth"] = function(i) {
-                        return 1;
-                    };
-                    objLayout["vLineWidth"] = function(i) {
-                        return 0.5;
-                    };
-                    objLayout["hLineColor"] = function(i) {
-                        return "#aaa";
-                    };
-                    objLayout["vLineColor"] = function(i) {
-                        return "#aaa";
-                    };
-                    doc.content[0].layout = objLayout;
-
-                    doc["footer"] = function(page, pages) {
-                        return {
-                            columns: [{
-                                alignment: "right",
-                                text: [
-                                    "pag ",
-                                    {
-                                        text: page.toString()
-                                    },
-                                    " de ",
-                                    {
-                                        text: pages.toString()
-                                    },
-                                ],
-                            }, ],
-                            margin: [20, 10, 40, 10],
-                        };
-                    };
-                },
+                };
             },
-            {
-                extend: "colvis",
-                className: "btn btn-light font-weight-bold",
-                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            }
+        },
+        {
+            extend: "colvis",
+            className: "btn btn-light font-weight-bold",
+            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10],
+        }
         ]
     }
 
@@ -742,27 +907,27 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
     function abrirModalVersionesStock() {
         const idEl = document.getElementById('id');
         const idProducto = idEl ? idEl.value : '';
-        
+
         if (!idProducto) {
             mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Debe guardar el producto primero', 3000);
             return;
         }
-        
+
         idProductoActualStock = idProducto;
         const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
-        
+
         if ($('#cboAnioVersion option').length === 0 && typeof datos_anio !== 'undefined') {
-             $('#cboAnioVersion').select2({
-                 data: datos_anio,
-                 minimumResultsForSearch: -1
-             });
-             
-             $('#cboAnioVersion').on('change', function() {
-                 cargarVersionesStockInicial(idProductoActualStock, this.value);
-             });
+            $('#cboAnioVersion').select2({
+                data: datos_anio,
+                minimumResultsForSearch: -1
+            });
+
+            $('#cboAnioVersion').on('change', function () {
+                cargarVersionesStockInicial(idProductoActualStock, this.value);
+            });
         }
         $('#cboAnioVersion').val(year_val).trigger('change');
-        
+
         $('#modalVersionesStock').modal('show');
         cargarVersionesStockInicial(idProducto, year_val);
     }
@@ -777,9 +942,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 anio: anio
             })
         })
-        .then(r => r.json())
-        .then(data => mostrarVersionesStockInicial(data))
-        .catch(e => console.error('Error:', e));
+            .then(r => r.json())
+            .then(data => mostrarVersionesStockInicial(data))
+            .catch(e => console.error('Error:', e));
     }
 
     function mostrarVersionesStockInicial(versiones) {
@@ -826,7 +991,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         `).join('');
 
         document.querySelectorAll('.btn-edit-motivo').forEach(btn => {
-            btn.onclick = function() {
+            btn.onclick = function () {
                 const card = this.closest('.card');
                 card.querySelector('.motivo-display').style.display = 'none';
                 card.querySelector('.motivo-edit').style.display = 'block';
@@ -834,7 +999,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         document.querySelectorAll('.btn-cancel-motivo').forEach(btn => {
-            btn.onclick = function() {
+            btn.onclick = function () {
                 const card = this.closest('.card');
                 card.querySelector('.motivo-display').style.display = 'block';
                 card.querySelector('.motivo-edit').style.display = 'none';
@@ -842,7 +1007,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         document.querySelectorAll('.btn-save-motivo').forEach(btn => {
-            btn.onclick = function() {
+            btn.onclick = function () {
                 const id = this.dataset.id;
                 const motivo = document.querySelector(`.textarea-motivo[data-id="${id}"]`).value;
                 guardarMotivoVersion(id, motivo);
@@ -850,14 +1015,14 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         document.querySelectorAll('.btn-delete-version').forEach(btn => {
-            btn.onclick = function() {
+            btn.onclick = function () {
                 if (confirm('¿Eliminar versión?')) {
                     eliminarVersionStock(this.dataset.id);
                 }
             };
         });
     }
-    
+
     function guardarMotivoVersion(idVersion, motivo) {
         fetch('controllers/inventario.controlador.php', {
             method: 'POST',
@@ -867,16 +1032,16 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 motivo: motivo
             })
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'success') {
-                mostrarToast('success', 'Completado', 'fa-check', 'Actualizado correctamente', 3000);
-                const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
-                cargarVersionesStockInicial(idProductoActualStock, year_val);
-            } else {
-                mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
-            }
-        });
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    mostrarToast('success', 'Completado', 'fa-check', 'Actualizado correctamente', 3000);
+                    const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
+                    cargarVersionesStockInicial(idProductoActualStock, year_val);
+                } else {
+                    mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
+                }
+            });
     }
 
     function eliminarVersionStock(idVersion) {
@@ -887,16 +1052,16 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 id_version: idVersion
             })
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'success') {
-                mostrarToast('success', 'Completado', 'fa-check', 'Versión eliminada', 3000);
-                const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
-                cargarVersionesStockInicial(idProductoActualStock, year_val);
-            } else {
-                mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
-            }
-        });
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    mostrarToast('success', 'Completado', 'fa-check', 'Versión eliminada', 3000);
+                    const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
+                    cargarVersionesStockInicial(idProductoActualStock, year_val);
+                } else {
+                    mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
+                }
+            });
     }
 
     function crearNuevaVersionStock() {
@@ -909,7 +1074,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         }
 
         const year_val = $('#cboAnioVersion').val() || (typeof year !== 'undefined' ? year : new Date().getFullYear());
-        
+
         fetch('controllers/inventario.controlador.php', {
             method: 'POST',
             body: new URLSearchParams({
@@ -920,33 +1085,33 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 motivo: motivo || 'Ajuste'
             })
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'success') {
-                mostrarToast('success', 'Éxito', 'fa-check', 'Versión creada correctamente', 3000);
-                document.getElementById('inputNuevoStockIni').value = '';
-                document.getElementById('inputMotivoStock').value = '';
-                cargarVersionesStockInicial(idProductoActualStock, year_val);
-                
-                const anioActual = new Date().getFullYear();
-                if (parseInt(year_val) === anioActual) {
-                     const stockInput = document.getElementById('stock_ini');
-                     if(stockInput) stockInput.value = stock;
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    mostrarToast('success', 'Éxito', 'fa-check', 'Versión creada correctamente', 3000);
+                    document.getElementById('inputNuevoStockIni').value = '';
+                    document.getElementById('inputMotivoStock').value = '';
+                    cargarVersionesStockInicial(idProductoActualStock, year_val);
+
+                    const anioActual = new Date().getFullYear();
+                    if (parseInt(year_val) === anioActual) {
+                        const stockInput = document.getElementById('stock_ini');
+                        if (stockInput) stockInput.value = stock;
+                    }
+                } else {
+                    mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
                 }
-            } else {
-                mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
-            }
-        });
+            });
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         let anio = year;
         let id_producto = 0;
         const checkbox = document.getElementById('check_stock');
         const icona = document.getElementById('stock_icon');
         const divStockIni = document.getElementById('divStockIni');
 
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
             if (this.checked) {
                 accion_inv = 6;
                 tabla.ajax.reload();
@@ -962,14 +1127,14 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     "url": "controllers/inventario.controlador.php",
                     "type": "POST",
                     "dataSrc": '',
-                    data: function(data) {
+                    data: function (data) {
                         data.accion = accion_inv;
                     }
                 },
                 ...configuracionTable
             });
 
-            tabla.on('draw.dt', function() {
+            tabla.on('draw.dt', function () {
                 if ($(window).width() >= 768) {
                     const b = document.body;
                     const s = b.scrollHeight + 20;
@@ -985,7 +1150,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 "url": "controllers/inventario.controlador.php",
                 "type": "POST",
                 "dataSrc": '',
-                data: function(data) {
+                data: function (data) {
                     data.accion = 12;
                     data.anio = anio;
                     data.id_producto = id_producto;
@@ -998,48 +1163,48 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             "ordering": false,
             "autoWidth": false,
             columnDefs: [{
-                    targets: 2,
-                    render: function(data, type, row) {
-                        let resultado = row.producto_util ? '<span class="alert alert-default-dark mb-0"><i class="fas fa-hammer-crash"></i> FAB</span>' : '';
-                        return `<div style="display:flex;justify-content:space-between;align-items:center">${data + resultado} </div>`;
-                    }
-                },
-                {
-                    targets: 3,
-                    className: 'text-center',
-                    render: function(data, type, row) {
-                        let resultado = row.salida ?? '-';
-                        let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-danger" font-weight-bold">${formatR} </span>`;
-                    }
-                }, {
-                    targets: 4,
-                    className: 'text-center',
-                    render: function(data, type, row) {
-                        let resultado = row.entrada ?? '-';
-                        let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-success" font-weight-bold">${formatR} </span>`;
-                    }
-                },
-                {
-                    targets: 5,
-                    className: 'text-center',
-                    render: function(data, type, row) {
-                        let resultado = row.compras ?? '-';
-                        let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-success" font-weight-bold">${formatR} </span>`;
-                    }
-                },
-                {
-                    targets: 6,
-                    className: 'text-center',
-                    responsivePriority: 3,
-                    render: function(data, type, row) {
-                        let resultado = row.stock ?? 0;
-                        let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-info" font-weight-bold">${formatR} </span>`;
-                    }
-                },
+                targets: 2,
+                render: function (data, type, row) {
+                    let resultado = row.producto_util ? '<span class="alert alert-default-dark mb-0"><i class="fas fa-hammer-crash"></i> FAB</span>' : '';
+                    return `<div style="display:flex;justify-content:space-between;align-items:center">${data + resultado} </div>`;
+                }
+            },
+            {
+                targets: 3,
+                className: 'text-center',
+                render: function (data, type, row) {
+                    let resultado = row.salida ?? '-';
+                    let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-danger" font-weight-bold">${formatR} </span>`;
+                }
+            }, {
+                targets: 4,
+                className: 'text-center',
+                render: function (data, type, row) {
+                    let resultado = row.entrada ?? '-';
+                    let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-success" font-weight-bold">${formatR} </span>`;
+                }
+            },
+            {
+                targets: 5,
+                className: 'text-center',
+                render: function (data, type, row) {
+                    let resultado = row.compras ?? '-';
+                    let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-success" font-weight-bold">${formatR} </span>`;
+                }
+            },
+            {
+                targets: 6,
+                className: 'text-center',
+                responsivePriority: 3,
+                render: function (data, type, row) {
+                    let resultado = row.stock ?? 0;
+                    let formatR = resultado.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    return `<span style='font-size:1.3rem;text-wrap:nowrap' class="text-info" font-weight-bold">${formatR} </span>`;
+                }
+            },
             ],
         });
 
@@ -1098,34 +1263,34 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             width: '100%',
         })
 
-        $(cboCategoria).change(function() {
+        $(cboCategoria).change(function () {
             estilosSelect2(this, 'lblC');
             opcionSelect(this, 'cat')
         });
 
-        $(cboUnidad).change(function() {
+        $(cboUnidad).change(function () {
             estilosSelect2(this, 'lblU')
             opcionSelect(this, 'u')
         });
 
-        $(cboUbicacion).change(function() {
+        $(cboUbicacion).change(function () {
             estilosSelect2(this, 'lblP')
             opcionSelect(this, 'p')
         });
 
-        $(cboAnio).on("change", function() {
+        $(cboAnio).on("change", function () {
             let a = this.options[this.selectedIndex].text
             anio = a
             tblHistorial.ajax.reload();
             const params = new URLSearchParams();
             params.append('accion', 13);
             params.append('anio', anio);
-            params.append('id_producto', id_producto); 
+            params.append('id_producto', id_producto);
 
             fetch('controllers/inventario.controlador.php', {
-                    method: 'POST',
-                    body: params
-                })
+                method: 'POST',
+                body: params
+            })
                 .then(response => response.json())
                 .then(data => {
                     const stockInicialElement = document.getElementById('stockInicial');
@@ -1143,7 +1308,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
         });
 
-        $(document).on('click', '#tblInventario tbody span.badge-info', function() {
+        $(document).on('click', '#tblInventario tbody span.badge-info', function () {
             const id_producto = $(this).data('id');
             const nombre = $(this).data('nombre');
             $('#modalMedidasLabel').html(`<i class="fas fa-ruler-combined"></i>  ${nombre}`);
@@ -1158,11 +1323,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             $.post('controllers/inventario.controlador.php', {
                 accion: 21,
                 id_producto
-            }, function(res) {
+            }, function (res) {
                 let data = [];
                 try {
                     data = JSON.parse(res);
-                } catch {}
+                } catch { }
                 medidasProducto = Array.isArray(data) ? data : [];
                 actualizarListaMedidas();
             });
@@ -1172,11 +1337,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             $.post('controllers/inventario.controlador.php', {
                 accion: 21,
                 id_producto
-            }, function(res) {
+            }, function (res) {
                 let data = [];
                 try {
                     data = JSON.parse(res);
-                } catch {}
+                } catch { }
                 const lista = $('#listaMedidas');
                 lista.empty();
                 if (Array.isArray(data) && data.length > 0) {
@@ -1224,14 +1389,14 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
 
 
-        $(document).on('click', '.btnEliminarMedidaTab', function() {
+        $(document).on('click', '.btnEliminarMedidaTab', function () {
             const id_medida = $(this).data('id');
-            confirmarEliminar('esta', 'medida', function(res) {
+            confirmarEliminar('esta', 'medida', function (res) {
                 if (res) {
                     $.post('controllers/inventario.controlador.php', {
                         accion: 24,
                         id_medida
-                    }, function() {
+                    }, function () {
                         const id_producto = $('#id').val();
                         cargarMedidasTab(id_producto); // Recarga la lista desde BD
                         accion_inv = 0;
@@ -1241,14 +1406,14 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             });
         });
 
-        $(document).on('click', '.btnEliminarMedida', function() {
+        $(document).on('click', '.btnEliminarMedida', function () {
             const id_medida = $(this).data('id');
-            confirmarEliminar('esta', 'medida', function(res) {
+            confirmarEliminar('esta', 'medida', function (res) {
                 if (res) {
                     $.post('controllers/inventario.controlador.php', {
                         accion: 24,
                         id_medida
-                    }, function() {
+                    }, function () {
                         const id_producto = $('#modalMedidas').data('id_producto');
                         cargarMedidasProducto(id_producto);
                         accion_inv = 0;
@@ -1258,7 +1423,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             });
         });
 
-        $('#btnAgregarMedidaModal').off('click').on('click', function() {
+        $('#btnAgregarMedidaModal').off('click').on('click', function () {
             const id_producto = $('#modalMedidas').data('id_producto');
             const cantidad = parseInt($('#modalMedidaCantidad').val()) || 0;
             const alto = parseFloat($('#modalMedidaAlto').val()) || 0;
@@ -1275,7 +1440,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     accion: 22,
                     id_producto,
                     medidas: JSON.stringify(medidas)
-                }, function(res) {
+                }, function (res) {
                     cargarMedidasProducto(id_producto);
                     $('#modalMedidaCantidad').val('');
                     $('#modalMedidaAlto').val('');
@@ -1288,7 +1453,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             }
         });
 
-        $('#btnAgregarMedida').on('click', function() {
+        $('#btnAgregarMedida').on('click', function () {
             const id_producto = $('#id').val(); // El id del producto actual
             const cantidad = parseInt($('#medidaCantidad').val()) || 0;
             const alto = parseFloat($('#medidaAlto').val()) || 0;
@@ -1305,7 +1470,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     accion: 22,
                     id_producto,
                     medidas: JSON.stringify(medidas)
-                }, function(res) {
+                }, function (res) {
                     cargarMedidasTab(id_producto);
                     $('#medidaCantidad').val('1');
                     $('#medidaAlto').val('');
@@ -1318,7 +1483,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             }
         });
 
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === "Escape") {
                 const activeModal = document.querySelector('.modal.show');
                 if (activeModal) {
@@ -1327,11 +1492,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             }
         });
 
-        $(modalE).on("shown.bs.modal", function() {
+        $(modalE).on("shown.bs.modal", function () {
             nombre.focus();
         });
 
-        $(modalE).on("hidden.bs.modal", function() {
+        $(modalE).on("hidden.bs.modal", function () {
             if (scroll) {
                 const navbar = document.getElementById('navbar-fix');
                 $(navbar).css('margin-right', '');
@@ -1339,12 +1504,12 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             accion_inv = 0;
         });
 
-        $(modalS).on("shown.bs.modal", function() {
+        $(modalS).on("shown.bs.modal", function () {
             inputContent.focus();
 
         });
 
-        $(modalS).on('hidden.bs.modal', function(e) {
+        $(modalS).on('hidden.bs.modal', function (e) {
             e.preventDefault();
             if (scroll) {
                 const navbar = body.querySelector('.navbar')
@@ -1354,11 +1519,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         const modalVersiones = document.getElementById('modalVersionesStock');
-        $(modalVersiones).on("shown.bs.modal", function() {
+        $(modalVersiones).on("shown.bs.modal", function () {
             document.getElementById('inputNuevoStockIni').focus();
         });
 
-        $(modalVersiones).on('hidden.bs.modal', function(e) {
+        $(modalVersiones).on('hidden.bs.modal', function (e) {
             e.preventDefault();
             if (scroll) {
                 const navbar = body.querySelector('.navbar')
@@ -1368,7 +1533,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         });
 
         if (btnNuevo) {
-            btnNuevo.addEventListener('click', function() {
+            btnNuevo.addEventListener('click', function () {
                 if (scroll) {
                     const navbar = document.getElementById('navbar-fix');
                     $(navbar).css('margin-right', '6px');
@@ -1377,7 +1542,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 medidasProducto = [];
                 actualizarListaMedidas();
                 cambiarModal(span, ' Nuevo Producto', icon, 'fa-layer-plus', elements, 'bg-gradient-blue', 'bg-gradient-green', modalE, 'modal-new', 'modal-change')
-                select.forEach(function(s) {
+                select.forEach(function (s) {
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
                 });
@@ -1390,7 +1555,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             });
         }
 
-        $('#tblInventario tbody').on('click', '.btnEditar', function() {
+        $('#tblInventario tbody').on('click', '.btnEditar', function () {
             if (scroll) {
                 const navbar = document.getElementById('navbar-fix');
                 $(navbar).css('margin-right', '6px');
@@ -1399,7 +1564,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             accion_inv = 2;
             cargarMedidasTab(row["id"]);
             cambiarModal(span, ' Editar Producto', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modalE, 'modal-change', 'modal-new')
-            select.forEach(function(s) {
+            select.forEach(function (s) {
                 s.classList.remove('select2-success');
                 s.classList.add('select2-warning');
             });
@@ -1419,36 +1584,36 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             divStockIni.style.display = 'block';
         });
 
-        $('#tblInventario tbody').on('click', '.btnHistorial', function() {
+        $('#tblInventario tbody').on('click', '.btnHistorial', function () {
             if (scroll) {
                 const navbar = document.getElementById('navbar-fix');
                 $(navbar).css('margin-right', '6px');
             }
             let row = obtenerFila(this, tabla);
             document.getElementById('stockInicial').textContent = '0.00';
-            let descripcion = row["descripcion"]; 
-            id_producto = row["id"]; 
-            setChange(cboAnio, year); 
+            let descripcion = row["descripcion"];
+            id_producto = row["id"];
+            setChange(cboAnio, year);
             document.getElementById('descripcionProducto').textContent = descripcion;
         });
 
-        $('#tblInventario tbody').on('click', '.btnEliminar', function() {
+        $('#tblInventario tbody').on('click', '.btnEliminar', function () {
             const e = obtenerFila(this, tabla)
             accion_inv = 3
             const id = e["id"];
             let src = new FormData();
             src.append('accion', accion_inv);
             src.append('id', id);
-            confirmarEliminar('este', 'producto', function(res) {
+            confirmarEliminar('este', 'producto', function (res) {
                 if (res) {
-                    confirmarAccion(src, 'inventario', tabla, '', function(res) {
+                    confirmarAccion(src, 'inventario', tabla, '', function (res) {
                         cargarAutocompletado();
                     })
                 }
             });
         });
 
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
@@ -1456,7 +1621,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             }
 
             const data = new FormData();
-            const file = fileImg.files[0]; 
+            const file = fileImg.files[0];
             if (file && (file.type !== "image/png" && file.type !== "image/jpeg" && file.type !== "image/webp")) {
                 mostrarToast(
                     'warning',
@@ -1483,14 +1648,14 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             data.append('accion', accion_inv);
             data.append('medidas', JSON.stringify(medidasProducto));
 
-            confirmarAccion(data, 'inventario', tabla, modalE, function(res) {
+            confirmarAccion(data, 'inventario', tabla, modalE, function (res) {
                 cargarAutocompletado();
                 medidasProducto = [];
                 actualizarListaMedidas();
             });
         });
 
-        $(".new-span").on('click', function() {
+        $(".new-span").on('click', function () {
             opcion = 1;
             name = this.dataset.value;
             const selectE = document.querySelector('#cbo' + name);
@@ -1501,7 +1666,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             formS.classList.remove('was-validated');
         });
 
-        $(".e-span").on('click', function() {
+        $(".e-span").on('click', function () {
             opcion = 2;
             name = this.dataset.value;
             const selectE = document.getElementById('cbo' + name);
@@ -1511,7 +1676,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             cambiarModal(spanE, ' Editar ' + name, iconElement, iconS, elementsE, 'bg-gradient-green', 'bg-gradient-blue', modalS, 'modal-change', 'modal-new')
         });
 
-        $(".d-span").on('click', function() {
+        $(".d-span").on('click', function () {
             opcion = 3;
             name = this.dataset.value;
             const id_val = document.getElementById('cbo' + name).value;
@@ -1520,16 +1685,16 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             src.append('accion', opcion);
             src.append('id', id_val);
             src.append('tabla', tbl);
-            confirmarEliminar('esta', name, function(res) {
+            confirmarEliminar('esta', name, function (res) {
                 if (res) {
-                    confirmarAccion(src, 'producto', null, '', function(res) {
+                    confirmarAccion(src, 'producto', null, '', function (res) {
                         cargarCombo(name);
                     })
                 }
             });
         });
 
-        formS.addEventListener('submit', function(e) {
+        formS.addEventListener('submit', function (e) {
             e.preventDefault();
             if (!this.checkValidity()) {
                 this.classList.add('was-validated');
@@ -1544,7 +1709,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 data.append('nombre', nombre);
                 data.append('accion', opcion);
                 data.append('tabla', tbl);
-                confirmarAccion(data, 'producto', null, modalS, function(res) {
+                confirmarAccion(data, 'producto', null, modalS, function (res) {
                     if (res) {
                         cargarCombo(name, ids);
                     }
@@ -1555,5 +1720,127 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         if (btnCrearVer) {
             btnCrearVer.onclick = crearNuevaVersionStock;
         }
+
+        /*=============================================
+        PRECIOS E HISTORIAL LOGIC
+        =============================================*/
+        $(document).on('click', '#tblInventario tbody .btnEditar', function () {
+            let row = tabla.row($(this).parents('tr')).data();
+            if (!row) row = tabla.row($(this)).data();
+            if (!row) return;
+
+            $('#precio_uni').val(row.precio_uni ? parseFloat(row.precio_uni).toFixed(2) : '0.00');
+            $('#precio_total_iva').val(row.precio_total_iva ? parseFloat(row.precio_total_iva).toFixed(2) : '0.00');
+
+            $.post('controllers/inventario.controlador.php', { accion: 41 }, function (res) {
+                let iva_val = 0;
+                try {
+                    let resData = JSON.parse(res);
+                    iva_val = resData.iva ? parseFloat(resData.iva) : 0;
+                } catch (e) { }
+                $('#iva_porcentaje').val(iva_val);
+            });
+
+            $.post('controllers/inventario.controlador.php', { accion: 42, id_producto: row.id }, function (res) {
+                let tbody = $('#tblHistorialPrecios tbody');
+                tbody.empty();
+                try {
+                    let mData = JSON.parse(res);
+                    if (mData.length > 0) {
+                        mData.forEach(item => {
+                            tbody.append(`<tr>
+                                <td>${item.fecha}</td>
+                                <td>${item.motivo}</td>
+                                <td>$${parseFloat(item.precio_uni).toFixed(2)}</td>
+                                <td>$${parseFloat(item.precio_iva).toFixed(2)}</td>
+                                <td>$${parseFloat(item.precio_total_iva).toFixed(2)}</td>
+                            </tr>`);
+                        });
+                    } else {
+                        tbody.append(`<tr><td colspan="5" class="text-center">No hay historial de precios</td></tr>`);
+                    }
+                } catch (e) {
+                    tbody.append(`<tr><td colspan="5" class="text-center">Error al cargar historial</td></tr>`);
+                }
+            });
+        });
+
+        $(document).on('input', '#precio_uni', function () {
+            let p_uni = parseFloat($(this).val()) || 0;
+            let iva = parseFloat($('#iva_porcentaje').val()) || 0;
+            let total = p_uni + (p_uni * (iva / 100));
+            $('#precio_total_iva').val(total.toFixed(2));
+        });
+
+        $(document).on('click', '#btnActualizarPrecio', function () {
+            let id_producto = $('#id').val();
+            let precio_uni = parseFloat($('#precio_uni').val()) || 0;
+            
+            // Check JS redundancy
+            let prodData = tabla.rows().data().toArray().find(x => x.id == id_producto);
+            let current_precio = prodData && prodData.precio_uni ? parseFloat(prodData.precio_uni) : 0;
+            if (precio_uni === current_precio) {
+                mostrarToast('info', 'Aviso', 'fa-info-circle', 'El precio ingresado es idéntico al actual.', 3000);
+                return;
+            }
+
+            Swal.fire({
+                title: 'Confirmar actualización',
+                html: `¿Estás seguro de actualizar el precio unitario a <b>$${precio_uni.toFixed(2)}</b>?`,
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Sí, actualizar',
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('controllers/inventario.controlador.php', {
+                        accion: 43,
+                        id_producto: id_producto,
+                        precio_uni: precio_uni,
+                        motivo: 'AJUSTE MANUAL'
+                    }, function (res) {
+                        try {
+                            let rData = JSON.parse(res);
+                            if (rData.status === 'success') {
+                                mostrarToast('success', 'Éxito', 'fa-check', 'Precio actualizado correctamente', 3000);
+                                accion_inv = 0;
+                                tabla.ajax.reload(null, false);
+                                $('#modalI').modal('hide');
+
+                                // setTimeout(function () {
+                                //     tabla.ajax.reload(null, false);
+                                //     let btnEditarClick = $('#tblInventario tbody button.btnEditar').filter(function () {
+                                //         return tabla.row($(this).parents('tr')).data().id == id_producto;
+                                //     });
+                                //     if (btnEditarClick.length > 0) btnEditarClick.click();
+                                // }, 500);
+                            } else if (rData.status === 'warning') {
+                                mostrarToast('info', 'Aviso', 'fa-info-circle', rData.m, 4000);
+                            } else {
+                                mostrarToast('danger', 'Error', 'fa-times', rData.m, 3000);
+                            }
+                        } catch (e) {
+                            mostrarToast('danger', 'Error', 'fa-times', 'Error desconocido', 3000);
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '#btnValorTotal', function () {
+            $.post('controllers/inventario.controlador.php', { accion: 44 }, function (res) {
+                let val = 0;
+                try {
+                    let vData = JSON.parse(res);
+                    val = vData.valor_total ? parseFloat(vData.valor_total) : 0;
+                } catch (e) { }
+                Swal.fire({
+                    title: 'Valor Total en Bodega',
+                    html: `<h2 class="text-success">$${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>`,
+                    icon: 'info'
+                });
+            });
+        });
     });
 </script>

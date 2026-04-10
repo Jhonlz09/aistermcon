@@ -309,7 +309,7 @@
     var mostrarCol = '<?php echo $_SESSION["editar5"] || $_SESSION["eliminar5"] ?>';
     var editar = '<?php echo $_SESSION["editar5"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar5"] ?>';
-    var aprobar = '<?php echo $_SESSION["aprobar5"] ?>';
+    var aprobar = '<?php echo isset($_SESSION["aprobar5"]) ? $_SESSION["aprobar5"] : false; ?>';
     var nc = '<?php echo $_SESSION["sc_desp"] ?? 1; ?>';
 
     console.log('secuencia', nc);
@@ -342,7 +342,7 @@
                             </span>
                         </center>`;
                 }
-
+                
                 let color = row.estado ? 'success' : 'yellow';
                 let icon = row.estado ? 'eye' : 'pencil';
                 let botones = '<center style="white-space: nowrap;">';
@@ -429,8 +429,9 @@
             inpNotas = document.getElementById('inpNotas'),
             nro_orden_sol = document.getElementById('nro_orden_sol'),
             cboResponsableSol = document.getElementById('cboResponsableSol'),
-            cboAnioSol = document.getElementById('cboAnioSol')
-        btnGuardarDespacho = document.getElementById('btnGuardarDespacho'),
+            cboAnioSol = document.getElementById('cboAnioSol'),
+            btnNuevo = document.getElementById('btnNuevo'),
+            btnGuardarDespacho = document.getElementById('btnGuardarDespacho'),
             div_productos = document.getElementById('div-productos'),
             div_header = document.getElementById('div_header');
 

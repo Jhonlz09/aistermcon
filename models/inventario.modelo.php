@@ -10,7 +10,7 @@ class ModeloInventario
             $l = Conexion::ConexionDB()->prepare("SELECT i.id,i.codigo,
                 i.descripcion, c.nombre as categoria,u.nombre as unidad,p.nombre as percha, 
                 i.stock_mal,i.stock, '' as acciones,i.stock_min, c.id as categoria_id, 
-                u.id as unidad_id, p.id as percha_id,i.img,
+                u.id as unidad_id, p.id as percha_id,i.img, i.precio_uni, i.precio_iva, i.precio_total_iva, i.valor_total_bodega,
                 (SELECT COUNT(*) FROM tblmedidas_producto m WHERE m.id_producto = i.id) AS cantidad_medidas,
                 -- === STOCK INICIAL AUTOMÁTICO (AÑO ACTUAL) ===
                 COALESCE((SELECT si.stock_ini 
@@ -797,11 +797,88 @@ class ModeloInventario
             $conn->exec("CREATE TRIGGER tr_propagar_stock_historico_entrada
                          AFTER INSERT OR UPDATE OR DELETE ON tblentradas
                          FOR EACH ROW EXECUTE PROCEDURE public.fn_propagar_stock_historico()");
-
             return array('status' => 'success', 'm' => 'Triggers históricos instalados correctamente');
-
         } catch (PDOException $e) {
             return array('status' => 'error', 'm' => $e->getMessage());
         }
     }
+
+    public static function mdlObtenerIvaConfiguracion()
+    {
+        try {
+            $stmt = Conexion::ConexionDB()->prepare("SELECT iva FROM tblconfiguracion LIMIT 1");
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['iva' => 0];
+        }
+    }
+
+    public static function mdlListarHistorialPrecios($id_producto)
+    {
+        try {
+            $stmt = Conexion::ConexionDB()->prepare("SELECT id_producto, precio_uni, precio_iva, precio_total_iva, motivo, TO_CHAR(fecha, 'DD/MM/YYYY HH24:MI:SS') as fecha FROM tblhistorial_precios WHERE id_producto = :id_producto ORDER BY fecha DESC");
+            $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public static function mdlActualizarPrecio($id_producto, $precio_uni, $motivo)
+    {
+        try {
+            $conn = Conexion::ConexionDB();
+            
+            // VERIFICAR REDUNDANCIA DE PRECIO
+            $stmtCheck = $conn->prepare("SELECT precio_uni FROM tblinventario WHERE id = :id");
+            $stmtCheck->bindParam(':id', $id_producto, PDO::PARAM_INT);
+            $stmtCheck->execute();
+            $currRow = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+            
+            if ($currRow && floatval($currRow['precio_uni']) == floatval($precio_uni)) {
+                return array('status' => 'warning', 'm' => 'El precio ingresado es igual al actual. No se realizaron cambios redundantes.');
+            }
+            
+            $stmtIva = $conn->prepare("SELECT iva FROM tblconfiguracion LIMIT 1");
+            $stmtIva->execute();
+            $ivaRow = $stmtIva->fetch(PDO::FETCH_ASSOC);
+            $porcentaje_iva = $ivaRow ? floatval($ivaRow['iva']) : 0;
+            
+            $calc_iva = $precio_uni * ($porcentaje_iva / 100);
+            $calc_total = $precio_uni + $calc_iva;
+
+            $stmtUpdatePrecio = $conn->prepare("UPDATE tblinventario SET precio_uni = :p_uni, precio_iva = :p_iva, precio_total_iva = :p_total WHERE id = :id");
+            $stmtUpdatePrecio->bindParam(':id', $id_producto, PDO::PARAM_INT);
+            $stmtUpdatePrecio->bindParam(':p_uni', $precio_uni, PDO::PARAM_STR);
+            $stmtUpdatePrecio->bindParam(':p_iva', $calc_iva, PDO::PARAM_STR);
+            $stmtUpdatePrecio->bindParam(':p_total', $calc_total, PDO::PARAM_STR);
+            $stmtUpdatePrecio->execute();
+
+            $stmtHistorial = $conn->prepare("INSERT INTO tblhistorial_precios (id_producto, precio_uni, precio_iva, precio_total_iva, motivo) VALUES (:id, :p_uni, :p_iva, :p_total, :motivo)");
+            $stmtHistorial->bindParam(':id', $id_producto, PDO::PARAM_INT);
+            $stmtHistorial->bindParam(':p_uni', $precio_uni, PDO::PARAM_STR);
+            $stmtHistorial->bindParam(':p_iva', $calc_iva, PDO::PARAM_STR);
+            $stmtHistorial->bindParam(':p_total', $calc_total, PDO::PARAM_STR);
+            $stmtHistorial->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+            $stmtHistorial->execute();
+
+            return array('status' => 'success', 'm' => 'Precio actualizado y registrado en el historial');
+        } catch (PDOException $e) {
+            return array('status' => 'danger', 'm' => 'Error al actualizar el precio: ' . $e->getMessage());
+        }
+    }
+
+    public static function mdlCalcularValorTotal()
+    {
+        try {
+            $stmt = Conexion::ConexionDB()->prepare("SELECT SUM((stock - stock_mal) * precio_total_iva) as valor_total FROM tblinventario WHERE estado = true");
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['valor_total' => 0];
+        }
+    }
+
 }

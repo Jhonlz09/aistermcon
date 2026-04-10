@@ -1,7 +1,8 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
-}?>
+} ?>
+
 <head>
     <title>Inicio</title>
 </head>
@@ -30,7 +31,7 @@ if (session_status() == PHP_SESSION_NONE) {
         <div class="row">
             <div class="col-lg">
                 <div class="row">
-                    <?php if (isset($_SESSION["crear3"])) : ?>
+                    <?php if (isset($_SESSION["crear3"]) && $_SESSION["crear3"] === true): ?>
                         <div class="col-6 col-sm">
                             <div class="small-box bg-1">
                                 <div class="inner">
@@ -40,11 +41,12 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <div class="icon">
                                     <i class="fas fa-shelves"></i>
                                 </div>
-                                <a onclick="masInfo('Inventario')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                                <a onclick="masInfo('Inventario')" style="cursor:pointer;" class="small-box-footer">Más Info
+                                    <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                     <?php endif; ?>
-                    <?php if (isset($_SESSION["crear4"])) : ?>
+                    <?php if (isset($_SESSION["crear4"]) && $_SESSION["crear4"] === true): ?>
                         <div class="col-6 col-sm">
                             <div class="small-box bg-2">
                                 <div class="inner">
@@ -54,11 +56,12 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <div class="icon">
                                     <i class="fas fa-cart-minus"></i>
                                 </div>
-                                <a onclick="masInfo('Movimientos')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                                <a onclick="masInfo('Movimientos')" style="cursor:pointer;" class="small-box-footer">Más
+                                    Info <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                     <?php endif; ?>
-                    <?php if (isset($_SESSION["crear9"])) : ?>
+                    <?php if (isset($_SESSION["crear9"]) && $_SESSION["crear9"] === true): ?>
                         <div class="col-6 col-sm">
                             <div class="small-box bg-3">
                                 <div class="inner">
@@ -68,11 +71,12 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <div class="icon">
                                     <i class="fas fa-cart-plus"></i>
                                 </div>
-                                <a onclick="masInfo('Listado de compras')" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                                <a onclick="masInfo('Listado de compras')" style="cursor:pointer;"
+                                    class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                     <?php endif; ?>
-                    <?php if (isset($_SESSION["crear23"])) : ?>
+                    <?php if (isset($_SESSION["crear23"]) && $_SESSION["crear23"] === true): ?>
                         <div class="col-6 col-sm">
                             <div class="small-box bg-4">
                                 <div class="inner">
@@ -82,7 +86,8 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <div class="icon">
                                     <i class="fas fa-person-digging"></i>
                                 </div>
-                                <a onclick="masInfo('Orden de trabajo'); estado_filter= 'OPERACION'" style="cursor:pointer;" class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
+                                <a onclick="masInfo('Orden de trabajo'); estado_filter= 'OPERACION'" style="cursor:pointer;"
+                                    class="small-box-footer">Más Info <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -95,17 +100,20 @@ if (session_status() == PHP_SESSION_NONE) {
             <div class="card-header" style="display:block;padding-block:.5rem">
                 <div class="row">
                     <div class="col-auto" style="padding-block:.2rem">
-                        <h3 class="card-title text-wrap"><i style="font-size:1.3rem" class="fas fa-file-lines"> </i> Guías de remision registradas</h3>
+                        <h3 class="card-title text-wrap"><i style="font-size:1.3rem" class="fas fa-file-lines"> </i>
+                            Guías de remision registradas</h3>
                     </div>
                     <div class="col">
-                        <select name="cboMeses" id="cboMeses" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                        <select name="cboMeses" id="cboMeses" class="form-control select2 select2-dark"
+                            data-dropdown-css-class="select2-dark">
                         </select>
                     </div>
                 </div>
             </div>
             <div class="card-body">
                 <div class="chart">
-                    <canvas id="barChart" style="min-height: 250px; height: 300px; max-height: 350px; width: 100%;"></canvas>
+                    <canvas id="barChart"
+                        style="min-height: 250px; height: 300px; max-height: 350px; width: 100%;"></canvas>
                 </div>
             </div>
         </div>
@@ -115,10 +123,12 @@ if (session_status() == PHP_SESSION_NONE) {
                     <div class="card-header" style="display:block;padding-block:.5rem">
                         <div class="row">
                             <div class="col-auto" style="padding-block:.2rem">
-                                <h3 class="card-title text-wrap"><i style="font-size:1.25rem" class="fas fa-ranking-star"></i> Los 10 productos mas usados</h3>
+                                <h3 class="card-title text-wrap"><i style="font-size:1.25rem"
+                                        class="fas fa-ranking-star"></i> Los 10 productos mas usados</h3>
                             </div>
                             <div class="col">
-                                <select id="cboMeses2" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                                <select id="cboMeses2" class="form-control select2 select2-dark"
+                                    data-dropdown-css-class="select2-dark">
                                 </select>
                             </div>
                         </div>
@@ -146,16 +156,19 @@ if (session_status() == PHP_SESSION_NONE) {
                     <div class="card-header" style="display:block;padding-block:.5rem">
                         <div class="row">
                             <div class="col-auto" style="padding-block:.2rem">
-                                <h3 class="card-title text-wrap"><i style="font-size: 1.25rem;" class="fas fa-screwdriver-wrench"></i> Equipos en obra</h3>
+                                <h3 class="card-title text-wrap"><i style="font-size: 1.25rem;"
+                                        class="fas fa-screwdriver-wrench"></i> Equipos en obra</h3>
                             </div>
                             <div class="col">
-                                <select id="cboCategoria" class="form-control select2 select2-dark" data-dropdown-css-class="select2-dark">
+                                <select id="cboCategoria" class="form-control select2 select2-dark"
+                                    data-dropdown-css-class="select2-dark">
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
-                        <canvas id="donutChart" style="min-height: 500px; height: 500px; max-height: 500px; max-width: 100%;"></canvas>
+                        <canvas id="donutChart"
+                            style="min-height: 500px; height: 500px; max-height: 500px; max-width: 100%;"></canvas>
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -166,7 +179,8 @@ if (session_status() == PHP_SESSION_NONE) {
             <div class="card-header" style="display:block;padding-block:.8rem">
                 <div class="row">
                     <div class="col-auto" style="padding-block:.2rem">
-                        <h3 class="card-title text-wrap"><i style="font-size:1.25rem" class="fas fa-arrow-down-square-triangle"></i> Productos con poca existencias </h3>
+                        <h3 class="card-title text-wrap"><i style="font-size:1.25rem"
+                                class="fas fa-arrow-down-square-triangle"></i> Productos con poca existencias </h3>
                     </div>
                 </div>
             </div>
@@ -193,7 +207,7 @@ if (session_status() == PHP_SESSION_NONE) {
 <!-- /.Contenido -->
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         const cboAnio = document.getElementById('cboAnio'),
             cboMeses = document.getElementById('cboMeses'),
             cboMeses2 = document.getElementById('cboMeses2'),
@@ -255,10 +269,10 @@ if (session_status() == PHP_SESSION_NONE) {
         let mes = month;
         let mesGrafico = mes;
         let todo_mes = [{
-                id: 0,
-                text: 'TODO'
-            },
-            ...datos_meses
+            id: 0,
+            text: 'TODO'
+        },
+        ...datos_meses
         ]
 
         cargarCombo('Categoria', cat);
@@ -309,7 +323,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 'anio': anio
             },
             dataType: 'json',
-            success: function(respuesta) {
+            success: function (respuesta) {
                 var clientes = [];
                 var salidas = [];
 
@@ -389,13 +403,13 @@ if (session_status() == PHP_SESSION_NONE) {
         TABLA DE 10 PRODUCTOS TOP
         ===================================*/
         const columnas = [{
-                targets: 0,
-                className: "text-center",
-            },
-            {
-                targets: 2,
-                className: "text-center display-1",
-            }
+            targets: 0,
+            className: "text-center",
+        },
+        {
+            targets: 2,
+            className: "text-center display-1",
+        }
         ];
 
         let tablaTop = iniciarTabla(tblTop, 2, columnas);
@@ -404,17 +418,17 @@ if (session_status() == PHP_SESSION_NONE) {
         TABLA DE POCO STOCK TOP
         ===================================*/
         const columnas2 = [{
-                targets: 0,
-                className: "text-center",
-            },
-            {
-                targets: 2,
-                className: "text-center",
-            },
-            {
-                targets: 3,
-                className: "text-center",
-            }
+            targets: 0,
+            className: "text-center",
+        },
+        {
+            targets: 2,
+            className: "text-center",
+        },
+        {
+            targets: 3,
+            className: "text-center",
+        }
         ];
         let tablaPoco = iniciarTabla(tblPoco, 3, columnas2);
         /* ================================
@@ -429,7 +443,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 'anio': anio
             },
             dataType: 'json',
-            success: function(respuesta) {
+            success: function (respuesta) {
                 var clientes = [];
                 var cantidad = [];
                 respuesta.forEach(i => {
@@ -475,7 +489,7 @@ if (session_status() == PHP_SESSION_NONE) {
                             align: 'end',
                             anchor: 'end',
                             borderWidth: 0,
-                            display: function(context) {
+                            display: function (context) {
                                 var dataset = context.dataset;
                                 var count = dataset.data.length;
                                 var value = dataset.data[context.dataIndex];
@@ -485,9 +499,9 @@ if (session_status() == PHP_SESSION_NONE) {
                                 weight: 'bold',
                                 size: '16'
                             },
-                            formatter: function(value, context) {
+                            formatter: function (value, context) {
                                 var dataset = context.dataset;
-                                var total = dataset.data.reduce(function(previousValue, currentValue, currentIndex, array) {
+                                var total = dataset.data.reduce(function (previousValue, currentValue, currentIndex, array) {
                                     return previousValue + currentValue;
                                 });
                                 var currentValue = dataset.data[context.dataIndex];
@@ -527,7 +541,7 @@ if (session_status() == PHP_SESSION_NONE) {
         //     donutCanvas.update();
         // });
 
-        $(cboAnio).on("change", function() {
+        $(cboAnio).on("change", function () {
             let a = this.options[this.selectedIndex].text
             if (a == anio) {
                 return;
@@ -544,7 +558,7 @@ if (session_status() == PHP_SESSION_NONE) {
             tablaTop.ajax.reload();
         });
 
-        $(cboMeses).on("change", function() {
+        $(cboMeses).on("change", function () {
             let m = this.value
             if (m == mes) {
                 return;
@@ -559,13 +573,13 @@ if (session_status() == PHP_SESSION_NONE) {
             actualizarGrafico(src, chartCanvas, barChartData, true);
         });
 
-        $(cboMeses2).on("change", function() {
+        $(cboMeses2).on("change", function () {
             mes = this.value;
             anio = cboAnio.options[cboAnio.selectedIndex].text;
             tablaTop.ajax.reload();
         });
 
-        $(cboCategoria).on("change", function() {
+        $(cboCategoria).on("change", function () {
             let c = this.value;
             if (c == cat) {
                 return;
@@ -586,7 +600,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 cache: false,
                 contentType: false,
                 processData: false,
-                success: function(respuesta) {
+                success: function (respuesta) {
                     var clientes = [];
                     var salidas = [];
                     respuesta.forEach(i => {
@@ -612,7 +626,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     'anio': anio
                 },
                 dataType: 'json',
-                success: function(respuesta) {
+                success: function (respuesta) {
                     $("#pro").html(respuesta[0]['pro']);
                     $("#mov").html(respuesta[0]['mov']);
                     $("#com").html(respuesta[0]['com']);
@@ -627,7 +641,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     url: "controllers/inicio.controlador.php",
                     dataSrc: "",
                     type: "POST",
-                    data: function(d) {
+                    data: function (d) {
                         d.accion = accion;
                         d.anio = anio;
                         d.mes = mes;
@@ -638,7 +652,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 lengthChange: false,
                 autoWidth: false,
                 dom: "t",
-                scrollY: "492px", 
+                scrollY: "492px",
                 scrollX: false,
                 scrollCollapse: true,
                 columnDefs: colums
@@ -647,8 +661,8 @@ if (session_status() == PHP_SESSION_NONE) {
             return dataTable;
         }
 
-        const container = document.getElementById('div-top'); 
-        const container2 = document.getElementById('div-poco'); 
+        const container = document.getElementById('div-top');
+        const container2 = document.getElementById('div-poco');
 
         const observer = new ResizeObserver(() => {
             tablaTop.columns.adjust();

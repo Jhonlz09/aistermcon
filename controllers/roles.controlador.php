@@ -50,8 +50,18 @@ class ControladorRoles
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-     static public function ctrObtenerModulos(){
-        $data = ModeloRoles::mdlObtenerModulos();
+    static public function ctrObtenerModulos(){
+        $data = ModeloRoles::mdlObtenerModulosConAcciones();
+        foreach($data as &$row){
+            if(is_string($row->acciones_permitidas)){
+                $row->acciones_permitidas = json_decode($row->acciones_permitidas, true);
+            }
+        }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    static public function ctrObtenerAcciones(){
+        $data = ModeloRoles::mdlObtenerAcciones();
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }
@@ -87,8 +97,11 @@ if (!isset($_POST["accion"])) {
         $datos = json_decode($_POST["datos"], true);
         $vistaInicioId = isset($_POST["vista_inicio_id"]) ? $_POST["vista_inicio_id"] : null;
         $data->savePermisos($datos, $vistaInicioId);
-    }else if($_POST["accion"] == 7) {
+    } else if($_POST["accion"] == 7) {
         $data = new ControladorRoles();
         $data->ctrObtenerModulos();
+    } else if($_POST["accion"] == 8) {
+        $data = new ControladorRoles();
+        $data->ctrObtenerAcciones();
     }
 }
