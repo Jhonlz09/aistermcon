@@ -1539,6 +1539,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     $(navbar).css('margin-right', '6px');
                 }
                 accion_inv = 1;
+                $('#precios-tab').css('display', 'none');
                 medidasProducto = [];
                 actualizarListaMedidas();
                 cambiarModal(span, ' Nuevo Producto', icon, 'fa-layer-plus', elements, 'bg-gradient-blue', 'bg-gradient-green', modalE, 'modal-new', 'modal-change')
@@ -1562,6 +1563,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             }
             let row = obtenerFila(this, tabla);
             accion_inv = 2;
+            $('#precios-tab').css('display', 'block');
             cargarMedidasTab(row["id"]);
             cambiarModal(span, ' Editar Producto', icon, 'fa-pen-to-square', elements, 'bg-gradient-green', 'bg-gradient-blue', modalE, 'modal-change', 'modal-new')
             select.forEach(function (s) {
