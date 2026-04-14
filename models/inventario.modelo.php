@@ -873,11 +873,31 @@ class ModeloInventario
     public static function mdlCalcularValorTotal()
     {
         try {
-            $stmt = Conexion::ConexionDB()->prepare("SELECT SUM((stock - stock_mal) * precio_total_iva) as valor_total FROM tblinventario WHERE estado = true");
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $conn = Conexion::ConexionDB();
+            
+            // Total Global
+            $stmtGlobal = $conn->prepare("SELECT SUM(valor_total_bodega) as valor_total FROM tblinventario WHERE estado = true");
+            $stmtGlobal->execute();
+            $global = $stmtGlobal->fetch(PDO::FETCH_ASSOC);
+
+            // Total por Categoría
+            $stmtCat = $conn->prepare("
+                SELECT c.nombre AS categoria, SUM(i.valor_total_bodega) as valor_total
+                FROM tblinventario i
+                LEFT JOIN tblcategoria c ON i.id_categoria = c.id
+                WHERE i.estado = true AND i.valor_total_bodega > 0
+                GROUP BY c.nombre
+                ORDER BY valor_total DESC
+            ");
+            $stmtCat->execute();
+            $categorias = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'valor_total' => $global['valor_total'] ?? 0,
+                'categorias' => $categorias
+            ];
         } catch (PDOException $e) {
-            return ['valor_total' => 0];
+            return ['valor_total' => 0, 'categorias' => []];
         }
     }
 

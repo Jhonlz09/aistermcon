@@ -1833,14 +1833,36 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         $(document).on('click', '#btnValorTotal', function () {
             $.post('controllers/inventario.controlador.php', { accion: 44 }, function (res) {
                 let val = 0;
+                let catHtml = '';
                 try {
                     let vData = JSON.parse(res);
                     val = vData.valor_total ? parseFloat(vData.valor_total) : 0;
+                    
+                    if (vData.categorias && vData.categorias.length > 0) {
+                        catHtml = '<div style="max-height: 300px; overflow-y: auto; margin-top: 20px; border: 1px solid #dee2e6; border-radius: 0.25rem;">';
+                        catHtml += '<table class="table table-sm table-striped m-0" style="font-size: 0.95rem;">';
+                        catHtml += '<thead class="bg-light" style="position: sticky; top: 0; z-index: 1;"><tr><th class="text-left" style="padding-left: 1rem;"><i class="fa-solid fa-tags text-secondary"></i> Categoría</th><th class="text-right" style="padding-right: 1rem;"><i class="fa-solid fa-sack-dollar text-secondary"></i> Subtotal</th></tr></thead><tbody>';
+                        vData.categorias.forEach(c => {
+                            let cVal = c.valor_total ? parseFloat(c.valor_total) : 0;
+                            catHtml += `<tr>
+                                <td class="text-left" style="padding-left: 1rem;">${c.categoria || 'Sin Categoría'}</td>
+                                <td class="text-right text-info font-weight-bold" style="padding-right: 1rem;">$${cVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            </tr>`;
+                        });
+                        catHtml += '</tbody></table></div>';
+                    }
                 } catch (e) { }
+
                 Swal.fire({
-                    title: 'Valor Total en Bodega',
-                    html: `<h2 class="text-success">$${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>`,
-                    icon: 'info'
+                    title: '<span style="font-size: 1.5rem"><i class="fa-solid fa-vault"></i> Valor Total en Bodega</span>',
+                    html: `
+                        <h2 class="text-success mb-2 mt-2" style="font-weight: bold;">$${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
+                        ${catHtml}
+                    `,
+                    icon: 'info',
+                    customClass: {
+                        popup: 'swal2-lg'
+                    }
                 });
             });
         });
