@@ -5,6 +5,8 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+$ver_precios = isset($_SESSION["precios3"]) ? $_SESSION["precios3"] == 1 : false;
+
 // Verificar si el usuario está autenticado
 if (!(isset($_SESSION['s_usuario']))) {
     header("Location: /aistermcon");
@@ -125,7 +127,6 @@ class PDF extends FPDF
             // Verificar si el texto coincide exactamente con el alto de una sola línea de texto
             $isSingleLine = abs($textHeight - $lineHeight) < 0.001;
             $this->SetFont('Arial', $b, $fontSizes[$i]); // Establecer el tamaño de la fuente
-            // Alinear el texto en la parte superior si es una sola línea o si el número de líneas de la celda es igual al número de líneas del texto
             if ($isSingleLine || $nb == $this->NbLines($w, $data[$i])) {
                 $this->SetXY($x, $y); // Establecer la posición Y en la parte superior
             } else {
@@ -265,10 +266,22 @@ if ($datos_guias == null) {
     $pdf->SetX(12);
     $pdf->Cell(0, 6, iconv('UTF-8', 'windows-1252', 'Resumen total de uso de materiales y herramientas'), 0, 1, 'L');
     $pdf->Ln(10);
-    $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.', 'Costo');
-    $pdf->SetWidths(array(22, 60, 16, 20, 20, 20, 30));
-    $pdf->SetAligns(array('L', 'L', 'C', 'C', 'C', 'C', 'C'));
-    $pdf->Row($header_resumen, array(12, 12, 12, 12, 12, 12, 12), 'B', 5, [true, true, true, true, true, true, true]);
+    $header_resumen = array('Codigo', 'Descripcion', 'Unidad', 'Tot. Salida', 'Tot. Entrada', 'Tot. Util.');
+    $fonts_resumen = array(12, 12, 12, 12, 12, 12);
+    $widthsResumen = array(22, 90, 16, 20, 20, 20);
+    $alignsResumen = array('L', 'L', 'C', 'C', 'C', 'C');
+    
+    if ($ver_precios) {
+        $header_resumen[] = 'Costo';
+        $fonts_resumen[] = 12;
+        $widthsResumen = array(22, 60, 16, 20, 20, 20, 30);
+        $alignsResumen = array('L', 'L', 'C', 'C', 'C', 'C', 'C');
+    }
+
+    $pdf->SetWidths($widthsResumen);
+    $pdf->SetAligns($alignsResumen);
+    $pdf->Row($header_resumen, $fonts_resumen, 'B', 5);
+    
     $data_resumen = ModeloInforme::mdlInformeOrdenResumen($id_orden, null, true);
     $total_capital_general = 0;
     foreach ($data_resumen as $fill) {
@@ -281,20 +294,35 @@ if ($datos_guias == null) {
         $id_producto = $fill['id_producto'];
         $capital = $fill["capital"];
         $total_capital_general += $capital;
-        $pdf->Row(array(
+        
+        $rowItemRes = array(
             iconv('UTF-8', 'windows-1252', $fill["codigo"]),
             iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
             iconv('UTF-8', 'windows-1252', $fill["unidad"]),
             iconv('UTF-8', 'windows-1252', $salida),
             iconv('UTF-8', 'windows-1252', $entrada),
-            iconv('UTF-8', 'windows-1252', $util),
-            iconv('UTF-8', 'windows-1252', '$ ' . number_format($capital, 2))
-        ), array(10, 10, 10, 10, 10, 10, 10), '', 6, [true, true, true, true, true, true, true]);
+            iconv('UTF-8', 'windows-1252', $util)
+        );
+        $rowFontsRes = array(10, 10, 10, 10, 10, 10);
+        $rowAlignsRes = [true, true, true, true, true, true];
+        
+        if ($ver_precios) {
+            $precio_unitario = isset($fill['precio_unitario']) ? $fill['precio_unitario'] : 0;
+            $texto_costo = '$ ' . number_format($capital, 2) . "\n(\$ " . number_format($precio_unitario, 2) . " c/u)";
+            $rowItemRes[] = iconv('UTF-8', 'windows-1252', $texto_costo);
+            $rowFontsRes[] = 10;
+            $rowAlignsRes[] = true;
+        }
+
+        $pdf->Row($rowItemRes, $rowFontsRes, '', 6, $rowAlignsRes);
     }
-    $pdf->SetFont('Arial', 'B', 11);
-    $pdf->SetWidths(array(158, 30));
-    $pdf->SetAligns(array('R', 'C'));
-    $pdf->Row(array('TOTAL GENERAL:', '$ ' . number_format($total_capital_general, 2)), array(11, 11), 'B', 7);
+    
+    if ($ver_precios) {
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->SetWidths(array(158, 30));
+        $pdf->SetAligns(array('R', 'C'));
+        $pdf->Row(array('TOTAL GENERAL:', '$ ' . number_format($total_capital_general, 2)), array(11, 11), 'B', 7);
+    }
 }
 // Configurar cabeceras para indicar el tipo de contenido y el nombre de descarga
 $pdf->Output('I', $filename);

@@ -387,7 +387,8 @@ class ModeloFabricacion
         try {
             $e = Conexion::ConexionDB()->prepare("SELECT s.id, i.descripcion, u.nombre AS unidad,
             s.cantidad_salida AS salidas, s.retorno, i.codigo, 
-            COALESCE(s.diferencia::text, '-') as utilizado, s.fabricado, b.tras
+            COALESCE(s.diferencia::text, '-') as utilizado, s.fabricado, b.tras,
+            i.precio_total_iva AS precio_unitario, (s.cantidad_salida * i.precio_total_iva) AS capital
             FROM tblsalidas s
                 JOIN tblinventario i ON s.id_producto = i.id
                 JOIN tblboleta b ON s.id_boleta = b.id 

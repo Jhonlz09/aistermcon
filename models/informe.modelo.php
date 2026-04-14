@@ -121,6 +121,7 @@ class ModeloInforme
             s.cantidad_salida, u.nombre AS unidad, i.descripcion, i.fabricado,
             COALESCE(s.retorno::text, '-') AS retorno,
             COALESCE(s.diferencia::text, '-') as utilizado,
+            i.precio_total_iva AS precio_unitario,
             (s.cantidad_salida * i.precio_total_iva) AS capital
         FROM 
             tblsalidas s
@@ -147,6 +148,7 @@ class ModeloInforme
             s.cantidad_salida, u.nombre AS unidad, i.descripcion, i.fabricado,
             COALESCE(s.retorno::text, '-') AS retorno,
             COALESCE(s.diferencia::text, '-') as utilizado,
+            i.precio_total_iva AS precio_unitario,
             (s.cantidad_salida * i.precio_total_iva) AS capital
         FROM 
             tblsalidas s
@@ -171,6 +173,7 @@ class ModeloInforme
         try {
             $u = Conexion::ConexionDB()->prepare("SELECT s.id, s.cantidad_salida,  u.nombre as unidad,
             i.descripcion, i.codigo, COALESCE(s.retorno::text, '-') AS retorno,
+            i.precio_total_iva AS precio_unitario,
             (s.cantidad_salida * i.precio_total_iva) AS capital
             FROM tblsalidas s
             JOIN tblinventario i ON i.id = s.id_producto
@@ -194,6 +197,7 @@ class ModeloInforme
                 SUM(s.cantidad_salida) AS cantidad_salida,
                 SUM(s.retorno) AS retorno,
                 SUM(s.cantidad_salida) - SUM(s.retorno) AS utilizado,
+                i.precio_total_iva AS precio_unitario,
                 SUM(s.cantidad_salida * i.precio_total_iva) AS capital
                 FROM 
                     tblsalidas s
@@ -213,7 +217,7 @@ class ModeloInforme
                 $sql .= "  AND i.fabricado = false";
             }
 
-            $sql .= " GROUP BY s.id_producto, i.codigo, i.descripcion, u.nombre, i.id, i.fabricado
+            $sql .= " GROUP BY s.id_producto, i.codigo, i.descripcion, u.nombre, i.id, i.fabricado, i.precio_total_iva
                     ORDER BY i.fabricado DESC, i.id_categoria ASC, i.descripcion ASC";
 
             $u = Conexion::ConexionDB()->prepare($sql);
@@ -234,12 +238,12 @@ class ModeloInforme
         try {
             $u = Conexion::ConexionDB()->prepare("SELECT SUM(s.cantidad_salida) AS cantidad_salida, SUM(s.retorno) AS retorno, u.nombre as unidad,
             i.descripcion, SUM(s.cantidad_salida) - SUM(s.retorno) AS utilizado,
-            i.codigo, SUM(s.cantidad_salida * i.precio_total_iva) AS capital
+            i.codigo, i.precio_total_iva AS precio_unitario, SUM(s.cantidad_salida * i.precio_total_iva) AS capital
             FROM tblsalidas s
             JOIN tblinventario i ON i.id = s.id_producto
             JOIN tblunidad u ON u.id = i.id_unidad
             WHERE s.id_producto_fab = :id_fab
-		        GROUP BY s.id_producto,i.codigo, i.descripcion, u.nombre,i.id,i.fabricado
+		        GROUP BY s.id_producto,i.codigo, i.descripcion, u.nombre,i.id,i.fabricado,i.precio_total_iva
 		            ORDER BY s.id_producto;");
             $u->bindParam(":id_fab", $id_fab, PDO::PARAM_INT);
             $u->execute();

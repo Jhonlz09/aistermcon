@@ -34,13 +34,15 @@ class PDF extends FPDF
         return false;
     }
 
-    function Row($data, $fontSizes, $b, $lineHeight = 10, $verticalAlignColumns = [])
+    function Row($data, $fontSizes, $b, $lineHeight = 10, $verticalAlignColumns = [], $minRowHeight = 0)
     {
         $nb = 0;
         for ($i = 0; $i < count($data); $i++) {
             $nb = max($nb, $this->NbLines($this->widths[$i], $data[$i]));
         }
-        $h = $lineHeight * $nb;
+        
+        $textBlockHeight = $lineHeight * $nb;
+        $h = max($minRowHeight, $textBlockHeight);
 
         $this->SetLineHeight($this->FontSize);
 
@@ -59,24 +61,24 @@ class PDF extends FPDF
             $this->Rect($x, $y, $w, $h);
 
             $shouldVerticalAlign = isset($verticalAlignColumns[$i]) && $verticalAlignColumns[$i];
-            $textHeight = $this->getStringHeight($w, $data[$i], $fontSizes[$i]);
+            
+            $thisCellNbLines = $this->NbLines($w, $data[$i]);
+            $thisCellTextHeight = $thisCellNbLines * $lineHeight;
 
             $yPos = $y;
-            if ($shouldVerticalAlign && $nb >= $this->NbLines($w, $data[$i])) {
-                $yPos += (($h - $textHeight) / 2);
-            }
 
-            $isSingleLine = abs($textHeight - $lineHeight) < 0.001;
+            if ($shouldVerticalAlign) {
+                // Centrado vertical dentro del bloque contenedor $h disponible
+                $yPos += (($h - $thisCellTextHeight) / 2);
+            }
 
             $this->SetFont('Arial', $b, $fontSizes[$i]);
 
-            if ($isSingleLine || $nb == $this->NbLines($w, $data[$i])) {
-                $this->SetXY($x, $y);
-            } else {
-                $this->SetXY($x, $yPos);
-            }
-
+            $this->SetXY($x, $yPos);
+            
+            // FPDF MultiCell asume $lineHeight como espaciado de renglones interno
             $this->MultiCell($w, $lineHeight, $data[$i], 0, $a, false);
+            
             $this->SetXY($x + $w, $y);
         }
 
@@ -157,7 +159,59 @@ class PDF extends FPDF
     }
 }
 
-function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $items, $titulo_tipo) {
+function renderCeldaMultilineaDinamica($pdf, $w, $h, $txt) {
+    // Permite que un texto con dobles líneas no rompa el diseño ajustando el contenedor
+    $pdf->MultiCell($w, $h, iconv('UTF-8', 'windows-1252', $txt), 1, 'L');
+}
+
+function calcularDimensionesFooterDinamico($pdf, $observaciones) {
+    // Se establece la fuente que usa observaciones para el cálculo preciso
+    $pdf->SetFont('Arial', '', 8);
+    $numLineas = $pdf->NbLines(140, iconv('UTF-8', 'windows-1252', $observaciones));
+    if ($numLineas < 1) $numLineas = 1;
+    
+    // 5 de altura por línea (para fuente size 8)
+    $altoTexto = $numLineas * 5; 
+    
+    // Si es un texto excepcionalmente largo, separamos bastante más las firmas para mejor estética
+    $separacionFirma = ($numLineas > 2) ? 10 : 5;
+    
+    // Espacio: 3 arriba + texto + separación dinámica
+    $offsetFirmas = 3 + $altoTexto + $separacionFirma; 
+    
+    // Proporción original adaptada para notas vaciás o cortas
+    if ($offsetFirmas < 18) $offsetFirmas = 18; 
+    
+    return [ 'altura_footer' => $offsetFirmas + 10, 'offset_firmas' => $offsetFirmas ];
+}
+
+function renderFooterDinamico($pdf, $observaciones, $dimensiones) {
+    $xCurrent = $pdf->GetX();
+    $yCurrent = $pdf->GetY();
+    
+    // Contenedor principal con alto dinámico
+    $pdf->Rect($xCurrent, $yCurrent, 180, $dimensiones['altura_footer']);
+    
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->SetXY($xCurrent + 2, $yCurrent + 3);
+    $pdf->Cell(35, 5, 'OBSERVACIONES:', 0, 0, 'L');
+    $pdf->SetFont('Arial', '', 8);
+    
+    // Texto multi-línea
+    $pdf->SetXY($xCurrent + 35, $yCurrent + 3);
+    $pdf->MultiCell(140, 5, iconv('UTF-8', 'windows-1252', $observaciones), 0, 'L');
+    
+    // Líneas de firma usando el Y dinámico
+    $pdf->SetY($yCurrent + $dimensiones['offset_firmas']);
+    $pdf->Cell(90, 5, '_______________________________', 0, 0, 'C');
+    $pdf->Cell(90, 5, '_______________________________', 0, 1, 'C');
+    
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->Cell(90, 5, 'RESPONSABLE PEDIDO', 0, 0, 'C');
+    $pdf->Cell(90, 5, 'RESPONSABLE BODEGA', 0, 1, 'C');
+}
+
+function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $items, $titulo_tipo, $tipo_trabajo) {
     if (empty($items)) return;
 
     $pdf->AddPage();
@@ -185,38 +239,40 @@ function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $ob
     $yFields = $pdf->GetY() + 2;
     $pdf->SetY($yFields);
     
-    $pdf->SetFont('Arial', '', 7);
+    $pdf->SetFont('Arial', '', 8);
     
     // Table width = 180 (Margin 15 + 180 + Right Margin 15 = 210)
     
     // ROW 1: ORDEN, FECHA DE SOLICITUD
-    $pdf->Cell(120, 5, iconv('UTF-8', 'windows-1252', ' ORDEN DE TRABAJO No.: ' . $orden), 1, 0, 'L');
-    $pdf->Cell(30, 5, iconv('UTF-8', 'windows-1252', 'FECHA DE SOLICITUD:'), 1, 0, 'C');
-    $pdf->Cell(10, 5, $dia, 1, 0, 'C');
-    $pdf->Cell(10, 5, $mes, 1, 0, 'C');
-    $pdf->Cell(10, 5, $ano, 1, 1, 'C');
+    $pdf->Cell(120, 6, iconv('UTF-8', 'windows-1252', ' ORDEN DE TRABAJO No.: ' . $orden), 1, 0, 'L');
+    $pdf->Cell(30, 6, iconv('UTF-8', 'windows-1252', 'FECHA DE SOLICITUD:'), 1, 0, 'C');
+    $pdf->Cell(10, 6, $dia, 1, 0, 'C');
+    $pdf->Cell(10, 6, $mes, 1, 0, 'C');
+    $pdf->Cell(10, 6, $ano, 1, 1, 'C');
 
     // ROW 2: CLIENTE, FECHA RETORNO
-    $pdf->Cell(120, 5, iconv('UTF-8', 'windows-1252', ' CLIENTE: ' . $cliente), 1, 0, 'L');
-    $pdf->Cell(30, 5, iconv('UTF-8', 'windows-1252', 'FECHA RETORNO:'), 1, 0, 'C');
-    $pdf->Cell(10, 5, '', 1, 0, 'C'); // Día vacío
-    $pdf->Cell(10, 5, '', 1, 0, 'C'); // Mes vacío
-    $pdf->Cell(10, 5, '', 1, 1, 'C'); // Año vacío
+    $pdf->Cell(120, 6, iconv('UTF-8', 'windows-1252', ' CLIENTE: ' . $cliente), 1, 0, 'L');
+    $pdf->Cell(30, 6, iconv('UTF-8', 'windows-1252', 'FECHA RETORNO:'), 1, 0, 'C');
+    $pdf->Cell(10, 6, '', 1, 0, 'C'); // Día vacío
+    $pdf->Cell(10, 6, '', 1, 0, 'C'); // Mes vacío
+    $pdf->Cell(10, 6, '', 1, 1, 'C'); // Año vacío
 
     // ROW 3: TIPO DE TRABAJO
-    $pdf->Cell(180, 5, iconv('UTF-8', 'windows-1252', ' TIPO DE TRABAJO: '), 1, 1, 'L');
+    renderCeldaMultilineaDinamica($pdf, 180, 6, ' TIPO DE TRABAJO: ' . $tipo_trabajo);
     
-    $pdf->Ln(2);
-
+    $pdf->Ln(3);
     // =============== TABLE SECTION ===============
-    $pdf->SetWidths(array(9, 21, 14, 14, 82, 20, 20)); // Total 180
+    $pdf->SetWidths(array(8, 22, 14, 14, 82, 20, 20)); // Total 180
     $pdf->SetAligns(array('C', 'C', 'C', 'C', 'L', 'C', 'C'));
+    // Calculamos dimensiones del footer dinámico
+    $dimensionesFooter = calcularDimensionesFooterDinamico($pdf, $observaciones);
     
-    // Configura el salto automático a una distancia segura para el footer
-    $altura_bloque_footer = 32;
-    $pdf->SetAutoPageBreak(true, $altura_bloque_footer + 15); 
+    // IMPORTANTE: Dejamos el AutoPageBreak en un margen estandar de 15.
+    // Esto permite que las filas de la tabla aprovechen toda la hoja hasta abajo.
+    // Solo saltará automáticamente si trata de imprimir una celda pasando ese margen.
+    $pdf->SetAutoPageBreak(true, 15); 
     
-    $pdf->SetFont('Arial', 'B', 6.5);
+    $pdf->SetFont('Arial', 'B', 8);
     $header = array(
         'No.', 
         iconv('UTF-8', 'windows-1252', 'CÓDIGO'), 
@@ -227,13 +283,20 @@ function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $ob
         sprintf("INGRESO A\nBODEGA")
     );
     
-    // Height 3 for header block sizes
-    $pdf->Row($header, array(6.5, 6.5, 6.5, 6.5, 6.5, 6, 6), 'B', 3.5, [true, true, true, true, true, true, true]);
+    // Height ajustado para las fuentes proporcionales (4.5 por linea, 9 en total)
+    $pdf->Row($header, array(8, 8, 8, 8, 8, 8, 8), 'B', 4.5, [true, true, true, true, true, true, true]);
 
     $count = 1;
     $total_items = 0;
     
-    $pdf->SetFont('Arial', '', 7);
+    $pdf->SetFont('Arial', '', 8);
+    
+    // Altura óptima matemáticamente calculada para que 27 filas encajen hermosamente
+    // en una sola hoja A4 junto con las cabeceras y el recuadro de firmas al final.
+    $altura_minima_fila = 6.8;
+    // Poca separación entre renglones para los registros de material con descripciones largas
+    $altura_texto = 3.5;
+
     foreach ($items as $fill) {
         $pdf->Row(array(
             $count,
@@ -243,7 +306,7 @@ function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $ob
             iconv('UTF-8', 'windows-1252', $fill["descripcion"]),
             iconv('UTF-8', 'windows-1252', rtrim(rtrim((string)$fill["cant_apro"], '0'), '.')), // Salida 
             iconv('UTF-8', 'windows-1252', isset($fill["retorno_formateado"]) ? $fill["retorno_formateado"] : ''), // Ingreso a Bodega
-        ), array(7, 7, 7, 7, 7, 7, 7), '', 5.5, [true, true, true, true, true, true, true]);
+        ), array(8, 8, 8, 8, 8, 8, 8), '', $altura_texto, [true, true, true, true, true, true, true], $altura_minima_fila);
         $count++;
         $total_items++;
     }
@@ -251,8 +314,6 @@ function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $ob
     // =========================================================================
     // --- LÓGICA DE FILAS VACÍAS ---
     // =========================================================================
-
-    $altura_fila_vacia = 5.5;     
 
     // Llenamos hasta exactamente 27 items (como el talonario físico)
     while ($count <= 27) {
@@ -264,36 +325,23 @@ function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $ob
             '', 
             '', 
             ''
-        ), array(7, 7, 7, 7, 7, 7, 7), '', $altura_fila_vacia, [true, true, true, true, true, true, true]);
+        ), array(8, 8, 8, 8, 8, 8, 8), '', $altura_texto, [true, true, true, true, true, true, true], $altura_minima_fila);
     
         $count++; 
         $total_items++; 
     }
     
     // =============== FOOTER SECTION ===============
+    // Verificamos matemáticamente si queda espacio suficiente en esta página
+    // 297 es la altura estándar de un A4. Descontamos la posición actual y el margen inferior.
+    $espacioLibre = 297 - $pdf->GetY() - 15;
     
-    $xCurrent = $pdf->GetX();
-    $yCurrent = $pdf->GetY();
+    // Si la altura requerida para el footer es mayor al espacio que queda libre, saltamos la página manual.
+    if ($espacioLibre < $dimensionesFooter['altura_footer']) {
+        $pdf->AddPage();
+    }
     
-    // Main boundary box over Observaciones and the rest
-    $pdf->Rect($xCurrent, $yCurrent, 180, 22);
-    
-    $pdf->SetFont('Arial', 'B', 7);
-    $pdf->SetXY($xCurrent + 2, $yCurrent + 2);
-    $pdf->Cell(35, 4, 'OBSERVACIONES:', 0, 0, 'L');
-    $pdf->SetFont('Arial', '', 7);
-    // Move to right for manual text
-    $pdf->SetXY($xCurrent + 35, $yCurrent + 2);
-    $pdf->MultiCell(140, 4, iconv('UTF-8', 'windows-1252', $observaciones), 0, 'L');
-    
-    // Signatures lines
-    $pdf->SetY($yCurrent + 14);
-    $pdf->Cell(90, 4, '_______________________________', 0, 0, 'C');
-    $pdf->Cell(90, 4, '_______________________________', 0, 1, 'C');
-    
-    $pdf->SetFont('Arial', 'B', 7);
-    $pdf->Cell(90, 4, 'RESPONSABLE PEDIDO', 0, 0, 'C');
-    $pdf->Cell(90, 4, 'RESPONSABLE BODEGA', 0, 1, 'C');
+    renderFooterDinamico($pdf, $observaciones, $dimensionesFooter);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
@@ -320,6 +368,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
 
     $orden = isset($data_solicitud['orden']) ? $data_solicitud['orden'] : '';
     $cliente = isset($data_solicitud['cliente']) ? $data_solicitud['cliente'] : '';
+    $tipo_trabajo = isset($data_solicitud['tipo_trabajo']) ? $data_solicitud['tipo_trabajo'] : '';
 
     $observaciones = $data_solicitud['notas'];
 
@@ -350,16 +399,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
 
     // Renderizar hojas. Si hay materiales, saca hoja de materiales. Si hay herramientas, hoja de herramientas.
     if (!empty($materiales)) {
-        generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $materiales, 'MATERIAL');
+        generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $materiales, 'MATERIAL', $tipo_trabajo);
     }
 
     if (!empty($herramientas)) {
-        generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $herramientas, 'HERRAMIENTAS');
+        generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $herramientas, 'HERRAMIENTAS', $tipo_trabajo);
     }
 
     // Si ambos arrays estubieran vacios, de todas formas renderizamos una pagina basica
     if (empty($materiales) && empty($herramientas)) {
-         generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, [], 'MATERIAL');
+         generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, [], 'MATERIAL', $tipo_trabajo);
     }
 
     $pdf->Output('I', $archivo.'.pdf');

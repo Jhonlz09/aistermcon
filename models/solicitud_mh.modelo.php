@@ -61,6 +61,7 @@ class ModeloSolicitudDespacho
                 sd.id_orden,
                 p.num_orden || ' ' || c.nombre as orden_label,
                 p.num_orden as orden,
+                p.descripcion as tipo_trabajo,
                 c.nombre as cliente,
                 sd.estado,
                 TO_CHAR(sd.fecha, 'YYYY-MM-DD') AS fecha,
