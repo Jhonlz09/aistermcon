@@ -211,10 +211,25 @@ function renderFooterDinamico($pdf, $observaciones, $dimensiones) {
     $pdf->Cell(90, 5, 'RESPONSABLE BODEGA', 0, 1, 'C');
 }
 
-function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $items, $titulo_tipo, $tipo_trabajo) {
+function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $items, $titulo_tipo, $tipo_trabajo, $bAnulado = false, $motivo_anulado = '', $dia_ret = '', $mes_ret = '', $ano_ret = '') {
     if (empty($items)) return;
 
     $pdf->AddPage();
+
+    // =============== WATERMARK ===============
+    if ($bAnulado) {
+        $pdf->SetFont('ArialBlack', '', 65);
+        $pdf->SetTextColor(235, 235, 235); // Gris muy claro casi transparente
+        $pdf->SetXY(0, 130);
+        $pdf->Cell(210, 30, 'A N U L A D O', 0, 1, 'C');
+        
+        if (!empty($motivo_anulado)) {
+            $pdf->SetFont('ArialBlack', '', 14);
+            $pdf->SetXY(15, 160);
+            $pdf->MultiCell(180, 8, iconv('UTF-8', 'windows-1252', 'MOTIVO: ' . $motivo_anulado), 0, 'C');
+        }
+        $pdf->SetTextColor(0, 0, 0); // Restore black color
+    }
 
     // =============== HEADER ===============
     // LOGO CENTRADO
@@ -253,9 +268,9 @@ function generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $ob
     // ROW 2: CLIENTE, FECHA RETORNO
     $pdf->Cell(120, 6, iconv('UTF-8', 'windows-1252', ' CLIENTE: ' . $cliente), 1, 0, 'L');
     $pdf->Cell(30, 6, iconv('UTF-8', 'windows-1252', 'FECHA RETORNO:'), 1, 0, 'C');
-    $pdf->Cell(10, 6, '', 1, 0, 'C'); // Día vacío
-    $pdf->Cell(10, 6, '', 1, 0, 'C'); // Mes vacío
-    $pdf->Cell(10, 6, '', 1, 1, 'C'); // Año vacío
+    $pdf->Cell(10, 6, $dia_ret, 1, 0, 'C'); // Día
+    $pdf->Cell(10, 6, $mes_ret, 1, 0, 'C'); // Mes
+    $pdf->Cell(10, 6, $ano_ret, 1, 1, 'C'); // Año
 
     // ROW 3: TIPO DE TRABAJO
     renderCeldaMultilineaDinamica($pdf, 180, 6, ' TIPO DE TRABAJO: ' . $tipo_trabajo);
@@ -372,6 +387,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
 
     $observaciones = $data_solicitud['notas'];
 
+    $bAnulado = isset($data_solicitud['anulado']) && $data_solicitud['anulado'] ? true : false;
+    $motivo_anulado = isset($data_solicitud['motivo_anulado']) ? $data_solicitud['motivo_anulado'] : '';
+
     $archivo = 'SOLICITUD-DESPACHO-' . $nro;
     $pdf->SetTitle($archivo);
 
@@ -397,18 +415,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
         }
     }
 
+    // Obtener fecha retorno materiales (is_material = true)
+    $fecha_retorno_mat = ModeloSolicitudDespacho::mdlConsultarFechaRetornoBoleta($id, true);
+    if($fecha_retorno_mat) {
+        $p = explode('-', $fecha_retorno_mat);
+        $dia_ret_m = isset($p[2]) ? $p[2] : '';
+        $mes_ret_m = isset($p[1]) ? $p[1] : '';
+        $ano_ret_m = isset($p[0]) ? $p[0] : '';
+    } else {
+        $dia_ret_m = ''; $mes_ret_m = ''; $ano_ret_m = '';
+    }
+
+    // Obtener fecha retorno herramientas (is_material = false)
+    $fecha_retorno_herr = ModeloSolicitudDespacho::mdlConsultarFechaRetornoBoleta($id, false);
+    if($fecha_retorno_herr) {
+        $p = explode('-', $fecha_retorno_herr);
+        $dia_ret_h = isset($p[2]) ? $p[2] : '';
+        $mes_ret_h = isset($p[1]) ? $p[1] : '';
+        $ano_ret_h = isset($p[0]) ? $p[0] : '';
+    } else {
+        $dia_ret_h = ''; $mes_ret_h = ''; $ano_ret_h = '';
+    }
+
     // Renderizar hojas. Si hay materiales, saca hoja de materiales. Si hay herramientas, hoja de herramientas.
     if (!empty($materiales)) {
-        generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $materiales, 'MATERIAL', $tipo_trabajo);
+        generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $materiales, 'MATERIAL', $tipo_trabajo, $bAnulado, $motivo_anulado, $dia_ret_m, $mes_ret_m, $ano_ret_m);
     }
 
     if (!empty($herramientas)) {
-        generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $herramientas, 'HERRAMIENTAS', $tipo_trabajo);
+        generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, $herramientas, 'HERRAMIENTAS', $tipo_trabajo, $bAnulado, $motivo_anulado, $dia_ret_h, $mes_ret_h, $ano_ret_h);
     }
 
     // Si ambos arrays estubieran vacios, de todas formas renderizamos una pagina basica
     if (empty($materiales) && empty($herramientas)) {
-         generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, [], 'MATERIAL', $tipo_trabajo);
+         generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, [], 'MATERIAL', $tipo_trabajo, $bAnulado, $motivo_anulado, $dia_ret_m, $mes_ret_m, $ano_ret_m);
     }
 
     $pdf->Output('I', $archivo.'.pdf');

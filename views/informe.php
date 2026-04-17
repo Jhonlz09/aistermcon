@@ -107,7 +107,7 @@
                     <div class="container-fluid">
                         <label for="none" class=" combo">
                             <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
-                            <i class="fas fa-file-pdf"></i> Seleccione un tipo de informe</label>
+                            <i class="fas fa-file-lines"></i> Seleccione un tipo de informe</label>
                         <div class="row">
                             <div class="col d-flex" style="padding-bottom:.75rem;">
                                 <div style="background-color:var(--primary-color-light)" class="tabs">
@@ -120,6 +120,33 @@
                                     <span class="glider"></span>
                                 </div>
                             </div>
+                        </div>
+                        <style>
+                            #radio-pdf:checked ~ .glider-format {
+                                transform: translateX(0);
+                                background-color: #d32f2f; /* Rojo oscuro para PDF */
+                            }
+                            #radio-excel:checked ~ .glider-format {
+                                transform: translateX(100%);
+                                background-color: #2e7d32; /* Verde oscuro para EXCEL */
+                            }
+                        </style>
+                        <label for="none" class=" combo mt-2">
+                            <!-- <div class="d-flex align-items-center" style="font-size:1.15rem;gap:4px"> -->
+                            <i class="fas fa-file-export"></i> Seleccione un formato
+                        </label>
+                        <div class="row">
+                            <div class="col d-flex" style="padding-bottom:.75rem;">
+                                <div style="background-color:var(--primary-color-light)" class="tabs">
+                                    <input type="radio" class="rd-i" id="radio-pdf" name="format-tabs" value="pdf" checked />
+                                    <label class="tab" for="radio-pdf"> <i class="fas fa-file-pdf"></i> PDF</label>
+                                    <input type="radio" class="rd-i" id="radio-excel" name="format-tabs" value="excel" />
+                                    <label class="tab" for="radio-excel"> <i class="fas fa-file-excel"></i> EXCEL</label>
+                                    <span class="glider glider-format" style="width: 50%;"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-12">
                                 <div class="mb-3" id="groupOrden">
                                     <label for="none" class="mb-0 combo">
@@ -331,12 +358,21 @@
 
         const form = document.getElementById('formInforme');
         const btnGuardar = document.getElementById('btnGuardar');
-        const tabsIn = document.querySelectorAll('.tabs .rd-i');
+        const tabsIn = document.querySelectorAll('.tabs .rd-i[name="tabs"]');
         let tabSelectedIn = '1';
 
         tabsIn.forEach(tab => {
             tab.addEventListener('change', function() {
                 tabSelectedIn = this.value;
+            });
+        });
+
+        const tabsFormat = document.querySelectorAll('.tabs .rd-i[name="format-tabs"]');
+        let formatSelectedIn = 'pdf';
+
+        tabsFormat.forEach(tab => {
+            tab.addEventListener('change', function() {
+                formatSelectedIn = this.value;
             });
         });
 
@@ -348,12 +384,19 @@
             }
             // let idOrden = cboOrden_i.value;
             if (tabSelectedIn === '1') {
-                form.action = 'PDF/pdf_informe_orden.php';
+                form.action = formatSelectedIn === 'pdf' ? 'PDF/pdf_informe_orden.php' : 'EXCEL/xls_informe_orden.php';
             } else if (tabSelectedIn === '2') {
-                form.action = 'PDF/pdf_informe_orden_fab.php';
+                form.action = formatSelectedIn === 'pdf' ? 'PDF/pdf_informe_orden_fab.php' : 'EXCEL/xls_informe_orden_fab.php';
             } else if (tabSelectedIn === '3') {
-                form.action = 'PDF/pdf_informe_orden_resumen.php';
+                form.action = formatSelectedIn === 'pdf' ? 'PDF/pdf_informe_orden_resumen.php' : 'EXCEL/xls_informe_orden_resumen.php';
             }
+            
+            if (formatSelectedIn === 'pdf') {
+                form.target = '_blank';
+            } else {
+                form.removeAttribute('target');
+            }
+
             form.submit();
         });
 

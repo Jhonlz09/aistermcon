@@ -38,6 +38,38 @@ function confirmarEliminar(
   });
 }
 
+function confirmarAnularConMotivo(
+  art,
+  name,
+  callback,
+  opcion = "anular",
+  confirmText = "Sí, Anular",
+  cancelText = "Cancelar"
+) {
+  Swal.fire({
+    title: "¿Está seguro de " + opcion + " " + art + " " + name + "?",
+    text: "Escriba el motivo de la anulación (Obligatorio).",
+    icon: "warning",
+    input: 'textarea',
+    inputPlaceholder: 'Escriba un motivo aquí...',
+    inputAttributes: {
+      'aria-label': 'Escriba el motivo aquí'
+    },
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
+    inputValidator: (value) => {
+      if (!value || value.trim().length === 0) {
+        return '¡Debe ingresar un motivo!';
+      }
+    }
+  }).then((result) => {
+    if (result.value) {
+      callback(true, result.value.trim());
+    }
+  });
+}
+
 function limpiar(btn = false) {
     let clearBtnAutoSol = document.getElementById("clearBtnAutoSol")
     let autoSolicitudOut = document.getElementById("autoSolicitudOut")

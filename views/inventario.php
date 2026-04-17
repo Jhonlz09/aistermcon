@@ -667,6 +667,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 </div>
 <!-- Fin Modal Stock Inicial - Versiones -->
 <script>
+    // Liberar foco para permitir interacciones en los inputs de SweetAlert superpuestos a modales Bootstrap
+    $.fn.modal.Constructor.prototype._enforceFocus = function() {};
+
     cargarCombo('Categoria');
     cargarCombo('Unidad');
     cargarCombo('Ubicacion');
@@ -1355,7 +1358,10 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                 <b>Ancho:</b> ${m.ancho}m | 
                                 <b>Área:</b> ${parseFloat(m.area_m2_total).toFixed(2)}m²
                             </span>
-                            <button class="btn btn-danger btn-sm btnEliminarMedida" data-id="${m.id}"><i class="fa fa-trash"></i></button>
+                            <div>
+                                <button type="button" class="btn btn-warning btn-sm btnEditarMedida" data-id="${m.id}" data-alto="${m.alto}" data-ancho="${m.ancho}" data-cantidad="${m.cantidad}" title="Editar Cantidad"><i class="fa fa-pencil"></i></button>
+                                <button type="button" class="btn btn-danger btn-sm btnEliminarMedida" data-id="${m.id}" title="Eliminar"><i class="fa fa-trash"></i></button>
+                            </div>
                         </li>
                     `);
                     });
@@ -1378,7 +1384,10 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                         <b>Ancho:</b> ${m.ancho}m | 
                         <b>Área:</b> ${parseFloat(m.area_m2_total).toFixed(2)}m²
                     </span>
-                    <button type="button" class="btn btn-danger btn-sm btnEliminarMedidaTab" data-id="${m.id}" title="Eliminar"><i class="fa fa-trash"></i></button>
+                    <div>
+                        <button type="button" class="btn btn-warning btn-sm btnEditarMedidaTab" data-id="${m.id}" data-alto="${m.alto}" data-ancho="${m.ancho}" data-cantidad="${m.cantidad}" title="Editar Cantidad"><i class="fa fa-pencil"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm btnEliminarMedidaTab" data-id="${m.id}" title="Eliminar"><i class="fa fa-trash"></i></button>
+                    </div>
                 </li>
             `);
                 });
@@ -1406,6 +1415,45 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             });
         });
 
+        $(document).on('click', '.btnEditarMedidaTab', function () {
+            const id_medida = $(this).data('id');
+            const alto = parseFloat($(this).data('alto'));
+            const ancho = parseFloat($(this).data('ancho'));
+            const oldCantidad = parseInt($(this).data('cantidad'));
+
+            Swal.fire({
+                title: 'Editar Cantidad',
+                input: 'number',
+                inputLabel: 'Ingresa la nueva cantidad para esta medida:',
+                inputValue: oldCantidad,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fa fa-save"></i> Guardar',
+                cancelButtonText: '<i class="fa fa-times"></i> Cancelar',
+                inputValidator: (value) => {
+                    if (!value || parseInt(value) <= 0) {
+                        return 'La cantidad debe ser mayor a 0';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let nuevaCantidad = parseInt(result.value);
+                    $.post('controllers/inventario.controlador.php', {
+                        accion: 23,
+                        id_medida: id_medida,
+                        alto: alto,
+                        ancho: ancho,
+                        cantidad_und: nuevaCantidad
+                    }, function (res) {
+                        const id_producto = $('#id').val();
+                        cargarMedidasTab(id_producto);
+                        accion_inv = 0;
+                        tabla.ajax.reload();
+                        mostrarToast('success', 'Éxito', 'fa-check', 'Cantidad actualizada', 3000);
+                    });
+                }
+            });
+        });
+
         $(document).on('click', '.btnEliminarMedida', function () {
             const id_medida = $(this).data('id');
             confirmarEliminar('esta', 'medida', function (res) {
@@ -1418,6 +1466,45 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                         cargarMedidasProducto(id_producto);
                         accion_inv = 0;
                         tabla.ajax.reload();
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.btnEditarMedida', function () {
+            const id_medida = $(this).data('id');
+            const alto = parseFloat($(this).data('alto'));
+            const ancho = parseFloat($(this).data('ancho'));
+            const oldCantidad = parseInt($(this).data('cantidad'));
+
+            Swal.fire({
+                title: 'Editar Cantidad',
+                input: 'number',
+                inputLabel: 'Ingresa la nueva cantidad para esta medida:',
+                inputValue: oldCantidad,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fa fa-save"></i> Guardar',
+                cancelButtonText: '<i class="fa fa-times"></i> Cancelar',
+                inputValidator: (value) => {
+                    if (!value || parseInt(value) <= 0) {
+                        return 'La cantidad debe ser mayor a 0';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let nuevaCantidad = parseInt(result.value);
+                    $.post('controllers/inventario.controlador.php', {
+                        accion: 23,
+                        id_medida: id_medida,
+                        alto: alto,
+                        ancho: ancho,
+                        cantidad_und: nuevaCantidad
+                    }, function (res) {
+                        const id_producto = $('#modalMedidas').data('id_producto');
+                        cargarMedidasProducto(id_producto);
+                        accion_inv = 0;
+                        tabla.ajax.reload();
+                        mostrarToast('success', 'Éxito', 'fa-check', 'Cantidad actualizada', 3000);
                     });
                 }
             });
@@ -1479,7 +1566,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     tabla.ajax.reload();
                 });
             } else {
-                alert('Completa todos los campos correctamente.');
+                mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Completa todos los campos correctamente.', 3000);
             }
         });
 

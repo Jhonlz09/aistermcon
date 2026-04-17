@@ -25,7 +25,8 @@ class ModeloSolicitudDespacho
                 '' as acciones,
 				    o.id as id_orden,
 				    e2.nombre as despachado,
-                    sd.anulado
+                    sd.anulado,
+                    sd.motivo_anulado
             FROM tblsolicitud_despacho sd
             LEFT JOIN tblorden o ON sd.id_orden = o.id
 			LEFT JOIN tblpresupuesto p ON p.id = o.id
@@ -67,7 +68,9 @@ class ModeloSolicitudDespacho
                 TO_CHAR(sd.fecha, 'YYYY-MM-DD') AS fecha,
                 sd.id_responsable,
                 sd.id_autorizado,
-                sd.notas
+                sd.notas,
+                sd.anulado,
+                sd.motivo_anulado
             FROM tblsolicitud_despacho sd
             LEFT JOIN tblorden o ON sd.id_orden = o.id
             LEFT JOIN tblpresupuesto p ON p.id = o.id
@@ -261,17 +264,19 @@ class ModeloSolicitudDespacho
     /**
      * Anular solicitud
      */
-    static public function mdlAnularSolicitud($id_solicitud)
+    static public function mdlAnularSolicitud($id_solicitud, $motivo = null)
     {
         try {
             $conexion = Conexion::ConexionDB();
 
             $consulta = "UPDATE tblsolicitud_despacho SET 
-                anulado = true
+                anulado = true,
+                motivo_anulado = :motivo
             WHERE id = :id";
 
             $stmt = $conexion->prepare($consulta);
             $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
+            $stmt->bindParam(":motivo", $motivo, PDO::PARAM_STR);
             $stmt->execute();
 
             return array(
@@ -774,7 +779,7 @@ class ModeloSolicitudDespacho
             $conexion = Conexion::ConexionDB();
             $conexion->beginTransaction();
 
-            $consulta = "UPDATE tblsolicitud_despacho SET anulado = false WHERE id = :id";
+            $consulta = "UPDATE tblsolicitud_despacho SET anulado = false, motivo_anulado = NULL WHERE id = :id";
             $stmt = $conexion->prepare($consulta);
             $stmt->bindParam(":id", $id_solicitud, PDO::PARAM_INT);
             $stmt->execute();
@@ -919,6 +924,33 @@ class ModeloSolicitudDespacho
         $command = "php $scriptPath $descrip $orden $fecha $cliente $usuario $origen_arg $title > /dev/null 2>&1 &";
      
         exec($command);
+    }
+
+    /**
+     * Consultar la fecha de retorno de la tabla tblboleta 
+     */
+    static public function mdlConsultarFechaRetornoBoleta($id_solicitud_despacho, $is_material)
+    {
+        try {
+            $consulta = "SELECT TO_CHAR(fecha_retorno, 'YYYY-MM-DD') as f_retorno 
+                         FROM tblboleta 
+                         WHERE id_solicitud_despacho = :id_solicitud_despacho 
+                         AND is_material = :is_material
+                         ORDER BY id DESC LIMIT 1";
+
+            $stmt = Conexion::ConexionDB()->prepare($consulta);
+            $stmt->bindParam(":id_solicitud_despacho", $id_solicitud_despacho, PDO::PARAM_INT);
+            $stmt->bindParam(":is_material", $is_material, PDO::PARAM_BOOL);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result && isset($result['f_retorno'])) {
+                return $result['f_retorno'];
+            }
+            return null;
+        } catch (PDOException $e) {
+            return null;
+        }
     }
 }
 ?>

@@ -3,7 +3,7 @@ require_once "../models/solicitud_mh.modelo.php";
 
 class ControladorSolicitudDespacho
 {
-    public $id, $num_sol, $id_orden, $id_boleta, $filas, $params, $subtotal, $id_responsable, $id_despachado, $id_autorizado, $anio;
+    public $id, $num_sol, $id_orden, $id_boleta, $filas, $params, $subtotal, $id_responsable, $id_despachado, $id_autorizado, $anio, $motivo_anulado;
 
     // Listar todas las solicitudes de despacho
     public function listarSolicitudes()
@@ -88,7 +88,7 @@ class ControladorSolicitudDespacho
     // Anular solicitud
     public function anularSolicitud()
     {
-        $data = ModeloSolicitudDespacho::mdlAnularSolicitud($this->id);
+        $data = ModeloSolicitudDespacho::mdlAnularSolicitud($this->id, $this->motivo_anulado);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -171,6 +171,7 @@ if ($_POST["accion"] == 1) {
     } else if ($_POST["accion"] == 12) {
         // Anular solicitud
         $data->id = $_POST["id"];
+        $data->motivo_anulado = $_POST["motivo_anulado"] ?? '';
         $data->anularSolicitud();
     } else if ($_POST["accion"] == 13) {
         // Reanudar solicitud

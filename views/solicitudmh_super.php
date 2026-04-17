@@ -345,24 +345,22 @@
             data: "acciones",
             visible: mostrarCol ? true : false,
             render: function (data, type, row, full, meta) {
+                let botones = '<center style="white-space: nowrap;">';
 
                 if (row.anulado) {
-                    let btnReanudar = isSuperAdmin ? "<button type='button' class='btn bg-gradient-danger btnReanudar'  title='Desanular'> <i class='fa fa-ban'></i>" : "<span title='Anulado' style='cursor:not-allowed;font-style: italic;' disabled> ANULADO <i class='fas fa-ban'></i></span>";
-
-                    return `
-                        <center style='white-space: nowrap;'>
-                            ${btnReanudar} 
-                        </button>
-                        </center>`;
+                    botones += `<a href="PDF/pdf_solicitud_despacho.php?id=${row.id}" target="_blank" style="color: #343a40; font-size:1.4rem;" title="PDF">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>`;
+                    botones += `</center>`;
+                    return botones;
                 }
 
-                let color = row.estado ? 'success' : 'yellow';
-                let botones = '<center style="white-space: nowrap;">';
-                
-                // Botón PDF
-                botones += `<button type='button' class='btn bg-gradient-info btnImprimirPDF' title='Imprimir PDF' onclick="window.open('PDF/pdf_solicitud_despacho.php?id=${row.id}', '_blank')">
-                                <i class='fas fa-file-pdf'></i>
+                // Botón PDF normal
+                botones += `<button type="button" class="btn bg-gradient-info btnImprimirPDF" title="Imprimir PDF" onclick="window.open('PDF/pdf_solicitud_despacho.php?id=${row.id}', '_blank')">
+                                <i class="fas fa-file-pdf"></i>
                             </button> `;
+
+                let color = row.estado ? 'success' : 'yellow';
 
                 if (editar) {
                     botones += "<button type='button' class='btn bg-gradient-warning btnEditar' title='Editar'>" +
@@ -396,11 +394,12 @@
                 render: function (data, type, row) {
                     
                     if (row.anulado) {
+                        let motivo = row.motivo_anulado ? `Motivo: ${row.motivo_anulado}` : 'Anulado';
+                        let btnReanudar = isSuperAdmin ? `<button type='button' class='btn bg-gradient-danger btnReanudar' title='Desanular\n${motivo}'><i class='fa fa-ban'></i></button>` : `<span title='${motivo}' style='cursor:help;font-style: italic; border-bottom: 1px dotted;' disabled> ANULADO <i class='fas fa-ban'></i></span>`;
+
                         return `
                         <center style='white-space: nowrap;'>
-                            <span title='Anulado' style='cursor:not-allowed;font-style: italic;' disabled>
-                                ANULADO <i class='fas fa-ban'></i>
-                            </span>
+                            ${btnReanudar}
                         </center>`;
                     }
                     let clase = data ? 'success' : 'warning';
@@ -1415,8 +1414,9 @@
             let src = new FormData();
             src.append('accion', 12);
             src.append('id', id_);
-            confirmarEliminar('esta', 'solicitud de despacho', function (r) {
+            confirmarAnularConMotivo('la', 'solicitud de despacho', function (r, motivo) {
                 if (r) {
+                    src.append('motivo_anulado', motivo);
                     confirmarAccion(src, 'solicitud_mh', tabla, '', null);
                 }
             });
