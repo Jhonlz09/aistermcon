@@ -45,7 +45,7 @@ class ModeloCombos
     static public function mdlListarAutorizado()
     {
         try {
-            $l = Conexion::ConexionDB()->prepare("SELECT id, split_part(nombre, ' ', 1) || ' ' || split_part(apellido, ' ', 1) as nombre FROM tblempleado WHERE id_rol IN (4, 10) AND estado=true ORDER BY id ASC");
+            $l = Conexion::ConexionDB()->prepare("SELECT id, split_part(nombre, ' ', 1) || ' ' || split_part(apellido, ' ', 1) as nombre FROM tblempleado WHERE id_rol IN (4, 10, 8) AND estado=true ORDER BY id ASC");
             $l->execute();
             return $l->fetchAll();
         } catch (PDOException $e) {
