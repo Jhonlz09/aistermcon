@@ -581,7 +581,7 @@
 
         cargarCombo('Transportista', conductorPorDefecto, 2);
         cargarCombo('Bodeguero', bodegueroPorDefecto, 6);
-        cargarCombo('Autorizado', autorizadoPorDefecto, 14);
+        cargarCombo('AutorizadoCon', autorizadoPorDefecto, 14);
 
         $(cboBodeguero).select2({
             placeholder: 'SELECCIONE',
