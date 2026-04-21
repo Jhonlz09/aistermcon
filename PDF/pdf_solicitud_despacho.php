@@ -450,7 +450,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     if (empty($materiales) && empty($herramientas)) {
          generarHojaDespacho($pdf, $nro, $orden, $cliente, $dia, $mes, $ano, $observaciones, [], 'MATERIAL', $tipo_trabajo, $bAnulado, $motivo_anulado, $dia_ret_m, $mes_ret_m, $ano_ret_m);
     }
-
     $pdf->Output('I', $archivo.'.pdf');
     exit;
 } else {

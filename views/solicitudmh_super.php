@@ -202,6 +202,7 @@
                                                         <th class="text-center">UND</th>
                                                         <th class="text-center">CANT. SOL.</th>
                                                         <th class="text-center">CANT. APRO.</th>
+                                                        <th class="text-center">COSTOS</th>
                                                         <th class="text-center">ACCIONES</th>
                                                     </tr>
                                                 </thead>
@@ -225,6 +226,7 @@
                                                         <th class="text-center">UND</th>
                                                         <th class="text-center">CANT. SOL.</th>
                                                         <th class="text-center">CANT. APRO.</th>
+                                                        <th class="text-center">COSTOS</th>
                                                         <th class="text-center">ACCIONES</th>
                                                     </tr>
                                                 </thead>
@@ -725,6 +727,7 @@
                         let rowNode = this.node();
                         let cantSol = $(rowNode).find('.cantidad').val();
                         $(rowNode).find('.aprobada').val(cantSol);
+                        window.actualizarTotalFila($(rowNode).find('.aprobada')[0]);
                     });
                 }
             }
@@ -764,22 +767,43 @@
                     data: "cant_sol",
                     className: "text-center",
                     render: function (data, type, row) {
-                        let readonlyAttr = isAprobadoActual ? 'readonly' : '';
+                        let readonlyAttr = typeof isAprobadoActual !== 'undefined' && isAprobadoActual ? 'readonly' : '';
                         return `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
                                 class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
                                 onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                                oninput="validarNumber(this,/[^0-9.]/g)" value="${data}" ${readonlyAttr}>`;
+                                oninput="validarNumber(this,/[^0-9.]/g); actualizarTotalFila(this)" value="${data}" ${readonlyAttr}>`;
                     }
                 },
                 {
                     data: "cant_apro",
                     className: "text-center",
                     render: function (data, type, row) {
-                        let readonlyAttr = isAprobadoActual ? 'readonly' : '';
+                        let readonlyAttr = typeof isAprobadoActual !== 'undefined' && isAprobadoActual ? 'readonly' : '';
                         return `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
                                 class="form-control text-center d-inline aprobada" inputmode="numeric" autocomplete="off" 
                                 onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                                oninput="validarNumber(this,/[^0-9.]/g)" value="${data}" ${readonlyAttr}>`;
+                                oninput="validarNumber(this,/[^0-9.]/g); actualizarTotalFila(this)" value="${data}" ${readonlyAttr}>`;
+                    }
+                },
+                {
+                    data: null,
+                    className: "text-center",
+                    render: function (data, type, row) {
+                        let p_uni = row.precio_uni ? parseFloat(row.precio_uni).toFixed(2) : '0.00';
+                        let p_iva = row.precio_iva ? parseFloat(row.precio_iva).toFixed(2) : '0.00';
+                        let p_tot_uni = row.precio_total_iva ? parseFloat(row.precio_total_iva).toFixed(2) : '0.00';
+                        let isZero = (p_tot_uni === '0.00' || p_tot_uni == 0);
+                        let isAprob = typeof isAprobadoActual !== 'undefined' && isAprobadoActual;
+                        let qty = parseFloat(isAprob ? (row.cant_apro || 0) : (row.cant_sol || 0));
+                        let row_total = (parseFloat(p_tot_uni) * qty).toFixed(2);
+                        let row_total_str = isNaN(row_total) ? '0.00' : row_total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        
+                        return `<div class="container-precios" style="font-size: 0.85rem;text-align:left;display:inline-block;min-width:100px;" data-precio="${p_tot_uni}">
+                                <div><b style="display:inline-block;width:45px;">Uni:</b> <span class="text-secondary">$${p_uni}</span></div>
+                                <div><b style="display:inline-block;width:45px;">IVA:</b> <span class="text-secondary">$${p_iva}</span></div>
+                                <div style="border-top:1px solid #ccc;margin-top:2px;padding-top:2px;"><b style="display:inline-block;width:45px;">U.+IVA:</b> <span class="${isZero ? 'text-danger' : 'text-success'} font-weight-bold">$${p_tot_uni}</span></div>
+                                <div style="margin-top:2px;border-top:1px dashed #ccc;padding-top:2px"><b style="display:inline-block;width:45px;">Total:</b> <span class="${row_total > 0 ? 'text-info' : 'text-secondary'} font-weight-bold total-row-price">$${row_total_str}</span></div>
+                            </div>`;
                     }
                 },
                 {
@@ -823,6 +847,7 @@
                             let rowNode = this.node();
                             let cantSol = $(rowNode).find('.cantidad').val();
                             $(rowNode).find('.aprobada').val(cantSol);
+                            window.actualizarTotalFila($(rowNode).find('.aprobada')[0]);
                         });
                     }
                 }
@@ -867,7 +892,7 @@
                         return `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
                                 class="form-control text-center d-inline cantidad" inputmode="numeric" autocomplete="off" 
                                 onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                                oninput="validarNumber(this,/[^0-9.]/g)" value="${data}" ${readonlyAttr}>`;
+                                oninput="validarNumber(this,/[^0-9.]/g); actualizarTotalFila(this)" value="${data}" ${readonlyAttr}>`;
                     }
                 },
                 {
@@ -878,7 +903,28 @@
                         return `<input type="text" style="width:82px;border-bottom-width:2px;margin:auto;font-size:1.4rem" 
                                 class="form-control text-center d-inline aprobada" inputmode="numeric" autocomplete="off" 
                                 onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" 
-                                oninput="validarNumber(this,/[^0-9.]/g)" value="${data}" ${readonlyAttr}>`;
+                                oninput="validarNumber(this,/[^0-9.]/g); actualizarTotalFila(this)" value="${data}" ${readonlyAttr}>`;
+                    }
+                },
+                {
+                    data: null,
+                    className: "text-center",
+                    render: function (data, type, row) {
+                        let p_uni = row.precio_uni ? parseFloat(row.precio_uni).toFixed(2) : '0.00';
+                        let p_iva = row.precio_iva ? parseFloat(row.precio_iva).toFixed(2) : '0.00';
+                        let p_tot_uni = row.precio_total_iva ? parseFloat(row.precio_total_iva).toFixed(2) : '0.00';
+                        let isZero = (p_tot_uni === '0.00' || p_tot_uni == 0);
+                        let isAprob = typeof isAprobadoActual !== 'undefined' && isAprobadoActual;
+                        let qty = parseFloat(isAprob ? (row.cant_apro || 0) : (row.cant_sol || 0));
+                        let row_total = (parseFloat(p_tot_uni) * qty).toFixed(2);
+                        let row_total_str = isNaN(row_total) ? '0.00' : row_total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        
+                        return `<div class="container-precios" style="font-size: 0.85rem;text-align:left;display:inline-block;min-width:100px;" data-precio="${p_tot_uni}">
+                                <div><b style="display:inline-block;width:45px;">Uni:</b> <span class="text-secondary">$${p_uni}</span></div>
+                                <div><b style="display:inline-block;width:45px;">IVA:</b> <span class="text-secondary">$${p_iva}</span></div>
+                                <div style="border-top:1px solid #ccc;margin-top:2px;padding-top:2px;"><b style="display:inline-block;width:45px;">U.+IVA:</b> <span class="${isZero ? 'text-danger' : 'text-success'} font-weight-bold">$${p_tot_uni}</span></div>
+                                <div style="margin-top:2px;border-top:1px dashed #ccc;padding-top:2px"><b style="display:inline-block;width:45px;">Total:</b> <span class="${row_total > 0 ? 'text-info' : 'text-secondary'} font-weight-bold total-row-price">$${row_total_str}</span></div>
+                            </div>`;
                     }
                 },
                 {
@@ -971,7 +1017,10 @@
                             unidad: respuesta.unidad,
                             cant_sol: 1, // Inicializar en 1
                             cant_apro: 0,
-                            img: respuesta.img
+                            img: respuesta.img,
+                            precio_uni: respuesta.precio_uni,
+                            precio_iva: respuesta.precio_iva,
+                            precio_total_iva: respuesta.precio_total_iva
                         };
 
                         let nuevoNode;
@@ -1459,5 +1508,24 @@
                 }
             }, accionTexto, confirmacionTexto, 'Si, confirmar');
         });
+        
+        window.actualizarTotalFila = function(input) {
+            let cant = parseFloat($(input).val() || 0);
+            let $row = $(input).closest('tr');
+            let $container = $row.find('.container-precios');
+            if ($container.length === 0) return;
+            
+            let precio = parseFloat($container.attr('data-precio') || 0);
+            let total = (cant * precio).toFixed(2);
+            let total_str = isNaN(total) ? '0.00' : total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            
+            let $totSpan = $container.find('.total-row-price');
+            $totSpan.text('$' + total_str);
+            if(total > 0) {
+                $totSpan.removeClass('text-secondary text-danger').addClass('text-info');
+            } else {
+                $totSpan.removeClass('text-info text-danger').addClass('text-secondary');
+            }
+        };
     });
 </script>

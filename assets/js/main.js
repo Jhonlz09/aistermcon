@@ -520,25 +520,6 @@ function Buscar(tabla, s) {
   $(window).scrollTop(scrollPosition);
 }
 
-function addPadding(b, s, w) {
-  if (s > w) {
-    b.classList.remove("no-scroll");
-  } else {
-    b.classList.add("no-scroll");
-  }
-}
-
-function handleScroll(b, s, w) {
-  if (!scroll && s > w) {
-    scroll = true;
-    addPadding(b, s, w);
-    console.log(b + " " + s + " hanfle " + w);
-  } else if (scroll) {
-    addPadding(b, s, w);
-    console.log(b + " " + s + " hanfle " + w);
-  }
-}
-
 function selecTexto(input) {
   input.select();
 }

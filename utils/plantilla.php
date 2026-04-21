@@ -378,38 +378,27 @@
                 ul.outerWidth(this.element.outerWidth());
             }
 
-            let isLocked = false;
-            let activeControl = null;
-            control.forEach((e) => {
-                e.addEventListener('click', () => {
-                    const clickedControlIsActive = e === activeControl;
-                    // Desactivar el control-sidebar activo anteriormente, si existe y no es el mismo que el clic actual
-                    if (activeControl && !clickedControlIsActive) {
-                        activeControl.classList.remove('active');
-                    }
+            $('.ctrl-side').on('click', function() {
+                // If it's about to open, set this one active
+                if (!$('body').hasClass('control-sidebar-slide-open')) {
+                    $('.ctrl-side').removeClass('active');
+                    $(this).addClass('active');
+                }
+            });
 
-                    // Si el clic actual no es el mismo que el control-sidebar activo, activarlo
-                    if (!clickedControlIsActive) {
-                        e.classList.add('active');
-                        activeControl = e;
-                    } else { // Si se hace clic en el mismo control-sidebar, alternar su estado
-                        e.classList.toggle('active');
-                        activeControl = e.classList.contains('active') ? e : null;
-                    }
+            $(document).on('expanded.lte.controlsidebar', function() {
+                $('html, body').addClass('overflow-body');
+                $('#navbar-fix').addClass('overflow-body-nav');
+                
+                if (!$('body').hasClass('sidebar-collapse')) {
+                    $('body').addClass('sidebar-collapse');
+                }
+            });
 
-                    const activeControls = document.querySelectorAll('.ctrl-side.active').length;
-                    const isOverflow = activeControls > 0;
-
-                    body.classList.toggle('overflow-body', isOverflow);
-                    html.classList.toggle('overflow-body', isOverflow);
-
-
-                    if (body.classList.contains('control-sidebar-slide-open')) {
-                        return;
-                    } else if (!(body.classList.contains('sidebar-collapse'))) {
-                        body.classList.toggle('sidebar-collapse');
-                    }
-                });
+            $(document).on('collapsed.lte.controlsidebar', function() {
+                $('html, body').removeClass('overflow-body');
+                $('#navbar-fix').removeClass('overflow-body-nav');
+                $('.ctrl-side').removeClass('active');
             });
 
             $(document).on('select2:open', () => {

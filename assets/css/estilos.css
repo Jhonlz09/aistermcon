@@ -628,8 +628,8 @@ a.dropdown-item[data-estado="PENDIENTE"]:active {
     box-shadow: -1px -2px 6px inset rgb(0 0 0 / 22%);
 }
 
-body.no-scroll {
-    padding-right: 6px;
+html {
+    overflow-y: scroll;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -947,8 +947,13 @@ table.dataTable tbody>tr>.selected {
     border: 1px solid #c3d5e6;
 } */
 
-.overflow-body {
-    overflow: hidden;
+body.overflow-body, html.overflow-body {
+    overflow: hidden !important;
+    padding-right: 6px !important;
+}
+
+#navbar-fix.overflow-body-nav {
+    padding-right: 6px !important;
 }
 
 .btn-row {

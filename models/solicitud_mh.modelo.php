@@ -96,6 +96,7 @@ class ModeloSolicitudDespacho
     {
         try {
             $consulta = "SELECT dd.id,dd.id_producto,i.codigo,i.descripcion,c.nombre as categoria,i.id_categoria,u.nombre as unidad,dd.cant_sol,dd.cant_apro,i.stock,i.img,
+                i.precio_uni, i.precio_iva, i.precio_total_iva,
                 '' as acciones
             FROM tbldetalle_despacho dd
             JOIN tblinventario i ON dd.id_producto = i.id
@@ -303,7 +304,10 @@ class ModeloSolicitudDespacho
                 i.stock,
                 u.nombre as unidad,
                 i.id_categoria,
-                i.img
+                i.img,
+                i.precio_uni,
+                i.precio_iva,
+                i.precio_total_iva
             FROM tblinventario i
             JOIN tblunidad u ON i.id_unidad = u.id
             WHERE i.codigo = :codigo AND i.estado = true";
