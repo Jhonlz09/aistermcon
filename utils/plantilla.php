@@ -352,10 +352,6 @@
                             ...configuracionTable
                         })
                         tabla.on('draw.dt', function () {
-                            // const b = document.body;
-                            // const s = b.scrollHeight;
-                            // const w = window.innerHeight;
-                            // handleScroll(b, s, w)
 
                             let Data = tabla.rows().data().toArray();
                             localStorage.setItem(ruta, JSON.stringify(Data));

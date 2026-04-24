@@ -223,11 +223,6 @@
             });
 
             tabla.on('draw.dt', () => {
-                const b = document.body;
-                const s = b.scrollHeight;
-                const w = window.innerHeight;
-
-                handleScroll(b, s, w);
 
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('usuarios', JSON.stringify(tablaData));

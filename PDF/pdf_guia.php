@@ -35,27 +35,40 @@ class PDF extends FPDF
         }
 
         $lines = array();
-        $words = explode(' ', $text);
-        $currentLine = '';
-        $currentWidth = $firstLineWidth;
-
-        foreach ($words as $word) {
-            $testLine = $currentLine . ($currentLine ? ' ' : '') . $word;
-            $testWidth = $this->GetStringWidth($testLine);
-
-            if ($testWidth <= $currentWidth) {
-                $currentLine = $testLine;
-            } else {
-                if ($currentLine) {
-                    $lines[] = $currentLine;
-                    $currentWidth = $subsequentLineWidth;  // Change the width for subsequent lines
-                }
-                $currentLine = $word;
+        // Separar por saltos de línea explícitos para que no se ignoren los \n
+        $paragraphs = explode("\n", $text);
+        $isFirstLine = true;
+        
+        foreach ($paragraphs as $p) {
+            $p = trim($p);
+            if ($p === '') {
+                $lines[] = '';
+                $isFirstLine = false;
+                continue;
             }
-        }
+            
+            $words = explode(' ', $p);
+            $currentLine = '';
+            
+            foreach ($words as $word) {
+                $currentWidth = $isFirstLine ? $firstLineWidth : $subsequentLineWidth;
+                $testLine = $currentLine . ($currentLine ? ' ' : '') . $word;
+                $testWidth = $this->GetStringWidth($testLine);
 
-        if ($currentLine) {
-            $lines[] = $currentLine;
+                if ($testWidth <= $currentWidth) {
+                    $currentLine = $testLine;
+                } else {
+                    if ($currentLine) {
+                        $lines[] = $currentLine;
+                        $isFirstLine = false;
+                    }
+                    $currentLine = $word;
+                }
+            }
+            if ($currentLine) {
+                $lines[] = $currentLine;
+                $isFirstLine = false;
+            }
         }
 
         return $lines;
@@ -72,6 +85,8 @@ class PDF extends FPDF
 
         // Print each line
         foreach ($lines as $i => $line) {
+            $y = $this->GetY();
+            
             if ($i == 0) {
                 // First line starts at the original X position (firstLineX)
                 $this->SetX($firstLineX);
@@ -81,17 +96,25 @@ class PDF extends FPDF
                 $this->SetX($subsequentLineX);
                 $width = $subsequentLineWidth;
 
-                // Get current position
-                $x = $this->GetX();
-                $y = $this->GetY();
-
                 // Draw the left and right fill rectangles for subsequent lines
-                $this->Rect($x - $leftFillWidth, $y, $leftFillWidth, $h, 'F'); // Left fill
-                $this->Rect($x + $width, $y, $rightFillWidth, $h, 'F'); // Right fill
+                $bgX = $subsequentLineX - $leftFillWidth;
+                $bgWidth = $subsequentLineWidth + $leftFillWidth + $rightFillWidth;
+                
+                // Ajustar al margen izquierdo para evitar espacios blancos
+                if (abs($bgX - 6) < 1) {
+                    $bgWidth += ($bgX - 6);
+                    $bgX = 6;
+                }
+                // Limitar al margen derecho (204) para evitar desbordes
+                if ($bgX + $bgWidth > 204) {
+                    $bgWidth = 204 - $bgX;
+                }
+
+                $this->Rect($bgX, $y, $bgWidth, $h, 'F');
             }
 
-            // Print the text
-            $this->MultiCell($width, $h, iconv('UTF-8', 'windows-1252', $line), 0, 'L', 1);
+            // Print the text usando Cell en vez de MultiCell porque WordWrap ya separó las líneas
+            $this->Cell($width, $h, iconv('UTF-8', 'windows-1252', $line), 0, 1, 'L', 0);
         }
 
         // Restore Y position

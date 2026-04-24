@@ -325,12 +325,6 @@
                 ...configuracionTable
             });
 
-            tabla.on('draw.dt', function() {
-                const b = document.body;
-                handleScroll(b, b.scrollHeight, window.innerHeight);
-            });
-        }
-
         $('#cboVistaInicio').select2({
             dropdownParent: $('#modalR'),
             placeholder: 'Seleccione'

@@ -75,47 +75,47 @@ try {
     echo "4. Recalculando baselines y migrando historial a Kardex Matemático...\n";
     
     // Obtenemos todos los productos y calculamos su desbalance matemático real
-    $stmt = $conn->query("
-        WITH total_entradas AS (
-            SELECT id_producto, COALESCE(SUM(cantidad_entrada), 0) as total FROM tblentradas GROUP BY id_producto
-        ),
-        total_salidas AS (
-            SELECT id_producto, COALESCE(SUM(cantidad_salida - COALESCE(retorno, 0)), 0) as total FROM tblsalidas GROUP BY id_producto
-        )
-        SELECT 
-            i.id,
-            i.stock as stock_real,
-            COALESCE(e.total, 0) as entradas_totales,
-            COALESCE(s.total, 0) as salidas_totales
-        FROM tblinventario i
-        LEFT JOIN total_entradas e ON i.id = e.id_producto
-        LEFT JOIN total_salidas s ON i.id = s.id_producto
-    ");
-    $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // $stmt = $conn->query("
+    //     WITH total_entradas AS (
+    //         SELECT id_producto, COALESCE(SUM(cantidad_entrada), 0) as total FROM tblentradas GROUP BY id_producto
+    //     ),
+    //     total_salidas AS (
+    //         SELECT id_producto, COALESCE(SUM(cantidad_salida - COALESCE(retorno, 0)), 0) as total FROM tblsalidas GROUP BY id_producto
+    //     )
+    //     SELECT 
+    //         i.id,
+    //         i.stock as stock_real,
+    //         COALESCE(e.total, 0) as entradas_totales,
+    //         COALESCE(s.total, 0) as salidas_totales
+    //     FROM tblinventario i
+    //     LEFT JOIN total_entradas e ON i.id = e.id_producto
+    //     LEFT JOIN total_salidas s ON i.id = s.id_producto
+    //     ");
+    // $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $insertAjuste = $conn->prepare("
-        INSERT INTO tblajustes_inventario (id_producto, cantidad, motivo, fecha) 
-        VALUES (:id_producto, :cantidad, 'STOCK INICIAL BASELINE (MIGRACION MATEMATICA)', '2000-01-01 00:00:00')
-    ");
+    // $insertAjuste = $conn->prepare("
+    //     INSERT INTO tblajustes_inventario (id_producto, cantidad, motivo, fecha) 
+    //     VALUES (:id_producto, :cantidad, 'STOCK INICIAL BASELINE (MIGRACION MATEMATICA)', '2000-01-01 00:00:00')
+    // ");
 
-    foreach ($productos as $p) {
-        $id = $p['id'];
-        $stock_real = floatval($p['stock_real']);
-        $entradas = floatval($p['entradas_totales']);
-        $salidas = floatval($p['salidas_totales']);
+    // foreach ($productos as $p) {
+    //     $id = $p['id'];
+    //     $stock_real = floatval($p['stock_real']);
+    //     $entradas = floatval($p['entradas_totales']);
+    //     $salidas = floatval($p['salidas_totales']);
         
-        // Stock_Real = Ajustes + Entradas - Salidas
-        // Ajustes = Stock_Real - Entradas + Salidas
-        $ajuste_baseline = $stock_real - $entradas + $salidas;
+    //     // Stock_Real = Ajustes + Entradas - Salidas
+    //     // Ajustes = Stock_Real - Entradas + Salidas
+    //     $ajuste_baseline = $stock_real - $entradas + $salidas;
         
-        if (true) { 
-            // Siempre insertamos un baseline aunque sea 0, para tener anclaje en el historial
-            $insertAjuste->execute([
-                ':id_producto' => $id,
-                ':cantidad' => $ajuste_baseline
-            ]);
-        }
-    }
+    //     if (true) { 
+    //         // Siempre insertamos un baseline aunque sea 0, para tener anclaje en el historial
+    //         $insertAjuste->execute([
+    //             ':id_producto' => $id,
+    //             ':cantidad' => $ajuste_baseline
+    //         ]);
+    //     }
+    // }
 
     echo "5. Creando trigger de Ajustes de Inventario...\n";
     $conn->exec("

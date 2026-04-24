@@ -12,15 +12,8 @@ class ModeloInventario
                 i.stock_mal,i.stock, '' as acciones,i.stock_min, c.id as categoria_id, 
                 u.id as unidad_id, p.id as percha_id,i.img, i.precio_uni, i.precio_iva, i.precio_total_iva, i.valor_total_bodega,
                 (SELECT COUNT(*) FROM tblmedidas_producto m WHERE m.id_producto = i.id) AS cantidad_medidas,
-                -- === STOCK INICIAL AUTOMÁTICO (AÑO ACTUAL) ===
-                COALESCE((SELECT si.stock_ini 
-                    FROM tblstock_inicial si 
-                    WHERE si.id_producto = i.id
-                      -- AQUÍ EL CAMBIO: Extraemos el año de la fecha actual del servidor
-                      AND si.anio = CAST(EXTRACT(YEAR FROM CURRENT_DATE) AS INTEGER)
-                    ORDER BY si.id DESC    
-                    LIMIT 1                
-                ), 0) AS stock_ini
+                -- === ELIMINADO: Stock inicial por año ===
+                0 AS stock_ini
                 -- =============================================
             FROM tblinventario i
             JOIN tblcategoria c on c.id= i.id_categoria
@@ -164,7 +157,7 @@ class ModeloInventario
             if ($img !== null) {
                 $sql .= ", img";
             }
-            $sql .= ") VALUES (:cod, :des, :sto, :st_min, :st_mal, :cat, :uni, :ubi";
+            $sql .= ") VALUES (:cod, :des, 0, :st_min, :st_mal, :cat, :uni, :ubi";
 
             // Agregar el valor de la imagen solo si no es null
             if ($img !== null) {
@@ -176,7 +169,6 @@ class ModeloInventario
             // Asignar los valores a los parámetros
             $a->bindParam(":cod", $cod, PDO::PARAM_STR);
             $a->bindParam(":des", $des, PDO::PARAM_STR);
-            $a->bindParam(":sto", $sto, PDO::PARAM_INT);
             $a->bindParam(":st_min", $st_min, PDO::PARAM_INT);
             $a->bindParam(":st_mal", $st_mal, PDO::PARAM_INT);
             $a->bindParam(":cat", $cat, PDO::PARAM_INT);
@@ -190,13 +182,16 @@ class ModeloInventario
             // Ejecutar la consulta
             $a->execute();
             $id_producto = $conn->lastInsertId();
-            $anio = date('Y');
-            $sql_stock_ini = "INSERT INTO tblstock_inicial(id_producto, anio, stock_ini) VALUES (:id_producto, :anio, :stock_ini)";
-            $b = $conn->prepare($sql_stock_ini);
-            $b->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
-            $b->bindParam(":anio", $anio, PDO::PARAM_INT);
-            $b->bindParam(":stock_ini", $sto, PDO::PARAM_STR);
-            $b->execute();
+            
+            // Insertar el stock inicial como el primer ajuste
+            if ($sto > 0) {
+                $sql_stock_ini = "INSERT INTO tblajustes_inventario(id_producto, cantidad, motivo, fecha) VALUES (:id_producto, :cantidad, 'Stock inicial (Alta de producto)', NOW())";
+                $b = $conn->prepare($sql_stock_ini);
+                $b->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+                $b->bindParam(":cantidad", $sto, PDO::PARAM_STR);
+                $b->execute();
+            }
+            
             return array(
                 'status' => 'success',
                 'm' => 'El producto se agregó correctamente'
@@ -431,78 +426,10 @@ class ModeloInventario
         }
     }
 
-    public static function mdlConsultarStockIniAnio($id_producto, $anio)
+    public static function mdlActualizarMotivoAjuste($id_version, $motivo)
     {
         try {
-            // Usamos la misma lógica del CTE para garantizar que coincida con la tabla
-            $sql = "SELECT stock_ini FROM tblstock_inicial 
-            WHERE id_producto = :id_producto AND anio = :anio ORDER BY id DESC 
-            LIMIT 1";
-            $stmt = Conexion::ConexionDB()->prepare($sql);
-            $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
-            $stmt->bindParam(':anio', $anio, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetchAll();
-        } catch (PDOException $e) {
-            return array(
-                'status' => 'danger',
-                'm' => 'Error al calcular stock inicial: ' . $e->getMessage()
-            );
-        }
-    }
-
-    public static function mdlObtenerVersionesStockInicial($id_producto, $anio)
-    {
-        try {
-            $sql = "SELECT id, id_producto, anio, stock_ini, 
-                    TO_CHAR(fecha_registro, 'DD/MM/YYYY HH24:MI:SS') as fecha_registro,
-                    motivo,
-                    ROW_NUMBER() OVER (ORDER BY fecha_registro DESC) as numero_version
-            FROM tblstock_inicial 
-            WHERE id_producto = :id_producto AND anio = :anio 
-            ORDER BY fecha_registro DESC";
-            $stmt = Conexion::ConexionDB()->prepare($sql);
-            $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
-            $stmt->bindParam(':anio', $anio, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return [];
-        }
-    }
-
-    public static function mdlCrearVersionStockInicial($id_producto, $anio, $stock_ini, $motivo = 'Ajuste de inventario')
-    {
-        try {
-            $conn = Conexion::ConexionDB();
-            $sql = "INSERT INTO tblstock_inicial(id_producto, anio, stock_ini, motivo, fecha_registro) 
-            VALUES (:id_producto, :anio, :stock_ini, :motivo, NOW()) RETURNING id";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
-            $stmt->bindParam(':anio', $anio, PDO::PARAM_INT);
-            $stmt->bindParam(':stock_ini', $stock_ini);
-            $stmt->bindParam(':motivo', $motivo, PDO::PARAM_STR);
-            $stmt->execute();
-            
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            return array(
-                'status' => 'success',
-                'm' => 'Versión de stock inicial creada',
-                'id_version' => $result['id']
-            );
-        } catch (PDOException $e) {
-            return array(
-                'status' => 'danger',
-                'm' => 'Error al crear versión: ' . $e->getMessage()
-            );
-        }
-    }
-
-    public static function mdlActualizarMotivoCambio($id_version, $motivo)
-    {
-        try {
-            $sql = "UPDATE tblstock_inicial SET motivo = :motivo WHERE id = :id";
+            $sql = "UPDATE tblajustes_inventario SET motivo = :motivo WHERE id = :id";
             $stmt = Conexion::ConexionDB()->prepare($sql);
             $stmt->bindParam(':id', $id_version, PDO::PARAM_INT);
             $stmt->bindParam(':motivo', $motivo, PDO::PARAM_STR);
@@ -520,22 +447,81 @@ class ModeloInventario
         }
     }
 
-    public static function mdlEliminarVersionStockInicial($id_version)
+    public static function mdlEliminarAjusteInventario($id_version)
     {
         try {
-            $sql = "DELETE FROM tblstock_inicial WHERE id = :id";
+            $sql = "DELETE FROM tblajustes_inventario WHERE id = :id";
             $stmt = Conexion::ConexionDB()->prepare($sql);
             $stmt->bindParam(':id', $id_version, PDO::PARAM_INT);
             $stmt->execute();
             
             return array(
                 'status' => 'success',
-                'm' => 'Versión eliminada correctamente'
+                'm' => 'Ajuste eliminado correctamente (el stock se recalculó automáticamente)'
             );
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
-                'm' => 'Error al eliminar versión: ' . $e->getMessage()
+                'm' => 'Error al eliminar ajuste: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public static function mdlObtenerHistorialAjustes($id_producto)
+    {
+        try {
+            $sql = "SELECT id, id_producto, cantidad as delta, 
+                    TO_CHAR(fecha, 'DD/MM/YYYY HH24:MI:SS') as fecha_registro,
+                    motivo,
+                    ROW_NUMBER() OVER (ORDER BY fecha DESC) as numero_version
+            FROM tblajustes_inventario 
+            WHERE id_producto = :id_producto
+            ORDER BY fecha DESC";
+            $stmt = Conexion::ConexionDB()->prepare($sql);
+            $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public static function mdlCrearAjusteInventario($id_producto, $stock_fisico, $motivo = 'Ajuste de inventario')
+    {
+        try {
+            $conn = Conexion::ConexionDB();
+            
+            // Obtener el stock actual
+            $stmt_stock = $conn->prepare("SELECT stock FROM tblinventario WHERE id = :id");
+            $stmt_stock->bindParam(':id', $id_producto, PDO::PARAM_INT);
+            $stmt_stock->execute();
+            $stock_actual = $stmt_stock->fetchColumn();
+            
+            $delta = floatval($stock_fisico) - floatval($stock_actual);
+            
+            if ($delta == 0) {
+                return array('status' => 'success', 'm' => 'El stock físico es igual al actual. No se generó ajuste.');
+            }
+
+            $sql = "INSERT INTO tblajustes_inventario(id_producto, cantidad, motivo, fecha) 
+            VALUES (:id_producto, :cantidad, :motivo, NOW()) RETURNING id";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $stmt->bindParam(':cantidad', $delta);
+            $stmt->bindParam(':motivo', $motivo, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return array(
+                'status' => 'success',
+                'm' => 'Ajuste de inventario registrado correctamente',
+                'id_version' => $result['id']
+            );
+        } catch (PDOException $e) {
+            return array(
+                'status' => 'danger',
+                'm' => 'Error al crear ajuste: ' . $e->getMessage()
             );
         }
     }
@@ -548,29 +534,50 @@ class ModeloInventario
                     CAST(:id_producto AS INTEGER) AS p_id, 
                     CAST(:anio AS INTEGER) AS p_anio
             ),
-            -- 1. OBTENER SOLO LA ÚLTIMA VERSIÓN DEL STOCK INICIAL REGISTRADO
-            ultima_version_stock AS (
-                SELECT stock_ini
-                FROM tblstock_inicial
+            -- 1. CALCULAR STOCK INICIAL DINÁMICO (Todo antes del año)
+            stock_historico AS (
+                SELECT 
+                    COALESCE(SUM(cantidad), 0) AS suma_ajustes
+                FROM tblajustes_inventario 
                 WHERE id_producto = (SELECT p_id FROM params)
-                  AND anio = (SELECT p_anio FROM params)
-                ORDER BY id DESC -- Tomamos el ID más alto (última versión)
-                LIMIT 1
+                  AND EXTRACT(YEAR FROM fecha) < (SELECT p_anio FROM params)
+            ),
+            entradas_historicas AS (
+                SELECT COALESCE(SUM(e.cantidad_entrada), 0) AS suma_entradas
+                FROM tblentradas e
+                JOIN tblfactura f ON e.id_factura = f.id
+                WHERE e.id_producto = (SELECT p_id FROM params)
+                  AND EXTRACT(YEAR FROM f.fecha) < (SELECT p_anio FROM params)
+            ),
+            salidas_historicas AS (
+                SELECT COALESCE(SUM(s.cantidad_salida - COALESCE(s.retorno, 0)), 0) AS suma_salidas
+                FROM tblsalidas s
+                JOIN tblboleta b ON s.id_boleta = b.id
+                WHERE s.id_producto = (SELECT p_id FROM params)
+                  AND EXTRACT(YEAR FROM b.fecha) < (SELECT p_anio FROM params)
+            ),
+            stock_base AS (
+                SELECT (sh.suma_ajustes + eh.suma_entradas - sah.suma_salidas) AS stock_inicial
+                FROM stock_historico sh
+                CROSS JOIN entradas_historicas eh
+                CROSS JOIN salidas_historicas sah
             ),
             combined_data AS (
-                -- 2. TRANSACCIONES (Salidas, Retornos, Compras)
                 -- Salidas
                 SELECT 
                     b.fecha::date AS fecha_raw,
+                    b.fecha AS fecha_time,
                     TO_CHAR(b.fecha, 'DD/MM/YYYY') AS fecha,
                     o.id AS id_orden,
                     p.num_orden AS orden_trabajo,
                     c.nombre AS empresa,
                     s.cantidad_salida AS salida,
-                    0::numeric AS entrada, -- Usamos 0 explícito para facilitar el CASE final
+                    0::numeric AS entrada,
                     0::numeric AS compras,
+                    0::numeric AS ajustes,
                     s.id_producto_fab,
-                    2 AS tipo_orden
+                    2 AS tipo_orden,
+                    'SALIDA' AS descripcion_mov
                 FROM tblsalidas s
                 JOIN tblboleta b ON s.id_boleta = b.id
                 JOIN tblorden o ON b.id_orden = o.id
@@ -583,6 +590,7 @@ class ModeloInventario
                 -- Retornos
                 SELECT 
                     b.fecha_retorno::date AS fecha_raw,
+                    b.fecha_retorno AS fecha_time,
                     TO_CHAR(b.fecha_retorno, 'DD/MM/YYYY') AS fecha,
                     o.id AS id_orden,
                     p.num_orden AS orden_trabajo,
@@ -590,8 +598,10 @@ class ModeloInventario
                     0 AS salida,
                     s.retorno AS entrada,
                     0::numeric AS compras,
+                    0::numeric AS ajustes,
                     s.id_producto_fab,
-                    3 AS tipo_orden
+                    3 AS tipo_orden,
+                    'RETORNO' AS descripcion_mov
                 FROM tblsalidas s
                 JOIN tblboleta b ON s.id_boleta = b.id
                 JOIN tblorden o ON b.id_orden = o.id
@@ -599,12 +609,13 @@ class ModeloInventario
                 JOIN tblclientes c ON p.id_cliente = c.id
                 CROSS JOIN params
                 WHERE s.id_producto = params.p_id
-                    AND s.retorno <> 0.00
+                    AND s.retorno > 0
                     AND EXTRACT(YEAR FROM b.fecha_retorno) = params.p_anio
                 UNION ALL
                 -- Compras
                 SELECT 
                     f.fecha::date AS fecha_raw,
+                    f.fecha AS fecha_time,
                     TO_CHAR(f.fecha, 'DD/MM/YYYY') AS fecha,
                     NULL AS id_orden,
                     NULL AS orden_trabajo,
@@ -612,73 +623,133 @@ class ModeloInventario
                     0 AS salida,
                     0 AS entrada,
                     e.cantidad_entrada AS compras,
+                    0::numeric AS ajustes,
                     NULL AS id_producto_fab,
-                    1 AS tipo_orden
+                    1 AS tipo_orden,
+                    'COMPRA' AS descripcion_mov
                 FROM tblentradas e
                 LEFT JOIN tblfactura f ON e.id_factura = f.id
-                JOIN tblproveedores pr ON f.id_proveedor = pr.id
                 CROSS JOIN params
                 WHERE e.id_producto = params.p_id
-                    AND EXTRACT(YEAR FROM f.fecha) = params.p_anio),
-                aggregated_data AS (
-                    SELECT 
-                        cd.fecha_raw,
-                        cd.fecha,
-                        cd.id_orden,
-                        cd.orden_trabajo,
-                        cd.empresa,
-                        SUM(cd.salida) AS salida,
-                        SUM(cd.entrada) AS entrada,
-                        SUM(cd.compras) AS compras,
-                        -- Inyectamos la última versión del stock (o 0 si no existe)
-                        COALESCE((SELECT stock_ini FROM ultima_version_stock), 0) AS stock_inicial,
-                        MAX(cd.id_producto_fab) AS id_producto_fab,
-                        cd.tipo_orden
-                    FROM combined_data cd
-                    GROUP BY 
-                        cd.fecha_raw, cd.fecha, cd.id_orden, cd.orden_trabajo, 
-                        cd.empresa, cd.tipo_orden
-                ),
-                final_data AS (
+                    AND EXTRACT(YEAR FROM f.fecha) = params.p_anio
+                UNION ALL
+                -- Ajustes
                 SELECT 
-                    ad.fecha_raw, -- La necesitamos aquí para ordenar, pero no la seleccionaremos al final
+                    a.fecha::date AS fecha_raw,
+                    a.fecha AS fecha_time,
+                    TO_CHAR(a.fecha, 'DD/MM/YYYY') AS fecha,
+                    NULL AS id_orden,
+                    NULL AS orden_trabajo,
+                    'AJUSTE' AS empresa,
+                    0 AS salida,
+                    0 AS entrada,
+                    0 AS compras,
+                    a.cantidad AS ajustes,
+                    NULL AS id_producto_fab,
+                    4 AS tipo_orden,
+                    a.motivo AS descripcion_mov
+                FROM tblajustes_inventario a
+                CROSS JOIN params
+                WHERE a.id_producto = params.p_id
+                    AND EXTRACT(YEAR FROM a.fecha) = params.p_anio
+            ),
+            aggregated_data AS (
+                SELECT 
+                    cd.fecha_raw,
+                    cd.fecha_time,
+                    cd.fecha,
+                    cd.id_orden,
+                    cd.orden_trabajo,
+                    cd.empresa,
+                    SUM(cd.salida) AS salida,
+                    SUM(cd.entrada) AS entrada,
+                    SUM(cd.compras) AS compras,
+                    SUM(cd.ajustes) AS ajustes,
+                    MAX(cd.id_producto_fab) AS id_producto_fab,
+                    cd.tipo_orden,
+                    MAX(cd.descripcion_mov) AS descripcion_mov
+                FROM combined_data cd
+                GROUP BY 
+                    cd.fecha_raw, cd.fecha_time, cd.fecha, cd.id_orden, cd.orden_trabajo, 
+                    cd.empresa, cd.tipo_orden
+            ),
+            final_data AS (
+                SELECT 
+                    ad.fecha_raw,
+                    ad.fecha_time,
                     ad.fecha,
                     ad.orden_trabajo,
                     ad.empresa,
                     ad.salida,
                     ad.entrada,
                     ad.compras,
+                    ad.ajustes,
                     -- Cálculo Matemático del Stock Acumulado
-                    SUM(ad.compras + ad.entrada - ad.salida) 
+                    SUM(ad.compras + ad.entrada + ad.ajustes - ad.salida) 
                     OVER (
-                        ORDER BY ad.fecha_raw, ad.tipo_orden
+                        ORDER BY ad.fecha_time, ad.tipo_orden
                         ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-                    ) + ad.stock_inicial AS stock,
+                    ) + COALESCE((SELECT stock_inicial FROM stock_base), 0) AS stock,
                     
                     CASE WHEN ad.id_producto_fab IS NOT NULL THEN TRUE ELSE FALSE END AS producto_util,
-                    ad.tipo_orden
+                    ad.tipo_orden,
+                    ad.descripcion_mov
                 FROM aggregated_data ad
             )
             -- 3. SELECCIÓN FINAL CON FORMATEO VISUAL
             SELECT 
                 fecha, 
-                -- NULOS A VACÍOS
                 COALESCE(orden_trabajo, '') AS orden_trabajo,
                 COALESCE(empresa, '') AS empresa,
-                -- CEROS A GUIONES (-) O NÚMEROS FORMATEADOS
-                CASE WHEN salida = 0 THEN '-' ELSE TO_CHAR(salida, 'FM999,999,990.00') END AS salida,
-                CASE WHEN entrada = 0 THEN '-' ELSE TO_CHAR(entrada, 'FM999,999,990.00') END AS entrada,
+                CASE WHEN salida = 0 AND ajustes >= 0 THEN '-' 
+                     WHEN ajustes < 0 THEN TO_CHAR(ABS(ajustes), 'FM999,999,990.00') 
+                     ELSE TO_CHAR(salida, 'FM999,999,990.00') 
+                END AS salida,
+                CASE WHEN entrada = 0 AND ajustes <= 0 THEN '-' ELSE 
+                    TO_CHAR(entrada + CASE WHEN ajustes > 0 THEN ajustes ELSE 0 END, 'FM999,999,990.00') 
+                END AS entrada,
                 CASE WHEN compras = 0 THEN '-' ELSE TO_CHAR(compras, 'FM999,999,990.00') END AS compras,
-                -- STOCK FORMATEADO
                 TO_CHAR(stock, 'FM999,999,990.00') AS stock,
-                producto_util
+                producto_util,
+                descripcion_mov,
+                ajustes
             FROM final_data
-            ORDER BY fecha_raw, tipo_orden;");
+            ORDER BY fecha_time, tipo_orden;");
 
             $e->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
             $e->bindParam(':anio', $anio, PDO::PARAM_INT);
             $e->execute();
-            return $e->fetchAll();
+            
+            $result = $e->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Fetch baseline stock for info
+            $sb = Conexion::ConexionDB()->prepare("
+            WITH params AS (
+                SELECT CAST(:id_producto AS INTEGER) AS p_id, CAST(:anio AS INTEGER) AS p_anio
+            ),
+            stock_historico AS (
+                SELECT COALESCE(SUM(cantidad), 0) AS suma_ajustes
+                FROM tblajustes_inventario WHERE id_producto = (SELECT p_id FROM params) AND EXTRACT(YEAR FROM fecha) < (SELECT p_anio FROM params)
+            ),
+            entradas_historicas AS (
+                SELECT COALESCE(SUM(e.cantidad_entrada), 0) AS suma_entradas
+                FROM tblentradas e JOIN tblfactura f ON e.id_factura = f.id WHERE e.id_producto = (SELECT p_id FROM params) AND EXTRACT(YEAR FROM f.fecha) < (SELECT p_anio FROM params)
+            ),
+            salidas_historicas AS (
+                SELECT COALESCE(SUM(s.cantidad_salida - COALESCE(s.retorno, 0)), 0) AS suma_salidas
+                FROM tblsalidas s JOIN tblboleta b ON s.id_boleta = b.id WHERE s.id_producto = (SELECT p_id FROM params) AND EXTRACT(YEAR FROM b.fecha) < (SELECT p_anio FROM params)
+            )
+            SELECT (sh.suma_ajustes + eh.suma_entradas - sah.suma_salidas) AS stock_inicial
+            FROM stock_historico sh CROSS JOIN entradas_historicas eh CROSS JOIN salidas_historicas sah");
+            $sb->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+            $sb->bindParam(':anio', $anio, PDO::PARAM_INT);
+            $sb->execute();
+            $stock_base = $sb->fetchColumn();
+
+            return [
+                'stock_inicial' => $stock_base !== false ? number_format((float)$stock_base, 2, '.', ',') : '0.00',
+                'data' => $result
+            ];
         } catch (PDOException $e) {
             return array(
                 'status' => 'danger',
@@ -686,122 +757,7 @@ class ModeloInventario
             );
         }
     }
-    /*=============================================
-    INSTALAR TRIGGER HISTÓRICO
-    =============================================*/
-    public static function mdlInstalarTriggerHistorico()
-    {
-        try {
-            $conn = Conexion::ConexionDB();
-
-            // 1. Crear Función
-            $sqlFunc = "CREATE OR REPLACE FUNCTION public.fn_propagar_stock_historico()
-            RETURNS TRIGGER AS \$\$
-            DECLARE
-                r_anio_transaccion INTEGER;
-                r_anio_actual INTEGER;
-                r_delta NUMERIC := 0;
-                r_anio_iter INTEGER;
-                r_ultimo_stock_ini NUMERIC;
-                r_id_producto INTEGER;
-                r_motivo TEXT;
-                r_fecha TIMESTAMP;
-            BEGIN
-                r_anio_actual := EXTRACT(YEAR FROM NOW())::INTEGER;
-                
-                -- Determinar ID, Fecha y Delta según la tabla y operación
-                IF TG_TABLE_NAME = 'tblsalidas' THEN
-                    IF TG_OP = 'DELETE' THEN
-                        r_id_producto := OLD.id_producto;
-                        -- Obtenemos fecha de la boleta relacionada
-                        SELECT fecha INTO r_fecha FROM tblboleta WHERE id = OLD.id_boleta;
-                        -- Borrar salida = Aumenta el stock disponible (Delta Positivo)
-                        r_delta := (OLD.cantidad_salida - COALESCE(OLD.retorno, 0));
-                    ELSIF TG_OP = 'INSERT' THEN
-                        r_id_producto := NEW.id_producto;
-                        SELECT fecha INTO r_fecha FROM tblboleta WHERE id = NEW.id_boleta;
-                        -- Nueva salida = Disminuye el stock (Delta Negativo)
-                        r_delta := - (NEW.cantidad_salida - COALESCE(NEW.retorno, 0));
-                    ELSIF TG_OP = 'UPDATE' THEN
-                        r_id_producto := NEW.id_producto;
-                        SELECT fecha INTO r_fecha FROM tblboleta WHERE id = NEW.id_boleta;
-                        -- Cambio neto: (Nuevo gasto) - (Viejo gasto). Si aumenta gasto, disminuye stock.
-                        r_delta := - ((NEW.cantidad_salida - COALESCE(NEW.retorno, 0)) - (OLD.cantidad_salida - COALESCE(OLD.retorno, 0)));
-                    END IF;
-                
-                ELSIF TG_TABLE_NAME = 'tblentradas' THEN
-                    IF TG_OP = 'DELETE' THEN
-                        r_id_producto := OLD.id_producto;
-                        -- En entradas la fecha está en tblfactura
-                        SELECT fecha INTO r_fecha FROM tblfactura WHERE id = OLD.id_factura;
-                        -- Borrar entrada = Disminuye stock (Delta Negativo)
-                        r_delta := - OLD.cantidad_entrada;
-                    ELSIF TG_OP = 'INSERT' THEN
-                        r_id_producto := NEW.id_producto;
-                        SELECT fecha INTO r_fecha FROM tblfactura WHERE id = NEW.id_factura;
-                        -- Nueva entrada = Aumenta stock (Delta Positivo)
-                        r_delta := NEW.cantidad_entrada;
-                    ELSIF TG_OP = 'UPDATE' THEN
-                        r_id_producto := NEW.id_producto;
-                        SELECT fecha INTO r_fecha FROM tblfactura WHERE id = NEW.id_factura;
-                        -- Cambio neto
-                        r_delta := NEW.cantidad_entrada - OLD.cantidad_entrada;
-                    END IF;
-                END IF;
-
-                -- Si no hay fecha (error integridad), usar NOW
-                IF r_fecha IS NULL THEN r_fecha := NOW(); END IF;
-                
-                r_anio_transaccion := EXTRACT(YEAR FROM r_fecha)::INTEGER;
-
-                -- Solo actuar si la transacción es de un año ANTERIOR al actual
-                IF r_anio_transaccion < r_anio_actual AND r_delta <> 0 THEN
-                    
-                    r_motivo := 'Ajuste automático: Cambio en ' || TG_TABLE_NAME || ' de ' || r_anio_transaccion;
-
-                    -- Recorrer años futuros desde (Año transaccion + 1) hasta Año Actual
-                    FOR r_anio_iter IN (r_anio_transaccion + 1) .. r_anio_actual LOOP
-                        
-                        -- Obtener el ÚLTIMO stock inicial registrado para ese año
-                        SELECT stock_ini INTO  r_ultimo_stock_ini
-                        FROM tblstock_inicial
-                        WHERE id_producto = r_id_producto AND anio = r_anio_iter
-                        ORDER BY fecha_registro DESC
-                        LIMIT 1;
-
-                        -- Si no existe registro previo para ese año, quizás deberíamos tomar el del año anterior, 
-                        -- pero para simplificar asumimos que '0' si no hay nada o ignoramos.
-                        -- Aquí asumiremos que si existe historial, lo ajustamos.
-                        
-                        IF r_ultimo_stock_ini IS NOT NULL THEN
-                           INSERT INTO tblstock_inicial (id_producto, anio, stock_ini, fecha_registro, motivo)
-                           VALUES (r_id_producto, r_anio_iter, r_ultimo_stock_ini + r_delta, NOW(), r_motivo);
-                        END IF;
-
-                    END LOOP;
-                END IF;
-
-                RETURN NULL;
-            END;
-            \$\$ LANGUAGE plpgsql;
-            ";
-            $conn->exec($sqlFunc);
-
-            // 2. Crear Triggers (Dropear si existen para evitar duplicados)
-            $conn->exec("DROP TRIGGER IF EXISTS tr_propagar_stock_historico_salida ON tblsalidas");
-            $conn->exec("CREATE TRIGGER tr_propagar_stock_historico_salida
-                         AFTER INSERT OR UPDATE OR DELETE ON tblsalidas
-                         FOR EACH ROW EXECUTE PROCEDURE public.fn_propagar_stock_historico()");
-
-            $conn->exec("DROP TRIGGER IF EXISTS tr_propagar_stock_historico_entrada ON tblentradas");
-            $conn->exec("CREATE TRIGGER tr_propagar_stock_historico_entrada
-                         AFTER INSERT OR UPDATE OR DELETE ON tblentradas
-                         FOR EACH ROW EXECUTE PROCEDURE public.fn_propagar_stock_historico()");
-            return array('status' => 'success', 'm' => 'Triggers históricos instalados correctamente');
-        } catch (PDOException $e) {
-            return array('status' => 'error', 'm' => $e->getMessage());
-        }
-    }
+    
 
     public static function mdlObtenerIvaConfiguracion()
     {

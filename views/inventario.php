@@ -184,27 +184,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="col-sm-6" id="divStockIni">
-                                            <div class="input-data">
-                                                <?php echo $id_user ? '' : '<span class="input-group-text" style="position:absolute;top:56%;right:12px"><i class="fas fa-lock"></i></span>'; ?>
-                                                <input autocomplete="off" id="stock_ini" name="stock_ini"
-                                                    class="input-nuevo" type="text" class="input-nuevo" type="text"
-                                                    readonly> <label class="label">
-                                                    <i class="fas fa-boxes-stacked"></i> Cantidad Inicial
-
-                                                    <i class="fas fa-pen-to-square text-secondary ml-2"
-                                                        id="iconStockHistory"
-                                                        style="cursor: pointer; font-size: 1.2rem; transition: 0.3s; pointer-events: auto; position: relative; z-index: 100;"
-                                                        title="Gestionar versiones e historial"
-                                                        onclick="event.preventDefault(); event.stopPropagation(); abrirModalVersionesStock();">
-                                                    </i>
-                                                </label>
-
-                                                <div class="invalid-feedback">*Campo obligatorio.</div>
-                                            </div>
-                                        </div>
-                                        <div class="col col-6">
+                                     
                                             <div class="input-data">
                                                 <input type="text" id="stock" maxlength="10" inputmode="numeric"
                                                     autocomplete="off" class="input-nuevo"
@@ -214,8 +194,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                                 <label class="label"><i class="fas fa-cubes"></i> Cantidad</label>
                                                 <div class="invalid-feedback">*Campo obligatorio.</div>
                                             </div>
-                                        </div>
-                                    </div>
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <div class=" input-data" style="margin-bottom:26px">
@@ -467,6 +445,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                             data-dropdown-css-class="select2-dark">
                         </select>
                     </div>
+                    <div class="col-auto">
+                        <button id="btnAjusteDesdeHistorial" class="btn bg-gradient-gray-dark" type="button" style="margin-top: 2px;">
+                            <i class="fas fa-boxes"></i> Ajuste de Inventario
+                        </button>
+                    </div>
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -621,12 +604,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         <div class="modal-content">
             <div class="modal-header bg-gradient-green align-items-center">
                 <h5 class="modal-title" id="modalVersionesStockLabel">
-                    <i class="fas fa-code-branch"></i> Versiones de Stock Inicial
+                    <i class="fas fa-boxes"></i> Ajustes de Inventario
                 </h5>
-                <div class="ml-3">
-                    <select id="cboAnioVersion" class="form-control select2 select2-dark"
-                        data-dropdown-css-class="select2-dark" style="width: 100px;"></select>
-                </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -637,28 +616,28 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                         <div class="input-data m-0">
                             <input autocomplete="off" id="inputNuevoStockIni" class="input-nuevo" type="text" min="0"
                                 required="">
-                            <label class="label"><i class="fas fa-boxes-stacked"></i> Stock inicial</label>
+                            <label class="label"><i class="fas fa-boxes-stacked"></i> Stock Físico Real</label>
                         </div>
                     </div>
                     <div class="col">
                         <div class="input-data m-0">
                             <!-- Usamos textarea pero con el estilo input-data si es posible, o un input grande -->
                             <input autocomplete="off" id="inputMotivoStock" class="input-nuevo" type="text" required="">
-                            <label class="label"><i class="fas fa-comment-alt"></i> Motivo del cambio</label>
+                            <label class="label"><i class="fas fa-comment-alt"></i> Motivo del ajuste</label>
                         </div>
                     </div>
                     <div class="col-auto pt-4">
-                        <button class="btn bg-gradient-green" type="button" id="btnCrearVersionStock">
-                            <i class="fas fa-plus"></i> Nueva Versión
+                        <button class="btn bg-gradient-green" type="button" onclick="crearNuevaVersionStock()">
+                            <i class="fas fa-plus"></i> Registrar Ajuste
                         </button>
                     </div>
                 </div>
                 <hr>
-                <h6 class="mb-2"><i class="fas fa-history"></i> Historial de Versiones</h6>
+                <h6 class="mb-2"><i class="fas fa-history"></i> Historial de Ajustes</h6>
                 <div id="containerVersionesStock" class="timeline-container">
                     <!-- Las versiones se cargarán dinámicamente aquí -->
                     <div class="text-center text-muted" id="sinVersiones">
-                        <i class="fas fa-inbox"></i> No hay versiones registradas
+                        <i class="fas fa-inbox"></i> No hay ajustes registrados
                     </div>
                 </div>
             </div>
@@ -917,32 +896,18 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         }
 
         idProductoActualStock = idProducto;
-        const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
-
-        if ($('#cboAnioVersion option').length === 0 && typeof datos_anio !== 'undefined') {
-            $('#cboAnioVersion').select2({
-                data: datos_anio,
-                minimumResultsForSearch: -1
-            });
-
-            $('#cboAnioVersion').on('change', function () {
-                cargarVersionesStockInicial(idProductoActualStock, this.value);
-            });
-        }
-        $('#cboAnioVersion').val(year_val).trigger('change');
 
         $('#modalVersionesStock').modal('show');
-        cargarVersionesStockInicial(idProducto, year_val);
+        cargarVersionesStockInicial(idProducto);
     }
 
     // Cargar versiones del servidor
-    function cargarVersionesStockInicial(idProducto, anio) {
+    function cargarVersionesStockInicial(idProducto) {
         fetch('controllers/inventario.controlador.php', {
             method: 'POST',
             body: new URLSearchParams({
                 accion: 31,
-                id_producto: idProducto,
-                anio: anio
+                id_producto: idProducto
             })
         })
             .then(r => r.json())
@@ -965,12 +930,12 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             <div class="card card-outline card-${idx === 0 ? 'success' : 'secondary'} mb-2">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <strong>Versión ${v.numero_version}</strong>
+                        <strong>Ajuste ${v.numero_version}</strong>
                         <small class="text-muted">${v.fecha_registro}</small>
                     </h5>
                 </div>
                 <div class="card-body">
-                    <p class="mb-2"><strong>Stock:</strong> ${v.stock_ini}</p>
+                    <p class="mb-2"><strong>Ajuste Neto (Delta):</strong> <span class="${v.delta > 0 ? 'text-success' : 'text-danger'} font-weight-bold">${v.delta > 0 ? '+' : ''}${v.delta}</span></p>
                     <div class="motivo-display">
                         <p class="mb-2"><strong>Motivo:</strong> ${v.motivo || 'Sin especificar'}</p>
                         <button type="button" class="btn bg-gradient-warning btn-edit-motivo" data-id="${v.id}" title="Editar">
@@ -1019,7 +984,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
         document.querySelectorAll('.btn-delete-version').forEach(btn => {
             btn.onclick = function () {
-                if (confirm('¿Eliminar versión?')) {
+                if (confirm('¿Eliminar ajuste? Esto revertirá el cambio en el inventario actual.')) {
                     eliminarVersionStock(this.dataset.id);
                 }
             };
@@ -1039,8 +1004,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             .then(data => {
                 if (data.status === 'success') {
                     mostrarToast('success', 'Completado', 'fa-check', 'Actualizado correctamente', 3000);
-                    const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
-                    cargarVersionesStockInicial(idProductoActualStock, year_val);
+                    cargarVersionesStockInicial(idProductoActualStock);
                 } else {
                     mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
                 }
@@ -1058,9 +1022,9 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'success') {
-                    mostrarToast('success', 'Completado', 'fa-check', 'Versión eliminada', 3000);
-                    const year_val = typeof year !== 'undefined' ? year : new Date().getFullYear();
-                    cargarVersionesStockInicial(idProductoActualStock, year_val);
+                    mostrarToast('success', 'Completado', 'fa-check', data.m, 3000);
+                    cargarVersionesStockInicial(idProductoActualStock);
+                    tabla.ajax.reload(null, false);
                 } else {
                     mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
                 }
@@ -1072,35 +1036,32 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         const motivo = document.getElementById('inputMotivoStock').value;
 
         if (!stock) {
-            mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Ingrese un valor de stock', 3000);
+            mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Ingrese el stock físico real', 3000);
             return;
         }
-
-        const year_val = $('#cboAnioVersion').val() || (typeof year !== 'undefined' ? year : new Date().getFullYear());
 
         fetch('controllers/inventario.controlador.php', {
             method: 'POST',
             body: new URLSearchParams({
                 accion: 32,
                 id_producto: idProductoActualStock,
-                anio: year_val,
                 stock_ini: stock,
-                motivo: motivo || 'Ajuste'
+                motivo: motivo || 'Ajuste manual de inventario'
             })
         })
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'success') {
-                    mostrarToast('success', 'Éxito', 'fa-check', 'Versión creada correctamente', 3000);
+                    mostrarToast('success', 'Éxito', 'fa-check', data.m, 3000);
                     document.getElementById('inputNuevoStockIni').value = '';
                     document.getElementById('inputMotivoStock').value = '';
-                    cargarVersionesStockInicial(idProductoActualStock, year_val);
-
-                    const anioActual = new Date().getFullYear();
-                    if (parseInt(year_val) === anioActual) {
-                        const stockInput = document.getElementById('stock_ini');
-                        if (stockInput) stockInput.value = stock;
-                    }
+                    cargarVersionesStockInicial(idProductoActualStock);
+                    tabla.ajax.reload(null, false);
+                    if (typeof tblHistorial !== 'undefined') tblHistorial.ajax.reload(null, false);
+                    
+                    // Actualizar el valor visual en el formulario principal también
+                    const stockInput = document.getElementById('stock');
+                    if (stockInput) stockInput.value = stock;
                 } else {
                     mostrarToast('danger', 'Error', 'fa-xmark', data.m, 4000);
                 }
@@ -1111,8 +1072,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         let anio = year;
         let id_producto = 0;
         const checkbox = document.getElementById('check_stock');
-        const icona = document.getElementById('stock_icon');
-        const divStockIni = document.getElementById('divStockIni');
 
         checkbox.addEventListener('change', function () {
             if (this.checked) {
@@ -1138,12 +1097,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             });
 
             tabla.on('draw.dt', function () {
-                if ($(window).width() >= 768) {
-                    const b = document.body;
-                    const s = b.scrollHeight + 20;
-                    const w = window.innerHeight;
-                    handleScroll(b, s, w);
-                }
                 let tablaData = tabla.rows().data().toArray();
             });
         }
@@ -1152,13 +1105,28 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             "ajax": {
                 "url": "controllers/inventario.controlador.php",
                 "type": "POST",
-                "dataSrc": '',
+                "dataSrc": function (json) {
+                    const stockInicialElement = document.getElementById('stockInicial');
+                    if (stockInicialElement) {
+                        stockInicialElement.textContent = json.stock_inicial || '0.00';
+                    }
+                    return json.data || [];
+                },
                 data: function (data) {
                     data.accion = 12;
                     data.anio = anio;
                     data.id_producto = id_producto;
                 }
             },
+            "columns": [
+                { "data": "fecha" },
+                { "data": "orden_trabajo" },
+                { "data": "empresa" },
+                { "data": "salida" },
+                { "data": "entrada" },
+                { "data": "compras" },
+                { "data": "stock" }
+            ],
             "dom": 't',
             "responsive": false,
             "pageLength": 10000,
@@ -1219,7 +1187,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             codigo = document.getElementById('codigo'),
             descripcion = document.getElementById('nombre'),
             stock = document.getElementById('stock'),
-            stock_ini = document.getElementById('stock_ini'),
+           
             stock_min = document.getElementById('stock_min'),
             stock_mal = document.getElementById('stock_mal'),
             cboCategoria = document.getElementById('cboCategoria'),
@@ -1285,30 +1253,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             let a = this.options[this.selectedIndex].text
             anio = a
             tblHistorial.ajax.reload();
-            const params = new URLSearchParams();
-            params.append('accion', 13);
-            params.append('anio', anio);
-            params.append('id_producto', id_producto);
-
-            fetch('controllers/inventario.controlador.php', {
-                method: 'POST',
-                body: params
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const stockInicialElement = document.getElementById('stockInicial');
-                    if (Array.isArray(data) && data.length > 0) {
-                        const stock_ini_r = data[0].stock_ini || 0;
-                        let r = stock_ini_r.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        stockInicialElement.textContent = r;
-                    } else {
-                        stockInicialElement.textContent = '0.00';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-
         });
 
         $(document).on('click', '#tblInventario tbody span.badge-info', function () {
@@ -1598,11 +1542,15 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
 
         $(modalS).on('hidden.bs.modal', function (e) {
             e.preventDefault();
-            if (scroll) {
-                const navbar = body.querySelector('.navbar')
-                $(body).addClass('modal-open');
-                $(body).css('padding-right', '6px');
-            }
+            // if (scroll) {
+            //     const navbar = body.querySelector('.navbar')
+            //     $(body).addClass('modal-open');
+            //     $(body).css('padding-right', '6px');
+            // }
+        });
+
+        $(modalE).on('show.bs.modal', function () {
+            $('#detalles-tab').tab('show');
         });
 
         const modalVersiones = document.getElementById('modalVersionesStock');
@@ -1610,21 +1558,21 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             document.getElementById('inputNuevoStockIni').focus();
         });
 
-        $(modalVersiones).on('hidden.bs.modal', function (e) {
-            e.preventDefault();
-            if (scroll) {
-                const navbar = body.querySelector('.navbar')
-                $(body).addClass('modal-open');
-                $(body).css('padding-right', '6px');
-            }
-        });
+        // $(modalVersiones).on('hidden.bs.modal', function (e) {
+        //     e.preventDefault();
+        //     if (scroll) {
+        //         const navbar = body.querySelector('.navbar')
+        //         $(body).addClass('modal-open');
+        //         $(body).css('padding-right', '6px');
+        //     }
+        // });
 
         if (btnNuevo) {
             btnNuevo.addEventListener('click', function () {
-                if (scroll) {
-                    const navbar = document.getElementById('navbar-fix');
-                    $(navbar).css('margin-right', '6px');
-                }
+                // if (scroll) {
+                //     const navbar = document.getElementById('navbar-fix');
+                //     $(navbar).css('margin-right', '6px');
+                // }
                 accion_inv = 1;
                 $('#precios-tab').css('display', 'none');
                 medidasProducto = [];
@@ -1634,7 +1582,6 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                     s.classList.remove('select2-warning');
                     s.classList.add('select2-success');
                 });
-                divStockIni.style.display = 'none';
                 form.reset();
                 fileImg.value = '';
                 stock_mal.value = '0';
@@ -1644,10 +1591,10 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
         }
 
         $('#tblInventario tbody').on('click', '.btnEditar', function () {
-            if (scroll) {
-                const navbar = document.getElementById('navbar-fix');
-                $(navbar).css('margin-right', '6px');
-            }
+            // if (scroll) {
+            //     const navbar = document.getElementById('navbar-fix');
+            //     $(navbar).css('margin-right', '6px');
+            // }
             let row = obtenerFila(this, tabla);
             accion_inv = 2;
             $('#precios-tab').css('display', 'block');
@@ -1664,13 +1611,11 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             stock.value = row["stock"];
             stock_min.value = row["stock_min"];
             stock_mal.value = row["stock_mal"];
-            stock_ini.value = row["stock_ini"];
             imgActual = row["img"];
             oldCod = row["codigo"];
             setChange(cboCategoria, row["categoria_id"]);
             setChange(cboUnidad, row["unidad_id"]);
             setChange(cboUbicacion, row["percha_id"]);
-            divStockIni.style.display = 'block';
         });
 
         $('#tblInventario tbody').on('click', '.btnHistorial', function () {
@@ -1684,6 +1629,16 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             id_producto = row["id"];
             setChange(cboAnio, year);
             document.getElementById('descripcionProducto').textContent = descripcion;
+        });
+
+        $('#btnAjusteDesdeHistorial').on('click', function() {
+            if (id_producto && id_producto > 0) {
+                idProductoActualStock = id_producto;
+                $('#modalVersionesStock').modal('show');
+                cargarVersionesStockInicial(id_producto);
+            } else {
+                mostrarToast('warning', 'Advertencia', 'fa-triangle-exclamation', 'Seleccione un producto del listado primero', 3000);
+            }
         });
 
         $('#tblInventario tbody').on('click', '.btnEliminar', function () {

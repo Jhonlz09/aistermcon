@@ -69,9 +69,9 @@ class ControladorInventario
         
         if ($data['status'] == 'success') {
             // Crear la primera versión del stock inicial
-            $anio = date('Y');
-            $motivo = isset($_POST['motivo_stock']) ? $_POST['motivo_stock'] : 'Stock inicial ingresado';
-            ModeloInventario::mdlCrearVersionStockInicial($data['id_producto'], $anio, $this->stock, $motivo);
+            // (La tabla de ajustes ya crea el stock inicial internamente si $this->stock > 0, pero si se llama desde aquí, 
+            // ya no llamamos a mdlCrearVersionStockInicial porque mdlAgregarInventario lo hizo).
+            // Comentado: ModeloInventario::mdlCrearVersionStockInicial($data['id_producto'], $anio, $this->stock, $motivo);
             
             if (isset($_POST['medidas'])) {
                 $medidas = json_decode($_POST['medidas'], true);
@@ -80,7 +80,6 @@ class ControladorInventario
                 }
             }
         }
-
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -210,8 +209,7 @@ class ControladorInventario
 
     public function consultarStockIniAnio()
     {
-        $data = ModeloInventario::mdlConsultarStockIniAnio($this->id, $this->anio);
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        echo json_encode([], JSON_UNESCAPED_UNICODE);
     }
 
     public function obtenerMedidasProducto()
@@ -222,13 +220,13 @@ class ControladorInventario
 
     public function obtenerVersionesStockInicial()
     {
-        $data = ModeloInventario::mdlObtenerVersionesStockInicial($this->id, $this->anio);
+        $data = ModeloInventario::mdlObtenerHistorialAjustes($this->id);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     public function crearVersionStockInicial()
     {
-        $data = ModeloInventario::mdlCrearVersionStockInicial($this->id, $this->anio, $this->stock_ini, isset($_POST['motivo']) ? $_POST['motivo'] : 'Ajuste de inventario');
+        $data = ModeloInventario::mdlCrearAjusteInventario($this->id, $this->stock_ini, isset($_POST['motivo']) ? $_POST['motivo'] : 'Ajuste de inventario');
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -236,14 +234,14 @@ class ControladorInventario
     {
         $id_version = isset($_POST['id_version']) ? $_POST['id_version'] : 0;
         $motivo = isset($_POST['motivo']) ? $_POST['motivo'] : '';
-        $data = ModeloInventario::mdlActualizarMotivoCambio($id_version, $motivo);
+        $data = ModeloInventario::mdlActualizarMotivoAjuste($id_version, $motivo);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     public function eliminarVersionStockInicial()
     {
         $id_version = isset($_POST['id_version']) ? $_POST['id_version'] : 0;
-        $data = ModeloInventario::mdlEliminarVersionStockInicial($id_version);
+        $data = ModeloInventario::mdlEliminarAjusteInventario($id_version);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
@@ -355,11 +353,9 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         echo json_encode(ModeloInventario::mdlEliminarMedidaProducto($id_medida), JSON_UNESCAPED_UNICODE);
     } else if ($_POST["accion"] == 31) { // Obtener versiones de stock inicial
         $data->id = $_POST["id_producto"];
-        $data->anio = $_POST["anio"];
         $data->obtenerVersionesStockInicial();
     } else if ($_POST["accion"] == 32) { // Crear nueva versión de stock inicial
         $data->id = $_POST["id_producto"];
-        $data->anio = $_POST["anio"];
         $data->stock_ini = $_POST["stock_ini"];
         $data->crearVersionStockInicial();
     } else if ($_POST["accion"] == 33) { // Actualizar motivo de cambio
@@ -376,7 +372,5 @@ if (isset($_POST["accion"]) && $_POST["accion"] == 0) {
         $data->actualizarPrecio();
     } else if ($_POST["accion"] == 44) { // Calcular Valor Total
         $data->calcularValorTotal();
-    } else if ($_POST["accion"] == 100) { // INSTALAR TRIGGERS
-        echo json_encode(ModeloInventario::mdlInstalarTriggerHistorico());
     }
 }

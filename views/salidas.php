@@ -269,13 +269,7 @@
             });
 
             tabla.on('draw.dt', function () {
-                if ($(window).width() >= 768) {
-                    const b = document.body;
-                    const s = b.scrollHeight + 58;
-                    const w = window.innerHeight;
-
-                    handleScroll(b, s, w);
-                }
+               
 
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('s', JSON.stringify(tablaData));

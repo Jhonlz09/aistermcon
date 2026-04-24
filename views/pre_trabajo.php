@@ -351,14 +351,6 @@
                 },
                 ...configuracionTable
             });
-
-            tabla.on('draw.dt', function() {
-                const b = document.body;
-                const s = b.scrollHeight;
-                const w = window.innerHeight;
-
-                handleScroll(b, s, w);
-            });
         }
         let accion = 0;
         const modal = document.getElementById('modal'),

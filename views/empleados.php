@@ -311,13 +311,6 @@
             });
 
             tabla.on('draw.dt', function() {
-                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
-                    const b = document.body;
-                    const s = b.scrollHeight;
-                    const w = window.innerHeight;
-
-                    handleScroll(b, s, w);
-                }
 
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('empleados', JSON.stringify(tablaData));
@@ -391,14 +384,14 @@
             inputContent.focus();
         });
 
-        $(modalS).on('hidden.bs.modal', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (scroll) {
-                $(body).addClass('modal-open');
-                $(body).css('padding-right', '6px');
-            }
-        });
+        // $(modalS).on('hidden.bs.modal', function(e) {
+        //     e.preventDefault();
+        //     e.stopPropagation();
+        //     if (scroll) {
+        //         $(body).addClass('modal-open');
+        //         $(body).css('padding-right', '6px');
+        //     }
+        // });
 
         $(".new-span").on('click', function() {
             accion_select = 1;

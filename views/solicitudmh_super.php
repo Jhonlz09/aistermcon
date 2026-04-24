@@ -628,10 +628,6 @@
             });
 
             tabla.on('draw.dt', function () {
-                const b = document.body;
-                const s = b.scrollHeight;
-                const w = window.innerHeight;
-                handleScroll(b, s, w);
 
                 $('[data-toggle="tooltip"]').tooltip();
             });

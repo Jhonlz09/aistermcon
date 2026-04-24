@@ -345,15 +345,6 @@
                 ...configuracionTable
             });
 
-            tabla.on('draw.dt', function() {
-                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
-                    const b = document.body;
-                    const s = b.scrollHeight;
-                    const w = window.innerHeight;
-
-                    handleScroll(b, s, w);
-                }
-            });
         }
 
         const form = document.getElementById('formInforme');

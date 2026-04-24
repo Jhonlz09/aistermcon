@@ -1613,12 +1613,7 @@
                     // Escribimos el número en la primera celda de esta fila
                     $('td:eq(0)', row).html(counter);
                 });
-                if ($(window).width() >= 768) { // Verificar si el ancho de la ventana es mayor o igual a 768 píxeles
-                    const b = document.body;
-                    const s = b.scrollHeight;
-                    const w = window.innerHeight;
-                    handleScroll(b, s, w);
-                }
+                if ($(window).width() >= 768) { 
                 let tablaData = tabla.rows().data().toArray();
                 localStorage.setItem('horario', JSON.stringify(tablaData));
             });
