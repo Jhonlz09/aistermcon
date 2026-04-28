@@ -324,7 +324,7 @@
                 },
                 ...configuracionTable
             });
-
+        }
         $('#cboVistaInicio').select2({
             dropdownParent: $('#modalR'),
             placeholder: 'Seleccione'

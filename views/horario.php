@@ -1614,8 +1614,9 @@
                     $('td:eq(0)', row).html(counter);
                 });
                 if ($(window).width() >= 768) { 
-                let tablaData = tabla.rows().data().toArray();
-                localStorage.setItem('horario', JSON.stringify(tablaData));
+                    let tablaData = tabla.rows().data().toArray();
+                    localStorage.setItem('horario', JSON.stringify(tablaData));
+                }
             });
         }
 
