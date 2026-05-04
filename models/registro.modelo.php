@@ -1,6 +1,7 @@
 <?php
 
 require_once "../utils/database/conexion.php";
+require_once "../models/proveedor_productos.modelo.php";
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -100,6 +101,9 @@ class ModeloRegistro
                 if (!$stmtE->execute()) {
                     throw new Exception("Error al guardar el detalle del producto ID: " . $id);
                 }
+
+                // Actualizar precio referencial en tblproveedor_productos (fire-and-forget)
+                ModeloProveedorProductos::mdlActualizarPrecioReferencial($conexion, $proveedor, $id, $precio, $fechaHora);
             }
 
             // 5. COMMIT (Confirmar cambios si todo salió bien)

@@ -785,6 +785,23 @@
                     width: 'auto',
                 })
 
+                // Cargar catálogo del proveedor al seleccionarlo (para autocomplete inteligente en compras)
+                $(cboProveedor).on('change', function () {
+                    const idProv = $(this).val();
+                    window.items_proveedor = {};
+                    if (idProv && idProv != '0' && selectedTab === '1') {
+                        $.ajax({
+                            url: 'controllers/proveedor_productos.controlador.php',
+                            method: 'POST',
+                            data: { accion: 6, id_proveedor: idProv },
+                            dataType: 'json',
+                            success: function (data) {
+                                window.items_proveedor = data || {};
+                            }
+                        });
+                    }
+                });
+
                 $(cboFab).select2({
                     placeholder: 'SELECCIONE',
                     width: 'auto',
@@ -1868,7 +1885,6 @@
                                 e.stopImmediatePropagation();
                                 $('#imgProductoModal').attr('src', $(this).attr('data-img-src'));
                                 $('#modalImagenTitulo').text($(this).attr('data-img-label'));
-                                // Asegura que Bootstrap modal se dispare después de actualizar contenido
                                 setTimeout(function () {
                                     if (!$('#modalImagenProducto').hasClass('show')) {
                                         $('#modalImagenProducto').modal('show');
@@ -1879,8 +1895,24 @@
                             $thumb = $("<div style='width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:#f0f0f0;'>").append($("<i style='color:#555;font-size:1.5rem;' class='fas fa-xl fa-image-slash'></i>"));
                         }
                         const $text = $("<div style='flex:1;min-width:0;'>");
-                        $text.append($("<div style='font-weight:600;word-wrap:break-word;white-space:normal;line-height:1.4;'>").text(item.label));
-                        $text.append($("<div style='font-size:0.95rem;color:#6c7891;'>").html("CANTIDAD: <strong class='large-text'>" + cantidad + "</strong>"));
+
+                        // Si hay proveedor seleccionado y el producto está vinculado, mostrar nombre del proveedor
+                        if (selectedTab === '1' && window.items_proveedor && window.items_proveedor[item.id]) {
+                            let provData = window.items_proveedor[item.id];
+                            let nombreMostrar = provData.nombre_prov || item.label;
+                            $text.append($("<div style='font-weight:600;word-wrap:break-word;white-space:normal;line-height:1.4;'>").text(nombreMostrar));
+                            if (nombreMostrar !== item.label) {
+                                $text.append($("<div style='font-size:0.8rem;color:#999;margin-top:1px;'>").text(item.label));
+                            }
+                            $text.append($("<div style='font-size:0.95rem;color:#6c7891;'>").html("CANTIDAD: <strong class='large-text'>" + cantidad + "</strong>"));
+                            let provLabel = '<span style="color:#28a745;font-weight:600;">✓ $' + parseFloat(provData.precio_ref).toFixed(2) + '</span>';
+                            if (provData.codigo_prov) provLabel += ' · <span style="color:#6c7891;">' + provData.codigo_prov + '</span>';
+                            $text.append($("<div style='font-size:0.85rem;margin-top:1px;'>").html(provLabel));
+                        } else {
+                            $text.append($("<div style='font-weight:600;word-wrap:break-word;white-space:normal;line-height:1.4;'>").text(item.label));
+                            $text.append($("<div style='font-size:0.95rem;color:#6c7891;'>").html("CANTIDAD: <strong class='large-text'>" + cantidad + "</strong>"));
+                        }
+
                         $inner.append($thumb).append($text);
                         $node.append($inner).appendTo(ul);
                         return $node;
@@ -2472,6 +2504,8 @@
                             div_prod_fab.style.display = 'none';
                             if (selectedTab === '1') {
                                 btnCancelarTrans.style.display = 'none'
+                                // Cargar catálogo del proveedor si ya hay uno seleccionado
+                                $(cboProveedor).trigger('change');
                             } else {
                                 btnCancelarTrans.style.display = 'block'
                             }
@@ -2598,8 +2632,11 @@
                         ];
 
                         if (tabla === tblCompra) {
+                            // Determinar precio: usar precio proveedor si existe, sino 0
+                            let precioDefault = (respuesta._precio_proveedor && parseFloat(respuesta._precio_proveedor) > 0)
+                                ? parseFloat(respuesta._precio_proveedor).toFixed(2) : '0';
                             nuevaFila.push(
-                                '$<input type="text" class="form-control text-center d-inline precio input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,5)" value="0">',
+                                '$<input type="text" class="form-control text-center d-inline precio input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,5)" value="' + precioDefault + '">',
                                 '$<input type="text" class="form-control text-center d-inline envio input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">',      // Envío
                                 '$<input type="text" class="form-control text-center d-inline cargo input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">',
                                 '$<input type="text" class="form-control text-center d-inline descuento input-table-compra" inputmode="numeric" autocomplete="off" onpaste="validarPegado(this, event)" onkeydown="validarTecla(event,this)" oninput="validarNumber(this,/[^0-9.]/g,false,2)" value="0">',  // Descuento
@@ -2721,6 +2758,10 @@
                                     audio.play();
                                     if (barras) inputBarras.disabled = true;
                                     if (selectedTab === '1') {
+                                        // Auto-rellenar precio del proveedor si existe la asociación
+                                        if (window.items_proveedor && window.items_proveedor[respuesta['id']]) {
+                                            respuesta._precio_proveedor = window.items_proveedor[respuesta['id']].precio_ref;
+                                        }
                                         agregarFila(respuesta, tblCompra);
                                     } else if (selectedTab === '2') {
                                         agregarFila(respuesta, tblOut);

@@ -157,6 +157,10 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     aria-selected="false">PRECIOS</a>
                             </li>
                         <?php endif; ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="proveedores-tab" data-toggle="pill" href="#proveedores_prod" role="tab"
+                                aria-selected="false">PROVEEDORES</a>
+                        </li>
                     </ul>
                     <div class="tab-content" id="tabInventarioContent">
                         <div class="tab-pane fade show active" id="detalles" role="tabpanel">
@@ -415,6 +419,34 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                             </table>
                         </div>
                         <?php endif; ?>
+
+                        <!-- Pestaña PROVEEDORES -->
+                        <div class="tab-pane fade" id="proveedores_prod" role="tabpanel">
+                            <div class="row mt-3 mb-2">
+                                <div class="col-md-6 ui-front">
+                                    <label class="col-form-label combo" for="searchProvAsociado">
+                                        <i class="fas fa-magnifying-glass-plus"></i> Asociar proveedor
+                                    </label>
+                                    <input type="search" class="form-control form-control-sm" id="searchProvAsociado"
+                                        placeholder="Escriba nombre del proveedor..." autocomplete="off"
+                                        style="border-bottom: 2px solid var(--select-border-bottom);">
+                                </div>
+                            </div>
+                            <table id="tblProveedoresProd" class="table table-sm table-bordered table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" style="width:40px">Nº</th>
+                                        <th>PROVEEDOR</th>
+                                        <th class="text-center">CÓD. PROVEEDOR</th>
+                                        <th>NOMBRE COMERCIAL</th>
+                                        <th class="text-center">PRECIO UNI. REF.</th>
+                                        <th class="text-center">ÚLT. COMPRA</th>
+                                        <th class="text-center" style="width:80px">ACCIONES</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
 
                     </div>
                 </div>
@@ -1696,6 +1728,8 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                 cargarAutocompletado();
                 medidasProducto = [];
                 actualizarListaMedidas();
+                // Guardar cambios de proveedores si la pestaña tiene datos
+                guardarProveedoresInv();
             });
         });
 
@@ -1866,6 +1900,175 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                             }
                         } catch (e) {
                             mostrarToast('danger', 'Error', 'fa-times', 'Error desconocido', 3000);
+                        }
+                    });
+                }
+            });
+        });
+
+        // ===== PESTAÑA PROVEEDORES EN FICHA DE PRODUCTO =====
+        let tblProvProd;
+        let provTabLoaded = false;
+
+        // Cuando se abre la pestaña PROVEEDORES
+        $('#proveedores-tab').on('shown.bs.tab', function () {
+            const idProducto = $('#id').val();
+            if (!idProducto) return;
+
+            // Destruir y recrear la tabla
+            if (tblProvProd) {
+                tblProvProd.destroy();
+                $('#tblProveedoresProd tbody').empty();
+            }
+            tblProvProd = $('#tblProveedoresProd').DataTable({
+                ajax: {
+                    url: 'controllers/proveedor_productos.controlador.php',
+                    type: 'POST',
+                    data: { accion: 5, id_producto: idProducto },
+                    dataSrc: function (json) {
+                        if (json && json.status === 'danger') return [];
+                        return json;
+                    }
+                },
+                dom: 't',
+                ordering: false,
+                paging: false,
+                autoWidth: false,
+                language: { emptyTable: 'No hay proveedores asociados a este producto' },
+                columns: [
+                    { data: null, className: 'text-center', render: function (d, t, r, m) { return m.row + 1; } },
+                    { data: 'nombre_proveedor_empresa' },
+                    { data: 'codigo_proveedor', className: 'text-center',
+                      render: function (data) { return '<input type="text" class="form-control form-control-sm text-center inp-cod-prov-inv" value="' + (data || '') + '" style="max-width:10rem;border-bottom:2px solid var(--select-border-bottom);">'; }
+                    },
+                    { data: 'nombre_proveedor',
+                      render: function (data) { return '<input type="text" class="form-control form-control-sm inp-nom-prov-inv" value="' + (data || '') + '" style="min-width:120px;border-bottom:2px solid var(--select-border-bottom);">'; }
+                    },
+                    { data: 'precio_referencial', className: 'text-center',
+                      render: function (data) { return '$<input type="text" class="form-control form-control-sm text-center d-inline inp-precio-ref-inv" value="' + (parseFloat(data) || 0).toFixed(2) + '" inputmode="numeric" oninput="validarNumber(this,/[^0-9.]/g)" style="width:5rem;border-bottom:2px solid var(--select-border-bottom);">'; }
+                    },
+                    { data: 'ultima_compra', className: 'text-center text-nowrap',
+                      render: function (data) { return data || '<span class="text-muted">—</span>'; }
+                    },
+                    { data: null, className: 'text-center',
+                      render: function () {
+                        return '<center style="white-space:nowrap">' +
+                          '<button type="button" class="btn btn-sm bg-gradient-danger btnDesasociarProvInv" title="Desasociar"><i class="fa-solid fa-link-slash"></i></button>' +
+                          '</center>';
+                      }
+                    }
+                ]
+            });
+
+            // Autocomplete para asociar proveedores
+            let searchProv = $('#searchProvAsociado');
+            if (searchProv.data('ui-autocomplete')) {
+                searchProv.autocomplete('destroy');
+            }
+            searchProv.val('');
+
+            // Obtener proveedores desde localStorage (cargado por la tabla de proveedores)
+            let proveedoresData = [];
+            try {
+                let stored = localStorage.getItem('proveedores');
+                if (stored) {
+                    proveedoresData = JSON.parse(stored).map(p => ({
+                        id: p.id || p[0],
+                        label: p.nombre || p[2],
+                        value: p.nombre || p[2]
+                    }));
+                }
+            } catch (e) { }
+
+            searchProv.autocomplete({
+                source: function (request, response) {
+                    const input = request.term.toLowerCase().trim();
+                    let resultados = proveedoresData.filter(p => p.label.toLowerCase().includes(input));
+                    response(resultados);
+                },
+                minLength: 1,
+                autoFocus: true,
+                select: function (event, ui) {
+                    $.ajax({
+                        url: 'controllers/proveedor_productos.controlador.php',
+                        method: 'POST',
+                        data: {
+                            accion: 2,
+                            id_proveedor: ui.item.id,
+                            id_producto: idProducto,
+                            codigo_proveedor: '',
+                            nombre_proveedor: '',
+                            precio_referencial: 0
+                        },
+                        dataType: 'json',
+                        success: function (r) {
+                            mostrarToast(r.status,
+                                r.status === 'success' ? 'Completado' : 'Error',
+                                r.status === 'success' ? 'fa-check' : 'fa-xmark',
+                                r.m);
+                            if (r.status === 'success' && tblProvProd) {
+                                tblProvProd.ajax.reload(null, false);
+                            }
+                        }
+                    });
+                    $(this).val('');
+                    return false;
+                }
+            });
+        });
+
+        // Marcar filas como modificadas cuando el usuario edita un input
+        $('#tblProveedoresProd').on('input', '.inp-cod-prov-inv, .inp-nom-prov-inv, .inp-precio-ref-inv', function () {
+            $(this).closest('tr').addClass('prov-dirty');
+        });
+
+        // Guardar solo las filas modificadas en una sola petición batch
+        function guardarProveedoresInv() {
+            if (!tblProvProd) return;
+            let dirtyRows = $('#tblProveedoresProd tbody tr.prov-dirty');
+            if (dirtyRows.length === 0) return;
+
+            let items = [];
+            dirtyRows.each(function () {
+                let rowData = tblProvProd.row(this).data();
+                let $tr = $(this);
+                items.push({
+                    id: rowData.id,
+                    codigo_proveedor: $tr.find('.inp-cod-prov-inv').val().trim(),
+                    nombre_proveedor: $tr.find('.inp-nom-prov-inv').val().trim(),
+                    precio_referencial: $tr.find('.inp-precio-ref-inv').val().trim()
+                });
+            });
+
+            $.ajax({
+                url: 'controllers/proveedor_productos.controlador.php',
+                method: 'POST',
+                data: { accion: 7, items: JSON.stringify(items) },
+                dataType: 'json',
+                success: function (r) {
+                    if (r.status === 'success') {
+                        dirtyRows.removeClass('prov-dirty');
+                        tblProvProd.ajax.reload(null, false);
+                    }
+                }
+            });
+        }
+
+        // Desasociar proveedor desde ficha de producto
+        $('#tblProveedoresProd').on('click', '.btnDesasociarProvInv', function () {
+            let row = tblProvProd.row($(this).closest('tr'));
+            let data = row.data();
+            confirmarEliminar('esta', 'asociación', function (r) {
+                if (r) {
+                    $.ajax({
+                        url: 'controllers/proveedor_productos.controlador.php',
+                        method: 'POST',
+                        data: { accion: 3, id: data.id },
+                        dataType: 'json',
+                        success: function (r) {
+                            mostrarToast(r.status, r.status === 'success' ? 'Completado' : 'Error',
+                                r.status === 'success' ? 'fa-check' : 'fa-xmark', r.m);
+                            if (r.status === 'success') tblProvProd.ajax.reload(null, false);
                         }
                     });
                 }

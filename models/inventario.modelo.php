@@ -550,17 +550,26 @@ class ModeloInventario
                   AND EXTRACT(YEAR FROM f.fecha) < (SELECT p_anio FROM params)
             ),
             salidas_historicas AS (
-                SELECT COALESCE(SUM(s.cantidad_salida - COALESCE(s.retorno, 0)), 0) AS suma_salidas
+                SELECT COALESCE(SUM(s.cantidad_salida), 0) AS suma_salidas
                 FROM tblsalidas s
                 JOIN tblboleta b ON s.id_boleta = b.id
                 WHERE s.id_producto = (SELECT p_id FROM params)
                   AND EXTRACT(YEAR FROM b.fecha) < (SELECT p_anio FROM params)
             ),
+            retornos_historicos AS (
+                SELECT COALESCE(SUM(s.retorno), 0) AS suma_retornos
+                FROM tblsalidas s
+                JOIN tblboleta b ON s.id_boleta = b.id
+                WHERE s.id_producto = (SELECT p_id FROM params)
+                  AND s.retorno > 0
+                  AND EXTRACT(YEAR FROM b.fecha_retorno) < (SELECT p_anio FROM params)
+            ),
             stock_base AS (
-                SELECT (sh.suma_ajustes + eh.suma_entradas - sah.suma_salidas) AS stock_inicial
+                SELECT (sh.suma_ajustes + eh.suma_entradas + rh.suma_retornos - sah.suma_salidas) AS stock_inicial
                 FROM stock_historico sh
                 CROSS JOIN entradas_historicas eh
                 CROSS JOIN salidas_historicas sah
+                CROSS JOIN retornos_historicos rh
             ),
             combined_data AS (
                 -- Salidas
@@ -736,11 +745,15 @@ class ModeloInventario
                 FROM tblentradas e JOIN tblfactura f ON e.id_factura = f.id WHERE e.id_producto = (SELECT p_id FROM params) AND EXTRACT(YEAR FROM f.fecha) < (SELECT p_anio FROM params)
             ),
             salidas_historicas AS (
-                SELECT COALESCE(SUM(s.cantidad_salida - COALESCE(s.retorno, 0)), 0) AS suma_salidas
+                SELECT COALESCE(SUM(s.cantidad_salida), 0) AS suma_salidas
                 FROM tblsalidas s JOIN tblboleta b ON s.id_boleta = b.id WHERE s.id_producto = (SELECT p_id FROM params) AND EXTRACT(YEAR FROM b.fecha) < (SELECT p_anio FROM params)
+            ),
+            retornos_historicos AS (
+                SELECT COALESCE(SUM(s.retorno), 0) AS suma_retornos
+                FROM tblsalidas s JOIN tblboleta b ON s.id_boleta = b.id WHERE s.id_producto = (SELECT p_id FROM params) AND s.retorno > 0 AND EXTRACT(YEAR FROM b.fecha_retorno) < (SELECT p_anio FROM params)
             )
-            SELECT (sh.suma_ajustes + eh.suma_entradas - sah.suma_salidas) AS stock_inicial
-            FROM stock_historico sh CROSS JOIN entradas_historicas eh CROSS JOIN salidas_historicas sah");
+            SELECT (sh.suma_ajustes + eh.suma_entradas + rh.suma_retornos - sah.suma_salidas) AS stock_inicial
+            FROM stock_historico sh CROSS JOIN entradas_historicas eh CROSS JOIN salidas_historicas sah CROSS JOIN retornos_historicos rh");
             $sb->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
             $sb->bindParam(':anio', $anio, PDO::PARAM_INT);
             $sb->execute();

@@ -78,7 +78,7 @@ function limpiar(btn = false) {
   autoSolicitudOut.value = ""
   if (selectedTab === "1") {
     setChange(cboProveedores, 0);
-    nro_factura.value = "";
+    nro_fac.value = "";
   } else if (selectedTab === "2") {
   
     setChange(cboConductor, conductorPorDefecto);
