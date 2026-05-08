@@ -240,6 +240,34 @@ class ModeloProveedorProductos
     }
 
     /**
+     * Lista productos del proveedor formateados para la tabla de catálogo en el panel de compras.
+     * Incluye datos del inventario necesarios para agregarFila(): id, codigo, nombre (unidad), descripcion, precio.
+     */
+    static public function mdlListarCatalogoCompra($id_proveedor)
+    {
+        try {
+            $stmt = Conexion::ConexionDB()->prepare("
+                SELECT 
+                    pp.id_producto AS id,
+                    pp.codigo_proveedor,
+                    pp.nombre_proveedor,
+                    pp.precio_referencial,
+                    i.codigo,
+                    i.descripcion                   
+                FROM tblproveedor_productos pp
+                INNER JOIN tblinventario i ON i.id = pp.id_producto
+                WHERE pp.id_proveedor = :id_prov AND pp.estado = true
+                ORDER BY i.descripcion
+            ");
+            $stmt->bindParam(':id_prov', $id_proveedor, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return array('status' => 'danger', 'm' => 'Error al listar catálogo: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Asocia automáticamente el producto al proveedor durante el registro de compra.
      * Si la asociación ya existe, actualiza precio y fecha.
      * Si no existe, la crea con el nombre del inventario como nombre_proveedor por defecto.

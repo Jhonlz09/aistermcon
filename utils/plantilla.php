@@ -92,7 +92,7 @@
     ?>
     <script>
         // var calendarInstance = null;
-        var tabla, tblCompra, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblProdFab, tblDetalleFab;
+        var tabla, tblCompra, tblCatalogoProv, tblOut, tblIn, tblReturn, tblDetalleSalida, tblDetalleCompra, tblProdFab, tblDetalleFab;
         var configuracionTable = {};
         let items = [];
         let id_boleta = 0;
@@ -790,6 +790,7 @@
                     const idProv = $(this).val();
                     window.items_proveedor = {};
                     if (idProv && idProv != '0' && selectedTab === '1') {
+                        // Cargar mapa de precios para autocomplete
                         $.ajax({
                             url: 'controllers/proveedor_productos.controlador.php',
                             method: 'POST',
@@ -799,6 +800,19 @@
                                 window.items_proveedor = data || {};
                             }
                         });
+                        // Cargar catálogo DataTable
+                        if (tblCatalogoProv) {
+                            window._catalogoProvId = idProv;
+                            tblCatalogoProv.ajax.url('controllers/proveedor_productos.controlador.php').load();
+                            // Actualizar parámetro del proveedor para próximas cargas
+                        }
+                        $('#card_catalogo_prov').show();
+                    } else {
+                        $('#card_catalogo_prov').hide();
+                        if (tblCatalogoProv) {
+                            tblCatalogoProv.clear().draw();
+                            $('#badge_catalogo_prov').text('0');
+                        }
                     }
                 });
 
@@ -958,6 +972,55 @@
                             dt.clear().draw(); // Esta línea vacía los datos de la tabla
                         }
                     }]
+                });
+
+                // DataTable para catálogo del proveedor (card colapsable arriba de tblCompra)
+                window._catalogoProvId = '0';
+                tblCatalogoProv = $('#tblCatalogoProv').DataTable({
+                    dom: 'ft',
+                    ordering: false,
+                    paging: false,
+                    autoWidth: false,
+                    language: { 
+                        emptyTable: 'Seleccione un proveedor para ver su catálogo',
+                        search: '<i class="fas fa-search"></i>',
+                        searchPlaceholder: 'Filtrar productos...'
+                    },
+                    ajax: {
+                        url: 'controllers/proveedor_productos.controlador.php',
+                        type: 'POST',
+                        data: function (d) {
+                            d.accion = 8;
+                            d.id_proveedor = window._catalogoProvId;
+                        },
+                        dataSrc: function (json) {
+                            if (json && json.status === 'danger') return [];
+                            $('#badge_catalogo_prov').text(json ? json.length : 0);
+                            return json || [];
+                        }
+                    },
+                    columns: [
+                        { data: null, className: 'text-center', render: function(d,t,r,m){ return m.row+1; } },
+                        { data: 'nombre_proveedor' },
+                        { data: 'precio_referencial', className: 'text-center text-nowrap',
+                          render: function(data){ return '$' + (parseFloat(data) || 0).toFixed(2); }
+                        },
+                        { data: null, className: 'text-center',
+                          render: function(){
+                            return '<button type="button" class="btn btn-xs btn-success btnAgregarCatalogo" title="Agregar a compra"><i class="fas fa-plus"></i></button>';
+                          }
+                        }
+                    ]
+                });
+
+                // Click en botón Agregar del catálogo del proveedor
+                $('#tblCatalogoProv').on('click', '.btnAgregarCatalogo', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    let rowData = tblCatalogoProv.row($(this).closest('tr')).data();
+                    if (!rowData) return;
+                    // Reutilizar CargarProductos que maneja duplicados, AJAX y agregarFila internamente
+                    CargarProductos(rowData.codigo);
                 });
 
                 tblOut = $('#tblOut').DataTable({
@@ -2508,8 +2571,12 @@
                                 $(cboProveedor).trigger('change');
                             } else {
                                 btnCancelarTrans.style.display = 'block'
+                                // Ocultar catálogo en tab 5 (editar compra)
+                                $('#card_catalogo_prov').hide();
                             }
                         } else if (selectedTab === '2' || selectedTab === '4') {
+                            // Ocultar catálogo para tabs que no son compra
+                            $('#card_catalogo_prov').hide();
                             div_orden.style.display = 'block';
                             div_proveedor.style.display = 'none';
                             div_fecha.style.display = 'block'

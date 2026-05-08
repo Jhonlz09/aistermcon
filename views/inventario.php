@@ -157,10 +157,12 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
                                     aria-selected="false">PRECIOS</a>
                             </li>
                         <?php endif; ?>
+                        <?php if (isset($_SESSION["crear10"]) && $_SESSION["crear10"] === true): ?>
                         <li class="nav-item">
                             <a class="nav-link" id="proveedores-tab" data-toggle="pill" href="#proveedores_prod" role="tab"
                                 aria-selected="false">PROVEEDORES</a>
                         </li>
+                        <?php endif; ?>
                     </ul>
                     <div class="tab-content" id="tabInventarioContent">
                         <div class="tab-pane fade show active" id="detalles" role="tabpanel">

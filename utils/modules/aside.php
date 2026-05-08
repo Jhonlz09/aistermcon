@@ -336,6 +336,32 @@
                                                     <?php else: ?>
                                                         <div id="form-1" class="card-body form-container">
                                                         <?php endif; ?>
+                                                        <!-- Card Catálogo del Proveedor (colapsable, solo visible en tab Compra) -->
+                                                        <div id="card_catalogo_prov" class="card card-outline card-success collapsed-card mb-2" style="display:none;">
+                                                            <div class="card-header py-1" data-card-widget="collapse" style="cursor:pointer">
+                                                                <h3 class="card-title" style="font-size:.95rem">
+                                                                    <i class="fas fa-boxes-stacked"></i> Catálogo del Proveedor
+                                                                    <span id="badge_catalogo_prov" class="badge badge-success ml-1">0</span>
+                                                                </h3>
+                                                                <div class="card-tools">
+                                                                    
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body table-responsive p-1">
+                                                                <table id="tblCatalogoProv" class="table table-sm table-bordered table-hover w-100 mb-0">
+                                                                    <thead class="thead-light">
+                                                                        <tr>
+                                                                            <th class="text-center" style="width:35px">Nº</th>
+                                                                            <th>PRODUCTO</th>
+                                                                            <th class="text-center" style="width:100px">PRECIO REF.</th>
+                                                                            <th class="text-center" style="width:70px">AGREGAR</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody></tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <!-- /Card Catálogo del Proveedor -->
                                                         <div class="table-responsive">
                                                             <table id="tblCompra"
                                                                 class="table table-bordered w-100 table-striped">

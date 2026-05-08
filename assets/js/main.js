@@ -79,6 +79,12 @@ function limpiar(btn = false) {
   if (selectedTab === "1") {
     setChange(cboProveedores, 0);
     nro_fac.value = "";
+    // Limpiar catálogo del proveedor
+    $('#card_catalogo_prov').hide();
+    if (typeof tblCatalogoProv !== 'undefined' && tblCatalogoProv) {
+      tblCatalogoProv.clear().draw();
+      $('#badge_catalogo_prov').text('0');
+    }
   } else if (selectedTab === "2") {
   
     setChange(cboConductor, conductorPorDefecto);

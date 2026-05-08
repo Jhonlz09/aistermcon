@@ -70,6 +70,15 @@ class ControladorProveedorProductos
         $data = ModeloProveedorProductos::mdlEditarAsociacionBatch($items);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
+
+    /**
+     * Acción 8: Listar catálogo del proveedor para panel de compras
+     */
+    static public function listarCatalogoCompra($id_proveedor)
+    {
+        $data = ModeloProveedorProductos::mdlListarCatalogoCompra($id_proveedor);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
 }
 
 // ---- Dispatch por acción ----
@@ -135,5 +144,9 @@ if (isset($_POST["accion"])) {
         } else {
             echo json_encode(array('status' => 'danger', 'm' => 'No tiene permisos para editar asociaciones.'), JSON_UNESCAPED_UNICODE);
         }
+
+    } else if ($accion == 8) {
+        // Listar catálogo del proveedor para panel de compras
+        ControladorProveedorProductos::listarCatalogoCompra($_POST["id_proveedor"]);
     }
 }
