@@ -705,25 +705,60 @@
 
         btnAddRow.addEventListener('click', function() {
             const rowCountInput = document.getElementById('rowCount');
-            const rowCount = parseInt(rowCountInput.value, 10) || 1; // Cantidad de filas a agregar
+            const rowCount = parseInt(rowCountInput.value, 10) || 1;
 
             if (accion == 2) {
-                let data = new FormData()
-                data.append('id_cotizacion', id_cotiz);
-                data.append('filasCantidad', rowCount)
-                data.append('accion', 10);
-                confirmarAccion(data, 'cotizacion', tblSolicitud, '', function(r) {
-                    if (r) {
-                        // tblSolicitud.ajax.reload(function(r) {
-                        //     actualizarSubtotal(true);
-                        // }, false);
-                    }
+                // ── 1) Capturar todos los valores actuales del DOM antes del reload ──
+                let filasActuales = [];
+                tblSolicitud.rows().every(function(rowIdx) {
+                    let node = this.node();
+                    let originalData = $(node).data('original') ? JSON.parse($(node).data('original')) : null;
+                    if (!originalData) return;
+
+                    filasActuales.push({
+                        id: originalData.id,
+                        cantidad: $(node).find('.cantidad').val() || '',
+                        id_unidad: $(node).find('.id_unidad').val() || '',
+                        descripcion: $(node).find('.descripcion').val() || '',
+                        precio_uni: $(node).find('.precio_uni').val() || ''
+                    });
                 });
+
+                // ── 2) Guardar filas existentes + agregar nuevas en una sola cadena ──
+                let dataSave = new FormData();
+                dataSave.append('id_cotizacion', id_cotiz);
+                dataSave.append('filas', JSON.stringify(filasActuales));
+                dataSave.append('isFilas', 'true');
+                dataSave.append('isInputs', 'false');
+                dataSave.append('subtotal', subtotal);
+                dataSave.append('iva', iva);
+                dataSave.append('impuesto', impuestos);
+                dataSave.append('total', total);
+                dataSave.append('desc', otros.value);
+                dataSave.append('estado_orden', true);
+                dataSave.append('accion', 6);
+
+                // Guardar primero los datos actuales, luego agregar las filas nuevas
+                confirmarAccion(dataSave, 'cotizacion', null, '', function(rSave) {
+                    if (rSave) {
+                        // Ahora sí agregar las filas vacías en la BD
+                        let dataAdd = new FormData();
+                        dataAdd.append('id_cotizacion', id_cotiz);
+                        dataAdd.append('filasCantidad', rowCount);
+                        dataAdd.append('accion', 10);
+                        confirmarAccion(dataAdd, 'cotizacion', null, '', function(rAdd) {
+                            if (rAdd) {
+                                tblSolicitud.ajax.reload(function() {
+                                    actualizarSubtotal(false);
+                                }, false);
+                            }
+                        }, 0, false);
+                    }
+                }, 0, false);
             } else {
                 for (let i = 0; i < rowCount; i++) {
-                    agregarFila(); // Llama a tu función de agregar fila
+                    agregarFila();
                 }
-                // Resetear el valor del input a 1 (opcional)
                 rowCountInput.value = 1;
             }
         });
@@ -765,7 +800,6 @@
             let precio = 0; // Valor por defecto
 
             if (cantidad !== 0 && precio_unitario !== 0) {
-                // Si ambos valores son distintos de cero, realizamos la operación
                 precio = precio_unitario * cantidad;
             }
 
@@ -776,6 +810,7 @@
 
         $('#otros').on('input keydown paste', function() {
             actualizarSubtotal();
+            
         });
 
         function actualizarSubtotal(database = false) {
