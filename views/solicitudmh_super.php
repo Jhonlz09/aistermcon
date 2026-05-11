@@ -550,7 +550,7 @@
                 const $inner = $("<div style='display:flex;align-items:center;gap:10px;padding:4px 6px;cursor:pointer;'>");
                 let $thumb;
                 if (item.img) {
-                    let imgSrc = `/aistermcon/utils/download.php?&file=${encodeURIComponent(item.img)}&route=products`;
+                    let imgSrc = `/utils/download.php?&file=${encodeURIComponent(item.img)}&route=products`;
                     $thumb = $("<img/>").attr('src', imgSrc).attr('data-toggle', "modal").attr('data-target', "#modalImagenProducto").attr('data-img-src', imgSrc).attr('data-img-label', item.label).css({
                         width: '48px',
                         height: '48px',
@@ -737,7 +737,7 @@
                         let $inner = $("<div style='display:flex;align-items:center;gap:10px;'>");
                         let $thumb;
                         if (row.img) {
-                            let imgSrc = `/aistermcon/utils/download.php?&file=${encodeURIComponent(row.img)}&route=products`;
+                            let imgSrc = `/utils/download.php?&file=${encodeURIComponent(row.img)}&route=products`;
                             $thumb = `<img src="${imgSrc}" 
                                 data-toggle="modal" data-target="#modalImagenProducto" 
                                 data-img-src="${imgSrc}" data-img-label="${data}"
@@ -858,7 +858,7 @@
                         let $inner = $("<div style='display:flex;align-items:center;gap:10px;'>");
                         let $thumb;
                         if (row.img) {
-                            let imgSrc = `/aistermcon/utils/download.php?&file=${encodeURIComponent(row.img)}&route=products`;
+                            let imgSrc = `/utils/download.php?&file=${encodeURIComponent(row.img)}&route=products`;
                             $thumb = `<img src="${imgSrc}" 
                                 data-toggle="modal" data-target="#modalImagenProducto" 
                                 data-img-src="${imgSrc}" data-img-label="${data}"

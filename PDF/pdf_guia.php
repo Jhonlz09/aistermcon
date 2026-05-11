@@ -5,7 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Verificar si el usuario está autenticado
 if (!(isset($_SESSION['s_usuario']))) {
-    header("Location: /aistermcon");
+    header("Location: /");
     exit();
 }
 

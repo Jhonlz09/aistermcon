@@ -6,7 +6,7 @@ if (session_status() == PHP_SESSION_NONE) {
 $ver_precios = isset($_SESSION["precios3"]) ? $_SESSION["precios3"] == 1 : false;
 
 if (!(isset($_SESSION['s_usuario']))) {
-    header("Location: /aistermcon");
+    header("Location: /");
     exit();
 }
 

@@ -364,7 +364,7 @@
                             " <i class='fa fa-trash'></i>" +
                             "</button>" : "") +
                         (ruta !== null ?
-                            " <a href='/aistermcon/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=ordenes" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
+                            " <a href='/utils/download.php?file=" + encodeURIComponent(ruta) + "&route=ordenes" + "' target='_blank' style='font-size:1.4rem;padding:3px 6.8px' class='btn btnDescargar' title='PDF'>" +
                             " <i class='fas fa-file-pdf'></i>" +
                             "</a>" :
                             " <span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed; color:darkgrey' class='btn' >" +

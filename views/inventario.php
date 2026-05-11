@@ -779,7 +779,7 @@ $id_user = ($_SESSION["s_usuario"]->id == 1) ? true : false;
             className: "text-center",
             render: function (data, type, row) {
 
-                let imgSrc = `/aistermcon/utils/download.php?&file=${encodeURIComponent(data)}&route=products`;
+                let imgSrc = `/utils/download.php?&file=${encodeURIComponent(data)}&route=products`;
                 if (data) {
                     return `<img
                         onclick="openModalImage(this)"

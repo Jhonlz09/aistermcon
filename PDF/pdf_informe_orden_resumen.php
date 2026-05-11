@@ -9,7 +9,7 @@ $ver_precios = isset($_SESSION["precios3"]) ? $_SESSION["precios3"] == 1 : false
 
 // Verificar si el usuario está autenticado
 if (!(isset($_SESSION['s_usuario']))) {
-    header("Location: /aistermcon");
+    header("Location: /");
     exit();
 }
 

@@ -380,7 +380,7 @@
 
                     const btn = (file, color, icon, title, target) => {
                         if (file) {
-                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=presupuestos' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
+                            return `<a href='/utils/download.php?file=${encodeURIComponent(file)}&route=presupuestos' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
                         }
                         return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
                     };
@@ -403,7 +403,7 @@
                     } = row;
                     const btn = (file, color, icon, title, target) => {
                         if (file) {
-                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=ordenes' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar'
+                            return `<a href='/utils/download.php?file=${encodeURIComponent(file)}&route=ordenes' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar'
                             title='${title}'><i class='fas ${icon}'></i></a>`;
                         }
                         return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
@@ -457,7 +457,7 @@
 
                     const btn = (file, color, icon, title, target) => {
                         if (file) {
-                            return `<a href='/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=actas_entrega' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
+                            return `<a href='/utils/download.php?file=${encodeURIComponent(file)}&route=actas_entrega' target='${target}' style='font-size:1.4rem;padding:3px 6.8px;color:${color}' class='btn btnDescargar' title='${title}'><i class='fas ${icon}'></i></a>`;
                         }
                         return `<span style='font-size:1.4rem;padding:3px 4px;cursor:not-allowed;color:darkgrey' class='btn'><i class='fas ${icon}'></i></span>`;
                     };
@@ -522,7 +522,7 @@
                 cachedDiv.style.gap = '1rem';
                 cachedDiv.style.justifyContent = 'center';
                 archivos.forEach(file => {
-                    const url = `/aistermcon/utils/show.php?file=${encodeURIComponent(file)}&route=orden_compra`;
+                    const url = `/utils/show.php?file=${encodeURIComponent(file)}&route=orden_compra`;
 
                     const wrapper = document.createElement('div');
                     wrapper.style.flex = '1 1 45%';
@@ -567,7 +567,7 @@
             inner.innerHTML = '';
 
             archivos.forEach((file, index) => {
-                const url = `/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=orden_compra`;
+                const url = `/utils/download.php?file=${encodeURIComponent(file)}&route=orden_compra`;
 
                 indicators.innerHTML += `
                 <li data-target="#carouselPreview" data-slide-to="${index}" ${index === 0 ? 'class="active"' : ''}></li>
@@ -727,7 +727,7 @@
                     var dzImage = file.previewElement.querySelector('.dz-image');
                     if (dzImage) {
                         if (file.type === "") {
-                            const imageUrl = `/aistermcon/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=orden_compra`;
+                            const imageUrl = `/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=orden_compra`;
                             dzImage.innerHTML = `<img src="${imageUrl}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;"alt="preview">`;
                             // dzImage.innerHTML = `<img src="C:/var/www/orden_compra/${file.ruta}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" alt="preview">`;
                         } else if (file.type.startsWith("image/")) {

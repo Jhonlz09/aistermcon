@@ -314,7 +314,7 @@
                 cachedDiv.style.gap = '1rem';
                 cachedDiv.style.justifyContent = 'center';
                 archivos.forEach(file => {
-                    const url = `/aistermcon/utils/show.php?file=${encodeURIComponent(file)}&route=trabajo_realizado`;
+                    const url = `/utils/show.php?file=${encodeURIComponent(file)}&route=trabajo_realizado`;
 
                     const wrapper = document.createElement('div');
                     wrapper.style.flex = '1 1 45%';
@@ -358,7 +358,7 @@
             inner.innerHTML = '';
 
             archivos.forEach((file, index) => {
-                const url = `/aistermcon/utils/download.php?file=${encodeURIComponent(file)}&route=trabajo_realizado`;
+                const url = `/utils/download.php?file=${encodeURIComponent(file)}&route=trabajo_realizado`;
 
                 indicators.innerHTML += `
                 <li data-target="#carouselPreview" data-slide-to="${index}" ${index === 0 ? 'class="active"' : ''}></li>
@@ -444,7 +444,7 @@
                     var dzImage = file.previewElement.querySelector('.dz-image');
                     if (dzImage) {
                         if (file.type === "") {
-                            const imageUrl = `/aistermcon/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=trabajo_realizado`;
+                            const imageUrl = `/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=trabajo_realizado`;
                             dzImage.innerHTML = `<img src="${imageUrl}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;"alt="preview">`;
                             // dzImage.innerHTML = `<img src="C:/var/www/orden_compra/${file.ruta}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" alt="preview">`;
                         } else if (file.type.startsWith("image/")) {

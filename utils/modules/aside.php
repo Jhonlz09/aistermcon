@@ -691,7 +691,7 @@
                 var dzImage = file.previewElement.querySelector('.dz-image');
                 if (dzImage) {
                     console.log(file.ruta);
-                    const imageUrl = `/aistermcon/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=guia_img`;
+                    const imageUrl = `/utils/download.php?&file=${encodeURIComponent(file.ruta)}&route=guia_img`;
                     dzImage.innerHTML = `<img src="${imageUrl}" style="object-fit:cover;border-radius:6px;"alt="preview">`;
                 }
             });

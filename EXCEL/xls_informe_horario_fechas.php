@@ -10,7 +10,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 // Validar sesión
 session_start();
 if (!isset($_SESSION['s_usuario'])) {
-    header("Location: /aistermcon");
+    header("Location: /");
     exit();
 }
 
