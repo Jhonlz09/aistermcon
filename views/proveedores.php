@@ -144,11 +144,73 @@
     <!-- /.modal-dialog -->
 </div>
 
+
+<!-- Modal Catálogo de Productos por Proveedor -->
+<div class="modal fade" id="modalCatalogo">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-info">
+                <h4 class="modal-title"><i class="fa-solid fa-boxes-stacked"></i>
+                    Catálogo — <span id="catalogoProveedorNombre"></span>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body scroll-modal">
+                <!-- Buscador para asociar productos -->
+                <div class="row mb-3">
+                    <div class="col-md-6 ui-front">
+                        <label class="col-form-label combo" for="searchCatalogoProducto">
+                            <i class="fas fa-magnifying-glass-plus"></i> Asociar producto del inventario
+                        </label>
+                        <input type="search" class="form-control form-control-sm" id="searchCatalogoProducto"
+                            placeholder="Escriba para buscar y asociar..." autocomplete="off"
+                            style="border-bottom: 2px solid var(--select-border-bottom);">
+                    </div>
+                </div>
+                <!-- Tabla de productos asociados -->
+                <div class="table-responsive">
+                    <table id="tblCatalogoProds" class="table table-bordered table-sm table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width:40px">Nº</th>
+                                <th>PRODUCTO INTERNO</th>
+                                <th class="text-center">CÓD. PROVEEDOR</th>
+                                <th>NOMBRE COMERCIAL</th>
+                                <th class="text-center">PRECIO UNI. REF.</th>
+                                <th class="text-center">ÚLT. COMPRA</th>
+                                <th class="text-center" style="width:100px">ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn bg-gradient-info" id="btnGuardarCatalogo">
+                    <i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar
+                </button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     var mostrarCol = '<?php echo $_SESSION["editar10"] || $_SESSION["eliminar10"] ?>';
     var editar = '<?php echo $_SESSION["editar10"] ?>';
     var eliminar = '<?php echo $_SESSION["eliminar10"] ?>';
     var permisoAsociar = '<?php echo isset($_SESSION["editar10"]) && $_SESSION["editar10"] === true ? "1" : "" ?>';
+
+    OverlayScrollbars(document.querySelector('.scroll-modal'), {
+        autoUpdate: true,
+        scrollbars: {
+            autoHide: 'leave'
+        }
+    });
 
     configuracionTable = {
         "responsive": true,
@@ -654,56 +716,3 @@
     })
 </script>
 
-<!-- Modal Catálogo de Productos por Proveedor -->
-<div class="modal fade" id="modalCatalogo">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header bg-gradient-info">
-                <h4 class="modal-title"><i class="fa-solid fa-boxes-stacked"></i>
-                    Catálogo — <span id="catalogoProveedorNombre"></span>
-                </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Buscador para asociar productos -->
-                <div class="row mb-3">
-                    <div class="col-md-6 ui-front">
-                        <label class="col-form-label combo" for="searchCatalogoProducto">
-                            <i class="fas fa-magnifying-glass-plus"></i> Asociar producto del inventario
-                        </label>
-                        <input type="search" class="form-control form-control-sm" id="searchCatalogoProducto"
-                            placeholder="Escriba para buscar y asociar..." autocomplete="off"
-                            style="border-bottom: 2px solid var(--select-border-bottom);">
-                    </div>
-                </div>
-                <!-- Tabla de productos asociados -->
-                <div class="table-responsive">
-                    <table id="tblCatalogoProds" class="table table-bordered table-sm table-striped" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width:40px">Nº</th>
-                                <th>PRODUCTO INTERNO</th>
-                                <th class="text-center">CÓD. PROVEEDOR</th>
-                                <th>NOMBRE COMERCIAL</th>
-                                <th class="text-center">PRECIO UNI. REF.</th>
-                                <th class="text-center">ÚLT. COMPRA</th>
-                                <th class="text-center" style="width:100px">ACCIONES</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer justify-content-between">
-                <button type="button" class="btn bg-gradient-info" id="btnGuardarCatalogo">
-                    <i class="fas fa-floppy-disk"></i><span class="button-text"> </span>Guardar
-                </button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">
-                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
